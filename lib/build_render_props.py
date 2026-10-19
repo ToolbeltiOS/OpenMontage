@@ -105,6 +105,11 @@ def proxy_video(path: str) -> str:
         "ffmpeg", "-v", "error", "-y", "-i", path,
         "-vf", "scale='min(1920,iw)':-2:flags=bicubic",
         "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
+        # Half-second GOP. Remotion seeks the source once per rendered frame,
+        # and with a default ~10s keyframe interval each seek decodes up to 240
+        # frames; under contention that stalled the frame server for the full
+        # 600s per-frame timeout. Keyframes are cheap here and seeking is not.
+        "-g", "12", "-keyint_min", "12", "-sc_threshold", "0",
         "-pix_fmt", "yuv420p", "-an", dest,
     ], check=True)
     return dest
