@@ -22,6 +22,8 @@ import { ProgressBar } from "./components/ProgressBar";
 import { CaptionOverlay, WordCaption } from "./components/CaptionOverlay";
 import { DocCaption } from "./design/DocCaption";
 import { EmphasisLine } from "./design/Emphasis";
+import { Graded, FrameLayer } from "./design/Frame";
+import { SourceCaption } from "./design/Scene";
 import { ActTitleCard } from "./scenes/ActTitleCard";
 import { EvidenceCard } from "./scenes/EvidenceCard";
 import { ScaleComparison } from "./scenes/ScaleComparison";
@@ -350,6 +352,8 @@ interface Overlay {
 interface AudioLayer {
   src: string;
   volume?: number;
+  /** seconds into `src` at which this render begins */
+  startFrom?: number;
 }
 
 interface AudioConfig {
@@ -384,7 +388,11 @@ export interface ExplainerProps {
 // ---------------------------------------------------------------------------
 
 const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".tif", ".webp"];
-const VIDEO_EXTENSIONS = [".mp4", ".mov", ".webm", ".avi", ".mkv"];
+// .ogv/.ogg are common on Wikimedia Commons; without them an Ogg clip
+// falls through to the image branch and the render dies on "Error loading
+// image". The manifest's own `type` field is not reliable here — several
+// video files are recorded as type "image" — so the extension decides.
+const VIDEO_EXTENSIONS = [".mp4", ".mov", ".webm", ".avi", ".mkv", ".ogv", ".ogg", ".m4v"];
 
 function isImage(source: string): boolean {
   const lower = source.toLowerCase();
@@ -870,27 +878,56 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
   // --- Media types (image / video fallback) ---
   const animation = cut.animation || cut.transform?.animation;
 
+  /**
+   * Sourced photography and footage get the same treatment as the authored
+   * scenes: the film's grade, and the persistent frame.
+   *
+   * Without this the cuts announce themselves — a raw blue-sky JPEG next to a
+   * graded schematic is the clearest tell of a documentary assembled from
+   * stock, which is exactly what the compose director warns about. The frame
+   * is applied when the cut carries act chrome, so other pipelines using this
+   * composition are untouched.
+   */
+  const inDocumentary = Boolean(cut.actNumber || cut.actTitle);
+  const dress = (el: React.ReactElement): React.ReactElement =>
+    inDocumentary ? (
+      <AbsoluteFill>
+        <Graded>{el}</Graded>
+        <FrameLayer
+          actNumber={cut.actNumber}
+          actTitle={cut.actTitle}
+          sceneIndex={cut.sceneIndex}
+          coords={cut.coords}
+        />
+        <SourceCaption caption={cut.caption} source={cut.sourceLine} />
+      </AbsoluteFill>
+    ) : (
+      el
+    );
+
   if (cut.source && isImage(cut.source)) {
-    return maybeWrapWithBg(<ImageScene src={cut.source} animation={animation} />);
+    return maybeWrapWithBg(dress(<ImageScene src={cut.source} animation={animation} />));
   }
 
   if (cut.source && isVideo(cut.source)) {
     return maybeWrapWithBg(
-      <VideoScene
-        src={cut.source}
-        startFrom={cut.source_in_seconds ?? 0}
-        transitionIn={cut.transition_in}
-        transitionOut={cut.transition_out}
-        transitionDuration={cut.transition_duration}
-        sceneDurationSeconds={cut.out_seconds - cut.in_seconds}
-        backgroundColor={cut.backgroundColor}
-      />,
+      dress(
+        <VideoScene
+          src={cut.source}
+          startFrom={cut.source_in_seconds ?? 0}
+          transitionIn={cut.transition_in}
+          transitionOut={cut.transition_out}
+          transitionDuration={cut.transition_duration}
+          sceneDurationSeconds={cut.out_seconds - cut.in_seconds}
+          backgroundColor={cut.backgroundColor}
+        />,
+      ),
     );
   }
 
   // Final fallback — try as image if source exists, otherwise show text_card
   if (cut.source) {
-    return maybeWrapWithBg(<ImageScene src={cut.source} animation={animation} />);
+    return maybeWrapWithBg(dress(<ImageScene src={cut.source} animation={animation} />));
   }
 
   // No source, no type — render as text card with cut id as fallback
@@ -1025,7 +1062,14 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
 
       {/* Layer 4: Audio — narration */}
       {audio?.narration?.src && (
-        <Audio src={resolveAsset(audio.narration.src)} volume={audio.narration.volume ?? 1} />
+        <Audio
+          src={resolveAsset(audio.narration.src)}
+          // Offset into a longer mix. A film rendered in act-sized parts needs
+          // each part to start at its own point in the single finished mix
+          // rather than carrying six separately normalised files.
+          startFrom={Math.round((audio.narration.startFrom ?? 0) * fps)}
+          volume={audio.narration.volume ?? 1}
+        />
       )}
 
       {/* Layer 4: Audio — music with offset, fade in/out, and optional loop */}

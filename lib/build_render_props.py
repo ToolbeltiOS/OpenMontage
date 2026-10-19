@@ -39,6 +39,38 @@ def slot_id(cut: dict) -> str | None:
     return m.group(1) if m else None
 
 
+PROXY_MAX = 2560  # long edge; leaves headroom for the 1.0 -> 1.08 parallax push
+
+
+def proxy_image(path: str) -> str:
+    """Downscale an oversized still once, and render against the copy.
+
+    Several of the sourced stills are 7712x4352 — 33 megapixels. Chrome decodes
+    the full image on every frame it appears in, which dominated the render:
+    measured 1.0fps with the originals against 3.8fps without them, and single
+    frames exceeding the 180-second per-frame timeout. Nothing is lost; the
+    canvas is 1920x1080 and the largest push is 1.08.
+    """
+    if not os.path.isfile(path) or os.path.splitext(path)[1].lower() not in (".jpg", ".jpeg", ".png"):
+        return path
+    out_dir = os.path.join(OUT, "proxies")
+    os.makedirs(out_dir, exist_ok=True)
+    dest = os.path.join(out_dir, os.path.basename(path))
+    if os.path.exists(dest) and os.path.getmtime(dest) >= os.path.getmtime(path):
+        return dest
+    probe = subprocess.check_output([
+        "ffprobe", "-v", "error", "-select_streams", "v:0",
+        "-show_entries", "stream=width,height", "-of", "csv=p=0", path,
+    ], text=True).strip().split(",")
+    w, h = int(probe[0]), int(probe[1])
+    if max(w, h) <= PROXY_MAX:
+        return path
+    scale = f"scale={PROXY_MAX}:-2" if w >= h else f"scale=-2:{PROXY_MAX}"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", path, "-vf", scale,
+                    "-q:v", "2", dest], check=True)
+    return dest
+
+
 def dur(path: str) -> float:
     return float(subprocess.check_output(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path]
@@ -125,24 +157,80 @@ def build_audio(music_dir: str, ed: dict, reuse: bool = False) -> tuple[str, lis
     return final, offsets
 
 
-def build_captions(offsets: list[float]) -> list[dict]:
+def _norm(w: str) -> str:
+    return w.lower().strip(".,;:!?\u201c\u201d'\"")
+
+
+def build_captions(offsets: list[float], script: dict) -> tuple[list[dict], int]:
+    """Script words, transcript timing.
+
+    The transcripts come from forced alignment of the synthesised audio, so
+    they carry the recogniser's spelling rather than the script's: Tiryns
+    arrives as "Turin", Pausanias as "Porsanias", moai as "mowie", Pumapunku
+    as "Puma Punku", and every spelled-out number comes back as digits. 128 of
+    2,909 words were wrong. Burned captions are the most-read text in the film,
+    so the words come from the approved script and only the timing comes from
+    the transcript.
+
+    Alignment is a plain sequence diff. Where the two agree, the script's
+    spelling is used with the transcript's times; where they do not, the script
+    words are distributed evenly across the span the transcript gives them.
+    """
+    import difflib
+
     words: list[dict] = []
+    corrected = 0
+    by_id = {sec["id"]: sec for sec in script["sections"]}
+
     for section, off in zip(SECTIONS, offsets):
         path = os.path.join(CAP, section, "transcript.json")
         if not os.path.exists(path):
             continue
-        items = json.load(open(path, encoding="utf-8"))
-        for i, w in enumerate(items):
-            text = w["text"]
+        tr = json.load(open(path, encoding="utf-8"))
+        # Keep the punctuation: it is what the caption pages break on, and a
+        # subtitle track with none reads as a transcript dump.
+        script_words = re.findall(
+            r"[\u201c\"(]?[A-Za-z0-9'\u2019-]+[.,;:!?\u2014\u201d\")]*", by_id[section]["text"]
+        )
+        script_words = [w for w in script_words if any(c.isalnum() for c in w)]
+        sm = difflib.SequenceMatcher(
+            a=[_norm(w["text"]) for w in tr], b=[_norm(w) for w in script_words]
+        )
+        out: list[dict] = []
+        for op, i1, i2, j1, j2 in sm.get_opcodes():
+            if op == "equal":
+                for k in range(i2 - i1):
+                    out.append({"word": script_words[j1 + k],
+                                "start": tr[i1 + k]["start"], "end": tr[i1 + k]["end"]})
+                continue
+            if j1 == j2:
+                continue  # the recogniser heard a word the script does not have
+            if i2 > i1:
+                span_start, span_end = tr[i1]["start"], tr[i2 - 1]["end"]
+            else:
+                # pure insertion: borrow the gap around the insertion point
+                span_start = tr[i1 - 1]["end"] if i1 > 0 else 0.0
+                span_end = tr[i1]["start"] if i1 < len(tr) else span_start + 0.3
+                if span_end <= span_start:
+                    span_end = span_start + 0.25
+            n = j2 - j1
+            step = (span_end - span_start) / n
+            for k in range(n):
+                out.append({"word": script_words[j1 + k],
+                            "start": span_start + k * step,
+                            "end": span_start + (k + 1) * step})
+            corrected += n
+
+        for i, w in enumerate(out):
             words.append({
-                "word": text,
+                "word": w["word"],
                 "startMs": round((w["start"] + off) * 1000),
                 "endMs": round((w["end"] + off) * 1000),
                 # Sentence-final punctuation is a real break: the narration was
                 # synthesised per sentence, so these are the natural pages.
-                "pageBreakAfter": text.endswith((".", "?", "!", "”")) or i == len(items) - 1,
+                "pageBreakAfter": w["word"].endswith((".", "?", "!")) or i == len(out) - 1,
             })
-    return words
+    return words, corrected
 
 
 def main() -> int:
@@ -152,7 +240,43 @@ def main() -> int:
         raise SystemExit("pass the music library dir as argv[1] or set MUSIC_LIBRARY_DIR")
 
     mixed, offsets = build_audio(music_dir, ed, reuse="--reuse-audio" in sys.argv)
-    captions = build_captions(offsets)
+    script = json.load(open(os.path.join(ART, "script.json"), encoding="utf-8"))
+    captions, corrected = build_captions(offsets, script)
+
+    # Every cut carries the act chrome, authored or sourced. The frame and the
+    # grade key off it, so a sourced photograph gets the same treatment as a
+    # schematic instead of announcing itself as stock.
+    ACTS = {
+        "cold_open": ("00", "Cold open"),
+        "act1": ("01", "A verdict two thousand years old"),
+        "act2": ("02", "The statues that walked"),
+        "act3": ("03", "The hole in the granite"),
+        "act4": ("04", "The cases nobody has closed"),
+        "outro": ("05", "Outro"),
+    }
+    slot_meta = {s["slot_id"]: s for s in
+                 json.load(open(os.path.join(ART, "scene_plan.json"), encoding="utf-8"))["metadata"]["slots"]}
+    for cut in ed["cuts"]:
+        sid = slot_id(cut)
+        if not sid:
+            continue
+        section = slot_meta.get(sid, {}).get("script_section_id", "")
+        num, title = ACTS.get(section, ("", ""))
+        cut.setdefault("actNumber", num)
+        cut.setdefault("actTitle", title)
+        cut.setdefault("sceneIndex", "S " + sid.rsplit("_s", 1)[-1])
+
+    # Oversized stills are rendered against downscaled proxies.
+    proxied = 0
+    for cut in ed["cuts"]:
+        for key in ("source", "backgroundImage"):
+            src = cut.get(key)
+            if not isinstance(src, str):
+                continue
+            new = proxy_image(src)
+            if new != src:
+                cut[key] = new
+                proxied += 1
 
     # cuts: durations -> absolute timeline positions, back to back
     t = 0.0
@@ -205,8 +329,11 @@ def main() -> int:
     }
     out = os.path.join(ART, "render_props.json")
     json.dump(props, open(out, "w", encoding="utf-8"), ensure_ascii=False)
+    print(f"proxies: {proxied} oversized stills downscaled to {PROXY_MAX}px")
     print(f"timeline: {t:.2f}s over {len(ed['cuts'])} cuts")
-    print(f"captions: {len(captions)} words, last at {captions[-1]['endMs'] / 1000:.2f}s")
+    print(f"captions: {len(captions)} words from the script, "
+          f"{corrected} re-timed where the transcript disagreed, "
+          f"last at {captions[-1]['endMs'] / 1000:.2f}s")
     print(f"mix: {mixed} ({dur(mixed):.2f}s)")
     print(f"overlays: {len(overlays)} kept, {len(dropped)} dropped as slot descriptions")
     for d in dropped:

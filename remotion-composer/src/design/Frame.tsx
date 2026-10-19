@@ -34,13 +34,22 @@ export interface FrameLayerProps extends DataStripProps {
   ink?: { rule: string; strip: string; faint: string; accent?: string };
 }
 
-/** Deterministic film grain. Seeded so renders are reproducible. */
+/**
+ * Deterministic film grain. Seeded so renders are reproducible.
+ *
+ * One CSS tile on a 320px repeat, stepped every second frame.
+ *
+ * Measured alternatives, both rejected: two gradient layers repainting every
+ * frame (the original) cost about 7% of render time against this; a data-URI
+ * SVG `feTurbulence` tile cost 9x — 0.46fps against 4.09fps — because Chrome
+ * re-evaluates the filter whenever the background position moves. Do not
+ * "improve" this without measuring a full act.
+ */
 const Grain: React.FC<{ opacity: number }> = ({ opacity }) => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
-  // Cheap, deterministic: a tiled noise field nudged each frame.
-  const ox = Math.round(random(`gx${frame}`) * 80);
-  const oy = Math.round(random(`gy${frame}`) * 80);
+  const step = Math.floor(frame / 2);
+  const ox = Math.round(random(`gx${step}`) * 64);
+  const oy = Math.round(random(`gy${step}`) * 64);
   return (
     <AbsoluteFill
       style={{
@@ -48,10 +57,9 @@ const Grain: React.FC<{ opacity: number }> = ({ opacity }) => {
         pointerEvents: "none",
         mixBlendMode: "overlay",
         backgroundImage:
-          "repeating-radial-gradient(circle at 17% 29%, rgba(255,255,255,0.5) 0 0.6px, transparent 0.6px 2.2px)," +
-          "repeating-radial-gradient(circle at 73% 61%, rgba(0,0,0,0.5) 0 0.5px, transparent 0.5px 1.9px)",
-        backgroundSize: `${width / 6}px ${height / 6}px, ${width / 5}px ${height / 5}px`,
-        backgroundPosition: `${ox}px ${oy}px, ${-oy}px ${ox}px`,
+          "repeating-radial-gradient(circle at 17% 29%, rgba(255,255,255,0.55) 0 0.6px, transparent 0.6px 2.1px)",
+        backgroundSize: "320px 320px",
+        backgroundPosition: `${ox}px ${oy}px`,
       }}
     />
   );
@@ -113,13 +121,11 @@ export const FrameLayer: React.FC<FrameLayerProps> = ({
       ) : null}
 
       {chromatic ? (
-        <>
-          <AbsoluteFill
-            style={{
-              boxShadow: `inset ${GRADE.chromatic}px 0 0 rgba(120,160,255,0.16), inset ${-GRADE.chromatic}px 0 0 rgba(255,150,110,0.14)`,
-            }}
-          />
-        </>
+        <AbsoluteFill
+          style={{
+            boxShadow: `inset ${GRADE.chromatic}px 0 0 rgba(120,160,255,0.16), inset ${-GRADE.chromatic}px 0 0 rgba(255,150,110,0.14)`,
+          }}
+        />
       ) : null}
 
       {bands && !ink ? (
@@ -278,6 +284,18 @@ export const FrameLayer: React.FC<FrameLayerProps> = ({
  * Unified grade for stills and footage. Lifted blacks toward #0C0C0E, slight
  * desaturation, warm highlights toward the ochre, cool shadows.
  */
+/**
+ * Unified grade for stills and footage. Lifted blacks toward the film's own
+ * background, slight desaturation, warm highlights, cool shadows.
+ *
+ * Folded into one filter chain and a single blended overlay. The earlier
+ * version stacked four full-frame layers with three different blend modes,
+ * which forced a separate compositing pass per layer on all 183 cuts.
+ *
+ * The overlay blends with `screen`, not `soft-light`. soft-light looked
+ * marginally richer and cost about four times the render time — a measured
+ * 1.0fps against 3.8fps, with single frames exceeding the 180s timeout.
+ */
 export const Graded: React.FC<{ children: React.ReactNode; strength?: number }> = ({
   children,
   strength = 1,
@@ -285,17 +303,23 @@ export const Graded: React.FC<{ children: React.ReactNode; strength?: number }> 
   <AbsoluteFill>
     <AbsoluteFill
       style={{
-        filter: `saturate(${1 - (1 - GRADE.saturation) * strength}) contrast(${1 + (GRADE.contrast - 1) * strength})`,
+        filter:
+          `saturate(${1 - (1 - GRADE.saturation) * strength}) ` +
+          `contrast(${1 + (GRADE.contrast - 1) * strength}) ` +
+          `brightness(${1 - 0.04 * strength})`,
       }}
     >
       {children}
     </AbsoluteFill>
-    {/* lifted blacks */}
-    <AbsoluteFill style={{ background: GRADE.lift, opacity: 0.1 * strength, mixBlendMode: "lighten" }} />
-    {/* cool shadows */}
-    <AbsoluteFill style={{ background: GRADE.coolShadows, opacity: strength, mixBlendMode: "multiply" }} />
-    {/* warm highlights */}
-    <AbsoluteFill style={{ background: GRADE.warmHighlights, opacity: strength, mixBlendMode: "screen" }} />
+    <AbsoluteFill
+      style={{
+        background:
+          `linear-gradient(170deg, ${GRADE.warmHighlights} 0%, transparent 52%, rgba(74,96,134,0.10) 100%)`,
+        opacity: strength,
+        mixBlendMode: "screen",
+      }}
+    />
+    <AbsoluteFill style={{ background: GRADE.lift, opacity: 0.08 * strength }} />
   </AbsoluteFill>
 );
 

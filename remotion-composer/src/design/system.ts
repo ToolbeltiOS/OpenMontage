@@ -85,7 +85,7 @@ export const GRADE = {
   warmHighlights: "rgba(192,138,62,0.10)",
   coolShadows: "rgba(38,52,74,0.16)",
   grainOpacity: 0.055,
-  vignette: 0.42,
+  vignette: 0.34,
   chromatic: 0.5, // px
 } as const;
 

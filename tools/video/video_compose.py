@@ -1673,6 +1673,8 @@ class VideoCompose(BaseTool):
             # would only take effect on a direct _remotion_render() call.
             if inputs.get("remotion_timeout_ms") is not None:
                 remotion_inputs["remotion_timeout_ms"] = inputs["remotion_timeout_ms"]
+            if inputs.get("concurrency") is not None:
+                remotion_inputs["concurrency"] = inputs["concurrency"]
             if inputs.get("public_dir") is not None:
                 remotion_inputs["public_dir"] = inputs["public_dir"]
             render_result = self._remotion_render(remotion_inputs)
@@ -2066,6 +2068,15 @@ class VideoCompose(BaseTool):
             ]
             if public_dir is not None:
                 cmd.append(f"--public-dir={public_dir}")
+
+            # Frame-level parallelism. Remotion defaults to roughly half the
+            # cores; a long render on a machine with headroom is worth raising,
+            # and a memory-constrained one is worth lowering. Only the atelier
+            # path could set this before, so the main render path had no way to
+            # tune a 36,000-frame job.
+            concurrency = inputs.get("concurrency")
+            if concurrency:
+                cmd.append(f"--concurrency={int(concurrency)}")
 
             # Apply media profile dimensions
             if profile_name:

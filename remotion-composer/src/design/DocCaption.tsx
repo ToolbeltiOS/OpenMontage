@@ -33,7 +33,7 @@ interface Page {
  */
 export const DocCaption: React.FC<DocCaptionProps> = ({
   words,
-  wordsPerPage = 9,
+  wordsPerPage = 8,
   fontSize = TYPE.body + 10,
   bottom = LAYOUT.bottom + 128,
   maxWidth = 1360,
@@ -56,7 +56,11 @@ export const DocCaption: React.FC<DocCaptionProps> = ({
     };
     for (const w of words) {
       buf.push(w);
-      if (w.pageBreakAfter || buf.length >= wordsPerPage) flush();
+      // Break on the clause, not on the word count. Filling to the cap chops a
+      // long sentence at "…stood before a", which reads as a dropped frame.
+      // A comma or dash past the halfway mark is a real pause to break on.
+      const clause = /[,;:\u2014]$/.test(w.word) && buf.length >= Math.ceil(wordsPerPage / 2);
+      if (w.pageBreakAfter || clause || buf.length >= wordsPerPage) flush();
     }
     flush();
     return out;
