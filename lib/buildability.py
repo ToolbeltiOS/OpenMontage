@@ -109,7 +109,7 @@ def check_slot(slot: dict[str, Any], contract: dict[str, Any]) -> list[str]:
 
 
 def check_scene_plan(slots: list[dict[str, Any]], contract: dict[str, Any] | None = None):
-    """Check every slot. Returns (ok, problems, summary)."""
+    """Check every slot, then the reuse rule. Returns (ok, problems, summary)."""
     contract = contract or load_contract()
     problems: list[str] = []
     counts = {"authored": 0, "sourced": 0, "unbuildable": 0}
@@ -122,6 +122,17 @@ def check_scene_plan(slots: list[dict[str, Any]], contract: dict[str, Any] | Non
         if p:
             counts["unbuildable"] += 1
             problems.extend(p)
+    # Reuse is a buildability question too: a plan that repeats an asset is
+    # not a plan the film can be cut from, it is the same film twice.
+    try:
+        from .reuse_rules import check as reuse_check, metrics as reuse_metrics
+    except ImportError:
+        from reuse_rules import check as reuse_check, metrics as reuse_metrics
+    reuse_problems = reuse_check(slots)
+    problems.extend(reuse_problems)
+    counts["reuse_violations"] = len(reuse_problems)
+    counts.update(reuse_metrics(slots))
+
     return (not problems), problems, counts
 
 
@@ -137,6 +148,11 @@ if __name__ == "__main__":
     ok, problems, counts = check_scene_plan(slots)
     print(f"slots: {len(slots)}  authored {counts['authored']}  sourced {counts['sourced']}")
     print(f"unbuildable slots: {counts['unbuildable']}")
+    print(f"unique assets {counts.get('unique_assets')} across "
+          f"{counts.get('media_backed_slots')} media-backed slots; "
+          f"max reuse {counts.get('max_appearances_of_any_asset')} "
+          f"(parent-level {counts.get('max_appearances_of_any_parent')})")
+    print(f"reuse violations: {counts.get('reuse_violations')}")
     for p in problems[:40]:
         print("  -", p)
     if len(problems) > 40:

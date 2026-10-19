@@ -130,8 +130,22 @@ def main() -> int:
     wall_seconds = rr.get("total_wall_seconds")
     peak_rss_mb = rr.get("peak_rss_mb_children")
 
+    # Reuse is part of the self-review, and a planner violation fails the
+    # build: a film that repeats its pictures is a defect you can measure.
+    sys.path.insert(0, os.path.join(ROOT, "lib"))
+    from reuse_rules import check as reuse_check, metrics as reuse_metrics
+    plan_slots = json.load(open(os.path.join(ART, "scene_plan.json"),
+                                encoding="utf-8"))["metadata"]["slots"]
+    reuse = reuse_metrics(plan_slots)
+    reuse_violations = reuse_check(plan_slots)
+
     # Hard checks first: nothing is delivered if any of them fails.
     checks = hard_checks(mp4)
+    checks.append({
+        "check": "scene plan obeys the reuse rule",
+        "pass": not reuse_violations,
+        "detail": reuse if not reuse_violations else reuse_violations[:10],
+    })
     for c in checks:
         print(("  PASS  " if c["pass"] else "  FAIL  ") + c["check"])
         if not c["pass"]:
@@ -231,6 +245,7 @@ def main() -> int:
             "why": "frames taken from the film carry burned-in narration captions",
         },
         "post_render_checks": checks,
+        "reuse": reuse,
         "measured": {
             "duration_seconds": round(duration, 2),
             "duration_hms": f"{int(duration) // 60}:{int(duration) % 60:02d}",
