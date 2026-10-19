@@ -143,7 +143,7 @@ def main() -> int:
             got = int(subprocess.check_output([
                 "ffprobe", "-v", "error", "-select_streams", "v:0", "-count_packets",
                 "-show_entries", "stream=nb_read_packets", "-of", "csv=p=0", exact,
-            ]).strip().rstrip(","))
+            ], text=True).strip().rstrip(","))
             if got != m["frames"]:
                 print(f"[{m['section']}] WARNING trimmed to {got} frames, wanted {m['frames']}",
                       flush=True)

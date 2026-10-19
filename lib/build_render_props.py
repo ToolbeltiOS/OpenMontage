@@ -282,6 +282,19 @@ def main() -> int:
     script = json.load(open(os.path.join(ART, "script.json"), encoding="utf-8"))
     captions, corrected = build_captions(offsets, script)
 
+    # The scene plan defines the order; the edit must follow it. The approved
+    # edit_decisions has the outro's two cuts inverted against the plan, which
+    # ends the film on a landscape photograph instead of on its title card.
+    # Sorting by the plan's own start_seconds fixes that and any other
+    # inversion, and is stable for anything the plan does not place.
+    plan_order = {s["slot_id"]: (s["start_seconds"], i)
+                  for i, s in enumerate(
+                      json.load(open(os.path.join(ART, "scene_plan.json"),
+                                     encoding="utf-8"))["metadata"]["slots"])}
+    before = [slot_id(c) for c in ed["cuts"]]
+    ed["cuts"].sort(key=lambda c: plan_order.get(slot_id(c), (1e9, 0)))
+    reordered = sum(1 for a, b in zip(before, [slot_id(c) for c in ed["cuts"]]) if a != b)
+
     # Every cut carries the act chrome, authored or sourced. The frame and the
     # grade key off it, so a sourced photograph gets the same treatment as a
     # schematic instead of announcing itself as stock.
@@ -370,6 +383,7 @@ def main() -> int:
     }
     out = os.path.join(ART, "render_props.json")
     json.dump(props, open(out, "w", encoding="utf-8"), ensure_ascii=False)
+    print(f"order: {reordered} cuts re-sequenced to follow the scene plan")
     print(f"proxies: {proxied} oversized assets replaced (stills {PROXY_MAX}px, footage 1080p)")
     print(f"timeline: {t:.2f}s over {len(ed['cuts'])} cuts")
     print(f"captions: {len(captions)} words from the script, "
