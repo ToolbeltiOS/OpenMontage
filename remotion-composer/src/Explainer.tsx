@@ -21,6 +21,7 @@ import { KPIGrid } from "./components/charts/KPIGrid";
 import { ProgressBar } from "./components/ProgressBar";
 import { CaptionOverlay, WordCaption } from "./components/CaptionOverlay";
 import { DocCaption } from "./design/DocCaption";
+import { EmphasisLine } from "./design/Emphasis";
 import { ActTitleCard } from "./scenes/ActTitleCard";
 import { EvidenceCard } from "./scenes/EvidenceCard";
 import { ScaleComparison } from "./scenes/ScaleComparison";
@@ -329,7 +330,11 @@ export interface Cut {
 }
 
 interface Overlay {
-  type: "section_title" | "stat_reveal" | "hero_title" | "provider_chip";
+  /** emphasis only: seconds the line stays up */
+  hold?: number;
+  /** emphasis only: "data" sets a bare figure in the mono level */
+  level?: string;
+  type: "section_title" | "stat_reveal" | "hero_title" | "provider_chip" | "emphasis";
   in_seconds: number;
   out_seconds: number;
   text?: string;
@@ -900,6 +905,18 @@ const OverlayRenderer: React.FC<{ overlay: Overlay; theme: ThemeConfig }> = ({
   overlay,
   theme,
 }) => {
+  // The documentary's own emphasis beat — a narration line held over the
+  // picture in Display. Stock section_title is a themed lower third and reads
+  // as a different film.
+  if (overlay.type === "emphasis") {
+    return (
+      <EmphasisLine
+        text={overlay.text ?? ""}
+        hold={overlay.hold as number | undefined}
+        level={(overlay.level as "display" | "data") ?? "display"}
+      />
+    );
+  }
   if (overlay.type === "section_title") {
     return (
       <SectionTitle

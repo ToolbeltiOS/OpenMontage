@@ -744,6 +744,11 @@ class VideoCompose(BaseTool):
         "screen-demo": "Explainer",
         "presenter": "TalkingHead",
         "animation-first": "Explainer",
+        # The narrated-documentary pipeline's authored scene types
+        # (annotated_still, schematic, map_route, timeline, document_reveal,
+        # act_title_card, evidence_card, scale_comparison) are all dispatched
+        # from the Explainer composition.
+        "narrated-documentary": "Explainer",
     }
 
     @classmethod
