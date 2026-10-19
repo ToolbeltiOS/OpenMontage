@@ -145,11 +145,41 @@ and the most search effort.
 - Motion graphics name a concrete scene type.
 - `visual_mix` recorded; slideshow risk assessed as low.
 - Sum of holds within 10% of the script duration.
+- `lib/buildability.py` exits 0 — zero unbuildable slots.
+
+### 10. Run The Buildability Check (Blocking)
+
+```
+python3 lib/buildability.py projects/<slug>/artifacts/scene_plan.json
+```
+
+It must exit 0 before you checkpoint. The check enforces two things:
+
+- **An authored slot names a component that exists** in
+  `remotion-composer/component-contract.json`, and supplies props that satisfy
+  that component's contract — required props, required keys on every array
+  item, and every enum value in range.
+- **A sourced slot points at a file that is on disk.**
+
+`"cross_section — the pyramid in section"` is a description, not a scene. It
+will pass every other criterion on this page and then render as a text card.
+
+If the check fails, you have two honest moves and no third: author the slot
+properly against a real component, or re-treat it as a sourced slot and give it
+queries. Do not weaken the contract to make a slot pass.
+
+If a slot genuinely needs a scene type that does not exist, build the component
+first — Zod schema in `src/schemas/docComponents.ts`, entry in
+`component-contract.json`, dispatch branch in `src/Explainer.tsx`, demo
+composition — and only then author against it. Both contract files must be
+updated together or the check and the render will disagree.
 
 ## Gate Reminder (Binding)
 
 This stage gates on human approval (`human_approval_default: true`). Checkpoint
-`awaiting_human`, present the slot list and the visual mix, and **END YOUR TURN**.
+`awaiting_human`, present the slot list, the visual mix **and the buildability
+result**, and **END YOUR TURN**. Do not present a plan whose buildability check
+has not been run.
 
 ## Common Pitfalls
 
@@ -157,4 +187,6 @@ This stage gates on human approval (`human_approval_default: true`). Checkpoint
 - Listing every provider on every slot, so the search has no preference at all.
 - A stills budget met on average but violated in one long stretch.
 - "Motion graphic" as a placeholder with no named type — it becomes a text card.
+- Treating the buildability check as advisory. It is the only thing between a
+  described slot and a silent text-card fallback at compose.
 - Planning cuts on a metronome, which reads as mechanical however good the footage.

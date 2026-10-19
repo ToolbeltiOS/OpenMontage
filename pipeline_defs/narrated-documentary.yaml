@@ -188,11 +188,25 @@ stages:
       - Motion-graphic slots name a concrete Remotion scene type
       - Slideshow risk is assessed and recorded as low
       - Sum of slot holds is within 10% of the script duration
+      # BLOCKING. Run #1 reached compose with 79 of 183 slots naming graphics
+      # that had no component behind them, because nothing checked. See
+      # lib/buildability.py.
+      - "BUILDABILITY: python3 lib/buildability.py <scene_plan.json> exits 0"
+    gate_commands:
+      - name: buildability
+        run: "python3 lib/buildability.py {artifacts}/scene_plan.json"
+        blocking: true
+        why: >
+          Every authored slot must name a component that exists in
+          remotion-composer/component-contract.json and supply props that
+          satisfy it; every sourced slot must point at a file that is on disk.
+          A slot that fails here would silently render as a text card.
     success_criteria:
       - Schema-valid scene_plan artifact
       - metadata.slots[] present with per-slot queries and preferred_sources
       - metadata.visual_mix records real-footage / motion-graphic / still percentages
       - Every script act maps to at least one hero slot
+      - Buildability check passes with zero unbuildable slots
 
   # ── Assets ──────────────────────────────────────────────────────
   - name: assets

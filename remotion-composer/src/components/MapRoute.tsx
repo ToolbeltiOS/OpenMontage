@@ -34,11 +34,32 @@ export interface MapRouteProps {
   coords?: string;
   /** great-circle style arc instead of straight segments */
   arc?: boolean;
+  /**
+   * Coastline detail. Defaults to "auto": 50m once the projection scale passes
+   * 2000, 110m below it. 110m coastline falls apart on a regional map — Preseli
+   * to Salisbury Plain renders at scale 5200 — and 50m is wasted on a
+   * hemisphere.
+   */
+  detail?: "auto" | "110m" | "50m";
+  /**
+   * Draw modern national borders under the route. Off by default and it should
+   * stay off for anything prehistoric: the film's maps are of landmasses and
+   * sea routes, and a border drawn across them is an anachronism on screen.
+   */
+  borders?: boolean;
 }
 
-// world-atlas ships with the composer; 110m land is enough at this scale.
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// world-atlas ships with the composer. Both resolutions are required
+// statically so the bundler can see them; which one is drawn is chosen per
+// scene from the projection scale.
+/* eslint-disable @typescript-eslint/no-var-requires */
 const land110 = require("world-atlas/land-110m.json");
+const land50 = require("world-atlas/land-50m.json");
+const countries50 = require("world-atlas/countries-50m.json");
+/* eslint-enable @typescript-eslint/no-var-requires */
+
+/** The scale above which 110m coastline starts to show its facets. */
+export const DETAIL_SCALE_THRESHOLD = 2000;
 
 /**
  * Route drawn over real geography. Used for the transport claims — Preseli to
@@ -64,11 +85,16 @@ export const MapRoute: React.FC<MapRouteProps> = ({
   sceneIndex,
   coords,
   arc = false,
+  detail = "auto",
+  borders = false,
 }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
 
-  const { pathD, projection, landPath } = useMemo(() => {
+  const resolution =
+    detail === "auto" ? (scale > DETAIL_SCALE_THRESHOLD ? "50m" : "110m") : detail;
+
+  const { pathD, projection, landPath, borderPath } = useMemo(() => {
     const c =
       center ??
       ([
@@ -77,10 +103,19 @@ export const MapRoute: React.FC<MapRouteProps> = ({
       ] as [number, number]);
     const proj = geoMercator().center(c).scale(scale).translate([width / 2, height / 2]);
     const gp = geoPath(proj as any) as any;
-    const land = feature(land110 as any, (land110 as any).objects.land) as any;
+    const atlas: any = resolution === "50m" ? land50 : land110;
+    const land = feature(atlas, atlas.objects.land) as any;
     const line = { type: "LineString", coordinates: route } as any;
-    return { pathD: gp(line) as string, projection: proj, landPath: gp(land) as string };
-  }, [route, center, scale, width, height]);
+    const borderGeo = borders
+      ? (feature(countries50 as any, (countries50 as any).objects.countries) as any)
+      : null;
+    return {
+      pathD: gp(line) as string,
+      projection: proj,
+      landPath: gp(land) as string,
+      borderPath: borderGeo ? (gp(borderGeo) as string) : null,
+    };
+  }, [route, center, scale, width, height, resolution, borders]);
 
   const drawStart = draw_at * fps;
   const p = interpolate(frame, [drawStart, drawStart + draw_seconds * fps], [0, 1], {
@@ -118,6 +153,9 @@ export const MapRoute: React.FC<MapRouteProps> = ({
     >
       <svg width={width} height={height} style={{ position: "absolute", inset: 0 }}>
         <path d={landPath} fill="#16161B" stroke={SYS.rule} strokeWidth={1} />
+        {borderPath ? (
+          <path d={borderPath} fill="none" stroke={SYS.rule} strokeWidth={0.6} opacity={0.5} />
+        ) : null}
         <path
           d={pathD}
           fill="none"
