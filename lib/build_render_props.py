@@ -71,6 +71,45 @@ def proxy_image(path: str) -> str:
     return dest
 
 
+VIDEO_EXT = (".mp4", ".mov", ".webm", ".mkv", ".ogv", ".avi", ".m4v")
+
+
+def proxy_video(path: str) -> str:
+    """Transcode oversized footage to a 1080p h264 proxy.
+
+    Remotion extracts frames from source video on every frame it renders. Act 1
+    alone carries 652 MB of footage including a 162 MB 4K webm, and with
+    several workers extracting at once the machine saturates — a neighbouring
+    frame of a pure-SVG schematic, with no media in it at all, exceeded the
+    300-second per-frame timeout waiting its turn.
+    """
+    if not os.path.isfile(path) or os.path.splitext(path)[1].lower() not in VIDEO_EXT:
+        return path
+    out_dir = os.path.join(OUT, "proxies")
+    os.makedirs(out_dir, exist_ok=True)
+    dest = os.path.join(out_dir, os.path.splitext(os.path.basename(path))[0] + "_1080.mp4")
+    if os.path.exists(dest) and os.path.getmtime(dest) >= os.path.getmtime(path):
+        return dest
+    try:
+        w, h = subprocess.check_output([
+            "ffprobe", "-v", "error", "-select_streams", "v:0",
+            "-show_entries", "stream=width,height", "-of", "csv=p=0", path,
+        ], text=True).strip().split(",")[:2]
+        w, h = int(w), int(h)
+    except Exception:
+        return path
+    size_mb = os.path.getsize(path) / 1e6
+    if max(w, h) <= 1920 and size_mb <= 40 and path.lower().endswith(".mp4"):
+        return path
+    subprocess.run([
+        "ffmpeg", "-v", "error", "-y", "-i", path,
+        "-vf", "scale='min(1920,iw)':-2:flags=bicubic",
+        "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
+        "-pix_fmt", "yuv420p", "-an", dest,
+    ], check=True)
+    return dest
+
+
 def dur(path: str) -> float:
     return float(subprocess.check_output(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path]
@@ -274,6 +313,8 @@ def main() -> int:
             if not isinstance(src, str):
                 continue
             new = proxy_image(src)
+            if new == src:
+                new = proxy_video(src)
             if new != src:
                 cut[key] = new
                 proxied += 1
@@ -329,7 +370,7 @@ def main() -> int:
     }
     out = os.path.join(ART, "render_props.json")
     json.dump(props, open(out, "w", encoding="utf-8"), ensure_ascii=False)
-    print(f"proxies: {proxied} oversized stills downscaled to {PROXY_MAX}px")
+    print(f"proxies: {proxied} oversized assets replaced (stills {PROXY_MAX}px, footage 1080p)")
     print(f"timeline: {t:.2f}s over {len(ed['cuts'])} cuts")
     print(f"captions: {len(captions)} words from the script, "
           f"{corrected} re-timed where the transcript disagreed, "

@@ -29,7 +29,9 @@ SECTIONS = ["cold_open", "act1", "act2", "act3", "act4", "outro"]
 
 
 def main() -> int:
-    concurrency = int(sys.argv[1]) if len(sys.argv) > 1 else 5
+    # 0 means "leave it to Remotion". Six workers each extracting frames from
+    # 4K footage saturated the machine; the default is the measured-good value.
+    concurrency = int(sys.argv[1]) if len(sys.argv) > 1 else 0
     only = sys.argv[2] if len(sys.argv) > 2 else None
 
     props = json.load(open(ART + "render_props.json", encoding="utf-8"))
@@ -103,8 +105,11 @@ def main() -> int:
             "asset_manifest": json.load(open(ART + "asset_manifest.json", encoding="utf-8")),
             "output_path": out,
             "profile": "youtube_landscape",
-            "remotion_timeout_ms": 300000,
-            "concurrency": concurrency,
+            # Per-frame ceiling. A frame that genuinely needs more than ten
+            # minutes is a bug worth failing on, but 300s was tripping on
+            # contention rather than on the frame's own cost.
+            "remotion_timeout_ms": 600000,
+            **({"concurrency": concurrency} if concurrency else {}),
         })
         wall = time.time() - t0
         fps = (round(end * 30) / wall) if wall else 0
