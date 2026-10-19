@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill, Img, interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, EXPO_OUT, EXPO_IN_OUT, LAYOUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
+import { resolveAsset } from "../lib/resolveAsset";
 
 export interface DocumentLine {
   text: string;
@@ -95,7 +96,7 @@ export const DocumentReveal: React.FC<DocumentRevealProps> = ({
         <AbsoluteFill style={{ backgroundColor: bg }} />
         {image ? (
           <Img
-            src={image}
+            src={resolveAsset(image)}
             style={{ width: "100%", height: "100%", objectFit: "cover", opacity: light ? 0.3 : 0.26 }}
           />
         ) : null}

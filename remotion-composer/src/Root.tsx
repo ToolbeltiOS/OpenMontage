@@ -23,6 +23,7 @@ import {
 import {
   DemoActTitleCard, DemoEvidenceCard, DemoScaleComparison, DemoDocCaption, DocStyleSheet,
 } from "./DocStyle";
+import { SlotPreview, SlotPreviewProps } from "./SlotPreview";
 
 // ---------------------------------------------------------------------------
 // Theme System — prevents every video from looking like dark fintech
@@ -245,6 +246,15 @@ export const Root: React.FC = () => {
         fps={30}
         width={1920}
         height={1080}
+      />
+      <Composition
+        id="SlotPreview"
+        component={SlotPreview}
+        durationInFrames={210}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{ cut: { id: "none", in_seconds: 0, out_seconds: 7 } } as SlotPreviewProps}
       />
       <Composition
         id="Explainer"

@@ -193,7 +193,7 @@ const AnimatedBackground: React.FC<{ theme: ThemeConfig }> = ({ theme }) => {
 // Types — aligned with edit_decisions artifact schema
 // ---------------------------------------------------------------------------
 
-interface Cut {
+export interface Cut {
   id: string;
   source: string;
   in_seconds: number;
@@ -619,7 +619,7 @@ const BackgroundVideoLayer: React.FC<{
   );
 };
 
-const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut, theme }) => {
+export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut, theme }) => {
   // Wrap component with background video or image if specified
   const maybeWrapWithBg = (element: React.ReactElement) => {
     if (cut.backgroundVideo) {

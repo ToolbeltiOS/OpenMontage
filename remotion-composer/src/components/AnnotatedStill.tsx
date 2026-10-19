@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill, Img, interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, TRACK, EXPO_OUT, EXPO_IN_OUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
+import { resolveAsset } from "../lib/resolveAsset";
 import { Graded } from "../design/Frame";
 
 export interface StillAnnotation {
@@ -111,7 +112,7 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
     >
       <AbsoluteFill style={{ transform: `scale(${scale})` }}>
         <Graded>
-          <Img src={image} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <Img src={resolveAsset(image)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </Graded>
       </AbsoluteFill>
 
