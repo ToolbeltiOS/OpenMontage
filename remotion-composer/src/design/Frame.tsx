@@ -8,6 +8,12 @@ export interface DataStripProps {
   actTitle?: string;
   /** bottom-right: scene index + subject, e.g. "03 / TIRYNS" */
   sceneIndex?: string;
+  /**
+   * top-right, on the same baseline as the act strip. Used where the bottom
+   * of the frame has to stay clear — an end card leaves the bottom fifth for
+   * YouTube End Screen elements, so its channel mark goes up here instead.
+   */
+  topRight?: string;
   /** bottom-right second line: coordinates or a date */
   coords?: string;
 }
@@ -73,6 +79,7 @@ export const FrameLayer: React.FC<FrameLayerProps> = ({
   actNumber,
   actTitle,
   sceneIndex,
+  topRight,
   coords,
   hairline = true,
   grain = true,
@@ -230,6 +237,25 @@ export const FrameLayer: React.FC<FrameLayerProps> = ({
               {actTitle}
             </span>
           ) : null}
+        </div>
+      ) : null}
+
+      {topRight ? (
+        <div
+          style={{
+            position: "absolute",
+            right: LAYOUT.left,
+            top: LAYOUT.top,
+            opacity: inP * 0.9,
+            fontFamily: SYS.data,
+            fontSize: TYPE.dataSm,
+            color: C.strip,
+            letterSpacing: TRACK,
+            textTransform: "uppercase",
+            textShadow: SHADOW,
+          }}
+        >
+          {topRight}
         </div>
       ) : null}
 

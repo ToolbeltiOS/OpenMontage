@@ -392,19 +392,22 @@
       "purpose": "comparative magnitude \u2014 bars plus counted figures, for the numbers narration cannot make felt. Two items minimum: one bar compares nothing"
     },
     "outro_cta": {
-      "required": [
-        "title",
-        "like_at",
-        "subscribe_at"
-      ],
+      "required": [],
       "optional": [
-        "kicker",
-        "subscribe_label",
-        "sceneIndex",
-        "actNumber",
-        "actTitle"
+        "channel",
+        "filmTitle",
+        "eyebrow",
+        "line1",
+        "line2",
+        "scheduleLine",
+        "backgroundSrc",
+        "likeAt",
+        "subscribeAt",
+        "fadeOutSeconds"
       ],
-      "purpose": "end card: the film's own title treatment dimmed behind a drawn like/subscribe beat, timed to the words that ask for it. Right third and bottom fifth left clear for YouTube End Screen elements. No platform marks or platform colours."
+      "defaults_supplied_by_schema": true,
+      "purpose": "the default end card for every narrated-documentary film: dimmed hero still, headline, drawn like / subscribe / bell timed to the narration, schedule line. Left two thirds only \u2014 the right third and bottom fifth stay clear for YouTube End Screen elements. No platform marks.",
+      "timing": "likeAt and subscribeAt are seconds into THIS scene, taken from the word-level captions for the words 'like' and 'subscribe'."
     }
   },
   "_chrome": {

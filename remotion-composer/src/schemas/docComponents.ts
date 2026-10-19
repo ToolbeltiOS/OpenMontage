@@ -1,4 +1,7 @@
 import { z } from "zod";
+// The end card ships its own schema with the component, so there is one
+// definition rather than a copy that can drift from it.
+import { outroCtaSchema } from "../components/OutroCta";
 
 /**
  * Props schemas for the eight documentary components.
@@ -220,16 +223,6 @@ export const ScaleComparisonSchema = z.object({
   ...CHROME,
 });
 
-export const OutroCtaSchema = z.object({
-  title: z.string().min(1),
-  kicker: z.string().optional(),
-  like_at: sec.describe("seconds from scene start when the narration says 'like'"),
-  subscribe_at: sec.describe("seconds from scene start when it says 'subscribe'"),
-  subscribe_label: z.string().optional(),
-  sceneIndex: z.string().optional(),
-  actNumber: z.string().optional(),
-  actTitle: z.string().optional(),
-});
 
 export const DOC_COMPONENT_SCHEMAS = {
   annotated_still: AnnotatedStillSchema,
@@ -240,7 +233,7 @@ export const DOC_COMPONENT_SCHEMAS = {
   act_title_card: ActTitleCardSchema,
   evidence_card: EvidenceCardSchema,
   scale_comparison: ScaleComparisonSchema,
-  outro_cta: OutroCtaSchema,
+  outro_cta: outroCtaSchema,
 } as const;
 
 export type DocComponentName = keyof typeof DOC_COMPONENT_SCHEMAS;
@@ -255,3 +248,5 @@ export function validateDocProps(name: string, props: unknown): string | null {
   if (r.success) return null;
   return r.error.issues.map((i) => `${i.path.join(".") || "(root)"}: ${i.message}`).join("; ");
 }
+
+export { outroCtaSchema };

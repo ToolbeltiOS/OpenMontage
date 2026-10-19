@@ -24,6 +24,7 @@ import {
   DemoActTitleCard, DemoEvidenceCard, DemoScaleComparison, DemoDocCaption, DocStyleSheet,
 } from "./DocStyle";
 import { SlotPreview, SlotPreviewProps } from "./SlotPreview";
+import { OutroCta } from "./components/OutroCta";
 
 // ---------------------------------------------------------------------------
 // Theme System — prevents every video from looking like dark fintech
@@ -246,6 +247,27 @@ export const Root: React.FC = () => {
         fps={30}
         width={1920}
         height={1080}
+      />
+      <Composition
+        id="OutroCtaScene"
+        component={OutroCta}
+        // narration (11.095s) + 15 frames, per the outro rule
+        durationInFrames={348}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          channel: "WAK3UPSOCIETY",
+          filmTitle: "They Said It Couldn't Be Built",
+          eyebrow: "THANK YOU FOR WATCHING",
+          line1: "A like and a subscribe helps us",
+          line2: "create more videos like this.",
+          scheduleLine: "NEW FILES EVERY WEEK",
+          backgroundSrc: "doc/outro_hero.jpg",
+          likeAt: 7.538,
+          subscribeAt: 8.29,
+          fadeOutSeconds: 0.5,
+        }}
       />
       <Composition
         id="SlotPreview"

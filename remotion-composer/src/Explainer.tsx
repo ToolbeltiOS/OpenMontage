@@ -27,7 +27,7 @@ import { SourceCaption } from "./design/Scene";
 import { ActTitleCard } from "./scenes/ActTitleCard";
 import { EvidenceCard } from "./scenes/EvidenceCard";
 import { ScaleComparison } from "./scenes/ScaleComparison";
-import { OutroCta } from "./scenes/OutroCta";
+import { OutroCta } from "./components/OutroCta";
 import { SectionTitle } from "./components/SectionTitle";
 import { StatReveal } from "./components/StatReveal";
 import { HeroTitle } from "./components/HeroTitle";
@@ -288,9 +288,16 @@ export interface Cut {
   status?: "peer_reviewed" | "contested" | "unpublished" | "measured" | "claim";
   index?: string;
   // outro_cta
-  like_at?: number;
-  subscribe_at?: number;
-  subscribe_label?: string;
+  channel?: string;
+  filmTitle?: string;
+  eyebrow?: string;
+  line1?: string;
+  line2?: string;
+  scheduleLine?: string;
+  backgroundSrc?: string;
+  likeAt?: number;
+  subscribeAt?: number;
+  fadeOutSeconds?: number;
   // scale_comparison
   items?: any[];
   unit?: string;
@@ -721,11 +728,17 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
       actNumber={cut.actNumber} actTitle={cut.actTitle} sceneIndex={cut.sceneIndex}
       source={cut.sourceLine} />);
   }
-  if (cut.type === "outro_cta" && cut.title && cut.like_at !== undefined) {
-    return (<OutroCta title={cut.title} kicker={cut.kicker}
-      like_at={cut.like_at} subscribe_at={cut.subscribe_at ?? cut.like_at + 1}
-      subscribe_label={cut.subscribe_label} sceneIndex={cut.sceneIndex}
-      actNumber={cut.actNumber} actTitle={cut.actTitle} />);
+  if (cut.type === "outro_cta") {
+    // outroCtaSchema fills its own defaults at runtime via parse(), but
+    // z.infer gives the OUTPUT type, where defaulted fields are required.
+    // Pass only the keys the cut actually set and let the schema do the rest.
+    const ctaKeys = ["channel", "filmTitle", "eyebrow", "line1", "line2",
+      "scheduleLine", "backgroundSrc", "likeAt", "subscribeAt", "fadeOutSeconds"] as const;
+    const ctaProps: Record<string, unknown> = {};
+    for (const k of ctaKeys) {
+      if (cut[k] !== undefined) ctaProps[k] = cut[k];
+    }
+    return <OutroCta {...(ctaProps as React.ComponentProps<typeof OutroCta>)} />;
   }
   if (cut.type === "scale_comparison" && cut.items && cut.unit) {
     return (<ScaleComparison items={cut.items} unit={cut.unit} decimals={cut.decimals}

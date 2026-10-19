@@ -104,5 +104,28 @@ export const LAYOUT = {
   ruleWidth: 300,
 } as const;
 
+/**
+ * Grouped view of the same tokens, for components written against a
+ * `tokens.color` / `tokens.font` shape. One source of truth — these are the
+ * values above, not a second palette.
+ */
+export const tokens = {
+  color: {
+    bg: SYS.bg,
+    ink: SYS.text,
+    accent: SYS.accent,
+    /** text sitting ON the accent, where the ochre is the fill */
+    accentInk: "#14100A",
+    muted: SYS.muted,
+    rule: SYS.rule,
+  },
+  font: {
+    display: SYS.display,
+    label: SYS.label,
+    data: SYS.data,
+    body: SYS.body,
+  },
+} as const;
+
 /** Stagger helper: nth element enters this many frames late. */
 export const stagger = (n: number) => n * SYS.stagger;
