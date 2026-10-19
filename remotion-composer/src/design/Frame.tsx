@@ -303,14 +303,14 @@ export const Graded: React.FC<{ children: React.ReactNode; strength?: number }> 
   <AbsoluteFill>
     <AbsoluteFill
       style={{
-        // brightness does the work the dropped multiply layer used to do.
-        // Without it a bright blue-sky JPEG stays bright and sits several
-        // stops away from the authored scenes it is cut against, which is the
-        // whole thing the grade exists to prevent.
+        // TWO filter functions, never three. Adding brightness() to this chain
+        // measured 0.60fps against 4.15 — headless Chrome rasterises in
+        // software and a third function evidently takes a different path. The
+        // darkening it was doing is done by the flat wash below instead, which
+        // is one cheap paint and achieves the same thing.
         filter:
           `saturate(${1 - (1 - GRADE.saturation) * strength}) ` +
-          `contrast(${1 + (GRADE.contrast - 1) * strength}) ` +
-          `brightness(${1 - 0.14 * strength})`,
+          `contrast(${1 + (GRADE.contrast - 1) * strength})`,
       }}
     >
       {children}
@@ -323,7 +323,13 @@ export const Graded: React.FC<{ children: React.ReactNode; strength?: number }> 
         mixBlendMode: "screen",
       }}
     />
-    <AbsoluteFill style={{ background: GRADE.lift, opacity: 0.06 * strength }} />
+    {/*
+      * The brightness pull. Without it a bright blue-sky JPEG stays bright and
+      * sits several stops from the authored scenes it cuts against, which is
+      * the one thing the grade exists to prevent.
+      */}
+    <AbsoluteFill style={{ background: "#07070A", opacity: 0.15 * strength }} />
+    <AbsoluteFill style={{ background: GRADE.lift, opacity: 0.05 * strength }} />
   </AbsoluteFill>
 );
 
