@@ -2094,7 +2094,22 @@ class VideoCompose(BaseTool):
             # so run_command() does not kill Remotion before its own timeout fires.
             remotion_timeout_ms = inputs.get("remotion_timeout_ms")
             scene_count = len(props.get("scenes") or props.get("cuts") or [])
-            subprocess_timeout = max(600, scene_count * 15)
+
+            # The subprocess budget must follow the FRAME count, not the scene
+            # count. A cut can be two seconds or sixty, so scene_count * 15 is
+            # not a duration estimate: a 39-cut, 248-second act scored 585s and
+            # was killed at the 600s floor roughly a third of the way through a
+            # render that needed about 1,800s. Estimate from the timeline at a
+            # deliberately pessimistic 1.5 frames/second and add headroom for
+            # bundling and encoding.
+            timeline_seconds = 0.0
+            for item in (props.get("scenes") or props.get("cuts") or []):
+                try:
+                    timeline_seconds = max(timeline_seconds, float(item.get("out_seconds") or 0))
+                except (TypeError, ValueError):
+                    continue
+            frame_budget = (timeline_seconds * 30) / 1.5 + 300
+            subprocess_timeout = int(max(600, scene_count * 15, frame_budget))
             if remotion_timeout_ms:
                 try:
                     ms = int(remotion_timeout_ms)

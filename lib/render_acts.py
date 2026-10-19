@@ -75,6 +75,25 @@ def main() -> int:
         part["composition_mode"] = ed["composition_mode"]
 
         out = f"{OUT}acts/{section}.mp4"
+
+        # Resume: an act already rendered to the right length is kept. A long
+        # render should never be restarted from the beginning because one part
+        # failed.
+        if os.path.exists(out):
+            try:
+                have = float(subprocess.check_output(
+                    ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                     "-of", "csv=p=0", out]).strip())
+            except Exception:
+                have = -1.0
+            if abs(have - (end + 1)) < 2.0 or abs(have - end) < 2.0:
+                print(f"[{section}] already rendered ({have:.1f}s) — keeping", flush=True)
+                manifest.append({"section": section, "path": out, "wall_seconds": 0,
+                                 "frames": round(end * 30), "fps": None, "resumed": True})
+                continue
+            print(f"[{section}] existing file is {have:.1f}s, expected ~{end:.1f}s — re-rendering",
+                  flush=True)
+
         t0 = time.time()
         print(f"[{section}] {len(part['cuts'])} cuts, {end:.1f}s, "
               f"{round(end * 30)} frames — starting", flush=True)

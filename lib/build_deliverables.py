@@ -34,19 +34,21 @@ def loudness(path: str) -> dict:
         capture_output=True, text=True).stderr
     tail = err[-4000:]
     def grab(pattern: str) -> float | None:
-        m = re.search(pattern, tail)
-        return float(m.group(1)) if m else None
+        ms = re.findall(pattern, tail)
+        return float(ms[-1]) if ms else None
     return {
-        "integrated_lufs": grab(r"I:\s*(-?\d+\.\d+)\s*LUFS"),
-        "loudness_range_lu": grab(r"LRA:\s*(-?\d+\.\d+)\s*LU"),
-        "true_peak_dbfs": grab(r"Peak:\s*(-?\d+\.\d+)\s*dBFS"),
+        "integrated_lufs": grab(r"I:\s+(-?\d+\.\d+)\s*LUFS"),
+        "loudness_range_lu": grab(r"LRA:\s+(-?\d+\.\d+)\s*LU"),
+        "true_peak_dbfs": grab(r"Peak:\s+(-?\d+\.\d+)\s*dBFS"),
     }
 
 
 def main() -> int:
     mp4 = sys.argv[1]
-    wall_seconds = float(sys.argv[2]) if len(sys.argv) > 2 else None
-    peak_rss_mb = float(sys.argv[3]) if len(sys.argv) > 3 else None
+    rr_path = os.path.join(ART, "render_report.json")
+    rr = json.load(open(rr_path, encoding="utf-8")) if os.path.exists(rr_path) else {}
+    wall_seconds = rr.get("total_wall_seconds")
+    peak_rss_mb = rr.get("peak_rss_mb_children")
 
     os.makedirs(DEST, exist_ok=True)
     final = os.path.join(DEST, f"{SLUG}.mp4")
@@ -133,8 +135,13 @@ def main() -> int:
         "render": {
             "runtime": ed["render_runtime"],
             "composition": "Explainer",
+            "rendered_in_parts": [p["section"] for p in rr.get("parts", [])],
+            "concurrency": rr.get("concurrency"),
             "wall_seconds": wall_seconds,
+            "wall_hms": (f"{int(wall_seconds) // 3600}:{(int(wall_seconds) % 3600) // 60:02d}:"
+                         f"{int(wall_seconds) % 60:02d}") if wall_seconds else None,
             "peak_rss_mb": peak_rss_mb,
+            "parts": rr.get("parts", []),
         },
     }
     json.dump(metadata, open(os.path.join(DEST, "metadata.json"), "w", encoding="utf-8"),
