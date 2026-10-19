@@ -124,11 +124,32 @@ def main() -> int:
         print(json.dumps(manifest, indent=1))
         return 0
 
-    # concat without re-encoding; every part came from the same encoder settings
+    # Trim each part to EXACTLY its content length before joining.
+    #
+    # calculateMetadata adds a second of padding to every composition, so each
+    # act renders about a second longer than the film it carries. Joined as
+    # rendered, that second of film time plays twice at every act boundary —
+    # a repeated word of narration five times over, and the audio running a
+    # progressively further behind the picture.
+    #
+    # `-frames:v N -c copy` is frame-exact and lossless; `-t seconds` was two
+    # frames long per part.
     listfile = OUT + "acts/concat.txt"
     with open(listfile, "w", encoding="utf-8") as fh:
         for m in manifest:
-            fh.write(f"file '{os.path.abspath(m['path'])}'\n")
+            exact = m["path"].replace(".mp4", "_exact.mp4")
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", m["path"],
+                            "-frames:v", str(m["frames"]), "-c", "copy", exact], check=True)
+            got = int(subprocess.check_output([
+                "ffprobe", "-v", "error", "-select_streams", "v:0", "-count_packets",
+                "-show_entries", "stream=nb_read_packets", "-of", "csv=p=0", exact,
+            ]).strip().rstrip(","))
+            if got != m["frames"]:
+                print(f"[{m['section']}] WARNING trimmed to {got} frames, wanted {m['frames']}",
+                      flush=True)
+            m["trimmed_path"] = exact
+            m["trimmed_frames"] = got
+            fh.write(f"file '{os.path.abspath(exact)}'\n")
     final = OUT + "they-said-it-couldnt-be-built.mp4"
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0",
                     "-i", listfile, "-c", "copy", final], check=True)
