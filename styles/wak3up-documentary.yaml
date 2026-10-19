@@ -96,8 +96,28 @@ structure:
       - "Land on the implication the piece earned, and stop."
       - "The closing question is a real one — a case the ledger shows is still open, not rhetorical suspense."
   outro_cta:
+    treatment: "voiced CTA <= 10 s with an animated like/subscribe"
     max_seconds: 10
     nothing_essential_in_last_seconds: 20
+    scene_type: outro_cta          # see component-contract.json
+    rules:
+      - "Two sentences. The first is a landing line at 0.76; the ask runs at the body speed."
+      - "The ask is earned, not demanded: tie it to what the viewer just spent."
+      - "The animation is timed to the words. Take the word timings from the
+         synthesiser (kokoro create_timed), not from an aligner run afterwards,
+         so the press lands on the syllable."
+      - "Icons are drawn in the design system's line style. No platform marks
+         and no platform colours — the activation colour is the film's ochre."
+      - "Leave the right third and the bottom fifth of the frame clear: that is
+         where YouTube places End Screen elements, and anything there is covered."
+    measured_run_2:
+      duration_seconds: 11.1
+      note: >
+        Over the 10 s target. The approved copy at the approved speeds is 10.79 s
+        of speech before any pause between the sentences: sentence 1 at 0.76 is
+        4.16 s, sentence 2 at 0.87 is 6.63 s. Hitting 10 s needs either shorter
+        copy or sentence 2 at about 1.05, which is faster than the body rate and
+        reads rushed exactly where the ask lands. Recorded rather than fudged.
 
 # ── Script production rules ─────────────────────────────────────────
 script_rules:
@@ -333,14 +353,65 @@ motion:
 
 audio:
   voice_style: "measured, grave, unhurried; slower on the reveal and a beat of silence after it; no hype, no upspeak"
-  music_mood: "low sustained strings and subdued drone; one motif, no drops, no percussion build"
-  music_volume: 0.07
   sfx_style: "sparse — paper handling, distant room tone, a single low hit on an act boundary at most"
-  ducking_threshold_db: -18          # music sits 18-20 dB under narration, ducked against the narration envelope
-  bed_strategy: continuous_with_act_crossfades
-  crossfade_seconds: 2.5
+
+  # ── music selection (binding) ──────────────────────────────────────────
+  # Run #1 picked beds by mood word and they carried tunes under the
+  # narration. The criteria are now stated as properties a track either has
+  # or does not, and they are measurable before anyone listens.
+  music_selection:
+    want: "sparse ambient pads or sustained tones. Elevator-quiet."
+    forbidden:
+      - melody                      # anything with a tune competes with the voice
+      - percussion
+      - swells or builds
+      - "paulstretch drones with audible texture"
+    measure_before_choosing:
+      melodic_movement: "frame-to-frame pitch-class distance; a held chord barely moves, a tune does. Prefer < 0.11"
+      build_db: "p95 - p25 of the loudness envelope across the track. Prefer < 5 dB"
+      rhythmic_periodicity: "autocorrelation peak of the onset envelope, 50-200 BPM. Lower is better"
+    note: >
+      These rank candidates; they cannot certify "no melody". Always audition
+      the shortlist as 20-second previews, EQ'd and levelled as they will sit
+      in the mix, before committing.
+    sources_in_order:
+      - "MUSIC_LIBRARY_DIR, where a track meets the criteria"
+      - "Pixabay Music: 'ambient pad', 'drone minimal', 'cinematic ambient quiet'"
+    licence_recorded: true
+
+  # ── music placement ───────────────────────────────────────────────────
+  bed_strategy: per_act_span_with_boundary_crossfades
+  max_beds: 3                        # fewer beds, longer spans, fewer seams
+  bed_assignment: "by act; adjacent acts share a bed where possible"
+  crossfade_seconds: 2.5             # centred ON the act boundary, under the fade to black
+
+  # ── levels (measure, do not assume) ───────────────────────────────────
+  narration_short_term_lufs: -16     # the voice is the show
+  narration_true_peak_db: -1.5
+  music_under_speech_lufs: -36       # absolute, not a ratio
+  music_in_gaps_lufs: -26            # gaps longer than 1.5s
+  music_at_act_boundaries_lufs: -22  # under the fade through black
+  duck:
+    keyed_on: narration
+    attack_ms: 150
+    release_ms: 900                  # slow enough that it never pumps
+    method: >
+      An explicit gain envelope computed from the narration's short-term
+      loudness, not a threshold compressor. A compressor's duck depth depends
+      on how far the signal exceeds the threshold, so it cannot be asked for a
+      specific "music sits N dB under the voice" and hold it.
+  music_eq:
+    high_pass_hz: 120
+    low_pass_hz: 7000
+    presence_cut: "-4 dB at 3 kHz (Q ~1.4), out of the consonant band"
   target_lufs: -14
   true_peak_db: -1.5
+  loudness_range_lu: null            # recorded, never targeted — see below
+  loudness_range_note: >
+    No LRA target. Narration-led material has little loudness range by nature:
+    the voice sits at one level for twenty minutes. Run #2 measured about 4 LU.
+    Chasing 6-9 would mean letting the music swell, which the selection
+    criteria forbid. Record the measured figure and move on.
   max_lufs_variation_between_acts: 2
 
 captions:

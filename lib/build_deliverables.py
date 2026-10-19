@@ -43,12 +43,103 @@ def loudness(path: str) -> dict:
     }
 
 
+SECTIONS = ["cold_open", "act1", "act2", "act3", "act4", "outro"]
+
+
+def stream_durations(path: str) -> dict:
+    out = {}
+    for kind in ("v", "a"):
+        try:
+            out[kind] = float(subprocess.check_output([
+                "ffprobe", "-v", "error", "-select_streams", f"{kind}:0",
+                "-show_entries", "stream=duration", "-of", "csv=p=0", path,
+            ], text=True).strip().rstrip(","))
+        except Exception:
+            out[kind] = None
+    return out
+
+
+def hard_checks(final: str, tail_seconds: float = 0.5) -> list[dict]:
+    """Three things that must be true of a delivered film. Any failure is fatal.
+
+    Each of these has already shipped a broken file once:
+
+    (a) A film can be internally consistent and still end before its own last
+        sentence — run #2 cut "you know where to find it" because the edit was
+        written against a narration total that later changed.
+    (b) A 48 kHz stereo section among 24 kHz mono ones is not resampled by the
+        concat demuxer, it is misread: the outro decoded at four times its
+        length and added 33 seconds of slurred audio. The mix still normalised
+        to spec and the file was still valid.
+    (c) The same bug seen from the other side — the streams disagreeing is the
+        symptom you can test for without knowing the cause.
+    """
+    results = []
+
+    # (c) every narration section must agree on format, BEFORE any concat
+    fmts = {}
+    for sec in SECTIONS:
+        wav = os.path.join(PROJ, "assets", "audio", sec + ".wav")
+        fmts[sec] = subprocess.check_output([
+            "ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries",
+            "stream=codec_name,sample_rate,channels", "-of", "csv=p=0", wav,
+        ], text=True).strip()
+    distinct = sorted(set(fmts.values()))
+    results.append({
+        "check": "narration sections share codec, sample rate and channels",
+        "pass": len(distinct) == 1,
+        "detail": distinct if len(distinct) == 1 else fmts,
+    })
+
+    # (a) duration == planned narration + tail, within half a second
+    def _dur(path: str) -> float:
+        return float(subprocess.check_output([
+            "ffprobe", "-v", "error", "-show_entries", "format=duration",
+            "-of", "csv=p=0", path], text=True).strip())
+
+    narration = sum(_dur(os.path.join(PROJ, "assets", "audio", sec + ".wav"))
+                    for sec in SECTIONS)
+    dur = float(subprocess.check_output([
+        "ffprobe", "-v", "error", "-show_entries", "format=duration",
+        "-of", "csv=p=0", final], text=True).strip())
+    expected = narration + tail_seconds
+    results.append({
+        "check": "final duration == narration + tail (+/- 0.5s)",
+        "pass": abs(dur - expected) <= 0.5,
+        "detail": {"measured": round(dur, 3), "expected": round(expected, 3),
+                   "delta": round(dur - expected, 3)},
+    })
+
+    # (b) the two streams must agree
+    sd = stream_durations(final)
+    agree = (sd["v"] is not None and sd["a"] is not None
+             and abs(sd["v"] - sd["a"]) <= 0.1)
+    results.append({
+        "check": "video and audio stream durations agree (+/- 0.1s)",
+        "pass": agree,
+        "detail": {"video": sd["v"], "audio": sd["a"],
+                   "delta": None if None in sd.values() else round(sd["v"] - sd["a"], 3)},
+    })
+    return results
+
+
 def main() -> int:
     mp4 = sys.argv[1]
     rr_path = os.path.join(ART, "render_report.json")
     rr = json.load(open(rr_path, encoding="utf-8")) if os.path.exists(rr_path) else {}
     wall_seconds = rr.get("total_wall_seconds")
     peak_rss_mb = rr.get("peak_rss_mb_children")
+
+    # Hard checks first: nothing is delivered if any of them fails.
+    checks = hard_checks(mp4)
+    for c in checks:
+        print(("  PASS  " if c["pass"] else "  FAIL  ") + c["check"])
+        if not c["pass"]:
+            print("        " + json.dumps(c["detail"]))
+    if not all(c["pass"] for c in checks):
+        print("\nDELIVERY BLOCKED: a post-render check failed. "
+              "Nothing was written to the output folder.")
+        return 2
 
     os.makedirs(DEST, exist_ok=True)
     final = os.path.join(DEST, f"{SLUG}.mp4")
@@ -139,6 +230,7 @@ def main() -> int:
             "source": "SlotPreview render of act4_s177 (Sacsayhuam\u00e1n joint)",
             "why": "frames taken from the film carry burned-in narration captions",
         },
+        "post_render_checks": checks,
         "measured": {
             "duration_seconds": round(duration, 2),
             "duration_hms": f"{int(duration) // 60}:{int(duration) % 60:02d}",

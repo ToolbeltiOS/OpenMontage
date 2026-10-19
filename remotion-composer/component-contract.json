@@ -390,6 +390,21 @@
         "items": 2
       },
       "purpose": "comparative magnitude \u2014 bars plus counted figures, for the numbers narration cannot make felt. Two items minimum: one bar compares nothing"
+    },
+    "outro_cta": {
+      "required": [
+        "title",
+        "like_at",
+        "subscribe_at"
+      ],
+      "optional": [
+        "kicker",
+        "subscribe_label",
+        "sceneIndex",
+        "actNumber",
+        "actTitle"
+      ],
+      "purpose": "end card: the film's own title treatment dimmed behind a drawn like/subscribe beat, timed to the words that ask for it. Right third and bottom fifth left clear for YouTube End Screen elements. No platform marks or platform colours."
     }
   },
   "_chrome": {

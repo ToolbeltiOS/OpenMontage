@@ -378,6 +378,31 @@ def main() -> int:
             "hold": max(1.6, length - 1.8),
         })
 
+    # The end card's animation is timed to the words "like" and "subscribe",
+    # which are positions inside the OUTRO narration. Cut durations sum to
+    # slightly less than the narration, so the card's cut starts about a
+    # second before its own voice-over.
+    #
+    # The slack goes into a hold at the HEAD of the card rather than into the
+    # preceding act: the card simply appears a beat before the voice begins,
+    # which it should anyway, and the act before it does not have to be
+    # re-rendered to absorb a second. The press timings are rebased onto the
+    # cut so they still land on the words.
+    outro_offset = offsets[SECTIONS.index("outro")]
+    last = ed["cuts"][-1]
+    if last.get("type") == "outro_cta":
+        narr_end = outro_offset + dur(os.path.join(AUD, "outro.wav"))
+        tail = 0.5
+        last["out_seconds"] = round(narr_end + tail, 3)
+        lead = round(outro_offset - last["in_seconds"], 3)
+        if abs(lead) > 0.02:
+            for k in ("like_at", "subscribe_at"):
+                if k in last:
+                    last[k] = round(last[k] + lead, 3)
+            print(f"end card holds {lead:.2f}s before the narration; "
+                  f"presses rebased to {last.get('like_at')}s / {last.get('subscribe_at')}s")
+        t = last["out_seconds"]
+
     # The timeline must cover the narration. edit_decisions was written against
     # a measured total of 1201.41s, but the cold open was later re-synthesised
     # at the approved speed and came back 1.3s longer. The cut durations were
@@ -386,7 +411,9 @@ def main() -> int:
     #
     # The deficit goes on the final cut, which is the end card: holding it a
     # beat longer is the one place extra time costs nothing.
-    narration_seconds = dur(mixed)
+    # Measure the narration from the section files, never from a mix that may
+    # have been reused from an earlier run with different narration in it.
+    narration_seconds = sum(dur(os.path.join(AUD, sec + ".wav")) for sec in SECTIONS)
     deficit = narration_seconds - t
     if deficit > 0.05:
         ed["cuts"][-1]["out_seconds"] = round(ed["cuts"][-1]["out_seconds"] + deficit + 0.1, 3)

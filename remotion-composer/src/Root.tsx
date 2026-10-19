@@ -250,7 +250,8 @@ export const Root: React.FC = () => {
       <Composition
         id="SlotPreview"
         component={SlotPreview}
-        durationInFrames={210}
+        // long enough for the outro CTA, which runs past the 7s a cut takes
+        durationInFrames={360}
         fps={30}
         width={1920}
         height={1080}

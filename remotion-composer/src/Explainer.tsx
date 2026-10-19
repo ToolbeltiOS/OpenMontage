@@ -27,6 +27,7 @@ import { SourceCaption } from "./design/Scene";
 import { ActTitleCard } from "./scenes/ActTitleCard";
 import { EvidenceCard } from "./scenes/EvidenceCard";
 import { ScaleComparison } from "./scenes/ScaleComparison";
+import { OutroCta } from "./scenes/OutroCta";
 import { SectionTitle } from "./components/SectionTitle";
 import { StatReveal } from "./components/StatReveal";
 import { HeroTitle } from "./components/HeroTitle";
@@ -286,6 +287,10 @@ export interface Cut {
   detail?: string;
   status?: "peer_reviewed" | "contested" | "unpublished" | "measured" | "claim";
   index?: string;
+  // outro_cta
+  like_at?: number;
+  subscribe_at?: number;
+  subscribe_label?: string;
   // scale_comparison
   items?: any[];
   unit?: string;
@@ -715,6 +720,12 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
       detail={cut.detail} status={cut.status} caption={cut.caption}
       actNumber={cut.actNumber} actTitle={cut.actTitle} sceneIndex={cut.sceneIndex}
       source={cut.sourceLine} />);
+  }
+  if (cut.type === "outro_cta" && cut.title && cut.like_at !== undefined) {
+    return (<OutroCta title={cut.title} kicker={cut.kicker}
+      like_at={cut.like_at} subscribe_at={cut.subscribe_at ?? cut.like_at + 1}
+      subscribe_label={cut.subscribe_label} sceneIndex={cut.sceneIndex}
+      actNumber={cut.actNumber} actTitle={cut.actTitle} />);
   }
   if (cut.type === "scale_comparison" && cut.items && cut.unit) {
     return (<ScaleComparison items={cut.items} unit={cut.unit} decimals={cut.decimals}

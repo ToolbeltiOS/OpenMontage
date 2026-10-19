@@ -220,6 +220,17 @@ export const ScaleComparisonSchema = z.object({
   ...CHROME,
 });
 
+export const OutroCtaSchema = z.object({
+  title: z.string().min(1),
+  kicker: z.string().optional(),
+  like_at: sec.describe("seconds from scene start when the narration says 'like'"),
+  subscribe_at: sec.describe("seconds from scene start when it says 'subscribe'"),
+  subscribe_label: z.string().optional(),
+  sceneIndex: z.string().optional(),
+  actNumber: z.string().optional(),
+  actTitle: z.string().optional(),
+});
+
 export const DOC_COMPONENT_SCHEMAS = {
   annotated_still: AnnotatedStillSchema,
   schematic: SchematicSchema,
@@ -229,6 +240,7 @@ export const DOC_COMPONENT_SCHEMAS = {
   act_title_card: ActTitleCardSchema,
   evidence_card: EvidenceCardSchema,
   scale_comparison: ScaleComparisonSchema,
+  outro_cta: OutroCtaSchema,
 } as const;
 
 export type DocComponentName = keyof typeof DOC_COMPONENT_SCHEMAS;
