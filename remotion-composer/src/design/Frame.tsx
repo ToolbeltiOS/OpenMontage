@@ -303,10 +303,14 @@ export const Graded: React.FC<{ children: React.ReactNode; strength?: number }> 
   <AbsoluteFill>
     <AbsoluteFill
       style={{
+        // brightness does the work the dropped multiply layer used to do.
+        // Without it a bright blue-sky JPEG stays bright and sits several
+        // stops away from the authored scenes it is cut against, which is the
+        // whole thing the grade exists to prevent.
         filter:
           `saturate(${1 - (1 - GRADE.saturation) * strength}) ` +
           `contrast(${1 + (GRADE.contrast - 1) * strength}) ` +
-          `brightness(${1 - 0.04 * strength})`,
+          `brightness(${1 - 0.14 * strength})`,
       }}
     >
       {children}
@@ -319,7 +323,7 @@ export const Graded: React.FC<{ children: React.ReactNode; strength?: number }> 
         mixBlendMode: "screen",
       }}
     />
-    <AbsoluteFill style={{ background: GRADE.lift, opacity: 0.08 * strength }} />
+    <AbsoluteFill style={{ background: GRADE.lift, opacity: 0.06 * strength }} />
   </AbsoluteFill>
 );
 
