@@ -378,6 +378,21 @@ def main() -> int:
             "hold": max(1.6, length - 1.8),
         })
 
+    # The timeline must cover the narration. edit_decisions was written against
+    # a measured total of 1201.41s, but the cold open was later re-synthesised
+    # at the approved speed and came back 1.3s longer. The cut durations were
+    # never updated, so the film ended 1.3s before its own last words — "you
+    # know where to find it" was cut off mid-phrase.
+    #
+    # The deficit goes on the final cut, which is the end card: holding it a
+    # beat longer is the one place extra time costs nothing.
+    narration_seconds = dur(mixed)
+    deficit = narration_seconds - t
+    if deficit > 0.05:
+        ed["cuts"][-1]["out_seconds"] = round(ed["cuts"][-1]["out_seconds"] + deficit + 0.1, 3)
+        t = ed["cuts"][-1]["out_seconds"]
+        print(f"timeline extended {deficit + 0.1:.2f}s on the final cut to cover the narration")
+
     props = {
         "cuts": ed["cuts"],
         "overlays": overlays,
