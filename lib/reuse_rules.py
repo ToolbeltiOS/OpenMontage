@@ -40,8 +40,12 @@ def check(slots: list[dict]) -> list[str]:
     # A plan whose media slots carry no asset_id would pass every rule below
     # by having nothing to check. That is not a pass, it is an untested plan,
     # and it is how the reuse problem survived run #1 in the first place.
+    # An authored slot draws its own picture and has no asset by design. It is
+    # exempt only if it actually carries a component AND props -- "authored"
+    # must not become a way to be invisible to the rule.
     media_like = [s for s in ordered
-                  if s.get("path") or s.get("treatment") in ("still", "footage", "texture")]
+                  if (s.get("path") or s.get("treatment") in ("still", "footage", "texture"))
+                  and not (s.get("component") and s.get("props"))]
     unidentified = [s["slot_id"] for s in media_like if not s.get("asset_id")]
     if unidentified:
         v.append(f"{len(unidentified)} media slots carry no asset_id, so the reuse "
@@ -85,7 +89,12 @@ def check(slots: list[dict]) -> list[str]:
             v.append(f"consecutive slots {a['slot_id']} and {b['slot_id']} share parent {pa}")
 
     # 4 — authored graphics must differ in configuration
-    authored = [s for s in ordered if s.get("treatment") == "graphic" and s.get("component")]
+    #
+    # Keyed on the component, NOT on treatment. The authored textures carry
+    # treatment "texture", so a treatment == "graphic" filter skipped all
+    # fourteen of them -- fourteen slots that could have held one identical
+    # configuration and passed, which is precisely the defect being fixed.
+    authored = [s for s in ordered if s.get("component") and s.get("props")]
     for key, n in Counter(_props_key(s) for s in authored).items():
         if n > 1:
             comp = json.loads(key)["c"]

@@ -408,6 +408,31 @@
       "defaults_supplied_by_schema": true,
       "purpose": "the default end card for every narrated-documentary film: dimmed hero still, headline, drawn like / subscribe / bell timed to the narration, schedule line. Left two thirds only \u2014 the right third and bottom fifth stay clear for YouTube End Screen elements. No platform marks.",
       "timing": "likeAt and subscribeAt are seconds into THIS scene, taken from the word-level captions for the words 'like' and 'subscribe'."
+    },
+    "texture_field": {
+      "required": [
+        "kind",
+        "seed"
+      ],
+      "optional": [
+        "density",
+        "angle",
+        "speed",
+        "actNumber",
+        "actTitle",
+        "sceneIndex",
+        "caption"
+      ],
+      "enums": {
+        "kind": [
+          "dust",
+          "strata",
+          "grain_drift",
+          "depth_field",
+          "scanline"
+        ]
+      },
+      "purpose": "authored texture for when the screened clip bank runs out. The reuse rule allows each clip once; with 41 texture beats and 28 clips, the remainder is authored rather than repeated. Seed + kind + density + angle make each instance a distinct configuration."
     }
   },
   "_chrome": {

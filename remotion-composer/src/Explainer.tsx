@@ -28,6 +28,7 @@ import { ActTitleCard } from "./scenes/ActTitleCard";
 import { EvidenceCard } from "./scenes/EvidenceCard";
 import { ScaleComparison } from "./scenes/ScaleComparison";
 import { OutroCta } from "./components/OutroCta";
+import { TextureField } from "./scenes/TextureField";
 import { SectionTitle } from "./components/SectionTitle";
 import { StatReveal } from "./components/StatReveal";
 import { HeroTitle } from "./components/HeroTitle";
@@ -287,6 +288,12 @@ export interface Cut {
   detail?: string;
   status?: "peer_reviewed" | "contested" | "unpublished" | "measured" | "claim";
   index?: string;
+  // texture_field
+  kind?: string;
+  seed?: string;
+  density?: number;
+  angle?: number;
+  speed?: number;
   // outro_cta
   channel?: string;
   filmTitle?: string;
@@ -727,6 +734,12 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
       detail={cut.detail} status={cut.status} caption={cut.caption}
       actNumber={cut.actNumber} actTitle={cut.actTitle} sceneIndex={cut.sceneIndex}
       source={cut.sourceLine} />);
+  }
+  if (cut.type === "texture_field" && cut.kind && cut.seed) {
+    return (<TextureField kind={cut.kind as any} seed={cut.seed}
+      density={cut.density} angle={cut.angle} speed={cut.speed}
+      actNumber={cut.actNumber} actTitle={cut.actTitle}
+      sceneIndex={cut.sceneIndex} caption={cut.caption} />);
   }
   if (cut.type === "outro_cta") {
     // outroCtaSchema fills its own defaults at runtime via parse(), but

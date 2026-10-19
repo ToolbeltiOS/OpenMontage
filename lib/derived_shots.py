@@ -26,9 +26,24 @@ import numpy as np
 
 PROXY_W = 320               # analysis resolution
 MIN_LONG_EDGE = 3000
-DETAIL_FRAC = 0.40          # of the long edge
-EXTREME_FRAC = 0.18
+DETAIL_FRAC = 0.45          # of the long edge
+EXTREME_FRAC = 0.30
 DETAIL_FLOOR = 10.0         # grayscale std inside the window, 0-255 scale
+MIN_CROP_PX = 1600          # below this the crop upscales past ~1.2x and softens
+VEG_PENALTY = 1.6           # weight subtracted for green/magenta foliage
+
+
+def rgb(path: str, width: int = PROXY_W) -> np.ndarray | None:
+    raw = subprocess.run(
+        ["ffmpeg", "-v", "error", "-i", path, "-vf",
+         f"format=rgb24,scale={width}:-2", "-frames:v", "1", "-f", "rawvideo", "-"],
+        capture_output=True).stdout
+    if not raw:
+        return None
+    h = len(raw) // (width * 3)
+    if h == 0:
+        return None
+    return np.frombuffer(raw[: width * h * 3], dtype=np.uint8).reshape(h, width, 3).astype(np.float32)
 
 
 def gray(path: str, width: int = PROXY_W) -> np.ndarray | None:
@@ -45,14 +60,39 @@ def gray(path: str, width: int = PROXY_W) -> np.ndarray | None:
     return np.frombuffer(raw[: width * h], dtype=np.uint8).reshape(h, width).astype(np.float32)
 
 
-def detail_map(g: np.ndarray, cell: int = 8) -> np.ndarray:
-    """Local standard deviation on a coarse grid — where the structure is."""
+def detail_map(g: np.ndarray, cell: int = 8, colour: np.ndarray | None = None) -> np.ndarray:
+    """Where the STRUCTURE is — which is not the same as where the texture is.
+
+    Local standard deviation alone picks whatever has the most high-frequency
+    content, and in a landscape that is foliage. The first pass cropped
+    Preseli onto a bank of pink fireweed and the extreme framing onto blurry
+    grass stalks: maximum detail, no subject.
+
+    So two corrections. Vegetation is penalised by its colour — green or
+    magenta dominance over the other channels — and the map is weighted toward
+    the middle of the frame, because a photographer points the camera at the
+    thing.
+    """
     h, w = g.shape
     gh, gw = h // cell, w // cell
     m = np.zeros((gh, gw), dtype=np.float32)
     for y in range(gh):
         for x in range(gw):
             m[y, x] = g[y * cell:(y + 1) * cell, x * cell:(x + 1) * cell].std()
+
+    if colour is not None:
+        ch, cw = colour.shape[0] // cell, colour.shape[1] // cell
+        gh2, gw2 = min(gh, ch), min(gw, cw)
+        for y in range(gh2):
+            for x in range(gw2):
+                blk = colour[y * cell:(y + 1) * cell, x * cell:(x + 1) * cell]
+                r, gg, b = blk[..., 0].mean(), blk[..., 1].mean(), blk[..., 2].mean()
+                veg = max(0.0, gg - (r + b) / 2) + max(0.0, (r + b) / 2 - gg) * 0.25
+                m[y, x] = max(0.0, m[y, x] - VEG_PENALTY * veg)
+
+    yy = np.linspace(-1, 1, gh)[:, None]
+    xx = np.linspace(-1, 1, gw)[None, :]
+    m *= (1.0 - 0.45 * (yy ** 2 + xx ** 2) / 2)
     return m
 
 
@@ -82,10 +122,15 @@ def best_window(m: np.ndarray, frac: float, aspect: float) -> tuple[float, float
 
 def crop_rect(w: int, h: int, cx: float, cy: float, frac: float) -> dict:
     """A 16:9 window of `frac` of the long edge, centred and clamped in frame."""
+    # The window stays 16:9. Clamping width and height independently loses
+    # the aspect on a panorama — Sacsayhuaman is 21685x3261, so 45% of the
+    # long edge is 9758 wide against only 3261 of height, and the crop came
+    # out letterboxed inside a 16:9 frame. Bound the width by what the height
+    # can support first.
     long_edge = max(w, h)
     cw = int(round(long_edge * frac))
+    cw = min(cw, w, int(h * 16 / 9))
     ch = int(round(cw * 9 / 16))
-    cw, ch = min(cw, w), min(ch, h)
     x = int(round(cx * w - cw / 2))
     y = int(round(cy * h - ch / 2))
     x = max(0, min(x, w - cw))
@@ -106,7 +151,7 @@ def derive(assets: list[dict], out_dir: str) -> list[dict]:
         g = gray(path)
         if g is None:
             continue
-        m = detail_map(g)
+        m = detail_map(g, colour=rgb(path))
 
         for label, frac in (("detail", DETAIL_FRAC), ("extreme", EXTREME_FRAC)):
             cx, cy, score = best_window(m, frac, 16 / 9)
@@ -115,6 +160,10 @@ def derive(assets: list[dict], out_dir: str) -> list[dict]:
                       f"below floor {DETAIL_FLOOR})", flush=True)
                 continue
             rect = crop_rect(w, h, cx, cy, frac)
+            if rect["w"] < MIN_CROP_PX:
+                print(f"    {os.path.basename(path)}: no {label} "
+                      f"(crop {rect['w']}px would upscale)", flush=True)
+                continue
             aid = f"{a['asset_id']}_{label}"
             dest = os.path.join(out_dir, aid + ".jpg")
             if not os.path.exists(dest):

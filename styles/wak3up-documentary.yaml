@@ -451,6 +451,42 @@ overlays:
     text: "#EDE6D8"
     highlight: "#C08A3E"
 
+# One asset, one appearance. Run #1 put 183 slots on 80 photographs; the
+# metrics looked fine because nothing counted how often a picture came back.
+asset_reuse:
+  rule: "Every asset id appears exactly once in the finished edit"
+  two_framings_of_one_parent:
+    allowed: true
+    min_separation_seconds: 240
+    must_differ_in_framing: true
+    max_appearances: 2
+  no_consecutive_slots_share_a_parent: true
+  texture_clips: "once each; author a texture_field configuration when the bank runs out"
+  authored_graphics: "no two slots may carry an identical component and props"
+  # The three places this rule hid from its own gate, all found by measuring
+  # rather than by reading the plan:
+  #  - media slots carrying no asset_id passed every rule by having nothing to
+  #    check, so the gate now fails on an unidentified media slot;
+  #  - the identical-configuration rule keyed on treatment == "graphic", which
+  #    skipped every authored texture, since those carry treatment "texture";
+  #  - an annotated_still is typed "graphic" but carries a PHOTOGRAPH borrowed
+  #    from a neighbouring slot. Both the planner and the gate skipped it, so
+  #    the plan reported 97 unique assets while the edit rendered one crop
+  #    four times. Count what is on screen, not what the plan calls it.
+  never_substitute_blind:
+    - "A texture clip has no title and no tags. Keep the clip that was chosen
+       by watching it, or author the beat. Swapping one blind drew a green
+       valley for 'dark void in masonry, torchlight not reaching the back'."
+    - "Subject keyword matching is not picture matching. It offered Stonehenge
+       for a Welsh outcrop and for a Scottish coastline, and a stone vessel in
+       a museum case for 'empty sea horizon, no vessel in frame'. A candidate
+       must share a word with the slot AND the slot must independently be about
+       that subject -- validating the asset against the subject the matcher
+       itself chose is circular."
+    - "A caption written for one photograph is a false statement about a
+       different one. When the picture changes, the caption, the annotation
+       anchors and the annotated_still type all go with it."
+
 quality_rules:
   - "Minimum contrast ratio 4.5:1 for all text against its actual backing frame"
   - "No more than 2 accent colors on screen at once"

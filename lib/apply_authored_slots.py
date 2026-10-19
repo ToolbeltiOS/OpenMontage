@@ -34,9 +34,20 @@ def slot_id(cut: dict) -> str | None:
 
 def main() -> int:
     graphics = {}
-    for mod in ("act_cold_open_1", "act_2_3", "act_4_outro"):
+    for mod in ("act_cold_open_1", "act_2_3", "act_4_outro", "textures", "process_shots"):
         graphics.update(_load(mod).SLOTS)
     reuse = _load("resolved_sourced").REUSE
+
+    # The scene plan is now the authority for which photograph fills a slot:
+    # lib/plan_assets.py assigns it under the reuse rule. resolved_sourced.REUSE
+    # was run #1's hand-resolution, and its whole mechanism was to point one
+    # slot at ANOTHER slot's asset -- the repetition being fixed. Its captions
+    # and annotation anchors are kept only where the picture did not change,
+    # because a caption written for one photograph is a false statement about a
+    # different one.
+    plan_slots = {s["slot_id"]: s
+                  for s in json.load(open(os.path.join(ART, "scene_plan.json"),
+                                          encoding="utf-8"))["metadata"]["slots"]}
 
     ed = json.load(open(os.path.join(ART, "edit_decisions.json"), encoding="utf-8"))
     am = json.load(open(os.path.join(ART, "asset_manifest.json"), encoding="utf-8"))
@@ -52,7 +63,13 @@ def main() -> int:
         if not sid:
             continue
 
-        if sid in graphics:
+        pslot = plan_slots.get(sid, {})
+
+        # Authored only where the plan says the slot cannot be filled, or where
+        # run #1 already drew it. Authoring a slot that holds a real photograph
+        # would trade a picture for a drawing.
+        if sid in graphics and (pslot.get("needs_authoring")
+                                or not pslot.get("path")):
             spec = graphics[sid]
             cut["type"] = spec["type"]
             cut.pop("source", None)
@@ -63,25 +80,37 @@ def main() -> int:
             authored += 1
             continue
 
-        if sid in reuse:
-            spec = dict(reuse[sid])
-            src = by_scene.get(spec["reuse"])
-            if not src:
-                problems.append(f"{sid}: no asset for reuse target {spec['reuse']}")
-                missing += 1
-                continue
-            cut["source"] = src["path"]
-            cut["reused_from"] = spec["reuse"]
-            if spec.get("annotate"):
+        if pslot.get("path"):
+            spec = dict(reuse.get(sid, {}))
+            changed = bool(pslot.get("asset_changed"))
+            cut["source"] = pslot["path"]
+            cut.pop("reused_from", None)
+            if spec.get("annotate") and not changed:
                 cut["type"] = "annotated_still"
-                cut["backgroundImage"] = src["path"]
+                cut["backgroundImage"] = pslot["path"]
                 cut["parallax"] = True
                 cut["annotations"] = spec["annotations"]
-            for k in ("actNumber", "actTitle", "sceneIndex", "caption"):
+            else:
+                # The picture moved, so run #1's annotated_still type, its
+                # backgroundImage and its anchor coordinates are all stale --
+                # anchors were measured on a frame this slot no longer shows.
+                if cut.get("type") == "annotated_still":
+                    cut.pop("type", None)
+                for k in ("backgroundImage", "annotations", "parallax"):
+                    cut.pop(k, None)
+            for k in ("actNumber", "actTitle", "sceneIndex"):
                 if k in spec:
                     cut[k] = spec[k]
-            if "source" in spec:
-                cut["sourceLine"] = spec["source"]
+            cap = pslot.get("caption") or (None if changed else spec.get("caption"))
+            if cap:
+                cut["caption"] = cap
+            else:
+                cut.pop("caption", None)
+            line = spec.get("source") if not changed else None
+            if pslot.get("artist") or pslot.get("licence"):
+                line = " · ".join(x for x in (pslot.get("artist"), pslot.get("licence")) if x)
+            if line:
+                cut["sourceLine"] = line
             resolved += 1
 
     for cut in ed["cuts"]:

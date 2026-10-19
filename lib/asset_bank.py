@@ -38,7 +38,11 @@ UA = ("wak3upsociety-documentary/1.0 "
       "python-urllib")
 MIN_INTERVAL = 3.0          # seconds between API calls (Commons throttles hard)
 MIN_STDDEV = 18.0           # grayscale std below this is a blank/near-uniform frame
+MIN_BANK_LONG_EDGE = 3000   # nothing smaller is bankable: it cannot fill 1080p
+                            # with a push, and yields no derived framings
 TOP_N = 8
+POOL_N = 20          # downloaded per subject; TOP_N are chosen from it
+MAX_PER_SERIES = 3   # files one upload session may contribute to the pool
 
 _last_call = 0.0
 
@@ -115,9 +119,56 @@ def imageinfo(titles: list[str]) -> list[dict]:
     return out
 
 
-def filename_has_term(title: str, terms: list[str]) -> bool:
-    t = title.lower().replace("_", " ")
-    return any(term.lower() in t for term in terms)
+# A site category contains the site's museum. Category:Mycenae returned six
+# vitrines of pottery before this list existed, because "Mycenae" is in the
+# filename of a museum photograph exactly as it is in the filename of the Lion
+# Gate. Negative terms are per-project, not universal — a film about pottery
+# would want the opposite list.
+DEFAULT_EXCLUDE = [
+    "museum", "exhibit", "vitrine", "display case", "showcase", "gallery of",
+    "vase", "pottery", "sherd", "krater", "amphora", "figurine", "jewellery",
+    "jewelry", "coin", "stamp", "poster", "logo", "map of", "diagram", "plan of",
+    "model of", "reconstruction", "replica", "book", "cover", "sign", "plaque",
+    "panel", "information board", "ticket", "flag", "portrait of",
+]
+
+
+def series_key(title: str) -> str:
+    """Collapse a filename to the upload session it came from.
+
+    Stonehenge has 740 usable files, and the twenty largest were all one
+    photographer's afternoon: "Amesbury, Stonehenge Wiltshire 1000097
+    20230817 0001", 0002, 0003... Ranking by resolution hands the whole pool
+    to whoever shot the site with the best camera, and no amount of
+    diversity selection inside that pool can recover a second viewpoint.
+    Stripping digits leaves the series, which is what needs capping.
+    """
+    t = re.sub(r"\d+", "", title.lower().replace("_", " "))
+    t = re.sub(r"[^a-z ]+", " ", t)
+    return " ".join(t.split())[:40]
+
+
+def filename_has_term(title: str, terms: list[str], exclude: list[str] | None = None) -> bool:
+    """Match on word boundaries, not substrings.
+
+    "cart" as a substring matches "cartes postales", so a subject looking for
+    ox carts banked eight postcards from Laos and Indochina. Multi-word terms
+    still match as phrases; single words must stand alone.
+    """
+    t = " " + title.lower().replace("_", " ").replace("-", " ") + " "
+    t = re.sub(r"[^a-z0-9 ]+", " ", t)
+    t = " " + " ".join(t.split()) + " "
+    if any(f" {x.lower().strip()} " in t or (" " in x and x.lower() in t)
+           for x in (exclude if exclude is not None else DEFAULT_EXCLUDE)):
+        return False
+    for term in terms:
+        term = term.lower().strip()
+        if " " in term:
+            if term in t:
+                return True
+        elif f" {term} " in t:
+            return True
+    return False
 
 
 def signature(path: str, n: int = 16) -> "np.ndarray | None":
@@ -215,21 +266,36 @@ def build(subjects: dict, out_dir: str, bank_path: str, top_n: int = TOP_N) -> d
             infos = []
         raw_n = len(infos)
         infos = [i for i in infos if i["mime"].startswith("image/")
-                 and filename_has_term(i["title"], spec["terms"])
+                 and filename_has_term(i["title"], spec["terms"],
+                                       spec.get("exclude", DEFAULT_EXCLUDE))
                  and i["width"] * i["height"] > 0]
         print(f"    {raw_n} files described -> {len(infos)} pass filename + mime", flush=True)
         infos.sort(key=lambda i: i["width"] * i["height"], reverse=True)
 
-        kept = []
-        kept_sigs: list = []
+        # Download a pool, then choose a DIVERSE subset from it.
+        #
+        # Ranking by pixel count alone returns the same photograph repeatedly.
+        # Stonehenge's top eight were eight frames of the monument from one
+        # distance and angle on one overcast afternoon: different files, one
+        # shot. Correlation rejection does not catch it, because the clouds
+        # differ enough to pass.
+        #
+        # So keep the sharpest candidate, then repeatedly add whichever
+        # remaining candidate is LEAST like everything kept so far. That
+        # selects for range of framing and light, which is what makes a bank
+        # of eight worth eight slots.
+        import numpy as np
+
+        pool = []
+        series_count: dict[str, int] = {}
         for info in infos:
-            if len(kept) >= top_n:
+            if len(pool) >= POOL_N:
                 break
-            # Commons appends query parameters to imageinfo URLs
-            # (?utm_source=...), so splitext on the whole URL returns the tail
-            # of a tracking parameter, not the file extension. Every candidate
-            # was being skipped by this check, silently, and the subject came
-            # back empty from 283 perfectly good files. Parse the path.
+            sk = series_key(info["title"])
+            if series_count.get(sk, 0) >= MAX_PER_SERIES:
+                continue
+            # Commons appends ?utm_source=... to imageinfo URLs, so splitext on
+            # the whole URL returns a tracking-parameter tail, not ".jpg".
             url_path = urllib.parse.urlparse(info["url"]).path
             ext = os.path.splitext(url_path)[1].lower() or ".jpg"
             if ext not in (".jpg", ".jpeg", ".png", ".tif", ".tiff", ".webp"):
@@ -240,36 +306,65 @@ def build(subjects: dict, out_dir: str, bank_path: str, top_n: int = TOP_N) -> d
             if not os.path.exists(dest):
                 if not download(info["url"], dest):
                     continue
-                if ext not in (".jpg", ".jpeg"):
-                    import subprocess
-                    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", dest,
-                                    "-q:v", "2", dest + ".jpg"], check=False)
-                    if os.path.exists(dest + ".jpg"):
-                        os.replace(dest + ".jpg", dest)
+            if max(info["width"], info["height"]) < MIN_BANK_LONG_EDGE:
+                print(f"    reject (too small {info['width']}x{info['height']}): "
+                      f"{info['title'][:48]}", flush=True)
+                if os.path.exists(dest):
+                    os.remove(dest)
+                continue
             sd = grayscale_stddev(dest)
             if sd < MIN_STDDEV:
-                print(f"    reject (flat, std {sd:.1f}): {info['title'][:60]}", flush=True)
+                print(f"    reject (flat, std {sd:.1f}): {info['title'][:54]}", flush=True)
                 os.remove(dest)
                 continue
             sig = signature(dest)
-            if sig is not None:
-                c = too_similar(sig, kept_sigs)
-                if c is not None:
-                    print(f"    reject (near-duplicate, r={c:.2f}): "
-                          f"{info['title'][:52]}", flush=True)
-                    os.remove(dest)
+            if sig is None:
+                continue
+            series_count[sk] = series_count.get(sk, 0) + 1
+            pool.append({"info": info, "aid": aid, "dest": dest, "sd": sd, "sig": sig})
+
+        # Keep in resolution order, rejecting anything that looks like one
+        # already kept.
+        #
+        # Two failed approaches are worth recording. Ranking by pixel count
+        # alone returned eight frames of Stonehenge from one angle on one
+        # afternoon — different files, one shot. Selecting for maximum
+        # diversity instead returned a car park, a tourist and some scrubland:
+        # genuinely varied, genuinely unusable, because "least like the others"
+        # rewards whatever is least like a photograph of the subject.
+        #
+        # Resolution order tracks "someone took this deliberately". The
+        # correlation gate at 0.85 — stricter than the 0.92 that let the
+        # Stonehenge aerials through — removes the near-twins without reaching
+        # for the junk at the bottom of the category.
+        kept = []
+        chosen = []
+        for cand in pool:
+            if len(kept) >= top_n:
+                break
+            if chosen:
+                worst = max(float(np.dot(cand["sig"], k["sig"])) for k in chosen)
+                if worst > 0.85:
+                    print(f"    reject (near-duplicate r={worst:.2f}): "
+                          f"{cand['info']['title'][:50]}", flush=True)
                     continue
-                kept_sigs.append(sig)
+            chosen.append(cand)
+            info = cand["info"]
             kept.append({
-                "asset_id": aid, "path": dest, "subject": name,
+                "asset_id": cand["aid"], "path": cand["dest"], "subject": name,
                 "title": info["title"], "page": info["descriptionurl"],
                 "width": info["width"], "height": info["height"],
                 "artist": info["artist"], "licence": info["licence"],
-                "credit": info["credit"], "stddev": round(sd, 1),
+                "credit": info["credit"], "stddev": round(cand["sd"], 1),
                 "provider": "wikimedia",
             })
             print(f"    keep {len(kept)}/{top_n}: {info['width']}x{info['height']} "
-                  f"{info['title'][:56]}", flush=True)
+                  f"{info['title'][:52]}", flush=True)
+        pool = [c for c in pool if c not in chosen]
+        for leftover in pool:
+            if os.path.exists(leftover["dest"]):
+                os.remove(leftover["dest"])
+
         bank["subjects"][name] = {"terms": spec["terms"], "categories": spec["categories"],
                                   "assets": kept}
         json.dump(bank, open(bank_path, "w"), indent=1, ensure_ascii=False)

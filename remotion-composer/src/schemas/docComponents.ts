@@ -233,6 +233,14 @@ export const DOC_COMPONENT_SCHEMAS = {
   act_title_card: ActTitleCardSchema,
   evidence_card: EvidenceCardSchema,
   scale_comparison: ScaleComparisonSchema,
+  texture_field: z.object({
+    kind: z.enum(["dust", "strata", "grain_drift", "depth_field", "scanline"]),
+    seed: z.string().min(1).describe("what makes two instances different configurations"),
+    density: z.number().min(4).max(400).optional(),
+    angle: z.number().optional(),
+    speed: z.number().min(0).max(4).optional(),
+    ...CHROME,
+  }),
   outro_cta: outroCtaSchema,
 } as const;
 
