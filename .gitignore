@@ -87,6 +87,10 @@ remotion-composer/projects/
 remotion-composer/public/*
 # But keep demo props (shipped with the project for zero-key demos)
 !remotion-composer/public/demo-props/
+# Keep the two stills the wak3up-documentary component demos render against,
+# so a fresh clone can run them. Both Wikimedia Commons, CC BY-SA, attributed
+# in the demo captions.
+!remotion-composer/public/doc/
 # Ignore test/scratch compositions in demo-props (keep only curated demos)
 remotion-composer/public/demo-props/test-*
 remotion-composer/public/demo-props/talking-head-*

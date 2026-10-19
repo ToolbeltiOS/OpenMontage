@@ -1,0 +1,344 @@
+name: narrated-documentary
+version: "1.0"
+description: >
+  Narrated long-form documentary pipeline (12-25 minutes). Research-first and
+  citation-bound: a sourced research_brief gates every factual claim, then an
+  outline-first, act-by-act script carries the piece as continuous narration.
+  Visuals are acquired retrieval-first from keyless public archives
+  (Archive.org, NASA, ESA, Library of Congress, NARA, Wikimedia)
+  with Pixabay video used ONLY for elemental texture, and are
+  layered with Remotion motion graphics — maps, timelines, document reveals,
+  lower-thirds — over a ducked music bed with word-level captions.
+  Composed from three audited ancestors: research + proposal + script from
+  animated-explainer, retrieval-first acquisition from documentary-montage,
+  layered edit + compose from hybrid.
+category: documentary
+stability: beta
+default_checkpoint_policy: guided
+
+metadata:
+  render_profile: youtube_landscape
+  target_duration_seconds: 1200
+  duration_tolerance_pct: 10
+  narration_required: true
+  lineage:
+    research: pipelines/explainer/research-director
+    proposal: pipelines/explainer/proposal-director
+    script: pipelines/explainer/script-director
+    assets: pipelines/documentary-montage/asset-director
+    edit: pipelines/hybrid/edit-director
+    compose: pipelines/hybrid/compose-director
+  acquisition_order:
+    - keyless_archives
+    - pixabay_video_elemental_texture_only
+  keyless_sources:
+    - archive_org
+    - nasa
+    - esa
+    - loc
+    - nara
+    - wikimedia
+  pixabay_sources:
+    - pixabay_video
+  excluded_sources:
+    pexels: "key issuance paused by Pexels since 2026-09-30; PEXELS_API_KEY intentionally unset"
+    videvo: "requires VIDEVO_API_KEY; not provisioned"
+    mixkit: "removed 2026-10-18 — zero results for every query"
+    dareful: "removed 2026-10-18 — zero results for every query"
+    unsplash: "removed 2026-10-18 — semantically unrelated stock for non-elemental queries; no generic-stock stills remain"
+
+reference_input:
+  supported: false
+
+orchestration:
+  mode: executive-producer
+  skill: pipelines/narrated-documentary/executive-producer
+  budget_default_usd: 0.00
+  max_revisions_per_stage: 3
+  max_send_backs: 2
+  max_wall_time_minutes: 150   # raised for run #1 (owner, 2026-10-18); real budget to be set from the measured render
+
+extensions:
+  custom_scripts: true
+  custom_playbooks: true
+  custom_skills: true
+  custom_tools: false
+
+required_skills:
+  - pipelines/narrated-documentary/executive-producer
+  - pipelines/narrated-documentary/research-director
+  - pipelines/narrated-documentary/proposal-director
+  - pipelines/narrated-documentary/script-director
+  - pipelines/narrated-documentary/scene-director
+  - pipelines/narrated-documentary/asset-director
+  - pipelines/narrated-documentary/edit-director
+  - pipelines/narrated-documentary/compose-director
+  - pipelines/narrated-documentary/publish-director
+  - meta/reviewer
+  - meta/checkpoint-protocol
+
+compatible_playbooks:
+  recommended:
+    - wak3up-documentary
+  also_works:
+    - premium-minimalist
+    - minimalist-diagram
+  custom_allowed: true
+
+stages:
+  # ── Research ────────────────────────────────────────────────────
+  - name: research
+    skill: pipelines/narrated-documentary/research-director
+    produces:
+      - research_brief
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Every named entity has a Wikipedia/Wikimedia pull recorded
+      - Data points are specific and sourced, never vague
+      - At least 3 genuinely different angles discovered
+      - Claim ledger is complete — every date, name and figure the script may use appears here with a source
+      - Contested or disputed claims are marked as contested, not asserted
+    success_criteria:
+      - Schema-valid research_brief with at least 8 data_points
+      - At least 3 angles_discovered, each with grounded_in references
+      - At least 8 sources cited with URLs
+      - Every named entity in the brief has an encyclopedia source
+
+  # ── Proposal ────────────────────────────────────────────────────
+  - name: proposal
+    skill: pipelines/narrated-documentary/proposal-director
+    required_artifacts_in:
+      - research_brief
+    produces:
+      - proposal_packet
+      - decision_log
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Concept options are genuinely different in angle, not just title
+      - Each concept is grounded in research findings, not generic
+      - Act structure is concrete and can carry the target duration
+      - Music plan is present (MANDATORY — silent only on explicit user opt-out)
+      - Narration plan is present and names the TTS route (narration is REQUIRED on this pipeline)
+      - Render runtime shortlist records BOTH available composition runtimes
+      - Production plan reflects actual tool availability from preflight
+      - Cost estimate is itemized and honest — a zero-cost plan must say which free paths carry it
+    success_criteria:
+      - Schema-valid proposal_packet with at least 3 concept_options
+      - selected_concept references a valid concept_id
+      - production_plan.render_runtime is locked and logged in decision_log
+      - decision_log contains a render_runtime_selection entry listing every available runtime
+      - music_plan present in proposal metadata
+      - narration_plan present and non-null
+
+  # ── Script ──────────────────────────────────────────────────────
+  - name: script
+    skill: pipelines/narrated-documentary/script-director
+    required_artifacts_in:
+      - proposal_packet
+    optional_artifacts_in:
+      - research_brief
+    produces:
+      - script
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Outline was written and approved before any act prose
+      - Each act was drafted with the outline plus the previous act as context, never the whole script in one call
+      - Every act introduces new information — no act restates an earlier one
+      - No date, name or figure appears that is absent from the research_brief claim ledger
+      - Word count within 10% of the narrated-word budget
+      - Cold open lands under 45 seconds and carries the chosen hook
+      - Ending is an open question, not a summary
+      - Speaker directions and delivery cues present for TTS
+    success_criteria:
+      - Schema-valid script artifact
+      - Narrated word count inside the playbook's word band
+      - Act count within the playbook's act band
+      - Every factual span carries a claim_ref into the research_brief
+
+  # ── Scene plan ──────────────────────────────────────────────────
+  - name: scene_plan
+    skill: pipelines/narrated-documentary/scene-director
+    required_artifacts_in:
+      - script
+    optional_artifacts_in:
+      - proposal_packet
+      - research_brief
+    produces:
+      - scene_plan
+    optional_tools:
+      - frame_sampler
+      - scene_detect
+    tools_available:
+      - frame_sampler
+      - scene_detect
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Slot descriptions use concrete noun-and-adjective language
+      - Every slot carries 2-3 short search queries and a preferred_sources list
+      - Keyless archive sources are listed first in preferred_sources
+      - Cut cadence matches the playbook — no slot holds longer than the playbook ceiling
+      - Still-image slots stay within the playbook's stills budget and each names a parallax treatment
+      - Motion-graphic slots name a concrete Remotion scene type
+      - Slideshow risk is assessed and recorded as low
+      - Sum of slot holds is within 10% of the script duration
+    success_criteria:
+      - Schema-valid scene_plan artifact
+      - metadata.slots[] present with per-slot queries and preferred_sources
+      - metadata.visual_mix records real-footage / motion-graphic / still percentages
+      - Every script act maps to at least one hero slot
+
+  # ── Assets ──────────────────────────────────────────────────────
+  - name: assets
+    skill: pipelines/narrated-documentary/asset-director
+    required_artifacts_in:
+      - scene_plan
+    optional_artifacts_in:
+      - script
+      - proposal_packet
+    produces:
+      - asset_manifest
+    required_tools:
+      - direct_clip_search
+      - tts_selector
+    optional_tools:
+      - corpus_builder
+      - clip_search
+      - subtitle_gen
+      - music_gen
+      - audio_enhance
+      - image_selector
+      - video_selector
+    tools_available:
+      - direct_clip_search
+      - corpus_builder
+      - clip_search
+      - tts_selector
+      - subtitle_gen
+      - music_gen
+      - audio_enhance
+      - image_selector
+      - video_selector
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Keyless archives were searched before any keyed provider
+      - Every slot has exactly one picked clip
+      - No clip_id is picked for two slots
+      - Provenance (provider, original_url, license) present on every asset
+      - Narration rendered act-by-act and total runtime measured, not estimated
+      - Music bed selected from the music library and its licence recorded
+      - Stills carry a parallax/2.5D treatment, never a static hold
+      - Gaps are flagged to the user, never silently filled with an unrelated clip
+    success_criteria:
+      - Schema-valid asset_manifest artifact
+      - One visual asset per scene slot
+      - Narration audio exists for every act with measured durations
+      - metadata.search_stats present (fast path) OR metadata.corpus_stats present (standard path)
+      - Every asset carries a licence field
+
+  # ── Edit ────────────────────────────────────────────────────────
+  - name: edit
+    skill: pipelines/narrated-documentary/edit-director
+    required_artifacts_in:
+      - scene_plan
+      - asset_manifest
+    optional_artifacts_in:
+      - script
+    produces:
+      - edit_decisions
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - render_runtime matches the proposal exactly — a swap is a CRITICAL violation
+      - Narration is the spine; every cut is placed against a narration timestamp
+      - No two adjacent cuts share subject AND scale
+      - Hero slots hold longest, cutaways shortest
+      - Music is ducked under narration by the playbook's amount
+      - Word-level caption track is present
+      - total_duration_seconds matches the sum of cut durations
+      - Every cut has a reason
+    success_criteria:
+      - Schema-valid edit_decisions artifact
+      - Timeline duration within 10% of the script duration
+      - edit_decisions.render_runtime equals proposal_packet.production_plan.render_runtime
+
+  # ── Compose ─────────────────────────────────────────────────────
+  - name: compose
+    skill: pipelines/narrated-documentary/compose-director
+    required_artifacts_in:
+      - edit_decisions
+      - asset_manifest
+    optional_artifacts_in:
+      - scene_plan
+      - script
+    produces:
+      - render_report
+      - final_review
+    required_tools:
+      - video_compose
+      - audio_mixer
+    optional_tools:
+      - video_stitch
+      - video_trimmer
+      - color_grade
+      - audio_enhance
+      - subtitle_gen
+      - remotion_caption_burn
+    tools_available:
+      - video_compose
+      - audio_mixer
+      - video_stitch
+      - video_trimmer
+      - color_grade
+      - audio_enhance
+      - subtitle_gen
+      - remotion_caption_burn
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Output duration matches the planned duration within 2 seconds
+      - Resolution matches the youtube_landscape canvas
+      - Uniform grade applied across mixed-era footage
+      - Narration is intelligible over the music bed at every point
+      - Integrated loudness lands near the playbook target
+      - Captions are burned or sidecar-delivered as the playbook specifies
+      - No silent fallback from the approved visual promise
+    success_criteria:
+      - Schema-valid render_report artifact
+      - Output file exists and passes ffprobe validation
+      - render_report records measured duration, resolution, shot count and visual mix
+      - render_report.audio_levels records measured integrated loudness
+
+  # ── Publish ─────────────────────────────────────────────────────
+  - name: publish
+    skill: pipelines/narrated-documentary/publish-director
+    required_artifacts_in:
+      - render_report
+      - final_review
+    optional_artifacts_in:
+      - script
+      - research_brief
+      - proposal_packet
+    produces:
+      - publish_log
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Export package is local and complete — no upload performed without an explicit instruction
+      - Title, description and tags reflect the actual content
+      - Chapter timestamps match the real act boundaries
+      - Research brief ships alongside the video as the provenance record
+      - Every claim in the description traces to the research_brief
+    success_criteria:
+      - Schema-valid publish_log artifact
+      - Export package contains video, thumbnail, metadata JSON and research brief
+      - publish_log records whether an upload occurred and to where

@@ -1,0 +1,403 @@
+identity:
+  name: "Wak3up Documentary"
+  category: cinematic
+  mood: grave, patient, archival, unsentimental
+  pace: deliberate
+  best_for: "Long-form narrated documentary (19-21 min) built from public-archive footage, for the Wak3upSociety YouTube channel"
+
+taste_profile:
+  design_read: "Dark investigative documentary in the channel's mystery register: a researcher's desk at night, taking the unexplained seriously. Gravity, not camp. Authority from evidence and attribution, not from scale."
+  visual_variance: 6
+  motion_intensity: 3
+  information_density: 4
+  palette_discipline: "Near-black field, warm bone text, single ochre accent drawn from weathered stone. No teal-and-orange grade, no neon, no cyan 'tech' glow."
+  layout_variation: "Alternate full-bleed archive footage, map/timeline frames, document-reveal push-ins, and lower-third attribution moments."
+  reference_strategy: "Build one reference frame per scene family (footage, map, timeline, document, lower-third) before the act is assembled."
+  # NOTE: these are VISUAL anti-patterns only. They constrain how mystery and
+  # conspiracy material is *rendered*, never whether it may be covered. This
+  # playbook places no content-level restriction on subject matter — see
+  # `content_stance` below.
+  anti_patterns:
+    - "ancient-aliens visual kitsch: UFO art, red arrows, question-mark graphics, pulsing zooms"
+    - "teal-and-orange blockbuster grade"
+    - "static held stills with no camera move"
+    - "stock-footage sheen: clean modern 4K drone plates standing in for archive material"
+    - "a cut whose only justification is that the clip was available"
+  quality_gates:
+    - "Every frame should look sourced, not generated."
+    - "If a claim is on screen, its support is in the research brief."
+    - "A viewer scrubbing any 30 seconds should see at least four distinct images."
+
+# ── Content stance ──────────────────────────────────────────────────
+# The channel's identity is mystery and conspiracy. This playbook imposes NO
+# content-level deprioritization of those subjects. What it governs is how a
+# contested claim is *handled*, not whether it may be told.
+content_stance:
+  niche: "mystery, conspiracy, the unexplained — the channel's established identity"
+  topic_deprioritization: none
+  spine: mystery_first
+  register: "the channel's mystery voice — serious, curious, unsentimental"
+  forbidden_registers:
+    - "sneering"
+    - "debunking register"
+    - "smug corrective tone"
+    - "credulous hype that asserts a contested claim as settled"
+  alternative_claims:
+    present_seriously: true
+    require_strongest_proponent: true    # name the best advocate, not a straw man
+    require_best_evidence: true          # their strongest evidence, not their weakest
+    attribution_required: true           # "proponents argue", "Hancock's thesis is"
+  method_layer:
+    role: investigation_not_thesis
+    rule: "Experimental archaeology is the instrument used to test each claim on camera, never the moral of the story."
+    when_case_closes: "say so plainly, without triumph"
+    when_case_stays_open: "that is the act's climax — the genuinely open cases are the payoff"
+  contested_handling: "Narrated as contested in BOTH directions: neither the orthodox nor the alternative account is asserted as settled when the ledger says it is disputed."
+
+# ── Structure ───────────────────────────────────────────────────────
+# Encodes the commissioned shape. The script director reads this as a
+# contract, not a suggestion.
+structure:
+  target_duration_seconds: 1200
+  duration_band_seconds: [1140, 1260]        # 19-21 minutes, hard
+  narrated_word_band: [2800, 3200]
+  words_per_minute_target: 150
+  act_count_band: [4, 5]
+  cold_open:
+    max_seconds: 45
+    must_carry_hook_from: "best_performing_source_short"
+    hook_reuse_mode: "language_and_rhythm"   # re-voice the hook; do NOT lift 9:16 source frames into a 16:9 canvas
+    rules:
+      - "Opens on the most arresting concrete image or claim available."
+      - "Plants the central question and does not answer it."
+      - "No greeting, no channel intro, no 'in this video'."
+  # Mystery-first act shape. Every act opens on the unexplained, not on the
+  # explanation. Method enters as the instrument of investigation.
+  act_shape:
+    spine: mystery_first
+    beat_order:
+      - "LEAD WITH THE UNEXPLAINED — the anomaly, stated at full strength."
+      - "THE ALTERNATIVE CLAIM — its strongest proponent and their best evidence, attributed."
+      - "THE TEST — what experimental archaeology actually did to probe it."
+      - "THE VERDICT OR THE GAP — closed, say so plainly; still open, that is the act's climax."
+    rules:
+      - "Never open an act on the orthodox explanation; open on the thing that needs explaining."
+      - "The alternative claim gets its strongest form, named proponent and best evidence — never a straw man."
+      - "An act whose case closes must still end on what the closure does NOT explain."
+      - "The final act is built entirely from cases that remain genuinely open."
+  ending:
+    mode: open_question
+    rules:
+      - "Do not recap the acts; the viewer just watched them."
+      - "Land on the implication the piece earned, and stop."
+      - "The closing question is a real one — a case the ledger shows is still open, not rhetorical suspense."
+  outro_cta:
+    max_seconds: 10
+    nothing_essential_in_last_seconds: 20
+
+# ── Script production rules ─────────────────────────────────────────
+script_rules:
+  generation_mode: outline_first_then_act_by_act
+  never_generate_whole_script_in_one_call: true
+  act_pass_context: ["outline", "previous_act_text", "assigned_claim_ids"]
+  citation_binding:
+    source_artifact: research_brief
+    ledger_required: true
+    forbidden_without_ledger_entry: ["date", "name", "figure", "quote"]
+    rule: "The script may not state a date, name or figure that is absent from the research_brief claim ledger. Send it back for a source, or cut the sentence."
+    contested_claims_must_be_narrated_as_contested: true
+    # Attribution is what lets an alternative claim be presented at full
+    # strength without the narration asserting it.
+    attribution_required_for_alternative_claims: true
+    attribution_forms:
+      - "proponents argue"
+      - "<name>'s thesis is"
+      - "<name> has proposed"
+      - "the claim rests on"
+    rule_attribution: "An alternative claim is voiced in full, attributed to a named proponent, and sourced. Attribution is never a hedge against sourcing — an attributed claim still needs a ledger entry."
+    both_directions: "When the ledger marks a question disputed, neither the orthodox nor the alternative account may be narrated as settled."
+  research_requirements:
+    encyclopedia_pull_for_every_named_entity: true
+    encyclopedia_sources: ["wikipedia", "wikimedia_commons"]
+    min_ledger_entries: 8
+    min_sources: 8
+    two_sources_required_for: ["surprising_figure", "hook_claim"]
+  padding_check_per_act:
+    - "New information: does this act tell the viewer something no earlier act told them? Name it in one sentence."
+    - "No restatement: does any paragraph re-explain something already established? Cut it."
+    - "Earned length: if this act were 20% shorter, what would be lost? If nothing, it is 20% too long."
+    - "Ledger density: at least one ledger entry spent per ~150 words."
+  reject_on:
+    - "an act that restates an earlier act"
+    - "a factual span with no claim_ref"
+    - "word count more than 10% outside the band"
+
+# ── Visual cadence ──────────────────────────────────────────────────
+visual_cadence:
+  cut_interval_seconds: [5, 8]
+  cut_on: meaning_change            # never on a metronome
+  # AMENDED 2026-10-18 by owner decision, after measured source health showed the
+  # keyless archives hold stills rather than footage for megalithic subjects.
+  # Original targets were footage 55-75 / graphics 15-30 / stills 0-20; they were
+  # not reachable from tier 1 and would have forced generic stock to set the look.
+  # RUN #1: mix bands are RECORDED, NOT GATED (owner decision 2026-10-18).
+  # Targets are not amended a fourth time; the final measured mix is reported
+  # in the asset manifest and the render report instead.
+  mix_targets_gated: false
+  mix_targets_note: "advisory only for run #1 — do not fail a gate on these"
+  mix_targets:
+    real_footage_pct: [15, 25]
+    motion_graphic_pct: [30, 40]
+    still_image_pct: [40, 45]
+  # Provenance of all three amendments, newest last.
+  mix_targets_superseded:
+    - revision: r1
+      note: "Original commission, pre-measurement"
+      real_footage_pct: [55, 75]
+      motion_graphic_pct: [15, 30]
+      still_image_pct: [0, 20]
+      superseded_because: "Keyless archives hold stills, not footage, for megalithic subjects."
+    - revision: r2
+      note: "After measured source health (2026-10-18)"
+      real_footage_pct: [30, 40]
+      motion_graphic_pct: [25, 35]
+      still_image_pct: [35, 40]
+      superseded_because: "The 30-40% footage floor could only be met by Pixabay texture, and visual review rejected 12 of 41 texture clips as unusable (gym, money, tractor, espresso machine). mixkit and dareful returned zero results for every query."
+
+  stills:
+    min_pct: 40
+    max_pct: 45
+    treatment_required: true
+    treatment_mandatory: true        # parallax/2.5D is not optional at this share
+    allowed_treatments: ["parallax_2_5d", "slow_push_in", "drift_across_oversized_frame"]
+    max_hold_seconds: 6              # hard: no still is held longer than 6s
+    no_consecutive_same_source: true # two stills in a row may not come from the same provider
+    max_consecutive_stills: 2        # a motion slot must break any run of two
+    rule: "At 40-45% of slots, stills carry nearly half the film. Every one takes a parallax or 2.5D move, none is held past 6 seconds, and no two in a row come from the same source. A static hold at this share reads as a slideshow immediately."
+  motion_graphic_types:
+    - map                           # route tracing, site location
+    - cross_section_diagram         # joint geometry, drill cores, block section
+    - timeline                      # placing an event against a span
+    - document_reveal               # push-in on a scan or record ('declassified file' reveal)
+    - lower_third                   # name, place, date — first mention only
+  hero_slots:
+    min_total: 2
+    min_per_act: 1
+    hold_may_exceed_ceiling: true
+  cadence_exceptions:
+    reveal_hold: "On the single biggest claim, hold one strong image past the ceiling and let the narration land."
+    burst: "Through a dense list, run 2-3s cuts for 10-15s, then return to cadence."
+  adjacency_rule: "No two adjacent cuts share BOTH subject and scale."
+  # Retuned for the amended mix. The test must still read LOW at 35-40% stills,
+  # so it no longer keys off the stills SHARE — it keys off the things that
+  # actually make a high still-share look like a slideshow: dead holds, runs,
+  # repeated sources and absent motion.
+  slideshow_risk:
+    must_be: low
+    basis: "STRUCTURAL ONLY for run #1 — share-based conditions removed by owner decision; runs, dead holds, repeated sources and window density still bind."
+    high_if_any:
+      - "any still lacks a parallax/2.5D or push-in treatment"
+      - "any still is held longer than 6 seconds"
+      - "three or more consecutive slots are stills"
+      - "two consecutive stills come from the same source"
+      - "mean hold exceeds the 8s cadence ceiling"
+      - "more than a third of slots lack a confirmed source family"
+      - "any 30-second window contains fewer than four distinct images"
+      - "two consecutive slots are both authored texture graphics"
+
+# ── Source acquisition ──────────────────────────────────────────────
+sources:
+  keyless_first: true
+  # Strict tier order. Exhaust a tier before falling through to the next.
+  # PEXELS IS DELIBERATELY ABSENT: new key issuance has been paused by Pexels
+  # since 2026-09-30, so PEXELS_API_KEY stays unset and the adapter is excluded
+  # outright rather than left to fail a retrieval mid-run.
+  source_order:
+    - tier: 1
+      name: keyless_archives
+      sources: [archive_org, nasa, esa, wikimedia, loc, nara]
+    - tier: 2
+      name: pixabay_video
+      sources: [pixabay_video]
+  excluded:
+    pexels: "key issuance paused by Pexels since 2026-09-30; PEXELS_API_KEY intentionally unset"
+    videvo: "requires VIDEVO_API_KEY; not provisioned"
+    mixkit: "REMOVED 2026-10-18 — returned ZERO results for every query across 82 attempts despite reporting available"
+    dareful: "REMOVED 2026-10-18 — returned ZERO results for every query across 82 attempts despite reporting available"
+    unsplash: "REMOVED 2026-10-18 — returns semantically unrelated stock for non-elemental queries, exactly as Pixabay does. A refill pass produced a municipal coat of arms, construction workers, a green-screen studio shot and a blank white frame. No generic-stock stills remain in this project."
+  subject_routing:
+    space: [nasa, esa]
+    mid_century_institutional: [archive_org, nara]
+    documents_and_artefacts: [wikimedia, loc]
+    elemental_texture: [pixabay_video]
+    stills_of_record: [wikimedia, loc]
+  # What each source is ALLOWED to do, not merely whether it responds.
+  source_roles:
+    site_illustration:
+      description: "The primary visual of a NAMED site, structure or artefact"
+      permitted: [wikimedia, loc, nara, archive_org]
+      forbidden: [pixabay_video]
+      rule: "A named site is never illustrated by generic stock. If no archive asset exists for that site, the slot becomes a cross-section diagram or a sourced still — not a lookalike clip."
+    texture:
+      description: "ELEMENTAL MOOD BEDS ONLY — dunes, sea, storm cloud, rock face, fog, dust, sand, night sky, waves, dry riverbed. Not illustrations of anything."
+      doctrine: "AMENDED 2026-10-18. Abstract and literal queries both failed: 'rope under tension' returned a gym, 'abrasive slurry' a tractor, and a literal re-query of 'rope close up' returned a spider web. Pixabay matches loosely over a modern commercial library, so texture is now sourced from ~10 elemental terms and treated as mood, never as depiction."
+      authored_alternative: "Remaining texture is AUTHORED in Remotion — particle dust, film grain, slow light sweep across a Wikimedia stone still. Authored texture counts as a GRAPHIC, not as footage." 
+      permitted: [pixabay_video, wikimedia]   # pixabay ELEMENTAL TEXTURE ONLY
+      rule: "Pixabay is permitted HERE ONLY. Texture carries motion between archive assets; it must never set the look and must never stand in for a named site."
+    stills_of_record:
+      description: "Photographs, scans and document plates under a parallax or push-in move"
+      permitted: [wikimedia, loc]
+
+  # Measured 2026-10-18 against the live adapters and APIs. Re-verify per
+  # production; these are adapter/holdings facts, not permanent properties.
+  known_source_health:
+    wikimedia_stills: "HEALTHY and effectively unlimited. Measured bitmap holdings: Giza 9,455 / Stonehenge 3,700 / Easter Island 1,254 / Sacsayhuaman 1,057 / Pumapunku only 86. This is the backbone of the amended mix."
+    wikimedia_video: "THIN but contains genuine gems. Measured video holdings: Giza 19, Stonehenge 10, Sacsayhuaman 5, Easter Island 3, Pumapunku ZERO. Usable finds include 'Les Pyramides, 1897', 'Stonehenge.ogv', 'Sacsayhuaman Cuzco (2011)', 'Giza pyramid complex 3D flyover'. Several nominal hits are false matches on the word 'Giza' as a surname — verify every pick visually."
+    archive_org: "NOT VIABLE FOR THIS SUBJECT. Retried 2026-10-18 with collection-scoped queries as instructed. Prelinger-only yields are tiny and almost entirely irrelevant: Stonehenge 3, Easter Island 2, Egypt quarry/pyramid 2, archaeology 26, Peru/Inca 17, masonry 23 — and the titles are 20th-century American industrial and home-movie material ('Social Security Story', 'Oxydol Goes Into High', 'General Motors Around the World', World's Fair home movies). The collection is ephemeral US film; it has essentially no megalithic holdings. Only two items merit a manual look: '[Burton Holmes Travelogue]' and a 1964 'Easter Island' item."
+    archive_org_adapter_limitation: "The adapter hard-codes collections ('prelinger', 'opensource_movies', 'home_movies'); the source comment calls the override 'a future refinement'. Because opensource_movies is always OR-ed in, open queries return reupload spam (a Tadeo Jones trailer, 'luxury wine coolers'). Scoping to Prelinger alone is not reachable through the public adapter API."
+    pixabay_video: "HEALTHY, highest volume (60 hits across 3 queries). Restricted to the texture role by owner decision."
+    dareful: "Responds but relevance is weak for specific historical subjects; texture role only."
+    loc: "DOWN — HTTP 403 on search. Marked down by owner decision; DO NOT RETRY THIS RUN."
+    nara: "DOWN — search returns non-JSON. Marked down by owner decision; DO NOT RETRY THIS RUN."
+    nasa_esa: "Responds but returns nothing for non-space subjects. Expected and correct; irrelevant to this topic."
+  do_not_retry_this_run: [loc, nara]
+  licence_required_on_every_asset: true
+  rule: "Keyed and scraped stock fills gaps; it never sets the look. One unrelated clip is what makes a viewer stop trusting the piece."
+
+visual_language:
+  color_palette:
+    primary: ["#0C0C0E", "#1A1A1F"]
+    accent: ["#C08A3E", "#8A6A3B"]
+    background: "#0C0C0E"
+    text: "#EDE6D8"
+    muted: "#8A8578"
+  composition: "full-bleed archive frame with a lower-left attribution zone; map and timeline frames centred with generous margins; one claim per frame"
+  texture: "fine film grain over graded footage, paper-grain field behind document reveals, no gloss and no vignette beyond a slight natural falloff"
+
+typography:
+  headings:
+    font: "Source Serif 4"
+    weight: 600
+    tracking: "-0.005em"
+  body:
+    font: "Inter"
+    weight: 400
+    line_height: 1.5
+  code:
+    font: "JetBrains Mono"
+    weight: 400
+  stat_card:
+    font: "Source Serif 4"
+    weight: 700
+    size_multiplier: 2.8
+  scale_system: "major_third"
+  weight_matrix:
+    title: 700
+    heading: 600
+    body: 400
+    caption: 500
+
+# ── Edit rules ──────────────────────────────────────────────────────
+edit_rules:
+  transition_vocabulary:
+    default: straight_cut
+    rules:
+      - "Straight cut on meaning change. This is the default and the majority."
+      - "Cross-dissolve of 12-20 frames BETWEEN CONSECUTIVE STILLS WITHIN A BEAT only — never between a still and footage, never across a beat boundary."
+      - "Fade through black BETWEEN ACTS, timed to the music crossfade at the act boundary."
+      - "One optional grain / light-leak transition, RESERVED FOR HERO-SLOT ENTRIES. At most one per act, never two in succession."
+    forbidden: [slide, wipe, flip, push, zoom_transition, star_wipe]
+    forbidden_rule: "No slide, wipe or flip anywhere in the piece, under any circumstance."
+  cross_dissolve_frames: [12, 20]
+  act_boundary: fade_through_black
+  act_boundary_sync: "fade length matches the music crossfade (2.5s) at that boundary"
+  hero_entry_transition: grain_light_leak
+  hero_entry_budget: "optional; max one per act"
+  distinct_transition_types_max: 4
+
+motion:
+  transitions: [cut, dissolve, fade-to-black]   # at most 4 distinct types across the piece
+  animation_style: "slow ease-out, archival restraint; push-ins under 4% scale per second; no bounce, no whip, no speed ramps"
+  pacing_rules:
+    min_scene_hold_seconds: 5
+    max_scene_hold_seconds: 8
+    text_card_hold_seconds: 4
+    stat_card_hold_seconds: 4
+    transition_duration_seconds: 0.5
+  entrance: "fade from black with a 1.5% scale settle"
+  exit: "soft fade; hard cut is the default between footage slots"
+
+audio:
+  voice_style: "measured, grave, unhurried; slower on the reveal and a beat of silence after it; no hype, no upspeak"
+  music_mood: "low sustained strings and subdued drone; one motif, no drops, no percussion build"
+  music_volume: 0.07
+  sfx_style: "sparse — paper handling, distant room tone, a single low hit on an act boundary at most"
+  ducking_threshold_db: -18          # music sits 18-20 dB under narration, ducked against the narration envelope
+  bed_strategy: continuous_with_act_crossfades
+  crossfade_seconds: 2.5
+  target_lufs: -14
+  true_peak_db: -1.5
+  max_lufs_variation_between_acts: 2
+
+captions:
+  enabled: true
+  granularity: word_level
+  source_preference: ["tts_word_timestamps", "transcription_alignment"]
+  alignment_rule: "The script is the authority for spelling; the transcript is the authority for timing."
+  style:
+    position: lower_centre
+    safe_margin_pct: 8
+    max_lines: 2
+    background: "rgba(12,12,14,0.55)"
+  legibility_check: "Check burned captions over the brightest frame in the piece, not a mid-grey frame."
+
+asset_generation:
+  image_prompt_prefix: "archival documentary frame, desaturated warm neutrals, natural light, visible film grain, period-accurate, "
+  image_negative_prompt: "neon, teal and orange grade, lens flare, cgi sheen, question mark graphics, red arrows, modern drone plate, glossy, oversaturated"
+  diagram_style: "bone-on-near-black editorial diagram, thin ochre rules, serif labels, generous margins, no 3D"
+  consistency_anchors:
+    - "Near-black field with warm bone typography"
+    - "Ochre accent used only for emphasis or a traced route"
+    - "Uniform grade across mixed-era footage so cuts do not announce their source"
+    - "Attribution lives in the lower-left zone"
+
+overlays:
+  stat_card:
+    bg: "#14141A"
+    border: "#3A3630"
+    radius: 3
+    shadow: "0 2px 10px rgba(0,0,0,0.5)"
+  key_term:
+    bg: "#1F1A12"
+    text: "#C08A3E"
+    radius: 3
+  code_block:
+    bg: "#0C0C0E"
+    text: "#EDE6D8"
+    highlight: "#C08A3E"
+
+quality_rules:
+  - "Minimum contrast ratio 4.5:1 for all text against its actual backing frame"
+  - "No more than 2 accent colors on screen at once"
+  - "One claim per frame"
+  - "Cut on meaning, never on a fixed interval"
+  - "Stills never exceed 20% of slots and always carry a camera move"
+  - "At most 4 distinct transition types in the whole piece"
+  - "Every asset carries a provider, a source URL and a licence"
+  - "No date, name or figure on screen or in narration without a research-brief claim"
+  - "Report measured duration, resolution and loudness — never estimated"
+  - "A motion-led promise is never delivered as stills"
+
+chart_palette:
+  - "#C08A3E"
+  - "#8A8578"
+  - "#EDE6D8"
+  - "#6B5A3E"
+
+color_rules:
+  harmony_type: "analogous"
+  contrast_validation: true
+  colorblind_safe: true
+
+overrides:
+  max_deviation_ratio: 0.15

@@ -1,0 +1,406 @@
+{
+  "_comment": "Buildability contract. The scene-plan validator reads this to fail a slot BEFORE a render is attempted. Zod schemas in src/schemas/docComponents.ts enforce the same shape at render time; this file is the build-time half so Python tooling does not need a TypeScript step.",
+  "_why": "Run #1 reached compose with 79 slots naming graphics that had no component behind them. They were descriptions, not scenes. Nothing checked.",
+  "components": {
+    "annotated_still": {
+      "required": [
+        "image"
+      ],
+      "optional": [
+        "parallax",
+        "parallaxFrom",
+        "parallaxTo",
+        "annotations",
+        "measurement",
+        "cutaway",
+        "caption",
+        "dim",
+        "actNumber",
+        "actTitle",
+        "sceneIndex",
+        "coords",
+        "kicker",
+        "source",
+        "title"
+      ],
+      "array_item_required": {
+        "annotations": [
+          "label",
+          "x",
+          "y",
+          "reveal_at"
+        ]
+      },
+      "purpose": "default for cross-section / diagram slots \u2014 a real still with timed annotations"
+    },
+    "schematic": {
+      "required": [
+        "layers"
+      ],
+      "optional": [
+        "viewBox",
+        "reveals",
+        "labels",
+        "title",
+        "caption",
+        "actNumber",
+        "actTitle",
+        "sceneIndex",
+        "coords",
+        "kicker",
+        "source"
+      ],
+      "array_item_required": {
+        "layers": [
+          "id",
+          "kind"
+        ],
+        "reveals": [
+          "layer_id",
+          "at",
+          "effect"
+        ],
+        "labels": [
+          "text",
+          "x",
+          "y",
+          "at"
+        ]
+      },
+      "enums": {
+        "layers.kind": [
+          "path",
+          "rect",
+          "circle",
+          "line",
+          "text",
+          "polyline"
+        ],
+        "reveals.effect": [
+          "draw",
+          "fade",
+          "slide-in"
+        ],
+        "labels.level": [
+          "label",
+          "data"
+        ]
+      },
+      "purpose": "authored vector section with a timed reveal \u2014 mechanisms a photo cannot show"
+    },
+    "map_route": {
+      "required": [
+        "route"
+      ],
+      "optional": [
+        "markers",
+        "center",
+        "scale",
+        "draw_seconds",
+        "draw_at",
+        "distance_callout",
+        "title",
+        "caption",
+        "arc",
+        "actNumber",
+        "actTitle",
+        "sceneIndex",
+        "coords",
+        "kicker",
+        "source"
+      ],
+      "array_item_required": {
+        "markers": [
+          "lon",
+          "lat",
+          "label",
+          "at"
+        ]
+      },
+      "purpose": "route drawn over real geography (d3-geo + world-atlas)"
+    },
+    "timeline": {
+      "required": [
+        "events"
+      ],
+      "optional": [
+        "orientation",
+        "span",
+        "playhead",
+        "title",
+        "caption",
+        "actNumber",
+        "actTitle",
+        "sceneIndex",
+        "coords",
+        "kicker",
+        "source"
+      ],
+      "array_item_required": {
+        "events": [
+          "year",
+          "label",
+          "at"
+        ]
+      },
+      "enums": {
+        "orientation": [
+          "horizontal",
+          "vertical"
+        ]
+      },
+      "purpose": "BC/AD chronology with a moving playhead"
+    },
+    "document_reveal": {
+      "required": [
+        "lines"
+      ],
+      "optional": [
+        "headline",
+        "source",
+        "image",
+        "paper",
+        "light_sweep",
+        "sweep_at",
+        "actNumber",
+        "actTitle",
+        "sceneIndex",
+        "coords",
+        "kicker",
+        "caption"
+      ],
+      "array_item_required": {
+        "lines": [
+          "text",
+          "at"
+        ]
+      },
+      "enums": {
+        "paper": [
+          "light",
+          "dark"
+        ]
+      },
+      "purpose": "paper-grain quote reveal with a raking light sweep"
+    },
+    "text_card": {
+      "required": [
+        "text"
+      ],
+      "optional": [
+        "fontSize",
+        "color",
+        "backgroundColor"
+      ],
+      "purpose": "stock"
+    },
+    "stat_card": {
+      "required": [
+        "stat"
+      ],
+      "optional": [
+        "subtitle",
+        "accentColor"
+      ],
+      "purpose": "stock"
+    },
+    "callout": {
+      "required": [
+        "text"
+      ],
+      "optional": [
+        "callout_type",
+        "title"
+      ],
+      "purpose": "stock"
+    },
+    "comparison": {
+      "required": [
+        "leftLabel",
+        "rightLabel",
+        "leftValue",
+        "rightValue"
+      ],
+      "optional": [
+        "title"
+      ],
+      "purpose": "stock"
+    },
+    "hero_title": {
+      "required": [
+        "text"
+      ],
+      "optional": [
+        "heroSubtitle"
+      ],
+      "purpose": "stock"
+    },
+    "anime_scene": {
+      "required": [
+        "images"
+      ],
+      "optional": [
+        "particles",
+        "lightingFrom",
+        "lightingTo",
+        "vignette"
+      ],
+      "purpose": "stock \u2014 stills with particles + camera motion"
+    },
+    "section_title": {
+      "required": [
+        "text"
+      ],
+      "optional": [
+        "accentColor",
+        "position"
+      ],
+      "purpose": "stock overlay \u2014 lower third"
+    },
+    "stat_reveal": {
+      "required": [
+        "text"
+      ],
+      "optional": [
+        "subtitle",
+        "accentColor",
+        "position"
+      ],
+      "purpose": "stock overlay"
+    },
+    "bar_chart": {
+      "required": [
+        "chartData"
+      ],
+      "optional": [
+        "chartAnimation",
+        "showValues",
+        "showGrid"
+      ],
+      "purpose": "stock"
+    },
+    "line_chart": {
+      "required": [
+        "chartSeries"
+      ],
+      "optional": [
+        "chartAnimation",
+        "xLabel",
+        "yLabel"
+      ],
+      "purpose": "stock"
+    },
+    "pie_chart": {
+      "required": [
+        "chartData"
+      ],
+      "optional": [
+        "donut",
+        "centerLabel",
+        "centerValue"
+      ],
+      "purpose": "stock"
+    },
+    "kpi_grid": {
+      "required": [
+        "chartData"
+      ],
+      "optional": [
+        "title",
+        "columns"
+      ],
+      "purpose": "stock"
+    },
+    "progress_bar": {
+      "required": [
+        "progress"
+      ],
+      "optional": [
+        "progressLabel",
+        "progressColor"
+      ],
+      "purpose": "stock"
+    },
+    "act_title_card": {
+      "required": [
+        "act",
+        "title"
+      ],
+      "optional": [
+        "epigraph",
+        "image",
+        "fade_in",
+        "fade_out"
+      ],
+      "purpose": "act boundary card \u2014 the one scene with no persistent chrome, carrying its own fade in/out so it lives inside the fade-through-black at the act change"
+    },
+    "evidence_card": {
+      "required": [
+        "claim",
+        "attribution"
+      ],
+      "optional": [
+        "index",
+        "detail",
+        "status",
+        "caption",
+        "actNumber",
+        "actTitle",
+        "sceneIndex",
+        "coords",
+        "kicker",
+        "source"
+      ],
+      "enums": {
+        "status": [
+          "peer_reviewed",
+          "contested",
+          "unpublished",
+          "measured",
+          "claim"
+        ]
+      },
+      "purpose": "the citation beat \u2014 who established a thing, which no photograph can show. The status chip is what stops a contested claim reading as settled"
+    },
+    "scale_comparison": {
+      "required": [
+        "items",
+        "unit"
+      ],
+      "optional": [
+        "decimals",
+        "title",
+        "footnote",
+        "caption",
+        "at",
+        "actNumber",
+        "actTitle",
+        "sceneIndex",
+        "coords",
+        "kicker",
+        "source"
+      ],
+      "array_item_required": {
+        "items": [
+          "label",
+          "value"
+        ]
+      },
+      "min_items": {
+        "items": 2
+      },
+      "purpose": "comparative magnitude \u2014 bars plus counted figures, for the numbers narration cannot make felt. Two items minimum: one bar compares nothing"
+    }
+  },
+  "_chrome": {
+    "props": [
+      "actNumber",
+      "actTitle",
+      "sceneIndex",
+      "coords",
+      "kicker",
+      "source"
+    ],
+    "why": "The persistent frame layer. Accepted by every documentary scene type and listed in each component's `optional`, so a slot cannot invent its own furniture names."
+  }
+}

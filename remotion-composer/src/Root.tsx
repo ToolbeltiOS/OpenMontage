@@ -16,6 +16,13 @@ import { ProductReveal, ProductRevealProps } from "./components/ProductReveal";
 import { CaptionOverlay, WordCaption } from "./components/CaptionOverlay";
 import { CollageBurst, CollageBurstProps } from "./CollageBurst";
 import { LyricOverlay, LyricOverlayProps } from "./LyricOverlay";
+import {
+  DemoAnnotatedStill, DemoSchematic, DemoMapRoute, DemoTimeline, DemoDocumentReveal,
+  SlotAct4S171, SlotAct3S110, SlotAct2S078,
+} from "./DocDemos";
+import {
+  DemoActTitleCard, DemoEvidenceCard, DemoScaleComparison, DemoDocCaption, DocStyleSheet,
+} from "./DocStyle";
 
 // ---------------------------------------------------------------------------
 // Theme System — prevents every video from looking like dark fintech
@@ -135,6 +142,110 @@ const calculateMetadata: CalculateMetadataFunction<ExplainerProps> = async ({
 export const Root: React.FC = () => {
   return (
     <>
+      <Composition
+        id="DocAnnotatedStill"
+        component={DemoAnnotatedStill}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="DocSchematic"
+        component={DemoSchematic}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="DocMapRoute"
+        component={DemoMapRoute}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="DocTimeline"
+        component={DemoTimeline}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="DocDocumentReveal"
+        component={DemoDocumentReveal}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="SlotAct4S171"
+        component={SlotAct4S171}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="SlotAct3S110"
+        component={SlotAct3S110}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="SlotAct2S078"
+        component={SlotAct2S078}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="DocActTitleCard"
+        component={DemoActTitleCard}
+        durationInFrames={180}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="DocEvidenceCard"
+        component={DemoEvidenceCard}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="DocScaleComparison"
+        component={DemoScaleComparison}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="DocCaptionStyle"
+        component={DemoDocCaption}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="DocStyleSheet"
+        component={DocStyleSheet}
+        durationInFrames={90}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
       <Composition
         id="Explainer"
         component={Explainer}

@@ -17,3 +17,16 @@ export type { ParticleType } from "./ParticleOverlay";
 export type { CameraMotion, AnimeSceneProps } from "./AnimeScene";
 export type { TerminalStep } from "./TerminalScene";
 export type { ScreenshotStep, Region, Point } from "./ScreenshotScene";
+
+// wak3up-documentary component set
+export { AnnotatedStill } from "./AnnotatedStill";
+export { Schematic } from "./Schematic";
+export { MapRoute } from "./MapRoute";
+export { Timeline } from "./Timeline";
+export { DocumentReveal } from "./DocumentReveal";
+export { wak3up } from "./wak3upTheme";
+export type { AnnotatedStillProps, StillAnnotation } from "./AnnotatedStill";
+export type { SchematicProps, SchematicLayer, SchematicReveal } from "./Schematic";
+export type { MapRouteProps, MapMarker } from "./MapRoute";
+export type { TimelineProps, TimelineEvent } from "./Timeline";
+export type { DocumentRevealProps, DocumentLine } from "./DocumentReveal";

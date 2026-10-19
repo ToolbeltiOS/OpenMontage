@@ -20,6 +20,10 @@ import { PieChart } from "./components/charts/PieChart";
 import { KPIGrid } from "./components/charts/KPIGrid";
 import { ProgressBar } from "./components/ProgressBar";
 import { CaptionOverlay, WordCaption } from "./components/CaptionOverlay";
+import { DocCaption } from "./design/DocCaption";
+import { ActTitleCard } from "./scenes/ActTitleCard";
+import { EvidenceCard } from "./scenes/EvidenceCard";
+import { ScaleComparison } from "./scenes/ScaleComparison";
 import { SectionTitle } from "./components/SectionTitle";
 import { StatReveal } from "./components/StatReveal";
 import { HeroTitle } from "./components/HeroTitle";
@@ -28,6 +32,11 @@ import type { CameraMotion } from "./components/AnimeScene";
 import { TerminalScene } from "./components/TerminalScene";
 import type { TerminalStep } from "./components/TerminalScene";
 import { ScreenshotScene } from "./components/ScreenshotScene";
+import { AnnotatedStill } from "./components/AnnotatedStill";
+import { Schematic } from "./components/Schematic";
+import { MapRoute } from "./components/MapRoute";
+import { Timeline } from "./components/Timeline";
+import { DocumentReveal } from "./components/DocumentReveal";
 import type { ScreenshotStep } from "./components/ScreenshotScene";
 import { ProviderChip } from "./components/ProviderChip";
 import { resolveAsset } from "./lib/resolveAsset";
@@ -228,6 +237,58 @@ interface Cut {
   progressSegments?: any[];
   // Hero title props (when used as scene, not overlay)
   heroSubtitle?: string;
+  // wak3up-documentary component props
+  annotations?: any[];
+  measurement?: any;
+  cutaway?: any;
+  caption?: string;
+  parallax?: boolean;
+  layers?: any[];
+  reveals?: any[];
+  labels?: any[];
+  viewBox?: string;
+  route?: [number, number][];
+  markers?: any[];
+  center?: [number, number];
+  scale?: number;
+  draw_seconds?: number;
+  draw_at?: number;
+  distance_callout?: any;
+  arc?: boolean;
+  events?: any[];
+  orientation?: "horizontal" | "vertical";
+  span?: [number, number];
+  playhead?: boolean;
+  headline?: string;
+  lines?: any[];
+  sourceLine?: string;
+  paper?: "light" | "dark";
+  light_sweep?: boolean;
+  sweep_at?: number;
+  dim?: number;
+  // Persistent frame layer — carried by every documentary scene
+  actNumber?: string;
+  actTitle?: string;
+  sceneIndex?: string;
+  coords?: string;
+  kicker?: string;
+  // act_title_card
+  act?: string;
+  epigraph?: string;
+  fade_in?: number;
+  fade_out?: number;
+  // evidence_card
+  claim?: string;
+  attribution?: string;
+  detail?: string;
+  status?: "peer_reviewed" | "contested" | "unpublished" | "measured" | "claim";
+  index?: string;
+  // scale_comparison
+  items?: any[];
+  unit?: string;
+  decimals?: number;
+  footnote?: string;
+  at?: number;
   // Styling overrides
   backgroundColor?: string;
   cardBackgroundColor?: string; // Inner card surface (comparison); defaults to theme.surfaceColor
@@ -305,6 +366,12 @@ export interface ExplainerProps {
   overlays?: Overlay[];
   captions?: WordCaption[];
   audio?: AudioConfig;
+  /**
+   * Caption register. "karaoke" is the stock word-highlight overlay; the
+   * documentary playbook uses "documentary" — whole phrases, unhighlighted,
+   * over a scrim. See src/design/DocCaption.tsx for why.
+   */
+  caption_style?: "karaoke" | "documentary";
 }
 
 // ---------------------------------------------------------------------------
@@ -588,6 +655,60 @@ const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut, theme 
   const accent = cut.accentColor || theme.accentColor;
 
   // Explicit component types — use theme-derived defaults for colors
+  // ── wak3up-documentary components ───────────────────────────────
+  // The persistent frame layer. Every documentary scene carries the same
+  // dossier furniture, so it is lifted out of the per-type branches.
+  const chrome = {
+    actNumber: cut.actNumber,
+    actTitle: cut.actTitle,
+    sceneIndex: cut.sceneIndex,
+    coords: cut.coords,
+    kicker: cut.kicker,
+    source: cut.sourceLine,
+  };
+
+  if (cut.type === "annotated_still" && cut.backgroundImage) {
+    return (<AnnotatedStill image={cut.backgroundImage} parallax={cut.parallax}
+      annotations={cut.annotations} measurement={cut.measurement}
+      cutaway={cut.cutaway} caption={cut.caption} title={cut.title} dim={cut.dim} {...chrome} />);
+  }
+  if (cut.type === "schematic" && cut.layers) {
+    return (<Schematic viewBox={cut.viewBox} layers={cut.layers} reveals={cut.reveals}
+      labels={cut.labels} title={cut.title} caption={cut.caption} {...chrome} />);
+  }
+  if (cut.type === "map_route" && cut.route) {
+    return (<MapRoute route={cut.route} markers={cut.markers} center={cut.center}
+      scale={cut.scale} draw_seconds={cut.draw_seconds} draw_at={cut.draw_at}
+      distance_callout={cut.distance_callout} title={cut.title} caption={cut.caption}
+      arc={cut.arc} {...chrome} />);
+  }
+  if (cut.type === "timeline" && cut.events) {
+    return (<Timeline events={cut.events} orientation={cut.orientation} span={cut.span}
+      playhead={cut.playhead} title={cut.title} caption={cut.caption} {...chrome} />);
+  }
+  if (cut.type === "document_reveal" && cut.lines) {
+    return (<DocumentReveal headline={cut.headline} lines={cut.lines} source={cut.sourceLine}
+      image={cut.backgroundImage} paper={cut.paper} light_sweep={cut.light_sweep}
+      sweep_at={cut.sweep_at} caption={cut.caption} kicker={cut.kicker}
+      actNumber={cut.actNumber} actTitle={cut.actTitle} sceneIndex={cut.sceneIndex}
+      coords={cut.coords} />);
+  }
+  if (cut.type === "act_title_card" && cut.act && cut.title) {
+    return (<ActTitleCard act={cut.act} title={cut.title} epigraph={cut.epigraph}
+      image={cut.backgroundImage} fade_in={cut.fade_in} fade_out={cut.fade_out} />);
+  }
+  if (cut.type === "evidence_card" && cut.claim && cut.attribution) {
+    return (<EvidenceCard index={cut.index} claim={cut.claim} attribution={cut.attribution}
+      detail={cut.detail} status={cut.status} caption={cut.caption}
+      actNumber={cut.actNumber} actTitle={cut.actTitle} sceneIndex={cut.sceneIndex}
+      source={cut.sourceLine} />);
+  }
+  if (cut.type === "scale_comparison" && cut.items && cut.unit) {
+    return (<ScaleComparison items={cut.items} unit={cut.unit} decimals={cut.decimals}
+      title={cut.title} footnote={cut.footnote} caption={cut.caption} at={cut.at}
+      actNumber={cut.actNumber} actTitle={cut.actTitle} sceneIndex={cut.sceneIndex}
+      kicker={cut.kicker} source={cut.sourceLine} />);
+  }
   if (cut.type === "text_card" && cut.text) {
     return maybeWrapWithBg(
       <TextCard text={cut.text} fontSize={cut.fontSize} color={textColor} backgroundColor={bgColor} />
@@ -833,6 +954,7 @@ const OverlayRenderer: React.FC<{ overlay: Overlay; theme: ThemeConfig }> = ({
 
 export const Explainer: React.FC<ExplainerProps> = (props) => {
   const { cuts, overlays, captions, audio } = props;
+  const captionStyle = props.caption_style ?? "karaoke";
   const { fps, durationInFrames } = useVideoConfig();
 
   // Resolve theme from props — playbook name, theme name, or custom themeConfig
@@ -870,7 +992,10 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
       })}
 
       {/* Layer 3: Captions (word-by-word highlight) */}
-      {captions && captions.length > 0 && (
+      {captions && captions.length > 0 && captionStyle === "documentary" && (
+        <DocCaption words={captions} />
+      )}
+      {captions && captions.length > 0 && captionStyle !== "documentary" && (
         <CaptionOverlay
           words={captions}
           wordsPerPage={6}
