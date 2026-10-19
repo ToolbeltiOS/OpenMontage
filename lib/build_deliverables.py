@@ -59,10 +59,26 @@ def main() -> int:
     a = next((s for s in info["streams"] if s["codec_type"] == "audio"), None)
     duration = float(info["format"]["duration"])
 
-    # thumbnail: a frame from the act 4 Sacsayhuaman material, not frame 0
+    # Thumbnail. Not pulled from the finished film: narration captions are on
+    # screen for almost its whole length (DocCaption holds a page until the
+    # next one starts), and a thumbnail carrying a half-sentence of subtitle is
+    # a worse picture than the shot underneath it. It is rendered from the
+    # SlotPreview composition instead, which has no caption layer — the
+    # Sacsayhuaman joint with its contact line annotated, which is the film's
+    # argument in one frame.
     thumb = os.path.join(DEST, "thumbnail.jpg")
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", "1130", "-i", final,
-                    "-frames:v", "1", "-q:v", "2", thumb], check=True)
+    slot_props = os.environ.get("THUMBNAIL_PROPS")
+    if slot_props and os.path.exists(slot_props):
+        png = os.path.join(DEST, ".thumb.png")
+        subprocess.run(["npx", "remotion", "still", "SlotPreview", png,
+                        "--frame=170", f"--props={slot_props}", "--log=error"],
+                       check=True, cwd=os.path.join(ROOT, "remotion-composer"))
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", png, "-q:v", "2", thumb],
+                       check=True)
+        os.remove(png)
+    else:
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", "1130", "-i", final,
+                        "-frames:v", "1", "-q:v", "2", thumb], check=True)
 
     ed = json.load(open(os.path.join(ART, "edit_decisions.json"), encoding="utf-8"))
     am = json.load(open(os.path.join(ART, "asset_manifest.json"), encoding="utf-8"))
@@ -118,6 +134,10 @@ def main() -> int:
             "block": credits,
             "music": [b["track"] for b in ed["music"]["beds"]],
             "narration": "Kokoro-82M (bm_george), run locally. No paid API was used.",
+        },
+        "thumbnail": {
+            "source": "SlotPreview render of act4_s177 (Sacsayhuam\u00e1n joint)",
+            "why": "frames taken from the film carry burned-in narration captions",
         },
         "measured": {
             "duration_seconds": round(duration, 2),
