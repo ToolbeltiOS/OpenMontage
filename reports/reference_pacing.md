@@ -130,7 +130,10 @@ counts are lower bounds. The two Barely Sociable rows are measured from word
 onsets inside an automatic track and are exact to a word.
 
 Run #1 has **thirteen seconds** of air in twenty minutes, and never stops
-talking for longer than 2.8 seconds. Even Fall of Civilizations, the most
+talking for longer than 2.8 seconds. Measured a second way — acoustically, off
+the delivered narration track rather than off the captions — it holds 15.4
+seconds in gaps of 1.5s or longer, across 7 gaps, the longest 2.25s. Two
+instruments, the same answer. Even Fall of Civilizations, the most
 wall-to-wall narrated reference, leaves twice as much. Barely Sociable leaves
 five to six minutes.
 
@@ -209,13 +212,67 @@ Fall of Civilizations and run #1 at 30. Chapter counts run 0–15 (ours: 6).
 
 ## 6. On-screen text density
 
-*(measurement running — tesseract at 1 fps across all six references; this
-section and §7 are filled from `measure.json` when it completes)*
+Tesseract in sparse-text mode, one frame per second, confident words only.
+
+| reference | seconds with any text | with 3+ words | mean area when present |
+|---|---|---|---|
+| LEMMiNO — Cicada | 70.5% | 54.5% | 4.3% |
+| LEMMiNO — Apocalypse | 66.2% | 46.7% | 3.1% |
+| Barely Sociable — Book | 66.4% | 56.1% | 7.7% |
+| Barely Sociable — Antarctica | 70.4% | 62.1% | 11.5% |
+| FoC — opening | 43.1% | 8.2% | 1.3% |
+| FoC — closing | 50.1% | 18.7% | 1.3% |
+
+Two registers, cleanly separated. The two mystery channels keep text on screen
+about two-thirds of the time, and half the film carries a full phrase: these
+are films built on documents, screenshots, headlines and annotated evidence,
+and the text *is* the evidence. Fall of Civilizations is the opposite — text
+appears for chapter furniture and quotations and almost never as three or more
+words, because its evidence is spoken and its pictures are places.
+
+Our register is the second one, and run #1 is closer to neither: it burns
+word-level captions for the whole film, so text is on screen for 99.4% of the
+runtime, at a size and position that never changes. That is not a text density,
+it is a subtitle track rendered into the picture — which is what §8 of the
+brief's step 18 removes.
+
+OCR cannot tell a burnt-in caption from a title card, so these figures count
+both. For the two Barely Sociable rows the larger mean area is real: its
+headline cards are full-frame.
 
 ## 7. Graphics / archive / footage ratio
 
-*(measurement running — CLIP zero-shot per shot crossed with inter-frame
-motion)*
+CLIP zero-shot on one frame per shot, crossed with motion measured over a
+quarter second in the middle of the shot. A shot classified as footage but not
+moving is a photograph held on screen, and is counted as archive.
+
+| reference | graphics | archive | footage | moving shots |
+|---|---|---|---|---|
+| LEMMiNO — Cicada | 61.0% | 17.1% | 22.0% | 58.5% |
+| LEMMiNO — Apocalypse | 52.5% | 7.5% | 40.0% | 100% |
+| Barely Sociable — Book | 61.9% | 36.5% | 1.6% | 60.3% |
+| Barely Sociable — Antarctica | 41.2% | 52.9% | 5.9% | 38.2% |
+| FoC — opening | 7.6% | 35.1% | 57.3% | 68.1% |
+| FoC — closing | 5.5% | 30.8% | 63.7% | 78.0% |
+| **ours, planned** | 30–40% | 40–45% (stills) | 15–25% | — |
+
+The two channels in our register are **graphics-led**: a little over half of
+every film is authored — diagrams, maps, text cards, document reveals — with
+archive stills carrying most of the rest and almost no live footage at all.
+Barely Sociable's Book film is 1.6% footage. Fall of Civilizations inverts it
+completely, because it can afford commissioned art and location filming.
+
+Run #1's amended mix (30–40% graphics, 40–45% stills, 15–25% footage) is
+already close to the LEMMiNO/Barely Sociable shape, and the direction of the
+remaining gap is toward *more* authored graphics rather than more footage. The
+2026-10-18 amendment that cut the footage target from 55–75% to 15–25%, made
+because the keyless archives hold stills rather than film, turns out to match
+what the comparable channels actually do.
+
+Caveats: CLIP's buckets are coarse, and the shot counts come from the detector
+described in §1, so the per-reference *shot counts* carry its error even though
+the ratios are stable across it. LEMMiNO's 100% moving figure on Apocalypse is
+real — that film is almost entirely animated graphics.
 
 ---
 
