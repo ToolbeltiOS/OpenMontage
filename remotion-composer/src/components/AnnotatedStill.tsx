@@ -130,7 +130,7 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
       coords={coords}
     >
       <AbsoluteFill style={{ transform: `scale(${scale}) translateX(${drift * 100}%)` }}>
-        <Graded>
+        <Graded act={actNumber}>
           <Img src={resolveAsset(image)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </Graded>
       </AbsoluteFill>

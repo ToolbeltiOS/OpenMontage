@@ -136,12 +136,12 @@ export const BeforeAfter: React.FC<BeforeAfterProps> = ({
     >
       <AbsoluteFill style={{ backgroundColor: SYS.bg, overflow: "hidden" }}>
         <AbsoluteFill style={{ transform: `scale(${scale})` }}>
-          <Graded strength={1}>
+          <Graded strength={1} act={actNumber}>
             <Plate src={before} />
           </Graded>
           {/* the later plate, clipped to the left of the divider */}
           <AbsoluteFill style={{ clipPath: `inset(0 ${(1 - p) * 100}% 0 0)` }}>
-            <Graded strength={1}>
+            <Graded strength={1} act={actNumber}>
               <Plate src={after} />
             </Graded>
           </AbsoluteFill>

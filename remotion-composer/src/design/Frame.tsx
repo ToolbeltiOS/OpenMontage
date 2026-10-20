@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig, random, Easing } from "remotion";
-import { SYS, TYPE, TRACK, GRADE, EXPO_OUT, LAYOUT, SHADOW } from "./system";
+import { SYS, TYPE, TRACK, GRADE, EXPO_OUT, LAYOUT, SHADOW, gradeForAct } from "./system";
 
 export interface DataStripProps {
   /** top-left: act number + act title */
@@ -322,10 +322,20 @@ export const FrameLayer: React.FC<FrameLayerProps> = ({
  * marginally richer and cost about four times the render time — a measured
  * 1.0fps against 3.8fps, with single frames exceeding the 180s timeout.
  */
-export const Graded: React.FC<{ children: React.ReactNode; strength?: number }> = ({
-  children,
-  strength = 1,
-}) => (
+export const Graded: React.FC<{
+  children: React.ReactNode;
+  strength?: number;
+  /**
+   * Act number or section id. The film keeps one grade; this shifts its
+   * temperature, saturation and lift by the act's own offsets, so a Greek
+   * ridge and an Egyptian quarry are not the same colour. Photographic
+   * material only — authored graphics are never wrapped in Graded and so
+   * keep the base palette.
+   */
+  act?: string | number;
+}> = ({ children, strength = 1, act }) => {
+  const g = gradeForAct(act);
+  return (
   <AbsoluteFill>
     <AbsoluteFill
       style={{
@@ -335,7 +345,7 @@ export const Graded: React.FC<{ children: React.ReactNode; strength?: number }> 
         // darkening it was doing is done by the flat wash below instead, which
         // is one cheap paint and achieves the same thing.
         filter:
-          `saturate(${1 - (1 - GRADE.saturation) * strength}) ` +
+          `saturate(${1 - (1 - g.saturation) * strength}) ` +
           `contrast(${1 + (GRADE.contrast - 1) * strength})`,
       }}
     >
@@ -354,10 +364,19 @@ export const Graded: React.FC<{ children: React.ReactNode; strength?: number }> 
       * sits several stops from the authored scenes it cuts against, which is
       * the one thing the grade exists to prevent.
       */}
+    {/* the act's temperature: one wash, warm or cool, never both */}
+    <AbsoluteFill
+      style={{
+        background: g.temperature >= 0 ? GRADE.warmHighlights : GRADE.coolShadows,
+        opacity: Math.abs(g.temperature) * strength,
+        mixBlendMode: "screen",
+      }}
+    />
     <AbsoluteFill style={{ background: "#07070A", opacity: 0.15 * strength }} />
-    <AbsoluteFill style={{ background: GRADE.lift, opacity: 0.05 * strength }} />
+    <AbsoluteFill style={{ background: GRADE.lift, opacity: g.lift * strength }} />
   </AbsoluteFill>
-);
+  );
+};
 
 /** Three-plane background: treated plate behind the subject. */
 export const Plate: React.FC<{ image?: string; children?: React.ReactNode }> = ({ image, children }) => (

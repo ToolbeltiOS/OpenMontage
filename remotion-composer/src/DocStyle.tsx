@@ -8,7 +8,7 @@ import { ScaleComparison } from "./scenes/ScaleComparison";
 import { DocCaption } from "./design/DocCaption";
 import { SceneShell } from "./design/Scene";
 import { Graded } from "./design/Frame";
-import { SYS, TYPE, TRACK, LAYOUT, GRADE, EXPO_OUT, EXPO_IN_OUT } from "./design/system";
+import { SYS, TYPE, TRACK, SHADOW, LAYOUT, GRADE, EXPO_OUT, EXPO_IN_OUT } from "./design/system";
 import type { WordCaption } from "./components/CaptionOverlay";
 
 /* ─────────────────────── the three new scene types ──────────────────────── */
@@ -69,6 +69,38 @@ export const DemoBeforeAfter: React.FC = () => (
     sceneIndex="S 118 / ASWAN"
     source="Wikimedia Commons, CC BY-SA 4.0"
   />
+);
+
+/**
+ * The same plate under three act grades, so the per-act offsets can be judged
+ * side by side rather than described. Act 2 is the coolest and flattest, act 3
+ * the warmest, act 4 the most lifted.
+ */
+export const DemoActGrades: React.FC = () => (
+  <AbsoluteFill style={{ flexDirection: "row", background: SYS.bg }}>
+    {(["act2", "act3", "act4"] as const).map((act) => (
+      <div key={act} style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+        <Graded act={act}>
+          <Img
+            // the hero plate rather than the joint: the offsets are deliberately
+            // small, and on a grey stone face they are invisible even when they
+            // are working
+            src={staticFile("doc/outro_hero.jpg")}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        </Graded>
+        <div
+          style={{
+            position: "absolute", left: 24, bottom: 24,
+            fontFamily: SYS.label, fontSize: TYPE.labelSm, letterSpacing: TRACK,
+            color: SYS.text, textShadow: SHADOW, opacity: 0.85,
+          }}
+        >
+          {act.toUpperCase()}
+        </div>
+      </div>
+    ))}
+  </AbsoluteFill>
 );
 
 /** The citation beat, bound to ledger entry c38. */

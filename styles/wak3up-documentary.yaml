@@ -447,6 +447,36 @@ visual_language:
   composition: "full-bleed archive frame with a lower-left attribution zone; map and timeline frames centred with generous margins; one claim per frame"
   texture: "fine film grain over graded footage, paper-grain field behind document reveals, no gloss and no vignette beyond a slight natural falloff"
 
+  # ── per-act grade (ADDED 2026-10-20) ──────────────────────────────────
+  # The uniform grade stays: it is what stops a cut between an 1890s plate and
+  # a modern photograph announcing its source. What it could not do is give an
+  # act a temperature of its own, so run #1's four acts looked identical even
+  # though they are set on a Greek ridge, a Pacific island, an Egyptian quarry
+  # and four unresolved sites.
+  #
+  # These are OFFSETS on the base grade, not replacements. They apply to
+  # photographic material only — stills, footage, treated plates. Authored
+  # graphics keep the base palette and get it structurally, because a
+  # schematic or a timeline is never wrapped in the grade wrapper: an ochre
+  # rule that shifts warm in act 3 reads as a rendering fault.
+  #
+  # temperature is the opacity of a warm wash; negative is the cool one.
+  grade_by_act:
+    cold_open: {temperature: -0.05, saturation: 0.80, lift: 0.07}   # the Pacific, open and cold
+    act1:      {temperature:  0.02, saturation: 0.88, lift: 0.05}   # Tiryns, nearest the base look
+    act2:      {temperature: -0.04, saturation: 0.82, lift: 0.06}   # the quarry and the sea route
+    act3:      {temperature:  0.08, saturation: 0.90, lift: 0.04}   # Aswan granite, the warmest act
+    act4:      {temperature: -0.02, saturation: 0.78, lift: 0.09}   # the open cases; the film drops here
+    outro:     {temperature:  0.03, saturation: 0.86, lift: 0.05}
+  grade_rules:
+    - "Offsets only. The band is narrow on purpose — a viewer should not be
+       able to name the change, only notice that act 3 is hotter."
+    - "Photographic material only. Authored graphics keep the base palette."
+    - "One wash per act, warm or cool, never both."
+    - "The table lives in remotion-composer/src/design/system.ts as
+       GRADE_BY_ACT; this block is the statement of intent, that is the
+       implementation, and a test pins them together."
+
 typography:
   headings:
     font: "Source Serif 4"

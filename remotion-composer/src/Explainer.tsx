@@ -962,7 +962,7 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
   const dress = (el: React.ReactElement): React.ReactElement =>
     inDocumentary ? (
       <AbsoluteFill>
-        <Graded>{el}</Graded>
+        <Graded act={cut.actNumber}>{el}</Graded>
         <FrameLayer
           actNumber={cut.actNumber}
           actTitle={cut.actTitle}

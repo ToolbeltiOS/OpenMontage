@@ -67,7 +67,7 @@ export const ActTitleCard: React.FC<ActTitleCardProps> = ({
       <AbsoluteFill style={{ opacity: o }}>
         <AbsoluteFill style={{ transform: `scale(${scale})` }}>
           {image ? (
-            <Graded strength={1.25}>
+            <Graded strength={1.25} act={act}>
               <AbsoluteFill
                 style={{
                   backgroundImage: `url(${image})`,

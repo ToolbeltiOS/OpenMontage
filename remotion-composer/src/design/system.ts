@@ -127,5 +127,62 @@ export const tokens = {
   },
 } as const;
 
+/**
+ * PER-ACT GRADE.
+ *
+ * One uniform grade across the film makes a cut between a 1890s plate and a
+ * modern photograph stop announcing its source — that is what GRADE above is
+ * for, and it stays. What it cannot do is let an act have a temperature of
+ * its own, so run #1's four acts looked identical even though they are set on
+ * a Greek ridge, a Pacific island, an Egyptian quarry and four unresolved
+ * sites.
+ *
+ * These are offsets on top of the base grade, not replacements: the film's
+ * look is still one look. They apply to PHOTOGRAPHIC material only —
+ * stills, footage, treated plates. Authored graphics keep the base palette,
+ * because an ochre rule that shifts warm in act 3 reads as a rendering bug,
+ * and they get it structurally: a schematic or a timeline is never wrapped in
+ * <Graded>.
+ *
+ * `temperature` is the opacity of a warm wash; negative is the cool one.
+ */
+export type ActGrade = {
+  temperature: number;
+  saturation: number;
+  lift: number;
+};
+
+export const GRADE_BY_ACT: Record<string, ActGrade> = {
+  // Rapa Nui at the edge of the Pacific — cool, open, the least saturated
+  cold_open: { temperature: -0.05, saturation: 0.80, lift: 0.07 },
+  // Tiryns and Mycenae: dry stone on a Greek ridge, close to the base look
+  act1: { temperature: 0.02, saturation: 0.88, lift: 0.05 },
+  // the quarry and the sea route — cooler again, and the flattest
+  act2: { temperature: -0.04, saturation: 0.82, lift: 0.06 },
+  // Aswan granite under an Egyptian sun: the warmest act in the film
+  act3: { temperature: 0.08, saturation: 0.90, lift: 0.04 },
+  // the cases nobody has closed; the film drops here and ends almost quiet
+  act4: { temperature: -0.02, saturation: 0.78, lift: 0.09 },
+  outro: { temperature: 0.03, saturation: 0.86, lift: 0.05 },
+};
+
+export const BASE_ACT_GRADE: ActGrade = {
+  temperature: 0,
+  saturation: GRADE.saturation,
+  lift: 0.05,
+};
+
+/**
+ * The grade for an act, by section id ("act2") or by the chrome's act number
+ * ("02"). The keys match the playbook's `visual_language.grade_by_act`
+ * exactly, so the two tables can be compared by a test instead of by eye.
+ */
+export const gradeForAct = (act?: string | number): ActGrade => {
+  if (act === undefined || act === null) return BASE_ACT_GRADE;
+  let key = String(act).trim().toLowerCase();
+  if (/^\d+$/.test(key)) key = `act${parseInt(key, 10)}`;
+  return GRADE_BY_ACT[key] ?? BASE_ACT_GRADE;
+};
+
 /** Stagger helper: nth element enters this many frames late. */
 export const stagger = (n: number) => n * SYS.stagger;

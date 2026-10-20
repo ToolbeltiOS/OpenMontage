@@ -102,6 +102,43 @@
         },
         "texture": {
           "type": "string"
+        },
+        "grade_by_act": {
+          "type": "object",
+          "description": "Per-act offsets on the base grade, applied to photographic material only. Authored graphics keep the base palette.",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "temperature",
+              "saturation",
+              "lift"
+            ],
+            "properties": {
+              "temperature": {
+                "type": "number",
+                "minimum": -0.25,
+                "maximum": 0.25,
+                "description": "Opacity of a warm wash; negative is the cool one."
+              },
+              "saturation": {
+                "type": "number",
+                "minimum": 0.5,
+                "maximum": 1.2
+              },
+              "lift": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 0.3
+              }
+            }
+          }
+        },
+        "grade_rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "additionalProperties": false
