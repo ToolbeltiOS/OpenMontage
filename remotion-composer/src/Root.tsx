@@ -25,6 +25,7 @@ import {
   DemoEvidenceCard, DemoScaleComparison, DemoDocCaption, DocStyleSheet,
 } from "./DocStyle";
 import { SlotPreview, SlotPreviewProps } from "./SlotPreview";
+import { CssLook, FilmLook } from "./FilmLook";
 import { OutroCta } from "./components/OutroCta";
 
 // ---------------------------------------------------------------------------
@@ -168,6 +169,24 @@ export const Root: React.FC = () => {
         fps={30}
         width={1920}
         height={1080}
+      />
+      <Composition
+        id="FilmLookOnly"
+        component={FilmLook}
+        durationInFrames={300}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{ src: "doc/outro_hero.jpg", act: "act3", isStill: true }}
+      />
+      <Composition
+        id="CssLookOnly"
+        component={CssLook}
+        durationInFrames={300}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{ src: "doc/outro_hero.jpg", act: "act3" }}
       />
       <Composition
         id="DocGlobeDescent"
