@@ -135,9 +135,16 @@ def main() -> int:
     edit = json.loads(edit_path.read_text())
     cuts = edit["cuts"] if isinstance(edit, dict) else edit
 
+    from verify_frame_motion import check as check_motion
     from verify_rhythm import check as check_rhythm
 
     problems, measured = check_rhythm(cuts)
+
+    # Does the picture actually move? Everything else here measures the plan
+    # or the container; this decodes the film. The act 2 demo passed every
+    # other check in this file while frozen for 51% of its running time.
+    motion_problems, motion = check_motion(str(film))
+    problems.extend(motion_problems)
     acts = act_histograms(cuts)
     energy = energy_curve(film)
     duration = ffprobe_duration(film)
@@ -207,6 +214,19 @@ def main() -> int:
 
     lines += [
         "",
+        "## Frame motion",
+        "",
+        f"{motion['duplicate_pairs_pct']}% of consecutive frame pairs are "
+        f"identical; mean frame difference {motion['mean_frame_difference']}; "
+        f"timestamps {'constant' if motion['timestamps_constant'] else '**irregular**'}.",
+        "",
+    ]
+    if motion["freezes"]:
+        lines += ["| at | frames | seconds |", "|---|---|---|"]
+        lines += [f"| {f['start_seconds']}s | {f['frames']} | {f['seconds']}s |"
+                  for f in motion["freezes"][:20]]
+        lines.append("")
+    lines += [
         "## Energy",
         "",
         f"Median level {energy['median_dbfs']} dBFS; the quietest 15% of the "

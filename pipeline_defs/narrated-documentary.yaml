@@ -407,6 +407,16 @@ stages:
         sidecar SRT, not a burn
       - No silent fallback from the approved visual promise
     gate_commands:
+      - name: frame_motion
+        run: "python3 lib/verify_frame_motion.py {renders}/final.mp4"
+        blocking: true
+        why: >
+          No run of more than two identical consecutive frames outside a
+          planned hold on black, and strictly constant timestamps. The act 2
+          demo passed every other check — right frame count, constant frame
+          rate, every timestamp exactly 1/30 apart, rhythm gate green — while
+          its picture was frozen for 51% of its running time, because nothing
+          in the pipeline compared one frame to the next.
       - name: captions
         run: "python3 lib/captions_srt.py {artifacts}/render_props.json {artifacts}/captions.en.srt"
         blocking: true

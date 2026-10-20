@@ -23,6 +23,10 @@ Per-minute cuts: `8 4`
 |---|---|---|---|---|
 | 2 | 13 | 89.8s | 6.91s | 12-20s ×1, 2-4s ×3, 4-6s ×1, 6-8s ×5, 8-12s ×3 |
 
+## Frame motion
+
+0.1% of consecutive frame pairs are identical; mean frame difference 1.2697; timestamps constant.
+
 ## Energy
 
 Median level -120.0 dBFS; the quietest 15% of the film sits at or below -120.0 dBFS, 90.5s in total.

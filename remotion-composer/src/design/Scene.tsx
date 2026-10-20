@@ -142,6 +142,23 @@ export const SourceCaption: React.FC<{
   );
 };
 
+/**
+ * How far an authored scene drifts across its own hold, as a fraction of the
+ * frame. Small enough that a viewer cannot name it; large enough that the
+ * picture is never the same two frames running.
+ *
+ * WHY THIS EXISTS. The playbook has always required a move on every still —
+ * "a static hold at this share reads as a slideshow immediately" — and
+ * authored graphics were exempt, because in run #1 they were held 6-8s and
+ * their own reveals covered most of that. Under beat-aware holds they are
+ * held 8-15.5s, the reveals finish early, and the rest is a frozen frame:
+ * measured at 90-95% duplicate frames per authored cut, with one run of 341
+ * identical frames — 11.4 seconds — inside a 15.5s reveal. The exemption was
+ * the bug.
+ */
+const AUTHORED_DRIFT = 0.030;
+const AUTHORED_SCALE = 1.045;
+
 export interface SceneShellProps extends Partial<FrameLayerProps> {
   children?: React.ReactNode;
   /** blurred backdrop image for the third plane; omit for the gradient plate */
@@ -156,6 +173,12 @@ export interface SceneShellProps extends Partial<FrameLayerProps> {
   caption_at?: number;
   /** turn off all persistent chrome (used by the act title cards) */
   chrome?: boolean;
+  /**
+   * The slow sustaining move under the scene's own animation. On by default:
+   * a scene that stops moving when its reveals finish is a frozen frame, and
+   * nothing downstream can tell that apart from a dropped frame.
+   */
+  sustain?: boolean;
   /**
    * Light-plate chrome. The paper scenes invert: the hairline, the data strip
    * and the caption all take the paper's ink instead of the film's off-white.
@@ -180,8 +203,25 @@ export const SceneShell: React.FC<SceneShellProps> = ({
   caption_at = 0.6,
   chrome = true,
   paperInk = false,
+  sustain = true,
   ...frameProps
 }) => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  // Linear, not eased: an eased drift spends its last seconds almost
+  // stationary, which is the state being fixed.
+  const progress = durationInFrames > 1 ? frame / (durationInFrames - 1) : 0;
+  const sustainStyle: React.CSSProperties = sustain
+    ? {
+        transform: `translateZ(0) scale(${1 + (AUTHORED_SCALE - 1) * progress}) `
+          + `translateX(${AUTHORED_DRIFT * (progress - 0.5) * 100}%)`,
+        // translateZ(0) and will-change force this onto its own composited
+        // layer. Without them a slow transform is rasterised with pixel
+        // snapping: the scene sits still for several frames and then jumps,
+        // which is the stutter rather than a cure for it.
+        willChange: "transform",
+      }
+    : {};
   const ink = paperInk
     ? {
         rule: "rgba(36,31,24,0.30)",
@@ -194,7 +234,9 @@ export const SceneShell: React.FC<SceneShellProps> = ({
   return (
   <AbsoluteFill style={{ backgroundColor: background ?? SYS.bg, overflow: "hidden" }}>
     {background ? null : <Plate image={plate} />}
-    {children}
+    {/* The scene drifts; the chrome does not. Moving the furniture would make
+        the frame edge and the data strips crawl. */}
+    <AbsoluteFill style={sustainStyle}>{children}</AbsoluteFill>
     {chrome ? (
       <>
         <FrameLayer {...frameProps} ink={ink} vignette={!paperInk && frameProps.vignette !== false} />

@@ -259,6 +259,10 @@ rhythm:
       # references it is always a shot with motion inside it — an orbit, a
       # scrolling document, an animated diagram. The long hold is earned by
       # internal movement, not granted by the beat type.
+      # SUSTAINED motion, not "animates at some point". A schematic that
+      # draws itself in three seconds and then holds for twelve is a frozen
+      # frame for twelve seconds, and a freeze is indistinguishable from a
+      # dropped frame to a viewer.
       long_hold_requires: internal_motion
       internal_motion_treatments:
         - authored_graphic_with_timed_reveals
@@ -346,6 +350,17 @@ visual_cadence:
       transition: 3.5
     no_consecutive_same_source: true # two stills in a row may not come from the same provider
     max_consecutive_stills: 2        # a motion slot must break any run of two
+    # AUTHORED GRAPHICS ARE NO LONGER EXEMPT (2026-10-20). This rule has
+    # always applied to stills — "a static hold at this share reads as a
+    # slideshow immediately" — and authored graphics were outside it, because
+    # under run #1's 6-8s holds their own reveals covered most of the shot.
+    # Under beat-aware holds they are held 8-15.5s, the reveals finish early,
+    # and the rest is a frozen frame: measured at 90-95% duplicate frames per
+    # authored cut, with 341 identical frames — 11.4 seconds — inside one
+    # 15.5s reveal. Every authored scene now carries a slow sustaining move
+    # (design/Scene.tsx, SceneShell), and `internal_motion` means SUSTAINED
+    # motion, not "animates at some point".
+    authored_graphics_need_a_move: true
     rule: "At 40-45% of slots, stills carry nearly half the film. Every one takes a parallax or 2.5D move, none is held past 6 seconds, and no two in a row come from the same source. A static hold at this share reads as a slideshow immediately."
   # ── cinematic maps (ADDED 2026-10-20) ─────────────────────────────────
   # Run #1's maps were a dark silhouette on a flat plate: nothing on screen
