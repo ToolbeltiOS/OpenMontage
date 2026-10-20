@@ -1,0 +1,79 @@
+{
+  "$schema": "../../../../schema/transition.schema.json",
+  "id": "light-leak",
+  "name": "Light Leak",
+  "version": "1.0.0",
+  "summary": "Soft, warm light drifts across the frame and floods it, hiding the change, then fades off the new scene.",
+  "uses": [
+    "Weddings and lifestyle",
+    "Nostalgic and film looks",
+    "Music videos"
+  ],
+  "family": "09-light",
+  "subfamily": "leak",
+  "facets": {
+    "structure": "bridged",
+    "origin": "edge-left",
+    "edge": "soft",
+    "layers": "third",
+    "space": "2d",
+    "timing": "eased",
+    "tone": [
+      "dreamy",
+      "retro",
+      "luxe"
+    ],
+    "function": [
+      "progression"
+    ],
+    "also": []
+  },
+  "duration": {
+    "default": 48,
+    "min": 24,
+    "max": 120
+  },
+  "overlay": true,
+  "requires": [
+    "webgl2"
+  ],
+  "params": [
+    {
+      "name": "colors",
+      "type": "colors",
+      "default": [
+        "#FF5A1F",
+        "#FFB13B",
+        "#FFF1D0"
+      ],
+      "description": "Leak colours, from edge to core."
+    },
+    {
+      "name": "seed",
+      "type": "integer",
+      "default": 1,
+      "min": 0,
+      "max": 9999,
+      "description": "Changes the random layout."
+    },
+    {
+      "name": "hold",
+      "type": "number",
+      "default": 0.06,
+      "min": 0,
+      "max": 0.3,
+      "description": "Share of the transition at full brightness."
+    }
+  ],
+  "presets": [],
+  "authors": [
+    "GTKottman"
+  ],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-10-06",
+      "notes": "First version."
+    }
+  ]
+}

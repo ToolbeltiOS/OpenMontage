@@ -1,0 +1,66 @@
+{
+  "$schema": "../../../../schema/transition.schema.json",
+  "id": "luma-dissolve",
+  "name": "Luma Dissolve",
+  "version": "1.0.0",
+  "summary": "Scene A dissolves by its own brightness: its highlights vanish first and its shadows last, showing scene B behind.",
+  "uses": [
+    "Dreamy or filmic scene changes",
+    "Silhouettes and high-contrast shots",
+    "Light-to-dark changes"
+  ],
+  "family": "02-blend",
+  "subfamily": "luma-dissolve",
+  "facets": {
+    "structure": "direct",
+    "origin": "distributed",
+    "edge": "soft",
+    "layers": "A",
+    "space": "2d",
+    "timing": "eased",
+    "tone": [
+      "dreamy",
+      "luxe"
+    ],
+    "function": [
+      "progression"
+    ],
+    "also": []
+  },
+  "duration": {
+    "default": 30,
+    "min": 12,
+    "max": 90
+  },
+  "overlay": false,
+  "requires": [
+    "svg-filters"
+  ],
+  "params": [
+    {
+      "name": "softness",
+      "type": "number",
+      "default": 0.25,
+      "min": 0.02,
+      "max": 1,
+      "description": "Width of the dissolve band in brightness."
+    },
+    {
+      "name": "darkFirst",
+      "type": "boolean",
+      "default": false,
+      "description": "Dissolve the shadows first instead."
+    }
+  ],
+  "presets": [],
+  "authors": [
+    "GTKottman"
+  ],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-10-06",
+      "notes": "First version."
+    }
+  ]
+}

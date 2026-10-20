@@ -35,8 +35,24 @@ export interface BeforeAfterProps {
  *
  * The whole point is that it is one subject: the two plates must be the same
  * place from the same angle, or the divider reads as a cut between two
- * pictures rather than as a comparison. Restoration and then-now beats are
- * what it is for.
+ * pictures rather than as a comparison.
+ *
+ * TWO USES, AND A RULE ABOUT THE SECOND
+ * -------------------------------------
+ * 1. **Plate and detail** — one photograph framed twice, which is the repo's
+ *    own two-framings-of-one-parent rule. This is what the demo shows.
+ * 2. **Then and now** — a restoration or a site across eras.
+ *
+ * A then-now comparison requires **two real plates from two real eras**. It is
+ * never faked: not by ageing a modern photograph, not by desaturating one
+ * side, not by generating a "period" version of a plate we hold. A fabricated
+ * era is a false claim about the evidence, and it is the one thing the
+ * playbook's own quality gate forbids outright — "every frame should look
+ * sourced, not generated" is a statement about what the frame IS, not about
+ * what it resembles.
+ *
+ * If the asset bank has no matched pair for a beat, the beat is not a
+ * before_after. Use plate-and-detail, or use a different component.
  *
  * Both plates run through the same grade, so the difference the viewer sees is
  * the difference in the material and not a difference in treatment.

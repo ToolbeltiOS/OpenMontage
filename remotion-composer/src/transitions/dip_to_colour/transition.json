@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../../schema/transition.schema.json",
+  "id": "dip-to-colour",
+  "name": "Dip to Colour",
+  "version": "1.0.0",
+  "summary": "Fades to a flat colour, holds, then fades up on the next scene.",
+  "uses": [
+    "Chapter breaks",
+    "Endings and beginnings",
+    "Dip to black or white"
+  ],
+  "family": "02-blend",
+  "subfamily": "dip-to-colour",
+  "facets": {
+    "structure": "bridged",
+    "origin": "whole-frame",
+    "edge": "none",
+    "layers": "third",
+    "space": "2d",
+    "timing": "eased",
+    "tone": [
+      "clean"
+    ],
+    "function": [
+      "section-break",
+      "progression"
+    ],
+    "also": []
+  },
+  "duration": {
+    "default": 36,
+    "min": 12,
+    "max": 90
+  },
+  "overlay": true,
+  "requires": [],
+  "params": [
+    {
+      "name": "color",
+      "type": "color",
+      "default": "#FF4F1A",
+      "description": "The incoming scene's background colour; the transition brings it in."
+    },
+    {
+      "name": "hold",
+      "type": "number",
+      "default": 0.1,
+      "min": 0,
+      "max": 0.4,
+      "description": "Share of the transition spent fully covered."
+    }
+  ],
+  "presets": [],
+  "authors": [
+    "GTKottman"
+  ],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-10-06",
+      "notes": "First version."
+    }
+  ]
+}

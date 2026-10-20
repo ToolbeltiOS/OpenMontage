@@ -1,0 +1,81 @@
+{
+  "$schema": "../../../../schema/transition.schema.json",
+  "id": "film-burn",
+  "name": "Film Burn",
+  "version": "1.0.0",
+  "summary": "Holes burn through the old scene with glowing edges until the frame is white-hot, then it cools to reveal the new scene.",
+  "uses": [
+    "Vintage and film looks",
+    "Endings",
+    "Music videos"
+  ],
+  "family": "09-light",
+  "subfamily": "burn",
+  "facets": {
+    "structure": "bridged",
+    "origin": "distributed",
+    "edge": "textured",
+    "layers": "third",
+    "space": "2d",
+    "timing": "eased",
+    "tone": [
+      "retro",
+      "gritty"
+    ],
+    "function": [
+      "section-break",
+      "energy"
+    ],
+    "also": []
+  },
+  "duration": {
+    "default": 48,
+    "min": 24,
+    "max": 100
+  },
+  "overlay": true,
+  "requires": [
+    "webgl2"
+  ],
+  "params": [
+    {
+      "name": "glow",
+      "type": "color",
+      "default": "#FF6A00",
+      "description": "Colour of the burning edge."
+    },
+    {
+      "name": "core",
+      "type": "color",
+      "default": "#FFF4E0",
+      "description": "Colour of the burnt-through centre."
+    },
+    {
+      "name": "seed",
+      "type": "integer",
+      "default": 1,
+      "min": 0,
+      "max": 9999,
+      "description": "Changes the random layout."
+    },
+    {
+      "name": "hold",
+      "type": "number",
+      "default": 0.04,
+      "min": 0,
+      "max": 0.3,
+      "description": "Share of the transition at full burn."
+    }
+  ],
+  "presets": [],
+  "authors": [
+    "GTKottman"
+  ],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-10-06",
+      "notes": "First version."
+    }
+  ]
+}

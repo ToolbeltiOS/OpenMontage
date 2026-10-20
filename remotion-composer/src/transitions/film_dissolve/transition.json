@@ -1,0 +1,51 @@
+{
+  "$schema": "../../../../schema/transition.schema.json",
+  "id": "film-dissolve",
+  "name": "Film Dissolve",
+  "version": "1.0.0",
+  "summary": "An additive dissolve: both scenes add together, so the midpoint glows like a film dissolve.",
+  "uses": [
+    "Warm, nostalgic scene changes",
+    "Music videos",
+    "Bright footage"
+  ],
+  "family": "02-blend",
+  "subfamily": "blend-mode",
+  "facets": {
+    "structure": "direct",
+    "origin": "whole-frame",
+    "edge": "none",
+    "layers": "A+B",
+    "space": "2d",
+    "timing": "eased",
+    "tone": [
+      "dreamy",
+      "retro"
+    ],
+    "function": [
+      "progression"
+    ],
+    "also": [
+      "09-light/flash"
+    ]
+  },
+  "duration": {
+    "default": 24,
+    "min": 8,
+    "max": 60
+  },
+  "overlay": false,
+  "requires": [],
+  "params": [],
+  "presets": [],
+  "authors": [
+    "GTKottman"
+  ],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-10-06",
+      "notes": "First version."
+    }
+  ]
+}
