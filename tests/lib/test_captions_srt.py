@@ -54,11 +54,20 @@ class TestGrouping:
         assert cues[0]["text"] == "one two three"
 
     def test_a_cue_never_spans_a_pause(self):
-        """A cue that straddles written air holds its text through the silence."""
+        """A cue that straddles written air would hold text through the silence."""
         w = words([("before", 0, 1500), ("after", 6000, 7500)])
         cues = cap.group(w)
         assert len(cues) == 2
-        assert cues[0]["endMs"] == 1500 and cues[1]["startMs"] == 6000
+        assert cues[1]["startMs"] == 6000
+        # It may hold a little into the gap for reading time, but it never
+        # reaches the next cue.
+        assert cues[0]["endMs"] < cues[1]["startMs"]
+
+    def test_a_readable_cue_leaves_the_gap_alone(self):
+        """Written air stays clear where the narration was not rushing."""
+        w = words([("one", 0, 1500), ("two", 1500, 3000), ("three", 9000, 10500)])
+        cues = cap.group(w)
+        assert cues[0]["endMs"] == 3000
 
     def test_cues_do_not_overlap(self):
         cues = cap.group(even(" ".join(["gamma"] * 50), per_word=120))

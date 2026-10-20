@@ -139,6 +139,10 @@ def group(words: list[dict[str, Any]],
 
 #: How far a cue may hold past its last word, into the silence that follows.
 HOLD_INTO_GAP_S = 1.5
+#: And the rate it is trying to reach by doing so. A cue already readable at
+#: this rate takes nothing from the gap, which is what keeps written air clear
+#: of text where the narration was not rushing in the first place.
+COMFORTABLE_CHARS_PER_SECOND = 17.0
 #: And how much of that silence is left clear before the next cue.
 GAP_GUARD_S = 0.08
 
@@ -151,12 +155,21 @@ def _hold_into_gaps(cues: list[dict[str, Any]]) -> None:
     Ending on the word is also why 92 of 311 cues read as "too fast" the first
     time a properly aligned track went through here: the words were right and
     the reading time was missing.
+
+    It takes only what it needs to reach a comfortable rate, never a flat
+    amount. A cue that is already readable leaves the gap alone, which is what
+    keeps written air free of text where the narration was not rushing.
     """
     for i, cue in enumerate(cues):
+        needed = len(cue["text"]) / COMFORTABLE_CHARS_PER_SECOND * 1000
+        shortfall = needed - (cue["endMs"] - cue["startMs"])
+        if shortfall <= 0:
+            continue                      # readable already; the gap stays clear
         limit = (cues[i + 1]["startMs"] - int(GAP_GUARD_S * 1000)
                  if i + 1 < len(cues) else cue["endMs"] + int(HOLD_INTO_GAP_S * 1000))
         cue["endMs"] = max(cue["endMs"],
-                           min(limit, cue["endMs"] + int(HOLD_INTO_GAP_S * 1000)))
+                           min(limit, cue["endMs"] + int(min(shortfall,
+                                                             HOLD_INTO_GAP_S * 1000))))
 
 
 def _repair_short_cues(cues: list[dict[str, Any]], min_seconds: float,
