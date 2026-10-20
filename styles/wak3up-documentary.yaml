@@ -686,6 +686,52 @@ audio:
       rule: "Every sound carries provider, URL and licence in the sound_design
              artifact, on the same terms as every picture."
 
+  # ── alignment QA (ADDED 2026-10-20, owner rule) ───────────────────────
+  # A paragraph the aligner was not sure about is re-synthesised and
+  # re-aligned; if it is still under after two attempts the stage fails.
+  #
+  # Confidence catches what the duration gate cannot. The duration gate finds
+  # an alignment that collapsed — run #1 had an eight-word sentence in 30
+  # milliseconds. It cannot find one that is confidently placed and wrong, or
+  # a synthesis the aligner could barely follow. The collapsed sentence scored
+  # 0.08-0.33 against 0.67-0.96 either side, and that signal was there before
+  # anyone looked at the timings.
+  #
+  # MEASURED ON RUN #1 AT 0.5: 23 of 54 paragraphs are under, which is 43% of
+  # the film and too many to be a defect rate. The paragraph median is 0.546,
+  # so 0.5 sits just below the middle of the distribution rather than in its
+  # tail.
+  #
+  # The obvious explanation — that the aligner loses confidence on proper
+  # nouns and spoken numerals, of which this script has many — was measured
+  # and does NOT hold: the correlation is -0.087, and the high-density
+  # paragraphs average 0.475 against 0.567 for the rest, on a sample of
+  # eleven. The likelier reason is that wav2vec2 was trained on human speech
+  # and this narration is synthesised, which moves the whole median down
+  # rather than creating a tail.
+  #
+  # The threshold lives here so it can be tuned against that distribution
+  # rather than re-synthesising half a film on an uncalibrated number. At 0.35
+  # the rule flags five paragraphs, which is the order of magnitude of
+  # something actually wrong. See reports/alignment_confidence.md.
+  alignment_qa:
+    min_mean_confidence: 0.5
+    max_attempts: 2
+    granularity: paragraph
+    # Not configured: the narration is kokoro through the hyperframes CLI,
+    # which is outside this repo. With no command the gate names the
+    # paragraphs and fails rather than pretending to have fixed them.
+    # Placeholders: {text_file} {out_wav} {section_id} {index}
+    resynth_command: null
+    measured_run_1:
+      paragraphs: 54
+      under_0_5: 23
+      section_means: {cold_open: 0.609, act1: 0.547, act2: 0.454,
+                      act3: 0.710, act4: 0.629, outro: 0.787}
+      note: >
+        See reports/alignment_confidence.md. Act 2 is the lowest section and is
+        also the one carrying the most proper nouns and numerals.
+
   # ── music selection (binding) ──────────────────────────────────────────
   # Run #1 picked beds by mood word and they carried tunes under the
   # narration. The criteria are now stated as properties a track either has

@@ -282,6 +282,15 @@ stages:
           30 milliseconds. Forced alignment is told the words, so it only has
           to decide when they were said. Any word under 40ms after that is a
           failure, not a rounding error.
+      - name: alignment_confidence
+        run: "python3 lib/alignment_qa.py --project {project_id} --fix"
+        blocking: true
+        why: >
+          A paragraph the aligner was barely able to follow is re-synthesised
+          and re-aligned, and fails the stage if it is still under after two
+          attempts. The duration gate finds an alignment that collapsed; this
+          one finds a synthesis the aligner could not follow, which is the
+          same defect one stage earlier.
       - name: sound_design
         run: "python3 lib/sound_design.py {artifacts}/sound_design.json"
         blocking: true
