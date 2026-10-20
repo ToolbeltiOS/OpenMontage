@@ -743,7 +743,8 @@ behind it are in `reports/reference_pacing.md`.
 | **Camera** | one push, 182 times | push/pull/lock/drift from the beat, one direction per run of stills, one speed ramp per act |
 | **Boundaries** | picture and sound cut together, 182 times | J-cuts 12–18 frames at act boundaries and reveals, L-cuts ≤10 at exposition, none at a landing |
 | **Captions** | burnt in, text on screen 99.4% of runtime | sidecar SRT uploaded with `captions.insert`; burn-in available, off, and layout-aware when on |
-| **Film look** | CSS grain/vignette/chromatic layers | shader pass available (`FilmLook`), measured, **not adopted** — see the decision list |
+| **Film look** | CSS grain/vignette/chromatic layers | **shader pass is the default**, full stack on every slot; CSS is a fallback flag. Both paths run one grade chain, matched to within 2% |
+| **Word timings** | transcription matched back to the script; 60 words under 40ms | forced alignment against the script; 0 under 40ms |
 | **Components** | — | `title_sequence` (default after the cold open) and `before_after` |
 | **Grade** | one look for four acts | per-act temperature, saturation and lift on photographic material; authored graphics keep the base palette |
 | **Maps** | flat dark silhouette | Natural Earth II terrain with shaded relief, palette ocean, 1–2% drift, plus a `globe_descent` that hands off to the same map |
@@ -783,18 +784,21 @@ evidence that they measure the right thing.
 - **Manim as the diagram route** (step 9) — side-by-sides pending.
 - **The two treatment tests** (step 10) — sketched reconstruction and halftone
   collage, one slot each, pending.
-- **CSS vs shader film look** (step 13) — frames rendered, in
-  `remotion-composer/out/step13/compare_{hero,joint,quarry}.png`. **It misses
-  the +25% budget**: measured +79% at the floor and +100% for the full stack,
-  because the cost is the canvas pass itself and not the effect chain
-  (`reports/film_look_cost.md`). Three options there, including running it on
-  hero slots only.
+- **The bed level.** Three mixes of the demo window are in
+  `projects/they-said-it-couldnt-be-built/renders/demo/` — `act2_demo_bed36.wav`
+  (approved), `bed30`, `bed28` — each with the sound design present. Judge by
+  ear; nothing moves until you do.
+- **The demo cut itself**: `renders/demo/act2_demo.mp4`, 90.8s, full look,
+  captions off, carrying the −36 mix.
 
 ### Known, recorded, not yet fixed
 
-- One caption cue in run #1 is unreadable: the forced aligner collapsed an
-  eight-word sentence into 30ms. 58 of 2,961 word timings are under 40ms. The
-  SRT builder reports it rather than padding it; the fix belongs in alignment.
+- **34 of 308 caption cues read faster than 20 characters a second.** Exposed
+  once the timings were correct: these are passages the narration genuinely
+  rushes. The answer in run #2 is a slower read or shorter copy, not a looser
+  gate.
+- Run #1's word timings are fixed: 60 words under 40ms before forced
+  alignment, 0 after.
 - `projects/.../edit_decisions.json` does not validate against its own schema
   (`transitions` is an object where the schema wants an array; `layer` is an
   integer where it wants a string enum). Run #1's record is left as published.
