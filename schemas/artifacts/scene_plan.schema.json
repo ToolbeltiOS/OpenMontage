@@ -68,6 +68,15 @@
             "default": false,
             "description": "True if this is the visual peak of the video — deserves extra attention"
           },
+          "beat": {
+            "type": "string",
+            "enum": ["reveal", "exposition", "landing", "transition"],
+            "description": "The beat type of the narration paragraph this scene covers, taken from the script. The hold band comes from rhythm.targets in the playbook; without it the planner has one band for the whole film."
+          },
+          "internal_motion": {
+            "type": "boolean",
+            "description": "Whether the shot moves inside the frame. A reveal may hold past the stills cap only when this is true."
+          },
           "character_actions": {
             "type": "array",
             "description": "Character-specific acting beats for rigged character animation scenes",

@@ -36,19 +36,46 @@ spoken**. That makes three things true:
 
 ## Process
 
-### 1. Walk The Script And Cut On Meaning
+### 1. Take The Shot Band From The Beat, Not From One Cadence
 
 Work act by act. Place a cut where the *meaning* changes — a new subject, a new
-place, a new claim — not on a metronome. The playbook sets the cadence band
-(typically a cut every 5–8 seconds); treat the ceiling as hard and the floor as a
-default. Holding one image past the ceiling is the fastest way to lose a viewer.
+place, a new claim — never on a metronome.
 
-Two cadence exceptions worth using deliberately:
+**The script says which beat each paragraph is, and the beat sets the band.**
+Copy the beat onto every slot it covers (`beat` on the slot, carried through to
+`edit_decisions.cuts[].beat`) and take the hold from `rhythm.targets` in the
+playbook:
 
-- **The reveal hold.** On the single biggest claim in the piece, hold longer than
-  the ceiling on one strong image and let the narration land. Mark it `hero`.
-- **The burst.** Through a dense list or a montage of consequences, run 2–3
-  second cuts for 10–15 seconds, then return to the normal cadence.
+| beat | `target_hold_seconds` | cuts/min through that passage |
+|---|---|---|
+| `reveal` | 12–25, **one shot** | 2–4 |
+| `exposition` | 6–10 | 6–9 |
+| `landing` | 4–8, and no cut lands inside the air | 0–2 |
+| `transition` | 1.5–3.5, as a burst of 8–15s | 15–25 momentarily |
+
+A reveal may only hold past the stills cap when the shot **moves inside the
+frame** — an authored graphic with timed reveals, real footage, a parallax
+across an oversized frame, or a push of more than 4% total. Set
+`internal_motion: true` on the slot when it does. A twelve-second hold on a
+static photograph is the slideshow the cap was written against, and the beat
+label does not change that; the edit gate checks it.
+
+There is one cadence band left in the playbook, `visual_cadence.cut_interval_seconds`,
+and it is the exposition band — what a slot gets when no beat reaches it.
+
+**Why this replaced a single band.** Run #1 had one band for the whole film.
+181 of its 182 shots came out between 5 and 8 seconds, p10 5.89s and p90 7.47s,
+with 8 to 10 cuts in every single minute. The playbook said "cut on meaning,
+never on a fixed interval" the whole time — nothing implemented it. Every
+reference film measured for run #2 swings by a factor of three to seven inside
+one film (`reports/reference_pacing.md`).
+
+### 1b. Hold The Picture Through The Air
+
+Where the script wrote `[air N.Ns]`, no cut lands inside the silence. The shot
+that carries the landing line carries the gap after it too. A cut inside the air
+spends the silence on a new picture, which is the one thing it was written to
+avoid.
 
 ### 2. Write Slot Descriptions In Concrete Nouns
 

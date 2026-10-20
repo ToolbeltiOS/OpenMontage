@@ -155,11 +155,26 @@ stages:
       - Cold open lands under 45 seconds and carries the chosen hook
       - Ending is an open question, not a summary
       - Speaker directions and delivery cues present for TTS
+    gate_commands:
+      - name: script_beats
+        run: "python3 lib/script_beats.py {artifacts}/script.json --plan {artifacts}/narration_plan.json"
+        blocking: true
+        why: >
+          Every paragraph carries a beat type and the air is written into the
+          prose. Without the beats the planner has one hold band for the whole
+          film, which is how run #1 came out with 181 of 182 shots between 5
+          and 8 seconds. Without the air markers nothing downstream knows
+          where the silence goes, and run #1 delivered thirteen seconds of it
+          in twenty minutes. The same command writes the narration plan the
+          synthesis and mix stages read.
     success_criteria:
       - Schema-valid script artifact
       - Narrated word count inside the playbook's word band
       - Act count within the playbook's act band
       - Every factual span carries a claim_ref into the research_brief
+      - Every paragraph carries a beat type
+      - Planned air is 8-15% of the runtime and every act lands one 4s gap
+      - Duration is measured as speech PLUS planned air, not words / wpm
 
   # ── Scene plan ──────────────────────────────────────────────────
   - name: scene_plan
@@ -279,10 +294,23 @@ stages:
       - Word-level caption track is present
       - total_duration_seconds matches the sum of cut durations
       - Every cut has a reason
+    gate_commands:
+      - name: rhythm
+        run: "python3 lib/verify_rhythm.py {artifacts}/edit_decisions.json"
+        blocking: true
+        why: >
+          Run #1 passed every pacing check the repo had and was still
+          metronomic: mean hold 6.6s inside the 5-8s band, 8 to 10 cuts in
+          every minute, 78.6% of shots inside one two-second band. The checks
+          measured the middle of the distribution and the defect was the
+          missing tails. This one fails on a flat cuts-per-minute curve and on
+          a film that piles into one band, and reports the tails for a human.
     success_criteria:
       - Schema-valid edit_decisions artifact
       - Timeline duration within 10% of the script duration
       - edit_decisions.render_runtime equals proposal_packet.production_plan.render_runtime
+      - Cuts carry their beat type, and each sits inside that beat's band
+      - The cuts-per-minute curve is not flat (lib/verify_rhythm.py)
 
   # ── Compose ─────────────────────────────────────────────────────
   - name: compose

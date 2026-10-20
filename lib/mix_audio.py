@@ -93,30 +93,86 @@ def two_pass_loudnorm(src: str, dst: str, I: float, TP: float, LRA: float = 11) 
          "-ar", str(SR), "-ac", "2", dst])
 
 
-def build_narration() -> tuple[str, list[float]]:
-    """Concatenate the sections and normalise the voice to -16 LUFS / -1.5 dBTP."""
+def narration_segments() -> tuple[list[dict], str]:
+    """The ordered pieces of narration, and where the list came from.
+
+    AIR IS WRITTEN, NOT FOUND. When the script stage has produced a narration
+    plan, each of its segments is one rendered file plus the silence the script
+    asked for after it, and that silence is inserted here — in the stage that
+    rebuilds the audio. A gap applied anywhere downstream of this function has
+    an expiry date, and the date is the next re-render.
+
+    Without a plan, or with a plan whose segment files have not been rendered,
+    this falls back to the six section files and reports `air_planned: False`
+    so that the absence is visible rather than silently zero. Run #1 delivered
+    thirteen seconds of silence in twenty minutes precisely because nothing
+    ever said out loud that none had been synthesised.
+    """
+    plan_path = os.path.join(PROJ, "artifacts", "narration_plan.json")
+    if os.path.exists(plan_path):
+        with open(plan_path, encoding="utf-8") as fh:
+            plan = json.load(fh)
+        segments = [
+            {"path": os.path.join(AUD, f"{seg['id']}.wav"),
+             "air_after_s": float(seg.get("air_after_s") or 0.0)}
+            for seg in plan.get("segments", [])
+        ]
+        missing = [s["path"] for s in segments if not os.path.exists(s["path"])]
+        if segments and not missing:
+            return segments, "narration_plan"
+        if missing:
+            print(f"narration plan found but {len(missing)} of {len(segments)} "
+                  f"segment files are missing; falling back to whole sections "
+                  f"and NO planned air will be synthesised", file=sys.stderr)
+    return ([{"path": os.path.join(AUD, s + ".wav"), "air_after_s": 0.0}
+             for s in SECTIONS], "sections")
+
+
+def silence_file(seconds: float) -> str:
+    """A mono/stereo-neutral silence file at the project rate, cached by length."""
+    path = os.path.join(OUT, f".silence_{seconds:.3f}.wav")
+    if not os.path.exists(path):
+        run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi",
+             "-i", f"anullsrc=r={SR}:cl=mono", "-t", f"{seconds:.3f}",
+             "-c:a", "pcm_s16le", path])
+    return path
+
+
+def build_narration() -> tuple[str, list[float], dict]:
+    """Concatenate the segments, insert the written air, normalise to -16 LUFS."""
     os.makedirs(OUT, exist_ok=True)
+    segments, source = narration_segments()
     offsets, t = [], 0.0
+    planned_air = 0.0
     listfile = os.path.join(OUT, "narration_concat.txt")
     with open(listfile, "w", encoding="utf-8") as fh:
-        for s in SECTIONS:
-            path = os.path.join(AUD, s + ".wav")
+        for seg in segments:
+            path = seg["path"]
             offsets.append(t)
             t += float(subprocess.check_output(
                 ["ffprobe", "-v", "error", "-show_entries", "format=duration",
                  "-of", "csv=p=0", path]).strip())
             fh.write(f"file '{path}'\n")
+            air = seg.get("air_after_s") or 0.0
+            if air > 0:
+                # The silence is a file in the concat list, not a filter after
+                # it: the concat demuxer is what builds this timeline, so the
+                # gap has to exist as one of its inputs or it is not in the
+                # file the next stage reads.
+                fh.write(f"file '{silence_file(air)}'\n")
+                planned_air += air
+                t += air
     # The concat demuxer decodes every file with the FIRST file's format. A
     # section written at a different rate or channel count is not resampled,
     # it is misread: a 48 kHz stereo outro among 24 kHz mono sections decoded
     # as four times its length and added 33 seconds of slurred audio to the
     # film. Check before concatenating rather than discovering it in the mix.
     fmts = set()
-    for s in SECTIONS:
+    for seg in segments:
         fmts.add(subprocess.check_output(
             ["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries",
              "stream=sample_rate,channels", "-of", "csv=p=0",
-             os.path.join(AUD, s + ".wav")], text=True).strip())
+             seg["path"]], text=True).strip())
     if len(fmts) > 1:
         raise SystemExit(f"narration sections differ in format: {sorted(fmts)}. "
                          f"Re-encode them to match before mixing.")
@@ -126,7 +182,13 @@ def build_narration() -> tuple[str, list[float]]:
          "-ar", str(SR), "-ac", "2", raw])
     voice = os.path.join(OUT, "narration_16.wav")
     two_pass_loudnorm(raw, voice, I=-16, TP=-1.5, LRA=11)
-    return voice, offsets
+    air = {
+        "source": source,
+        "air_planned": source == "narration_plan",
+        "planned_air_seconds": round(planned_air, 2),
+        "segments": len(segments),
+    }
+    return voice, offsets, air
 
 
 def build_bed(spans: list[dict], total: float, under_speech_lufs: float,
@@ -229,6 +291,38 @@ def speech_envelope(voice: np.ndarray) -> np.ndarray:
     return np.repeat(flag, hop)[:len(mono)]
 
 
+def measure_air(voice: np.ndarray, total: float) -> dict:
+    """Silence in the finished voice track: how much, how many gaps, how long.
+
+    Uses the same speech flag the ducking is keyed on, so the air the report
+    claims is the air the mix actually treats as a gap.
+    """
+    flag = speech_envelope(voice)
+    quiet = flag < 0.5
+    edges = np.diff(np.concatenate(([0], quiet.view(np.int8), [0])))
+    starts = np.flatnonzero(edges == 1)
+    ends = np.flatnonzero(edges == -1)
+    lengths = [(b - a) / SR for a, b in zip(starts, ends)]
+    # Two thresholds, because they are two different things. A 0.7s break is
+    # punctuation — the voice taking a breath between sentences — and run #1
+    # had 54 of them. Air is a gap the music can rise into and a cut can land
+    # inside, which the playbook sets at GAP_SECONDS, and run #1 had none at
+    # all. Reporting only the first number would have called a film with no
+    # air 4% air.
+    pauses = [g for g in lengths if g >= 0.6]
+    gaps = [g for g in lengths if g >= GAP_SECONDS]
+    realised = float(sum(gaps))
+    return {
+        "realised_air_seconds": round(realised, 2),
+        "realised_gaps": len(gaps),
+        "air_threshold_s": GAP_SECONDS,
+        "pauses_over_0_6s": len(pauses),
+        "pause_seconds_total": round(float(sum(pauses)), 2),
+        "longest_realised_gap_s": round(max(lengths), 2) if lengths else 0.0,
+        "air_pct_of_total": round(100 * realised / total, 1) if total else 0.0,
+    }
+
+
 def gain_envelope(voice: np.ndarray, offsets: list[float], n: int,
                   base_lufs: float) -> np.ndarray:
     """dB offsets applied to the bed, before attack/release smoothing."""
@@ -279,7 +373,7 @@ def main() -> int:
     out_path = sys.argv[3]
     window = json.loads(sys.argv[4]) if len(sys.argv) > 4 else None
 
-    voice_path, offsets = build_narration()
+    voice_path, offsets, air = build_narration()
     total = len(sf.read(voice_path, dtype="float32")[0]) / SR
     bed_path = build_bed(spans, total, under_speech)
 
@@ -287,6 +381,12 @@ def main() -> int:
     bed, _ = sf.read(bed_path, dtype="float32", always_2d=True)
     n = min(len(voice), len(bed))
     voice, bed = voice[:n], bed[:n]
+
+    # What the film actually holds, measured on the voice track rather than
+    # taken from the plan. The two disagreeing is the defect worth catching:
+    # the plan asked for air, the synthesiser did not deliver it, and the
+    # loudness checks all pass either way because they are set by the voice.
+    air.update(measure_air(voice, total))
 
     env_db = smooth(gain_envelope(voice, offsets, n, under_speech), ATTACK_MS, RELEASE_MS)
     bed_ducked = bed * (10 ** (env_db[:, None] / 20)).astype(np.float32)
@@ -316,6 +416,7 @@ def main() -> int:
                  "gap_seconds": GAP_SECONDS},
         "eq": "highpass 120 Hz x2, lowpass 7 kHz x2, -4 dB at 3 kHz (Q~1.4)",
         "narration": measure(voice_path),
+        "air": air,
         "bed_under_speech": measure(bed_path),
         "final": measure(out_path),
         "note": "LRA is recorded, not targeted: narration-led material has little range.",

@@ -124,18 +124,81 @@ is usually *slower on the reveal, pause after it*. Add `pronunciation_guides` fo
 every proper noun the voice is likely to mangle; archaeological and astronomical
 names are reliably mangled.
 
-### Step 8 — Word Count
+### Step 8 — Tag Every Paragraph With A Beat
 
-Count the narrated words. Do not estimate. Report the count, the budget and the
-implied runtime at the target WPM. If you are more than 10% over, cut — do not
-assume the voice will read faster.
+Put `[beat: <type>]` on its own line above each paragraph. Four types, and the
+planner reads them to decide how long a shot may hold:
+
+| beat | what it is | shots run |
+|---|---|---|
+| `reveal` | the paragraph that turns the act — at most one per act | 12–25s, one shot |
+| `landing` | the sentence after a reveal, where the voice stops | 4–8s |
+| `transition` | moving between subjects or into a new act | 1.5–3.5s, in a burst |
+| `exposition` | everything else, and most of the film | 6–10s |
+
+An untagged paragraph is exposition, which is usually right. Tagging everything
+a reveal is the same as tagging nothing: run #1 had no beats at all, the planner
+gave every slot one band, and 181 of its 182 shots came out between 5 and 8
+seconds long.
+
+### Step 9 — Write The Air
+
+**Air is written, not found.** Put `[air N.Ns]` on its own line between
+paragraphs, using 1.5, 2.5 or 4.0 seconds and nothing else:
+
+```
+[beat: reveal]
+The granite had been quarried a hundred and forty miles away.
+[air 2.5s]
+
+[beat: landing]
+Nobody has explained how it got here.
+[air 4.0s]
+```
+
+Where it goes:
+
+- after a landing line — 1.5s or 2.5s;
+- at each act's own climax — 4s, once per act;
+- before a reveal the narration has set up and the picture has not yet turned
+  — 1.5s;
+- somewhere at least every two minutes.
+
+Across the film the air totals 8–15% of the runtime. This is why the word
+budget is 2,500–2,700 and not 2,800–3,200: the silence is part of the runtime,
+not an overrun on top of it.
+
+Run #1's `pause_policy` asked for "a full beat of silence after each verdict
+sentence". The delivered film held thirteen seconds of silence in twenty
+minutes and never stopped talking for longer than 2.8 seconds, because the
+policy was prose and nothing downstream could read it. A marker can be read.
+
+### Step 10 — Word Count And Duration
+
+Count the narrated words. Do not estimate. The runtime is **speech plus planned
+air** — `words / wpm * 60 + sum(air)` — so measure it that way and not by words
+alone, or the air will read as an overrun and get cut.
+
+Run the gate; it does the arithmetic and writes the narration plan the
+synthesis and mix stages read:
+
+```bash
+python3 lib/script_beats.py projects/<id>/artifacts/script.json \
+    --plan projects/<id>/artifacts/narration_plan.json
+```
+
+If you are more than 10% over the duration band, cut words — never air. A film
+that needs its silence removed to make length was too long in prose.
 
 ## Quality Gate
 
 - Outline existed before prose, and is in the artifact.
 - Each act drafted in its own pass with the padding check recorded.
 - Every checkable fact carries `claim_refs`.
-- Word count inside the playbook band.
+- Word count inside the playbook band (2,500–2,700).
+- Every paragraph carries a beat type.
+- Air written as markers, 8–15% of runtime, one 4s gap per act.
+- `lib/script_beats.py` exits 0 and the narration plan is written.
 - Cold open under 45 seconds and carrying the hook.
 - Ending is an open question.
 - Acts within the playbook's act band.
@@ -148,6 +211,9 @@ This stage gates on human approval (`human_approval_default: true`). Checkpoint
 ## Common Pitfalls
 
 - Writing all five acts in one pass because the outline felt clear.
+- Writing a pause policy in prose instead of marking the air. Prose is not a
+  number, and no stage downstream can act on it.
+- Treating air as slack to be cut when the runtime is long. Cut words.
 - A fact that "everyone knows" going in without a ledger entry.
 - Act 4 restating act 2 with new adjectives.
 - A summary ending, which reliably reads as a shrug.

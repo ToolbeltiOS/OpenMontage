@@ -60,8 +60,46 @@ content_stance:
 structure:
   target_duration_seconds: 1200
   duration_band_seconds: [1140, 1260]        # 19-21 minutes, hard
-  narrated_word_band: [2800, 3200]
+  # LOWERED 2026-10-20 from [2800, 3200]. Run #1 filled 20 minutes with 99.4%
+  # narration and thirteen seconds of silence in the whole film. Air is now
+  # planned in the script and synthesised as real gaps, which costs words: at
+  # 150 wpm, 8-15% air over 1200s is 96-180s that are not speech.
+  narrated_word_band: [2500, 2700]
   words_per_minute_target: 150
+  # The film's duration is speech plus planned air, not words / wpm. Measuring
+  # it the old way counted the air as overrun and would send the script back
+  # for being too long when it was exactly right.
+  duration_measurement: speech_plus_planned_air
+
+  # ── air ────────────────────────────────────────────────────────────────
+  # AIR IS WRITTEN, NOT FOUND (owner, 2026-10-20). A gap that nobody wrote
+  # does not appear: run #1's pause_policy asked for "a full beat of silence
+  # after each verdict sentence" and the delivered film's longest silence was
+  # 2.8 seconds, because nothing in the chain turned the policy into a number.
+  # The script marks air; the narration stage synthesises it; the mix measures
+  # what it realised against what was planned.
+  air:
+    written_not_found: true
+    marker: "[air N.Ns]"              # between paragraphs, in the section text
+    allowed_lengths_seconds: [1.5, 2.5, 4.0]
+    film_total_pct: [8, 15]           # of the finished runtime
+    rules:
+      - "After a landing line: 1.5s or 2.5s. The picture holds; no cut lands
+         inside the silence."
+      - "At each act's own climax: 4s, once per act."
+      - "Before a reveal, where the narration has set it up and the picture has
+         not yet turned: 1.5s."
+      - "At least one gap of 1.5s or longer every two minutes."
+      - "Air is never used to reach the duration band. A film that needs air to
+         make length is short, and the fix is more film, not more silence."
+    measured_run_1:
+      air_seconds_total: 13.0
+      narration_coverage_pct: 99.4
+      longest_gap_seconds: 2.8
+      note: >
+        Measured from render_props captions. The references run 63-97% coverage
+        with gaps up to 115s; see reports/reference_pacing.md section 3.
+
   act_count_band: [4, 5]
   cold_open:
     # Raised from 45 to 46 on 2026-10-18. The approved cold open measures
@@ -139,6 +177,29 @@ structure:
 
 # ── Script production rules ─────────────────────────────────────────
 script_rules:
+  # ── beat tagging (ADDED 2026-10-20) ──────────────────────────────────
+  # Every paragraph carries a beat type, and the planner reads it to set the
+  # shot band. Without it the planner has nothing to vary on and falls back to
+  # one band for the whole film, which is how run #1 came out metronomic.
+  beat_tagging:
+    required: true
+    granularity: paragraph
+    types: [reveal, exposition, landing, transition]
+    marker: "[beat: <type>]"          # first line of the paragraph
+    default: exposition
+    rules:
+      - "A reveal is the paragraph that turns the act — one per act at most,
+         and the act has to have earned it."
+      - "A landing is the sentence after a reveal, where the voice stops. It is
+         followed by written air."
+      - "A transition moves between subjects or acts and is the only beat that
+         may run as a burst."
+      - "Everything else is exposition. Tagging everything a reveal is the same
+         as tagging nothing."
+  air_markers:
+    required: true
+    marker: "[air N.Ns]"              # on its own line between paragraphs
+    see: structure.air
   generation_mode: outline_first_then_act_by_act
   never_generate_whole_script_in_one_call: true
   act_pass_context: ["outline", "previous_act_text", "assigned_claim_ids"]
@@ -174,9 +235,70 @@ script_rules:
     - "a factual span with no claim_ref"
     - "word count more than 10% outside the band"
 
+# ── Rhythm ──────────────────────────────────────────────────────────
+# ADDED 2026-10-20 from reports/reference_pacing.md. The playbook already said
+# "cut on meaning, never on a fixed interval" and the film came out metronomic
+# anyway: 181 of run #1's 182 shots were 5-8 seconds long, p10 5.89s and p90
+# 7.47s, with 8-10 cuts in every single minute. Nothing implemented the rule,
+# because the planner had one hold band and applied it to every slot.
+#
+# A beat type now sets the band. The targets below are measured, not invented —
+# eight hand-counted minutes across LEMMiNO, Barely Sociable and Fall of
+# Civilizations, every one of which swings by a factor of three to seven inside
+# a single film.
+rhythm:
+  source: reports/reference_pacing.md
+  beat_types: [reveal, exposition, landing, transition]
+  default_beat: exposition
+  targets:
+    reveal:
+      shot_seconds: [12, 25]
+      cuts_per_minute: [2, 4]
+      shots_per_beat: 1
+      # A twelve-second hold on a static still is a slideshow; on the
+      # references it is always a shot with motion inside it — an orbit, a
+      # scrolling document, an animated diagram. The long hold is earned by
+      # internal movement, not granted by the beat type.
+      long_hold_requires: internal_motion
+      internal_motion_treatments:
+        - authored_graphic_with_timed_reveals
+        - real_footage
+        - parallax_2_5d_across_an_oversized_frame
+        - slow_push_in_over_4pct_total
+    exposition:
+      shot_seconds: [6, 10]
+      cuts_per_minute: [6, 9]
+    landing:
+      shot_seconds: [4, 8]
+      cuts_per_minute: [0, 2]
+      no_cut_during_air: true        # the picture holds through the silence
+    transition:
+      shot_seconds: [1.5, 3.5]
+      cuts_per_minute: [15, 25]
+      burst_seconds: [8, 15]         # how long a burst may run before it ends
+  # Checked across the finished film, not per slot. A film that hits every
+  # per-beat band and still reads flat will fail the spread test.
+  film_envelope:
+    cuts_per_minute_mean: [6, 10]
+    cuts_per_minute_spread_min: 4    # busiest minute minus quietest minute
+    shot_length_p90_min_seconds: 12  # the long tail has to exist
+    shot_length_p10_max_seconds: 4   # and so does the short one
+    max_pct_of_shots_in_any_2s_band: 45
+  measured_run_1:
+    shots: 182
+    cuts_per_minute_mean: 9.04
+    cuts_per_minute_range: [8, 10]
+    shot_length_p10: 5.89
+    shot_length_p90: 7.47
+    pct_of_shots_in_5_to_8s: 99.5
+
 # ── Visual cadence ──────────────────────────────────────────────────
 visual_cadence:
+  # SUPERSEDED for shot length by `rhythm.targets` above: this band is the
+  # exposition band, and it is what a slot gets when no beat type reaches it.
+  # Left in place because the scene plan and several checks still read it.
   cut_interval_seconds: [5, 8]
+  cut_interval_is_beat_aware: true
   cut_on: meaning_change            # never on a metronome
   # AMENDED 2026-10-18 by owner decision, after measured source health showed the
   # keyless archives hold stills rather than footage for megalithic subjects.
@@ -212,7 +334,16 @@ visual_cadence:
     treatment_required: true
     treatment_mandatory: true        # parallax/2.5D is not optional at this share
     allowed_treatments: ["parallax_2_5d", "slow_push_in", "drift_across_oversized_frame"]
-    max_hold_seconds: 6              # hard: no still is held longer than 6s
+    # Beat-aware since 2026-10-20. 6s remains the cap for every beat except a
+    # reveal, and a reveal may only exceed it with real motion inside the shot
+    # (rhythm.targets.reveal.long_hold_requires). A still that merely sits
+    # there for twelve seconds is the slideshow this cap was written against.
+    max_hold_seconds: 6
+    max_hold_seconds_by_beat:
+      reveal: 25                     # requires internal_motion
+      exposition: 6
+      landing: 8
+      transition: 3.5
     no_consecutive_same_source: true # two stills in a row may not come from the same provider
     max_consecutive_stills: 2        # a motion slot must break any run of two
     rule: "At 40-45% of slots, stills carry nearly half the film. Every one takes a parallax or 2.5D move, none is held past 6 seconds, and no two in a row come from the same source. A static hold at this share reads as a slideshow immediately."
@@ -361,8 +492,13 @@ motion:
   transitions: [cut, dissolve, fade-to-black]   # at most 4 distinct types across the piece
   animation_style: "slow ease-out, archival restraint; push-ins under 4% scale per second; no bounce, no whip, no speed ramps"
   pacing_rules:
-    min_scene_hold_seconds: 5
-    max_scene_hold_seconds: 8
+    # Film-wide floor and ceiling. The per-beat bands in `rhythm.targets` sit
+    # inside them and are what the planner actually reads; these two are the
+    # outer limits nothing may cross.
+    min_scene_hold_seconds: 1.5
+    max_scene_hold_seconds: 25
+    min_scene_hold_seconds_default: 5
+    max_scene_hold_seconds_default: 8
     text_card_hold_seconds: 4
     stat_card_hold_seconds: 4
     transition_duration_seconds: 0.5
