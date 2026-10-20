@@ -1,0 +1,33 @@
+{
+ "what": "Ground truth for the reference pacing measurement. Each row is one minute of one reference, read off a 1 fps contact sheet and counted by eye.",
+ "why": "The automatic cut detector could not be trusted across these six references. Calibrated on one LEMMiNO minute it read 18 against a hand count of 18, and on another minute of the same film it read 1 against 7. On footage-led material it over-reads instead: 19 against 8. The error is not noise, it is a property of the material — a detector fires inside a moving shot and stays quiet between two photographs that share a palette. So the absolute numbers in reference_pacing.md come from these rows, and the detector supplies the shape of the curve between them.",
+ "method": {
+  "sheet": "ffmpeg fps=1, scale=320, tile=10x6 — sixty frames, one per second",
+  "counted": "distinct shots visible in the minute",
+  "a_shot": "one continuous camera or graphic take. A reveal inside a held graphic, an annotation appearing over a diagram, or a push across one still is NOT a new shot.",
+  "known_bias": "a shot shorter than one second can fall between two sampled frames and be missed, so these counts are a slight under-count of the fastest passages"
+ },
+ "sampled_minutes": [
+  {"reference": "lemmino-cicada", "minute": 4, "hand_shots": 7, "detector_cuts": 1,
+   "note": "TOR window, PGP card, a long scrolling-text animation, a forum page, two text cards, hands on a phone"},
+  {"reference": "lemmino-cicada", "minute": 11, "hand_shots": 1, "detector_cuts": 0,
+   "note": "one continuously scrolling document for the whole minute"},
+  {"reference": "lemmino-apocalypse", "minute": 6, "hand_shots": 3, "detector_cuts": 0,
+   "note": "comet graphic ~24s, annotated Earth cross-section, Earth with title"},
+  {"reference": "bs-book-75000", "minute": 17, "hand_shots": 11, "detector_cuts": 3,
+   "note": "article pages, headline cards, a DNA graphic, an embedded video, portraits"},
+  {"reference": "bs-antarctica", "minute": 15, "hand_shots": 8, "detector_cuts": 3,
+   "note": "stylised body diagram alternating with a machine graphic, several joins are dissolves"},
+  {"reference": "foc-sumerians-openA", "minute": 5, "hand_shots": 14, "detector_cuts": 12,
+   "note": "the title sequence and the presenter's piece to camera — the fastest minute measured anywhere"},
+  {"reference": "foc-sumerians-openA", "minute": 10, "hand_shots": 8, "detector_cuts": 19,
+   "note": "aerial and underwater footage; the detector fires repeatedly inside the moving shots"},
+  {"reference": "foc-sumerians-finalB", "minute": 12, "hand_shots": 4, "detector_cuts": 3,
+   "note": "a tablet pan, then a single 40-second orbit around a ziggurat render, then two landscape plates"}
+ ],
+ "shots_per_minute_by_channel": {
+  "LEMMiNO": {"samples": [7, 1, 3], "mean": 3.7, "mean_shot_seconds": 16.2},
+  "Barely Sociable": {"samples": [11, 8], "mean": 9.5, "mean_shot_seconds": 6.3},
+  "Fall of Civilizations": {"samples": [14, 8, 4], "mean": 8.7, "mean_shot_seconds": 6.9}
+ }
+}

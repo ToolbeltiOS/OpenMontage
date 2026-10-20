@@ -131,6 +131,21 @@
             "type": "array",
             "items": { "type": "string" }
           },
+          "gate_commands": {
+            "type": "array",
+            "description": "Blocking checks a stage must pass. `run` is a shell command; `{artifacts}` expands to the project's artifacts directory. A non-zero exit fails the stage before the next one starts.",
+            "items": {
+              "type": "object",
+              "required": ["name", "run"],
+              "additionalProperties": false,
+              "properties": {
+                "name": { "type": "string" },
+                "run": { "type": "string" },
+                "blocking": { "type": "boolean", "default": true },
+                "why": { "type": "string" }
+              }
+            }
+          },
           "sub_stages": {
             "type": "array",
             "description": "Optional sub-stages within a stage (e.g., sample preview for reference-driven productions)",
