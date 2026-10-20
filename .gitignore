@@ -133,3 +133,6 @@ venv/
 # Natural Earth terrain raster (700MB, public domain, re-downloadable)
 assets/basemaps/
 !projects/*/artifacts/demo_act2_props.json
+
+# Critic contact sheets (regenerable)
+reports/critic/
