@@ -4,6 +4,7 @@ import { geoMercator, geoPath, geoDistance } from "d3-geo";
 import { feature } from "topojson-client";
 import { SYS, TYPE, TRACK, EXPO_OUT, LAYOUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
+import { TerrainBase, TerrainTile } from "./TerrainBase";
 
 export interface MapMarker {
   lon: number;
@@ -34,6 +35,15 @@ export interface MapRouteProps {
   coords?: string;
   /** great-circle style arc instead of straight segments */
   arc?: boolean;
+  /**
+   * Terrain tile under the route. Without one the map falls back to the flat
+   * plate, which is what run #1 shipped: a dark grey silhouette with no
+   * indication that the Altar Stone's route crosses a sea or that Preseli is
+   * a range of hills. Cut a tile with scripts/build_basemap_tile.py.
+   */
+  basemap?: TerrainTile;
+  /** total basemap drift across the shot, as a fraction of the frame */
+  basemap_drift?: number;
   /**
    * Coastline detail. Defaults to "auto": 50m once the projection scale passes
    * 2000, 110m below it. 110m coastline falls apart on a regional map — Preseli
@@ -87,14 +97,24 @@ export const MapRoute: React.FC<MapRouteProps> = ({
   arc = false,
   detail = "auto",
   borders = false,
+  basemap,
+  basemap_drift = 0.015,
 }) => {
   const frame = useCurrentFrame();
-  const { fps, width, height } = useVideoConfig();
+  const { fps, width, height, durationInFrames } = useVideoConfig();
 
+  // With a terrain base the coastline is not decoration, it is the mask the
+  // ocean tint is cut with. 110m against a 1:10m raster leaves the relief
+  // showing through the sea and the sea lying over Norway, so a basemap
+  // always takes the finer line whatever the scale says.
   const resolution =
-    detail === "auto" ? (scale > DETAIL_SCALE_THRESHOLD ? "50m" : "110m") : detail;
+    detail !== "auto"
+      ? detail
+      : basemap || scale > DETAIL_SCALE_THRESHOLD
+        ? "50m"
+        : "110m";
 
-  const { pathD, projection, landPath, borderPath } = useMemo(() => {
+  const { pathD, projection, landPath, landGeo, borderPath } = useMemo(() => {
     const c =
       center ??
       ([
@@ -113,6 +133,7 @@ export const MapRoute: React.FC<MapRouteProps> = ({
       pathD: gp(line) as string,
       projection: proj,
       landPath: gp(land) as string,
+      landGeo: land,
       borderPath: borderGeo ? (gp(borderGeo) as string) : null,
     };
   }, [route, center, scale, width, height, resolution, borders]);
@@ -151,8 +172,28 @@ export const MapRoute: React.FC<MapRouteProps> = ({
       sceneIndex={sceneIndex}
       coords={coords}
     >
+      {basemap ? (
+        <TerrainBase
+          tile={basemap}
+          projection={projection}
+          land={landGeo}
+          width={width}
+          height={height}
+          progress={durationInFrames ? frame / durationInFrames : 0}
+          drift={basemap_drift}
+        />
+      ) : null}
+
       <svg width={width} height={height} style={{ position: "absolute", inset: 0 }}>
-        <path d={landPath} fill="#16161B" stroke={SYS.rule} strokeWidth={1} />
+        {/* With a terrain base the land is already drawn; the coastline stays
+            as a hairline so the route has an edge to read against. */}
+        <path
+          d={landPath}
+          fill={basemap ? "none" : "#16161B"}
+          stroke={SYS.rule}
+          strokeWidth={basemap ? 0.8 : 1}
+          opacity={basemap ? 0.65 : 1}
+        />
         {borderPath ? (
           <path d={borderPath} fill="none" stroke={SYS.rule} strokeWidth={0.6} opacity={0.5} />
         ) : null}

@@ -119,6 +119,21 @@ export const SchematicSchema = z.object({
   ...CHROME,
 });
 
+/** The terrain tile under a map, cut by scripts/build_basemap_tile.py. */
+export const TerrainTileSchema = z.object({
+  src: z.string().min(1),
+  bounds: z.tuple([z.number(), z.number(), z.number(), z.number()])
+    .describe("[west, south, east, north] of the tile, in degrees"),
+});
+
+export const GlobeDescentSchema = z.object({
+  lon: z.number().min(-180).max(180),
+  lat: z.number().min(-90).max(90),
+  seconds: z.number().min(1).max(8).optional(),
+  handoff_seconds: z.number().min(0).max(3).optional(),
+  texture: z.string().optional(),
+});
+
 export const MapRouteSchema = z.object({
   route: z.array(z.tuple([z.number().min(-180).max(180), z.number().min(-90).max(90)])).min(2),
   markers: z
@@ -138,6 +153,8 @@ export const MapRouteSchema = z.object({
   draw_seconds: z.number().positive().optional(),
   draw_at: sec.optional(),
   distance_callout: z.object({ text: z.string().min(1), at: sec }).optional(),
+  basemap: TerrainTileSchema.optional(),
+  basemap_drift: z.number().min(0).max(0.08).optional(),
   title: z.string().optional(),
   caption: z.string().optional(),
   arc: z.boolean().optional(),
@@ -260,6 +277,7 @@ export const DOC_COMPONENT_SCHEMAS = {
   annotated_still: AnnotatedStillSchema,
   schematic: SchematicSchema,
   map_route: MapRouteSchema,
+  globe_descent: GlobeDescentSchema,
   timeline: TimelineSchema,
   document_reveal: DocumentRevealSchema,
   act_title_card: ActTitleCardSchema,

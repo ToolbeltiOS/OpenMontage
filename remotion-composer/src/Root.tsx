@@ -17,7 +17,7 @@ import { CaptionOverlay, WordCaption } from "./components/CaptionOverlay";
 import { CollageBurst, CollageBurstProps } from "./CollageBurst";
 import { LyricOverlay, LyricOverlayProps } from "./LyricOverlay";
 import {
-  DemoAnnotatedStill, DemoSchematic, DemoMapRoute, DemoTimeline, DemoDocumentReveal,
+  DemoAnnotatedStill, DemoSchematic, DemoMapRoute, DemoMapRoutePreseli, DemoGlobeDescent, DemoTimeline, DemoDocumentReveal,
   SlotAct4S171, SlotAct3S110, SlotAct2S078,
 } from "./DocDemos";
 import {
@@ -164,6 +164,22 @@ export const Root: React.FC = () => {
       <Composition
         id="DocMapRoute"
         component={DemoMapRoute}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="DocGlobeDescent"
+        component={DemoGlobeDescent}
+        durationInFrames={180}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="DocMapRoutePreseli"
+        component={DemoMapRoutePreseli}
         durationInFrames={150}
         fps={30}
         width={1920}

@@ -129,3 +129,6 @@ venv/
 
 # Local Wan / diffusers GPU environment
 .venv-wan/
+
+# Natural Earth terrain raster (700MB, public domain, re-downloadable)
+assets/basemaps/

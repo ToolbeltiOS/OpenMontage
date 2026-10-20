@@ -107,7 +107,9 @@
         "sceneIndex",
         "coords",
         "kicker",
-        "source"
+        "source",
+        "basemap",
+        "basemap_drift"
       ],
       "array_item_required": {
         "markers": [
@@ -118,6 +120,18 @@
         ]
       },
       "purpose": "route drawn over real geography (d3-geo + world-atlas)"
+    },
+    "globe_descent": {
+      "required": [
+        "lon",
+        "lat"
+      ],
+      "optional": [
+        "seconds",
+        "handoff_seconds",
+        "texture"
+      ],
+      "purpose": "a descent from a dark globe to one place over 3-4s, handing off to the 2D map for the same extent; WebGL, so it needs --gl=angle on an M1"
     },
     "timeline": {
       "required": [

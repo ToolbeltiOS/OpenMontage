@@ -347,6 +347,43 @@ visual_cadence:
     no_consecutive_same_source: true # two stills in a row may not come from the same provider
     max_consecutive_stills: 2        # a motion slot must break any run of two
     rule: "At 40-45% of slots, stills carry nearly half the film. Every one takes a parallax or 2.5D move, none is held past 6 seconds, and no two in a row come from the same source. A static hold at this share reads as a slideshow immediately."
+  # ── cinematic maps (ADDED 2026-10-20) ─────────────────────────────────
+  # Run #1's maps were a dark silhouette on a flat plate: nothing on screen
+  # said that the Altar Stone's route crosses a sea, or that Preseli is a
+  # range of hills. The route was the only thing drawn and the geography it
+  # crossed was a shape.
+  maps:
+    base: terrain
+    source:
+      name: "Natural Earth II with Shaded Relief and Water, 1:10m"
+      licence: public domain
+      url: "https://www.naturalearthdata.com/downloads/10m-raster-data/10m-natural-earth-2/"
+      local: assets/basemaps/NE2_HR_LC_SR/      # 700MB, gitignored, re-downloadable
+      tiles_built_by: scripts/build_basemap_tile.py
+    treatment:
+      ocean: "flooded with the palette, masked by the coastline the map already
+              draws — the tint lands on the coast instead of being colour-keyed
+              out of the raster"
+      land: "relief kept; desaturated and lifted into the film's grade"
+      coastline: "a hairline over the raster, so the route has an edge to read
+                  against"
+      drift_pct: [1, 2]
+    rules:
+      - "A terrain base always takes the 50m coastline, whatever the scale
+         rule says. 110m against a 1:10m raster leaves relief showing through
+         the sea and the sea lying over Norway."
+      - "Tiles are cut at build time in the source's own projection and warped
+         per row into the shot's Mercator. Reprojecting 700MB per frame to
+         avoid a 300KB JPEG is the wrong trade in every direction."
+    globe_descent:
+      seconds: [3, 4]
+      hands_off_to: the same map, at the same extent
+      rule: "The camera moves onto the ray through the target and looks back
+             at the centre. Rotating the globe instead means deriving the
+             texture's orientation from the sphere's winding, and the first
+             attempt put Antarctica in frame on a descent to Scotland."
+      requires: "WebGL — --gl=angle on this machine"
+
   motion_graphic_types:
     - map                           # route tracing, site location
     - cross_section_diagram         # joint geometry, drill cores, block section

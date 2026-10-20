@@ -3,6 +3,7 @@ import { staticFile } from "remotion";
 import { AnnotatedStill } from "./components/AnnotatedStill";
 import { Schematic } from "./components/Schematic";
 import { MapRoute } from "./components/MapRoute";
+import { GlobeDescent } from "./components/GlobeDescent";
 import { Timeline } from "./components/Timeline";
 import { DocumentReveal } from "./components/DocumentReveal";
 import { SYS } from "./design/system";
@@ -81,6 +82,7 @@ export const DemoMapRoute: React.FC = () => (
       { lon: -1.826, lat: 51.179, label: "Stonehenge", at: 2.9, dx: 20, dy: 28 },
     ]}
     scale={1500}
+    basemap={{ src: "basemaps/orcadian.jpg", bounds: [-42.5, 39.5, 34.5, 66.5] }}
     draw_at={0.9}
     draw_seconds={2.4}
     distance_callout={{ text: "≥ 750 km", at: 3.5 }}
@@ -212,4 +214,52 @@ export const SlotAct2S078: React.FC = () => (
     distance_callout={{ text: "140 or 180 miles?", at: 3.4 }}
     caption="Institutions publish different figures for the same journey"
   />
+);
+
+
+/**
+ * Preseli to Salisbury Plain over the terrain base — the second of the two
+ * test routes for the cinematic map. The hills the bluestone came from are
+ * visible as hills here; on the flat plate they were an undifferentiated grey
+ * silhouette.
+ */
+export const DemoMapRoutePreseli: React.FC = () => (
+  <MapRoute
+    kicker="Transport"
+    title="Preseli to Salisbury Plain"
+    actNumber="02"
+    actTitle="Where the stones came from"
+    sceneIndex="S 069 / PRESELI"
+    route={[
+      [-4.74, 51.99],
+      [-4.1, 51.78],
+      [-3.2, 51.5],
+      [-2.4, 51.3],
+      [-1.826, 51.179],
+    ]}
+    markers={[
+      { lon: -4.74, lat: 51.99, label: "Carn Goedog", at: 0.5 },
+      { lon: -1.826, lat: 51.179, label: "Stonehenge", at: 2.6, dx: 18, dy: 26 },
+    ]}
+    scale={5200}
+    basemap={{ src: "basemaps/preseli.jpg", bounds: [-15.5, 46.2, 9.0, 56.6] }}
+    draw_at={0.8}
+    draw_seconds={2.2}
+    distance_callout={{ text: "≈ 225 km", at: 3.2 }}
+    caption="Carn Goedog and Craig Rhos-y-felin to Salisbury Plain"
+    source="Parker Pearson et al., Antiquity 93 (2019)"
+  />
+);
+
+
+/**
+ * The globe descent, handing off to the Orcadian route. The map it dissolves
+ * into is the same component with the same extent, so the handoff lands on
+ * the geography the descent was aiming at rather than cutting to another
+ * drawing of it.
+ */
+export const DemoGlobeDescent: React.FC = () => (
+  <GlobeDescent lon={-3.9} lat={55.5} seconds={3.5}>
+    <DemoMapRoute />
+  </GlobeDescent>
 );

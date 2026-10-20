@@ -28,6 +28,7 @@ import { SourceCaption } from "./design/Scene";
 import { ActTitleCard } from "./scenes/ActTitleCard";
 import { TitleSequence } from "./scenes/TitleSequence";
 import { BeforeAfter } from "./scenes/BeforeAfter";
+import { GlobeDescent } from "./components/GlobeDescent";
 import { EvidenceCard } from "./scenes/EvidenceCard";
 import { ScaleComparison } from "./scenes/ScaleComparison";
 import { OutroCta } from "./components/OutroCta";
@@ -287,6 +288,14 @@ export interface Cut {
   fade_out?: number;
   // title_sequence (channel is shared with outro_cta)
   sting_at?: number;
+  // map_route terrain base / globe_descent
+  basemap?: { src: string; bounds: [number, number, number, number] };
+  basemap_drift?: number;
+  lon?: number;
+  lat?: number;
+  seconds?: number;
+  handoff_seconds?: number;
+  texture?: string;
   // before_after
   before?: string;
   after?: string;
@@ -748,6 +757,12 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
   if (cut.type === "act_title_card" && cut.act && cut.title) {
     return (<ActTitleCard act={cut.act} title={cut.title} epigraph={cut.epigraph}
       image={cut.backgroundImage} fade_in={cut.fade_in} fade_out={cut.fade_out} />);
+  }
+  if (cut.type === "globe_descent" && cut.lon !== undefined && cut.lat !== undefined) {
+    return (
+      <GlobeDescent lon={cut.lon} lat={cut.lat} seconds={cut.seconds}
+        handoff_seconds={cut.handoff_seconds} texture={cut.texture} />
+    );
   }
   if (cut.type === "title_sequence" && cut.title) {
     return (<TitleSequence title={cut.title} channel={cut.channel}
