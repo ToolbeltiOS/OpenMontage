@@ -1,0 +1,734 @@
+{
+ "cuts": [
+  {
+   "id": "c049",
+   "source": "demo/c049__wikimedia_133096.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 2.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s049 | straight cut on meaning change",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 049 / RANO RARAKU",
+   "caption": "Rano Raraku \u2014 statues still in and below the quarry",
+   "sourceLine": "Wikimedia Commons \u00b7 CC BY-SA",
+   "source_in_seconds": 0,
+   "beat": "transition",
+   "internal_motion": false,
+   "act": 2,
+   "camera": {
+    "move": "drift",
+    "speed_pct_per_second": 1.2,
+    "direction": "right",
+    "reason": "transition: lateral movement carries the eye to the next subject (right, held across the run)"
+   },
+   "parallax": true,
+   "parallaxFrom": 1.0,
+   "parallaxTo": 1.0,
+   "driftFrom": -0.0156,
+   "driftTo": 0.0156
+  },
+  {
+   "id": "c050",
+   "source": "demo/c050__wikimedia_21013494.jpg",
+   "in_seconds": 2.6,
+   "out_seconds": 5.0,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act2_s050 | hold reached the 6s ceiling for this treatment",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 050",
+   "source_in_seconds": 0,
+   "beat": "transition",
+   "internal_motion": false,
+   "act": 2,
+   "camera": {
+    "move": "drift",
+    "speed_pct_per_second": 1.2,
+    "direction": "right",
+    "reason": "transition: lateral movement carries the eye to the next subject (right, held across the run)"
+   },
+   "audio_lead_frames": 0,
+   "lead_reason": "straight cut",
+   "parallax": true,
+   "parallaxFrom": 1.0,
+   "parallaxTo": 1.0,
+   "driftFrom": -0.0144,
+   "driftTo": 0.0144
+  },
+  {
+   "id": "c051",
+   "source": "demo/c051__pixabay_video_232185_1080.mp4",
+   "in_seconds": 5.0,
+   "out_seconds": 7.8,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s051 | straight cut on meaning change",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 051",
+   "source_in_seconds": 0,
+   "beat": "transition",
+   "internal_motion": true,
+   "act": 2,
+   "camera": {
+    "move": "drift",
+    "speed_pct_per_second": 1.2,
+    "direction": "right",
+    "reason": "transition: lateral movement carries the eye to the next subject (right, held across the run)"
+   },
+   "audio_lead_frames": 0,
+   "lead_reason": "straight cut",
+   "parallax": true,
+   "parallaxFrom": 1.0,
+   "parallaxTo": 1.0,
+   "driftFrom": -0.0168,
+   "driftTo": 0.0168
+  },
+  {
+   "id": "c052",
+   "in_seconds": 7.8,
+   "out_seconds": 15.8,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s052 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 052 / BASE GEOMETRY",
+   "kicker": "The design",
+   "title": "A wide D-shaped base and a forward lean",
+   "caption": "The team modelled the geometry in three dimensions from real statues",
+   "layers": [
+    {
+     "id": "ground",
+     "kind": "line",
+     "x": 300,
+     "y": 880,
+     "x2": 1620,
+     "y2": 880,
+     "stroke": "#3A3630",
+     "strokeWidth": 3
+    },
+    {
+     "id": "body",
+     "kind": "path",
+     "d": "M 740 880 L 772 500 L 900 330 L 1010 350 L 1040 540 L 1010 880 Z",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "baseD",
+     "kind": "path",
+     "d": "M 740 880 L 1010 880 L 1004 846 a 136 46 0 0 0 -258 0 Z",
+     "stroke": "#C08A3E",
+     "strokeWidth": 4
+    },
+    {
+     "id": "plumb",
+     "kind": "line",
+     "x": 876,
+     "y": 330,
+     "x2": 876,
+     "y2": 940,
+     "stroke": "#55514A",
+     "strokeWidth": 2,
+     "dashed": true
+    },
+    {
+     "id": "com",
+     "kind": "circle",
+     "x": 906,
+     "y": 640,
+     "r": 13,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3
+    },
+    {
+     "id": "comdrop",
+     "kind": "line",
+     "x": 906,
+     "y": 640,
+     "x2": 906,
+     "y2": 880,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2,
+     "dashed": true
+    },
+    {
+     "id": "lean",
+     "kind": "path",
+     "d": "M 876 420 a 120 120 0 0 1 44 16",
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "ground",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "body",
+     "at": 0.4,
+     "effect": "draw",
+     "duration": 1.2
+    },
+    {
+     "layer_id": "baseD",
+     "at": 1.7,
+     "effect": "draw",
+     "duration": 0.8
+    },
+    {
+     "layer_id": "plumb",
+     "at": 2.7,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "lean",
+     "at": 3.2,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "com",
+     "at": 3.9,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "comdrop",
+     "at": 4.2,
+     "effect": "draw",
+     "duration": 0.4
+    }
+   ],
+   "labels": [
+    {
+     "text": "D-shaped footprint",
+     "x": 1070,
+     "y": 876,
+     "at": 2.3,
+     "anchor": "start",
+     "accent": true
+    },
+    {
+     "text": "forward lean",
+     "x": 950,
+     "y": 404,
+     "at": 3.6,
+     "anchor": "start"
+    },
+    {
+     "text": "centre of mass",
+     "x": 946,
+     "y": 630,
+     "at": 4.4,
+     "anchor": "start",
+     "accent": true
+    }
+   ],
+   "claim_refs": [
+    "c06"
+   ],
+   "source": "Ledger c06",
+   "source_in_seconds": 0,
+   "beat": "exposition",
+   "internal_motion": true,
+   "act": 2,
+   "camera": {
+    "move": "pull",
+    "speed_pct_per_second": 2.0,
+    "direction": "none",
+    "reason": "exposition: context arrives as the frame opens"
+   },
+   "audio_lead_frames": 0,
+   "lead_reason": "straight cut",
+   "parallax": true,
+   "parallaxFrom": 1.16,
+   "parallaxTo": 1.0
+  },
+  {
+   "id": "c053",
+   "source": "demo/c053__wm_543133505_detail.jpg",
+   "in_seconds": 15.8,
+   "out_seconds": 23.3,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act2_s053 | hold reached the 6s ceiling for this treatment",
+   "sourceLine": "Dennis G. Jarvis \u00b7 CC BY-SA 2.0",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 053",
+   "source_in_seconds": 0,
+   "beat": "exposition",
+   "internal_motion": false,
+   "act": 2,
+   "camera": {
+    "move": "pull",
+    "speed_pct_per_second": 2.0,
+    "direction": "none",
+    "reason": "exposition: context arrives as the frame opens"
+   },
+   "audio_lead_frames": 0,
+   "lead_reason": "straight cut",
+   "parallax": true,
+   "parallaxFrom": 1.15,
+   "parallaxTo": 1.0
+  },
+  {
+   "id": "c054",
+   "in_seconds": 23.3,
+   "out_seconds": 38.8,
+   "layer": 0,
+   "transition_in": "grain_light_leak",
+   "transition_duration": 0.6,
+   "reason": "hero_entry | act2_s054 | hero-slot entry \u2014 the one reserved grain/light-leak this act",
+   "type": "schematic",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 054 / THE GAIT",
+   "kicker": "The method",
+   "title": "Pivot, swing, pivot",
+   "caption": "Three hemp ropes, eighteen people, a 4.35-tonne replica moved about 100 metres",
+   "layers": [
+    {
+     "id": "ground",
+     "kind": "line",
+     "x": 260,
+     "y": 840,
+     "x2": 1660,
+     "y2": 840,
+     "stroke": "#3A3630",
+     "strokeWidth": 3
+    },
+    {
+     "id": "p1",
+     "kind": "path",
+     "d": "M 430 840 L 452 560 L 520 470 L 576 490 L 596 600 L 582 840 Z",
+     "stroke": "#55514A",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "p2",
+     "kind": "path",
+     "d": "M 840 840 L 846 560 L 918 468 L 974 492 L 988 600 L 992 840 Z",
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "p3",
+     "kind": "path",
+     "d": "M 1250 840 L 1240 560 L 1314 470 L 1370 492 L 1386 600 L 1402 840 Z",
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "arc1",
+     "kind": "path",
+     "d": "M 506 450 a 300 300 0 0 1 400 0",
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5,
+     "dashed": true
+    },
+    {
+     "id": "arc2",
+     "kind": "path",
+     "d": "M 906 450 a 300 300 0 0 1 400 0",
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5,
+     "dashed": true
+    },
+    {
+     "id": "rope1",
+     "kind": "line",
+     "x": 520,
+     "y": 470,
+     "x2": 300,
+     "y2": 400,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "rope2",
+     "kind": "line",
+     "x": 576,
+     "y": 490,
+     "x2": 800,
+     "y2": 392,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "pivot1",
+     "kind": "circle",
+     "x": 582,
+     "y": 840,
+     "r": 9,
+     "fill": "#C08A3E",
+     "stroke": "none"
+    },
+    {
+     "id": "pivot2",
+     "kind": "circle",
+     "x": 840,
+     "y": 840,
+     "r": 9,
+     "fill": "#C08A3E",
+     "stroke": "none"
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "ground",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "p1",
+     "at": 0.4,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "rope1",
+     "at": 1.0,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "rope2",
+     "at": 1.2,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "pivot1",
+     "at": 1.6,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "arc1",
+     "at": 1.8,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "p2",
+     "at": 2.5,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "pivot2",
+     "at": 3.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "arc2",
+     "at": 3.3,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "p3",
+     "at": 4.0,
+     "effect": "draw",
+     "duration": 0.8
+    }
+   ],
+   "labels": [
+    {
+     "text": "rope teams",
+     "x": 300,
+     "y": 360,
+     "at": 1.5,
+     "anchor": "start",
+     "accent": true
+    },
+    {
+     "text": "pivot on the base edge",
+     "x": 700,
+     "y": 920,
+     "at": 2.2,
+     "anchor": "middle"
+    }
+   ],
+   "claim_refs": [
+    "c04",
+    "c06"
+   ],
+   "source": "Lipo, Hunt and Rapu Haoa (2012) \u2014 ledger c04",
+   "source_in_seconds": 0,
+   "beat": "reveal",
+   "internal_motion": true,
+   "act": 2,
+   "camera": {
+    "move": "push",
+    "speed_pct_per_second": 2.4,
+    "direction": "none",
+    "reason": "reveal: the frame closes on what is being revealed; the act's one speed ramp, into a hard cut",
+    "ramp": true
+   },
+   "audio_lead_frames": 15,
+   "lead_reason": "reveal: the sentence that turns the act starts before the picture does, so the image lands on a line already running",
+   "parallax": true,
+   "parallaxFrom": 1.0,
+   "parallaxTo": 1.372
+  },
+  {
+   "id": "c055",
+   "source": "demo/c055__pixabay_video_2266.mp4",
+   "in_seconds": 38.8,
+   "out_seconds": 44.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s055 | straight cut on meaning change",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 055",
+   "source_in_seconds": 0,
+   "beat": "landing",
+   "internal_motion": true,
+   "act": 2,
+   "camera": {
+    "move": "lock",
+    "speed_pct_per_second": 0.0,
+    "direction": "none",
+    "reason": "landing: the picture stops with the voice and holds the air"
+   },
+   "audio_lead_frames": 0,
+   "lead_reason": "landing: the picture holds through the written air, so its boundary does not move",
+   "parallax": false
+  },
+  {
+   "id": "c056",
+   "source": "demo/c056__wm_748006084.jpg",
+   "in_seconds": 44.6,
+   "out_seconds": 52.3,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act2_s056 | hold reached the 6s ceiling for this treatment",
+   "sourceLine": "Dennis G. Jarvis \u00b7 CC BY-SA 2.0",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 056",
+   "source_in_seconds": 0,
+   "beat": "exposition",
+   "internal_motion": false,
+   "act": 2,
+   "camera": {
+    "move": "pull",
+    "speed_pct_per_second": 2.0,
+    "direction": "none",
+    "reason": "exposition: context arrives as the frame opens"
+   },
+   "audio_lead_frames": -6,
+   "lead_reason": "exposition: the picture arrives before the sentence that explains it, so the cut stops announcing itself",
+   "parallax": true,
+   "parallaxFrom": 1.154,
+   "parallaxTo": 1.0
+  },
+  {
+   "id": "c057",
+   "in_seconds": 52.3,
+   "out_seconds": 61.3,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s057 | straight cut on meaning change",
+   "type": "evidence_card",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 057 / THE EXPERIMENT",
+   "index": "c04",
+   "claim": "A 4.35-tonne replica was walked about 100 metres by eighteen people on three hemp ropes.",
+   "attribution": "Lipo, Hunt and Rapu Haoa (2012), Journal of Archaeological Science",
+   "detail": "DOI 10.1016/j.jas.2012.09.029. Reported durations differ between accounts, so no time is given here.",
+   "status": "peer_reviewed",
+   "caption": "Crew and distance are solid; the clock is not",
+   "claim_refs": [
+    "c04"
+   ],
+   "source_in_seconds": 0,
+   "beat": "exposition",
+   "internal_motion": false,
+   "act": 2,
+   "camera": {
+    "move": "pull",
+    "speed_pct_per_second": 2.0,
+    "direction": "none",
+    "reason": "exposition: context arrives as the frame opens"
+   },
+   "audio_lead_frames": 0,
+   "lead_reason": "straight cut",
+   "parallax": true,
+   "parallaxFrom": 1.18,
+   "parallaxTo": 1.0
+  },
+  {
+   "id": "c058",
+   "source": "demo/c058__wikimedia_54342588.jpg",
+   "in_seconds": 61.3,
+   "out_seconds": 67.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act2_s058 | hold reached the 6s ceiling for this treatment",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 058",
+   "source_in_seconds": 0,
+   "beat": "exposition",
+   "internal_motion": false,
+   "act": 2,
+   "camera": {
+    "move": "pull",
+    "speed_pct_per_second": 2.0,
+    "direction": "none",
+    "reason": "exposition: context arrives as the frame opens"
+   },
+   "audio_lead_frames": 0,
+   "lead_reason": "straight cut",
+   "parallax": true,
+   "parallaxFrom": 1.126,
+   "parallaxTo": 1.0
+  },
+  {
+   "id": "c059",
+   "in_seconds": 67.6,
+   "out_seconds": 76.3,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s059 | straight cut on meaning change",
+   "type": "timeline",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 059 / THE FOLLOW-UP",
+   "kicker": "What came after",
+   "title": "The demonstration, then the survey",
+   "events": [
+    {
+     "year": 2012,
+     "label": "the replica is walked",
+     "at": 0.6,
+     "accent": true
+    },
+    {
+     "year": 2025,
+     "label": "962 moai analysed",
+     "at": 2.4,
+     "accent": true
+    }
+   ],
+   "span": [
+    2006,
+    2031
+   ],
+   "caption": "'The walking moai hypothesis' responds to critics and analysed 962 statues",
+   "claim_refs": [
+    "c04",
+    "c07"
+   ],
+   "source": "Ledger c04, c07",
+   "source_in_seconds": 0,
+   "beat": "exposition",
+   "internal_motion": true,
+   "act": 2,
+   "camera": {
+    "move": "pull",
+    "speed_pct_per_second": 2.0,
+    "direction": "none",
+    "reason": "exposition: context arrives as the frame opens"
+   },
+   "audio_lead_frames": -6,
+   "lead_reason": "exposition: the picture arrives before the sentence that explains it, so the cut stops announcing itself",
+   "parallax": true,
+   "parallaxFrom": 1.174,
+   "parallaxTo": 1.0
+  },
+  {
+   "id": "c060",
+   "source": "demo/c060__wikimedia_29809354.jpg",
+   "in_seconds": 76.3,
+   "out_seconds": 82.8,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act2_s060 | hold reached the 6s ceiling for this treatment",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 060",
+   "source_in_seconds": 0,
+   "beat": "exposition",
+   "internal_motion": false,
+   "act": 2,
+   "camera": {
+    "move": "pull",
+    "speed_pct_per_second": 2.0,
+    "direction": "none",
+    "reason": "exposition: context arrives as the frame opens"
+   },
+   "audio_lead_frames": 0,
+   "lead_reason": "straight cut",
+   "parallax": true,
+   "parallaxFrom": 1.13,
+   "parallaxTo": 1.0
+  },
+  {
+   "id": "c061",
+   "in_seconds": 82.8,
+   "out_seconds": 89.8,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s061 | straight cut on meaning change",
+   "type": "evidence_card",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 061 / THE OBJECTION",
+   "index": "c08",
+   "claim": "\u201cA stunt and not an experiment.\u201d",
+   "attribution": "Jo Anne Van Tilburg, UCLA",
+   "detail": "The orthodox side is itself split: the objection is to whether the demonstration counts as an experiment at all.",
+   "status": "contested",
+   "caption": "Quoted as given",
+   "claim_refs": [
+    "c08"
+   ],
+   "source_in_seconds": 0,
+   "beat": "exposition",
+   "internal_motion": false,
+   "act": 2,
+   "camera": {
+    "move": "pull",
+    "speed_pct_per_second": 2.0,
+    "direction": "none",
+    "reason": "exposition: context arrives as the frame opens"
+   },
+   "audio_lead_frames": 0,
+   "lead_reason": "straight cut",
+   "parallax": true,
+   "parallaxFrom": 1.14,
+   "parallaxTo": 1.0
+  }
+ ],
+ "overlays": [],
+ "captions": [],
+ "burn_in_captions": false,
+ "caption_style": "documentary",
+ "playbook": "wak3up-documentary"
+}

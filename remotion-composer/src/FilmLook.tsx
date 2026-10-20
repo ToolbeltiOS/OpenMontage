@@ -2,7 +2,7 @@ import React from "react";
 import {
   AbsoluteFill,
   Img,
-  OffthreadVideo,
+  Video,
   staticFile,
   useCurrentFrame,
   useVideoConfig,
@@ -115,7 +115,45 @@ const SourcePlane: React.FC<{ texture: THREE.Texture; tint: THREE.Color }> = ({
  * is wrapped as a texture instead of fetching the same file twice. One
  * guarantee, and it is the renderer's own.
  */
+/**
+ * The same idea for a moving source.
+ *
+ * `OffthreadVideo` extracts frames outside the DOM, so there is no element for
+ * WebGL to sample — the first version of this pass rendered an invisible
+ * OffthreadVideo and a canvas with nothing in it. `Video` mounts a real
+ * element and Remotion seeks it to the current frame before the capture, so a
+ * VideoTexture over it samples the right frame.
+ */
+const useVideoTexture = (src: string, enabled: boolean) => {
+  const frame = useCurrentFrame();
+  const [el, setEl] = React.useState<HTMLVideoElement | null>(null);
+  const texture = React.useMemo(() => {
+    if (!el) return null;
+    const t = new THREE.VideoTexture(el);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.minFilter = THREE.LinearFilter;
+    return t;
+  }, [el]);
+
+  // The element is seeked per frame, so the texture has to be told each time.
+  React.useEffect(() => {
+    if (texture) texture.needsUpdate = true;
+  }, [texture, frame]);
+
+  const video = enabled ? (
+    <Video
+      src={src.startsWith("http") ? src : staticFile(src)}
+      ref={(node) => setEl(node)}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0 }}
+      muted
+    />
+  ) : null;
+
+  return { texture, video };
+};
+
 const useImgTexture = (src: string, enabled: boolean) => {
+  const frame = useCurrentFrame();
   const [el, setEl] = React.useState<HTMLImageElement | null>(null);
   const texture = React.useMemo(() => {
     if (!el) return null;
@@ -129,8 +167,17 @@ const useImgTexture = (src: string, enabled: boolean) => {
   // and a THREE.Texture built from an incomplete element uploads nothing and
   // never updates. That rendered a black plane every time — which at least
   // had the courtesy to be deterministic.
+  // Re-uploaded every frame. Over a frame SEQUENCE the src changes each
+  // frame while React keeps the same <img> node, so onLoad fires with the
+  // same element reference, the state does not change, and the GPU keeps the
+  // first upload — which rendered ten seconds of picture and eighty of black.
+  React.useEffect(() => {
+    if (texture && el?.complete) texture.needsUpdate = true;
+  }, [texture, el, frame]);
+
   const img = enabled ? (
     <Img
+      key={src}
       src={src.startsWith("http") ? src : staticFile(src)}
       onLoad={(e) => setEl(e.currentTarget)}
       style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0 }}
@@ -162,7 +209,9 @@ export const FilmLook: React.FC<FilmLookProps> = ({
   const activeAct =
     acts?.find((a) => t >= a.from_seconds && t < a.to_seconds)?.act ?? act;
   const g = gradeOps(activeAct);
-  const { texture, img } = useImgTexture(src, isStill);
+  const { texture: stillTexture, img } = useImgTexture(src, isStill);
+  const { texture: videoTexture, video } = useVideoTexture(src, !isStill);
+  const texture = isStill ? stillTexture : videoTexture;
   const tint = React.useMemo(
     () => new THREE.Color(
       g.multiply[0] * g.brightness,
@@ -177,11 +226,7 @@ export const FilmLook: React.FC<FilmLookProps> = ({
       {/* The source. Remotion blocks the frame until this has decoded; the
           canvas below samples the element it finished with. */}
       {img}
-      {!isStill && (
-        <AbsoluteFill style={{ opacity: 0 }}>
-          <OffthreadVideo src={src.startsWith("http") ? src : staticFile(src)} />
-        </AbsoluteFill>
-      )}
+      {video}
 
       <ThreeCanvas
         width={width}
@@ -249,6 +294,32 @@ export const FilmLook: React.FC<FilmLookProps> = ({
  * which is also the more honest comparison — each is produced by exactly the
  * pass that would ship it.
  */
+/**
+ * The pass over a rendered frame SEQUENCE.
+ *
+ * A video source needs an element WebGL can sample, and neither of Remotion's
+ * video components provides one that survives a per-frame seek:
+ * OffthreadVideo extracts frames outside the DOM entirely, and a VideoTexture
+ * over <Video> sampled black. A frame sequence sidesteps the question — each
+ * frame is a still, and the still path is the one that renders the same
+ * numbers three times in a row.
+ *
+ * It costs disk: 90 seconds at 1080p is about 350 MB of JPEG. They are
+ * deleted after the encode.
+ */
+export const FilmLookFrames: React.FC<{
+  dir?: string;
+  act?: string;
+  stack?: "full" | "lean" | "minimal";
+  acts?: { act: string; from_seconds: number; to_seconds: number }[];
+}> = ({ dir = "demoframes", act = "act2", stack = "full", acts }) => {
+  const frame = useCurrentFrame();
+  const name = String(frame + 1).padStart(5, "0");
+  return (
+    <FilmLook src={`${dir}/f_${name}.jpg`} act={act} stack={stack} acts={acts} isStill />
+  );
+};
+
 export const CssLook: React.FC<{ src?: string; act?: string }> = ({
   src = "doc/outro_hero.jpg",
   act = "act3",

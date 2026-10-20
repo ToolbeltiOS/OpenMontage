@@ -133,25 +133,39 @@ def check(cuts: list[dict[str, Any]],
     problems: list[str] = []
     notes: list[str] = []
 
+    # The envelope describes a film. On a short extract its three tests are
+    # arithmetic artefacts rather than findings: a 90-second clip has one
+    # whole minute, so its cuts-per-minute spread is zero by construction, and
+    # its p90 is the second-longest of a dozen shots. The per-beat bands below
+    # still apply, because those are per shot.
+    FILM_MINIMUM_SECONDS = 240.0
+    short = d["duration_seconds"] < FILM_MINIMUM_SECONDS
+    if short:
+        notes.append(
+            f"{d['duration_seconds']:.0f}s of material: the film-level envelope "
+            f"(curve spread and the two tails) is not checked under "
+            f"{FILM_MINIMUM_SECONDS:.0f}s, because on a short extract it "
+            f"measures the sample rather than the edit")
+
     lo, hi = env["cuts_per_minute_mean"]
-    if not (lo <= d["cuts_per_minute_mean"] <= hi):
+    if not short and not (lo <= d["cuts_per_minute_mean"] <= hi):
         notes.append(
             f"mean {d['cuts_per_minute_mean']} cuts/min is outside {lo}-{hi}")
 
-    if d["cuts_per_minute_spread"] < env["cuts_per_minute_spread_min"]:
+    if not short and d["cuts_per_minute_spread"] < env["cuts_per_minute_spread_min"]:
         problems.append(
             f"the cuts-per-minute curve is flat: busiest minute "
             f"{d['cuts_per_minute_max']}, quietest {d['cuts_per_minute_min']}, "
             f"spread {d['cuts_per_minute_spread']} against a minimum of "
             f"{env['cuts_per_minute_spread_min']}")
 
-    if d["shot_length"]["p90"] < env["shot_length_p90_min_seconds"]:
+    if not short and d["shot_length"]["p90"] < env["shot_length_p90_min_seconds"]:
         notes.append(
             f"no long tail: p90 is {d['shot_length']['p90']}s, and the film "
             f"needs holds of at least {env['shot_length_p90_min_seconds']}s "
             f"to land its reveals")
 
-    if d["shot_length"]["p10"] > env["shot_length_p10_max_seconds"]:
+    if not short and d["shot_length"]["p10"] > env["shot_length_p10_max_seconds"]:
         notes.append(
             f"no short tail: p10 is {d['shot_length']['p10']}s, so nothing in "
             f"the film moves faster than "
