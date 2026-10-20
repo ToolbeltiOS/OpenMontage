@@ -1,0 +1,89 @@
+{
+ "video_id": "smlOZ9v2jdM",
+ "url": "https://www.youtube.com/watch?v=smlOZ9v2jdM",
+ "uploaded_at_utc": "2026-10-20T15:29:15+00:00",
+ "channel": {
+  "title": "Wak3upsociety",
+  "id": "UCFV1qbG1xAAZ4QHtZYTVtcQ"
+ },
+ "playlist_id": "PLGLHDmJ31GMo",
+ "comment_id": "UgwUqCu8SNo5IUwJ5w54AaABAg",
+ "file": {
+  "path": "/Users/mac/Developer/wak3up-docs/output/they-said-it-couldnt-be-built/they-said-it-couldnt-be-built.mp4",
+  "bytes": 926762654
+ },
+ "listing": {
+  "title": "They Said It Couldn't Be Built — The Impossible Stones",
+  "description": "For two thousand years people have looked at megalithic stone and concluded that someone else must have built it. Pausanias blamed one-eyed giants.\nThe argument has never gone out of use. It has only changed its builder.\nThis is what the evidence actually says — and the four places it genuinely runs out.\n\nCHAPTERS\n00:00 Cold open\n00:45 A verdict two thousand years old\n04:54 Where the stones came from\n09:29 The hole in the granite\n15:23 The cases nobody has closed\n19:56 Outro\n\nSOURCES\nA Scottish provenance for the Altar Stone of Stonehenge (Nature 632, 570-575, 2024)\nhttps://www.nature.com/articles/s41586-024-07652-1\nAltar Stone paper — full record (PMC)\nhttps://pmc.ncbi.nlm.nih.gov/articles/PMC11324516\nUCL — Altar Stone came from Scotland, not Wales\nhttps://www.ucl.ac.uk/news/2024/aug/stonehenge-altar-stone-came-scotland-not-wales\nUCL — Quarrying of Stonehenge bluestones dated to 3000 BC\nhttps://www.ucl.ac.uk/news/2019/feb/quarrying-stonehenge-bluestones-dated-3000-bc\nUniversity of Manchester — bluestone quarries 140 miles away\nhttps://www.manchester.ac.uk/discover/news/stonehenge-bluestone-quarries-confirmed-140-miles-away-in-wales\nNature news — Easter Island statues 'walked' out of quarry\nhttps://www.nature.com/articles/nature.2012.11613\nBinghamton University — Easter Island's statues actually 'walked'\nhttps://www.binghamton.edu/news/story/5830/easter-islands-statues-actually-walked-and-physics-backs-it-up\nDiscovery of a big void in Khufu's Pyramid by observation of cosmic-ray muons (Nature 552, 386-390, 2017)\nhttps://www.nature.com/articles/nature24647\nPrecise characterization of a corridor-shaped structure in Khufu's Pyramid by observation of cosmic-ray muons (Nature Communications 14:1144, 2023)\nhttps://www.nature.com/articles/s41467-023-36351-0\nConfirmation of the ScanPyramids North Face Corridor using multi-modal image fusion (Scientific Reports, 2025)\nhttps://www.nature.com/articles/s41598-025-91115-8\n\nMUSIC\nAncient Civilisations — Alex Jones / Xander Jones — YouTube Audio Library - free to use\nLake Jupiter — John Patitucci — YouTube Audio Library - free to use\nSmall Drama — documentary piano — Pixabay Content License\nhttps://pixabay.com/music/small-drama-documentary-piano-580861/\n\nIMAGE AND FOOTAGE CREDITS\nThis film is built from 54 freely licensed photographs and clips. 29 of them are share-alike (CC BY-SA), and the film is offered under the same terms where those shots appear.\nEvery credit — creator, licence and source URL — is in the pinned comment, because the full list is longer than a YouTube description may be.\n\nNarration is synthesised speech. Graphics are original.\n\nNew video every Monday.",
+  "tags": [
+   "archaeology",
+   "Stonehenge",
+   "Rapa Nui",
+   "Easter Island",
+   "moai",
+   "Great Pyramid",
+   "Giza",
+   "Pumapunku",
+   "Tiwanaku",
+   "Sacsayhuaman",
+   "Tiryns",
+   "Mycenae",
+   "ancient engineering",
+   "megalith",
+   "documentary"
+  ],
+  "categoryId": "27",
+  "defaultLanguage": "en",
+  "defaultAudioLanguage": "en",
+  "privacyStatus": "public",
+  "selfDeclaredMadeForKids": false,
+  "license": "youtube",
+  "embeddable": true,
+  "publicStatsViewable": true,
+  "containsSyntheticMedia": true,
+  "playlist": "Documentaries",
+  "chapters": [
+   {
+    "time": "00:00",
+    "title": "Cold open"
+   },
+   {
+    "time": "00:45",
+    "title": "A verdict two thousand years old"
+   },
+   {
+    "time": "04:54",
+    "title": "Where the stones came from"
+   },
+   {
+    "time": "09:29",
+    "title": "The hole in the granite"
+   },
+   {
+    "time": "15:23",
+    "title": "The cases nobody has closed"
+   },
+   {
+    "time": "19:56",
+    "title": "Outro"
+   }
+  ]
+ },
+ "pinned_comment_chars": 7484,
+ "api_completed": [
+  "custom thumbnail set",
+  "credits comment posted",
+  "playlist 'Documentaries' created (public)",
+  "video added to playlist (retried after a 409 on first insert)"
+ ],
+ "manual_in_studio": [
+  "PIN the credits comment — the API has no pin endpoint",
+  "End Screen: subscribe element in the right third, next-video element",
+  "Comments: videos.insert cannot set comment visibility; it follows channel defaults — confirm they are on",
+  "Cards, if wanted"
+ ],
+ "notes": {
+  "playlist_409": "playlists().insert succeeded; the 409 came from the immediate playlistItems().insert, most likely because the new playlist was not yet queryable. Retried and it went in.",
+  "processing": "YouTube reported processingStatus=processing right after upload; HD renditions appear over the following minutes."
+ }
+}
