@@ -141,6 +141,21 @@ a reveal is the same as tagging nothing: run #1 had no beats at all, the planner
 gave every slot one band, and 181 of its 182 shots came out between 5 and 8
 seconds long.
 
+### Step 8b — Tag The Register Beside The Beat
+
+`[beat: reveal | awe]` — the beat says what the paragraph is *doing*, the
+register says how it *sounds*. Five registers: `awe`, `tension`, `doubt`,
+`quiet`, `resolution`.
+
+Two reveals in one film can be awe and dread. Tagged only by beat they get the
+same push at the same speed, which is how run #1 ended up with one gesture for
+182 shots. The playbook's `motion.mood.table` maps (beat × register) onto the
+move, its speed, the transition family, a hold multiplier and whether the
+music may rise there.
+
+The register is a reading of the paragraph, not of the subject: a quiet
+sentence about a catastrophe is `quiet`.
+
 ### Step 9 — Write The Air
 
 **Air is written, not found.** Put `[air N.Ns]` on its own line between

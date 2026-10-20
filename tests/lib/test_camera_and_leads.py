@@ -144,3 +144,51 @@ class TestLeads:
         problems = edit_leads.check([cut(0), over, under])
         assert any("outside the 12-18 budget" in p for p in problems)
         assert any("over the 10-frame ceiling" in p for p in problems)
+
+
+class TestMoodTable:
+    """(beat x register) picks the move; the asset can veto it."""
+
+    def test_the_register_changes_the_move(self):
+        awe = camera_intent.assign([cut(0, 14, beat="reveal", register="awe",
+                                        asset_class="vast")])[0]
+        quiet = camera_intent.assign([cut(1, 14, beat="reveal", register="quiet",
+                                          asset_class="empty")])[0]
+        assert awe["camera"]["move"] == "push"
+        assert quiet["camera"]["move"] == "lock"
+
+    def test_a_push_into_a_dense_asset_becomes_a_lock(self):
+        """The frame is already full; the move would read as a zoom."""
+        c = camera_intent.assign([cut(0, 14, beat="reveal", register="awe",
+                                      asset_class="dense")])[0]
+        assert c["camera"]["move"] == "lock"
+        assert "zoom" in c["camera"]["reason"]
+
+    def test_the_row_carries_hold_rise_and_transition(self):
+        c = camera_intent.assign([cut(0, 6, beat="landing", register="quiet",
+                                      asset_class="empty")])[0]
+        assert c["hold_multiplier"] == 1.4
+        assert c["music_rise_allowed"] is True
+        assert c["transition_family"] == "dissolve"
+
+    def test_a_cut_without_a_register_falls_back_to_the_beat(self):
+        """Run #1's material has no registers; it must still get a move."""
+        c = camera_intent.assign([cut(0, 7, beat="exposition")])[0]
+        assert c["camera"]["move"] == "pull"
+        assert "hold_multiplier" not in c
+
+    def test_every_table_row_names_a_known_move(self):
+        pb = camera_intent.load_playbook()
+        for key, row in pb["motion"]["mood"]["table"].items():
+            beat, register = key.split(".")
+            assert row["move"] in camera_intent.MOVES, key
+            assert beat in {"reveal", "exposition", "landing", "transition"}, key
+            assert register in pb["motion"]["mood"]["registers"], key
+
+    def test_the_table_covers_every_beat_and_register(self):
+        pb = camera_intent.load_playbook()
+        mood = pb["motion"]["mood"]
+        expected = {f"{b}.{r}"
+                    for b in ("reveal", "exposition", "landing", "transition")
+                    for r in mood["registers"]}
+        assert set(mood["table"]) == expected

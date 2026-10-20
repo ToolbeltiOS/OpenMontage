@@ -337,6 +337,78 @@
               }
             }
           }
+        },
+        "mood": {
+          "type": "object",
+          "description": "Camera, transition family and hold chosen from (beat x emotional register) and the asset's own class. A playbook without this gets one gesture for the whole film.",
+          "additionalProperties": true,
+          "properties": {
+            "registers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "asset_classes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "never_push_into": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "table": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "move",
+                  "speed",
+                  "transition",
+                  "hold",
+                  "rise"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "move": {
+                    "type": "string",
+                    "enum": [
+                      "push",
+                      "pull",
+                      "drift",
+                      "lock"
+                    ]
+                  },
+                  "speed": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 4
+                  },
+                  "transition": {
+                    "type": "string"
+                  },
+                  "hold": {
+                    "type": "number",
+                    "minimum": 0.5,
+                    "maximum": 2.0
+                  },
+                  "rise": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            "rules": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
         }
       },
       "additionalProperties": false

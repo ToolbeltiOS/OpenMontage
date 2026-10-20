@@ -73,6 +73,16 @@
             "enum": ["reveal", "exposition", "landing", "transition"],
             "description": "The beat type of the narration paragraph this scene covers, taken from the script. The hold band comes from rhythm.targets in the playbook; without it the planner has one band for the whole film."
           },
+          "register": {
+            "type": "string",
+            "enum": ["awe", "tension", "doubt", "quiet", "resolution"],
+            "description": "Emotional register of the narration paragraph this scene covers, tagged by the script stage beside the beat."
+          },
+          "asset_class": {
+            "type": "string",
+            "enum": ["vast", "intimate", "dark", "bright", "dense", "empty"],
+            "description": "CLIP zero-shot class of the chosen asset."
+          },
           "internal_motion": {
             "type": "boolean",
             "description": "Whether the shot moves inside the frame. A reveal may hold past the stills cap only when this is true."

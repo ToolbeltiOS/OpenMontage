@@ -67,6 +67,24 @@
             "enum": ["reveal", "exposition", "landing", "transition"],
             "description": "The beat type of the narration this cut sits under. The planner takes the shot-length band from it; lib/verify_rhythm.py checks the cut against that band."
           },
+          "register": {
+            "type": "string",
+            "enum": ["awe", "tension", "doubt", "quiet", "resolution"],
+            "description": "The emotional register of the narration this cut sits under, from the script. With the beat it selects the row in the playbook's mood table."
+          },
+          "asset_class": {
+            "type": "string",
+            "enum": ["vast", "intimate", "dark", "bright", "dense", "empty"],
+            "description": "CLIP zero-shot class of the asset on screen. It vetoes the mood table in one direction: a push into a dense frame becomes a lock."
+          },
+          "hold_multiplier": {
+            "type": "number",
+            "minimum": 0.5,
+            "maximum": 2.0,
+            "description": "Scales the beat's hold band; it does not replace it."
+          },
+          "music_rise_allowed": { "type": "boolean" },
+          "transition_family": { "type": "string" },
           "internal_motion": {
             "type": "boolean",
             "description": "Whether the shot moves inside the frame. A reveal may only hold past the stills cap when this is true — otherwise a long hold is a slideshow with a beat label on it."

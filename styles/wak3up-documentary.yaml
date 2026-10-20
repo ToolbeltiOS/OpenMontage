@@ -637,6 +637,58 @@ motion:
     # NOTE: the earlier "no speed ramps" clause in animation_style was dropped
     # on 2026-10-20 in favour of exactly one per act, into a hard cut. The
     # ramp is the only acceleration in the piece and it is budgeted.
+
+  # ── mood (ADDED 2026-10-20) ───────────────────────────────────────────
+  # The beat says what the paragraph is DOING; the register says how it
+  # sounds. Two reveals in a film can be awe and dread, and giving both the
+  # same push at the same speed is how a film ends up with one gesture.
+  #
+  # The move is chosen from (beat x register) AND the asset's own class,
+  # because a push into a dense frame has nowhere to go: the frame is already
+  # full, and the move reads as a zoom on a photograph rather than an approach
+  # to a subject. That rule is absolute and overrides the table.
+  mood:
+    registers: [awe, tension, doubt, quiet, resolution]
+    asset_classes: [vast, intimate, dark, bright, dense, empty]
+    classified_by: CLIP zero-shot on a fixed vocabulary, per bank asset
+    never_push_into: [dense]
+    table:
+      # beat.register: [move, speed_pct_per_second, transition_family,
+      #                 hold_multiplier, music_rise_allowed]
+      reveal.awe:          {move: push,  speed: 2.0, transition: dissolve, hold: 1.25, rise: true}
+      reveal.tension:      {move: push,  speed: 3.2, transition: cut,      hold: 0.9,  rise: true}
+      reveal.doubt:        {move: drift, speed: 1.0, transition: dissolve, hold: 1.1,  rise: false}
+      reveal.quiet:        {move: lock,  speed: 0.0, transition: dissolve, hold: 1.3,  rise: true}
+      reveal.resolution:   {move: pull,  speed: 1.8, transition: dissolve, hold: 1.2,  rise: true}
+      exposition.awe:      {move: pull,  speed: 1.8, transition: cut,      hold: 1.1,  rise: false}
+      exposition.tension:  {move: push,  speed: 2.6, transition: cut,      hold: 0.85, rise: false}
+      exposition.doubt:    {move: drift, speed: 1.2, transition: cut,      hold: 1.0,  rise: false}
+      exposition.quiet:    {move: pull,  speed: 1.4, transition: dissolve, hold: 1.15, rise: false}
+      exposition.resolution: {move: pull, speed: 1.6, transition: cut,     hold: 1.0,  rise: false}
+      landing.awe:         {move: lock,  speed: 0.0, transition: dissolve, hold: 1.3,  rise: true}
+      landing.tension:     {move: lock,  speed: 0.0, transition: cut,      hold: 1.0,  rise: false}
+      landing.doubt:       {move: lock,  speed: 0.0, transition: dissolve, hold: 1.2,  rise: false}
+      landing.quiet:       {move: lock,  speed: 0.0, transition: dissolve, hold: 1.4,  rise: true}
+      landing.resolution:  {move: lock,  speed: 0.0, transition: fade,     hold: 1.35, rise: true}
+      transition.awe:      {move: drift, speed: 1.4, transition: dissolve, hold: 1.0,  rise: false}
+      transition.tension:  {move: drift, speed: 1.8, transition: cut,      hold: 0.8,  rise: false}
+      transition.doubt:    {move: drift, speed: 1.2, transition: cut,      hold: 0.9,  rise: false}
+      transition.quiet:    {move: drift, speed: 0.9, transition: dissolve, hold: 1.1,  rise: false}
+      transition.resolution: {move: drift, speed: 1.2, transition: fade,   hold: 1.0,  rise: false}
+    rules:
+      - "A push into a `dense` asset becomes a lock. The frame is already
+         full; the move would read as a zoom on a photograph."
+      - "A hold multiplier scales the beat's band, it does not replace it.
+         A landing at 1.4x is still inside the landing band."
+      - "A riser or a sting may only land where the table says rise: true AND
+         the music's own arousal is rising there."
+      - "No cut falls within 12 frames of a source scene change in real
+         footage: the viewer sees two cuts where the edit made one."
+    measured_run_1:
+      registers_used: 0
+      note: >
+        Run #1 had no register tags at all, which is why every one of its 182
+        shots took the same push at the same speed.
   pacing_rules:
     # Film-wide floor and ceiling. The per-beat bands in `rhythm.targets` sit
     # inside them and are what the planner actually reads; these two are the

@@ -57,12 +57,45 @@ def load_playbook(path: str | None = None) -> dict[str, Any]:
         return yaml.safe_load(fh)
 
 
+def mood_choice(beat: str, register: str | None, asset_class: str | None,
+                playbook: dict[str, Any]) -> dict[str, Any] | None:
+    """The (beat x register) row, with the asset's own veto applied.
+
+    The beat says what the paragraph is doing; the register says how it
+    sounds. Two reveals in one film can be awe and dread, and giving both the
+    same push at the same speed is how run #1 ended up with one gesture for
+    182 shots.
+
+    The asset overrules the table in exactly one direction: a push into a
+    DENSE frame becomes a lock, because the frame is already full and the move
+    reads as a zoom on a photograph rather than an approach to a subject.
+    """
+    mood = (playbook.get("motion", {}) or {}).get("mood") or {}
+    table = mood.get("table") or {}
+    if not register:
+        return None
+    row = table.get(f"{beat}.{register}")
+    if not row:
+        return None
+    row = dict(row)
+    row["vetoed_by_asset"] = False
+    if (row["move"] == "push"
+            and asset_class in set(mood.get("never_push_into") or [])):
+        row["move"] = "lock"
+        row["speed"] = 0.0
+        row["vetoed_by_asset"] = True
+    return row
+
+
 def assign(cuts: list[dict[str, Any]], playbook: dict[str, Any] | None = None
            ) -> list[dict[str, Any]]:
     """Give every cut a camera move and the reason for it.
 
     Returns the same list, with `camera` filled in where it was absent. An
     existing `camera` is left alone — a move chosen by hand outranks the table.
+
+    A cut carrying a `register` is read from the mood table; one without falls
+    back to the beat alone, which is what run #1's material has.
     """
     pb = playbook or load_playbook()
     cap = float(pb["motion"].get("max_push_pct_per_second", 4.0))
@@ -76,6 +109,31 @@ def assign(cuts: list[dict[str, Any]], playbook: dict[str, Any] | None = None
             prev_move = cut["camera"].get("move")
             continue
         beat = cut.get("beat") or "exposition"
+
+        row = mood_choice(beat, cut.get("register"), cut.get("asset_class"), pb)
+        if row:
+            camera = {
+                "move": row["move"],
+                "speed_pct_per_second": round(min(float(row["speed"]), cap), 2),
+                "direction": "none",
+                "reason": (f"{beat} in a {cut['register']} register"
+                           + (f"; the asset is {cut.get('asset_class')}, so the "
+                              f"push became a lock — a push into a full frame "
+                              f"reads as a zoom"
+                              if row["vetoed_by_asset"] else "")),
+            }
+            if row["move"] == "drift":
+                if prev_move != "drift":
+                    run_direction = "left" if run_direction == "right" else "right"
+                camera["direction"] = run_direction
+                camera["reason"] += f" ({run_direction}, held across the run)"
+            cut["camera"] = camera
+            cut.setdefault("hold_multiplier", row["hold"])
+            cut.setdefault("music_rise_allowed", row["rise"])
+            cut.setdefault("transition_family", row["transition"])
+            prev_move = row["move"]
+            continue
+
         move = BY_BEAT.get(beat, "pull")
         speed = min(SPEED_PCT_PER_SECOND[move], cap)
 
