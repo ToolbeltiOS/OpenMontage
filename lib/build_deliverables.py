@@ -190,9 +190,18 @@ def main() -> int:
     sc = json.load(open(os.path.join(ART, "script.json"), encoding="utf-8"))
     sp = json.load(open(os.path.join(ART, "scene_plan.json"), encoding="utf-8"))
 
+    # Report what a viewer sees, not what the plan calls it. An authored
+    # texture is typed "graphic" because it is a component, but it reads on
+    # screen as a texture beat -- counting it as a diagram put the graphic
+    # share at 48.9% when the real diagram load is 39.0%, and understated
+    # texture by the same 18 slots. A metric that misdescribes the picture is
+    # the same defect as a plan that misdescribes its assets.
     treatments: dict[str, int] = {}
     for slot in sp["metadata"]["slots"]:
-        treatments[slot["treatment"]] = treatments.get(slot["treatment"], 0) + 1
+        comp = slot.get("component")
+        reads_as = ("texture" if comp == "texture_field"
+                    else "graphic" if comp else slot["treatment"])
+        treatments[reads_as] = treatments.get(reads_as, 0) + 1
     total_slots = len(sp["metadata"]["slots"])
     mix_measured = {k: round(100 * c / total_slots, 1) for k, c in sorted(treatments.items())}
 

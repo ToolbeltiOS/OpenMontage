@@ -96,6 +96,13 @@ CAPTION_OVERRIDE = {
 # as two words in the filename and one in the script.
 ASSET_OVERRIDE = {
     "act4_s148": "wm_63128291",
+    # The beat IS the painting: "the sledge and the figure pouring liquid".
+    # Run #1 filled it with an aerial of Giza and the modern city, and because
+    # that was not a repeat the repair pass kept it -- then the caption below
+    # described the painting over a photograph of Cairo. Forcing the wide
+    # parent here also gives the film the two framings it is entitled to:
+    # act1_s025 holds the detail at 154s, this holds the whole scene at 839s.
+    "act3_s129": "wm_595950890",
 }
 
 PRIORITY_SLOTS = ("act4_s160", "act4_s143")
@@ -436,8 +443,18 @@ def main() -> int:
         if not pick.get("_run1"):
             slot["asset_changed"] = True
             slot.pop("caption", None)
+        # A forced caption describes a SUBSTITUTED asset. When the repair pass
+        # keeps run #1's photograph instead, the caption becomes a statement
+        # about a picture that is not on screen: a trench above a bay captioned
+        # "Cyclopean wall, Mycenae", an aerial of Giza and the modern city
+        # captioned as a tomb painting at Deir el-Bersha. Bank assets only.
         if sid in CAPTION_OVERRIDE:
-            slot["caption"] = CAPTION_OVERRIDE[sid]
+            if str(pick["asset_id"]).startswith("r1_"):
+                report.append(f"{sid}: caption override dropped -- kept run #1's "
+                              f"picture, so the caption would describe another")
+                slot.pop("caption", None)
+            else:
+                slot["caption"] = CAPTION_OVERRIDE[sid]
         used.add(pick["asset_id"])
         parent_hits[parent].append({"end": slot.get("end_seconds", start),
                                     "framing": pick.get("framing", "wide")})
