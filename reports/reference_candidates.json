@@ -1,0 +1,282 @@
+{
+ "measured_at_utc": "2026-10-20T18:08:33+00:00",
+ "window_minutes": [
+  10,
+  30
+ ],
+ "source": "YouTube Data API v3 (read-only)",
+ "channels": [
+  {
+   "handle": "@LEMMiNO",
+   "title": "LEMMiNO",
+   "channel_id": "UCRcgy6GzDeccI7dkbbBna3Q",
+   "uploads_playlist": "UURcgy6GzDeccI7dkbbBna3Q",
+   "subscribers": 5930000,
+   "video_count": 171,
+   "videos_read": 171,
+   "in_window": 62,
+   "pick": {
+    "video_id": "I2O7blSSzpI",
+    "title": "Cicada 3301: An Internet Mystery",
+    "published": "2018-05-19",
+    "duration_s": 1074,
+    "views": 42729094,
+    "url": "https://www.youtube.com/watch?v=I2O7blSSzpI"
+   },
+   "runners_up": [
+    {
+     "video_id": "kd2KEHvK-q8",
+     "title": "The Vanishing of Flight 370",
+     "published": "2019-04-14",
+     "duration_s": 1494,
+     "views": 30091831,
+     "url": "https://www.youtube.com/watch?v=kd2KEHvK-q8"
+    },
+    {
+     "video_id": "CbUjuwhQPKs",
+     "title": "The Search For D. B. Cooper",
+     "published": "2020-04-27",
+     "duration_s": 1767,
+     "views": 24436988,
+     "url": "https://www.youtube.com/watch?v=CbUjuwhQPKs"
+    },
+    {
+     "video_id": "SpeSpA3e56A",
+     "title": "Extraordinary Until Proven Otherwise",
+     "published": "2020-08-28",
+     "duration_s": 1665,
+     "views": 12850277,
+     "url": "https://www.youtube.com/watch?v=SpeSpA3e56A"
+    },
+    {
+     "video_id": "ryg077wBvsM",
+     "title": "The Great Silence",
+     "published": "2018-11-30",
+     "duration_s": 1049,
+     "views": 11868350,
+     "url": "https://www.youtube.com/watch?v=ryg077wBvsM"
+    }
+   ],
+   "most_viewed_any_length": [
+    {
+     "video_id": "I2O7blSSzpI",
+     "title": "Cicada 3301: An Internet Mystery",
+     "published": "2018-05-19",
+     "duration_s": 1074,
+     "views": 42729094,
+     "url": "https://www.youtube.com/watch?v=I2O7blSSzpI"
+    },
+    {
+     "video_id": "kd2KEHvK-q8",
+     "title": "The Vanishing of Flight 370",
+     "published": "2019-04-14",
+     "duration_s": 1494,
+     "views": 30091831,
+     "url": "https://www.youtube.com/watch?v=kd2KEHvK-q8"
+    },
+    {
+     "video_id": "CbUjuwhQPKs",
+     "title": "The Search For D. B. Cooper",
+     "published": "2020-04-27",
+     "duration_s": 1767,
+     "views": 24436988,
+     "url": "https://www.youtube.com/watch?v=CbUjuwhQPKs"
+    }
+   ],
+   "shortest": [
+    {
+     "video_id": "GbetzV4l4CY",
+     "title": "Trees #TeamTrees",
+     "published": "2019-10-25",
+     "duration_s": 138,
+     "views": 908370,
+     "url": "https://www.youtube.com/watch?v=GbetzV4l4CY"
+    },
+    {
+     "video_id": "zy4ay9xfKpQ",
+     "title": "Seas #TeamSeas",
+     "published": "2021-10-29",
+     "duration_s": 154,
+     "views": 1134613,
+     "url": "https://www.youtube.com/watch?v=zy4ay9xfKpQ"
+    },
+    {
+     "video_id": "60EvAfhA0j8",
+     "title": "Ads & Patreon",
+     "published": "2017-12-07",
+     "duration_s": 178,
+     "views": 335895,
+     "url": "https://www.youtube.com/watch?v=60EvAfhA0j8"
+    }
+   ]
+  },
+  {
+   "handle": "@BarelySociable",
+   "title": "Barely Sociable",
+   "channel_id": "UC9PIn6-XuRKZ5HmYeu46AIw",
+   "uploads_playlist": "UU9PIn6-XuRKZ5HmYeu46AIw",
+   "subscribers": 1380000,
+   "video_count": 36,
+   "videos_read": 35,
+   "in_window": 18,
+   "pick": {
+    "video_id": "q-1HikE4b54",
+    "title": "The Book Tied To 75,000 Disappearances",
+    "published": "2021-10-01",
+    "duration_s": 1649,
+    "views": 4169170,
+    "url": "https://www.youtube.com/watch?v=q-1HikE4b54"
+   },
+   "runners_up": [
+    {
+     "video_id": "eS_rEzKdzBA",
+     "title": "The Scientist That \"Discovered Antigravity\" Then Disappeared Completely - An Unsolved Mystery",
+     "published": "2021-05-25",
+     "duration_s": 1346,
+     "views": 4139507,
+     "url": "https://www.youtube.com/watch?v=eS_rEzKdzBA"
+    },
+    {
+     "video_id": "1ci3l7pnfdk",
+     "title": "Mortis - Internet Mysteries",
+     "published": "2019-09-23",
+     "duration_s": 1276,
+     "views": 3830439,
+     "url": "https://www.youtube.com/watch?v=1ci3l7pnfdk"
+    },
+    {
+     "video_id": "_28b0P_6VvY",
+     "title": "The Mysterious Phone Number From The 90's",
+     "published": "2019-10-17",
+     "duration_s": 754,
+     "views": 3814297,
+     "url": "https://www.youtube.com/watch?v=_28b0P_6VvY"
+    },
+    {
+     "video_id": "pl20NdwAs3k",
+     "title": "The Mysterious Black Box Of Flight 980 - An Unsolved Mystery",
+     "published": "2020-07-20",
+     "duration_s": 1570,
+     "views": 3590308,
+     "url": "https://www.youtube.com/watch?v=pl20NdwAs3k"
+    }
+   ],
+   "most_viewed_any_length": [
+    {
+     "video_id": "GpMP6Nh3FvU",
+     "title": "The Dark Side Of The Silk Road",
+     "published": "2019-11-20",
+     "duration_s": 4485,
+     "views": 13614749,
+     "url": "https://www.youtube.com/watch?v=GpMP6Nh3FvU"
+    },
+    {
+     "video_id": "1VZkiQUzITU",
+     "title": "Dream - The Infiltration Of The Dark Net",
+     "published": "2021-05-01",
+     "duration_s": 3421,
+     "views": 4844503,
+     "url": "https://www.youtube.com/watch?v=1VZkiQUzITU"
+    },
+    {
+     "video_id": "q-1HikE4b54",
+     "title": "The Book Tied To 75,000 Disappearances",
+     "published": "2021-10-01",
+     "duration_s": 1649,
+     "views": 4169170,
+     "url": "https://www.youtube.com/watch?v=q-1HikE4b54"
+    }
+   ],
+   "shortest": [
+    {
+     "video_id": "4tfe10Q7oVE",
+     "title": "Playing The Mr Beast Riddle ARG",
+     "published": "2020-01-18",
+     "duration_s": -1,
+     "views": 0,
+     "url": "https://www.youtube.com/watch?v=4tfe10Q7oVE"
+    },
+    {
+     "video_id": "CwwZFxH1W4c",
+     "title": "What Is Really Going On With U.S. Army Esports?",
+     "published": "2020-08-04",
+     "duration_s": 519,
+     "views": 621676,
+     "url": "https://www.youtube.com/watch?v=CwwZFxH1W4c"
+    },
+    {
+     "video_id": "9na8UBoncy4",
+     "title": "Who Is Canada's Unidentified Maximum Security Prisoner?",
+     "published": "2020-09-28",
+     "duration_s": 551,
+     "views": 2834582,
+     "url": "https://www.youtube.com/watch?v=9na8UBoncy4"
+    }
+   ]
+  },
+  {
+   "handle": "@FallofCivilizations",
+   "title": "Fall of Civilizations",
+   "channel_id": "UCT6Y5JJPKe_JDMivpKgVXew",
+   "uploads_playlist": "UUT6Y5JJPKe_JDMivpKgVXew",
+   "subscribers": 1520000,
+   "video_count": 47,
+   "videos_read": 47,
+   "in_window": 0,
+   "pick": null,
+   "runners_up": [],
+   "most_viewed_any_length": [
+    {
+     "video_id": "d2lJUOv0hLA",
+     "title": "8. The Sumerians - Fall of the First Cities",
+     "published": "2020-08-16",
+     "duration_s": 8869,
+     "views": 40944523,
+     "url": "https://www.youtube.com/watch?v=d2lJUOv0hLA"
+    },
+    {
+     "video_id": "jpAphcaVJIs",
+     "title": "13. The Assyrians - Empire of Iron",
+     "published": "2021-10-16",
+     "duration_s": 11125,
+     "views": 22182606,
+     "url": "https://www.youtube.com/watch?v=jpAphcaVJIs"
+    },
+    {
+     "video_id": "YpKej05RgsY",
+     "title": "18. Egypt - Fall of the Pharaohs",
+     "published": "2024-04-30",
+     "duration_s": 14293,
+     "views": 14859529,
+     "url": "https://www.youtube.com/watch?v=YpKej05RgsY"
+    }
+   ],
+   "shortest": [
+    {
+     "video_id": "2dWOB4bWriM",
+     "title": "Fall of Civilizations: Stories of Greatness and Decline - coming soon in paperback!",
+     "published": "2025-03-23",
+     "duration_s": 46,
+     "views": 24446,
+     "url": "https://www.youtube.com/watch?v=2dWOB4bWriM"
+    },
+    {
+     "video_id": "QtTkaL9-3qk",
+     "title": "Thank you to everyone on YouTube!",
+     "published": "2025-03-27",
+     "duration_s": 99,
+     "views": 64831,
+     "url": "https://www.youtube.com/watch?v=QtTkaL9-3qk"
+    },
+    {
+     "video_id": "glKe9njOB24",
+     "title": "1. Roman Britain  - The Work of Giants Crumbled",
+     "published": "2020-04-08",
+     "duration_s": 3810,
+     "views": 5263010,
+     "url": "https://www.youtube.com/watch?v=glKe9njOB24"
+    }
+   ]
+  }
+ ]
+}
