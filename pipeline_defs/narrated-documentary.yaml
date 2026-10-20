@@ -262,6 +262,8 @@ stages:
       - No clip_id is picked for two slots
       - Provenance (provider, original_url, license) present on every asset
       - Narration rendered act-by-act and total runtime measured, not estimated
+      - Word timings come from FORCED ALIGNMENT against the script, not from
+        transcription matched back to it; no word is under 40ms
       - Music bed selected from the music library and its licence recorded
       - "Sound design acquired — room tone, one ambience per act chosen for
          the act's PLACE, plus risers, impacts and stings, each with provider,
@@ -269,6 +271,17 @@ stages:
       - Stills carry a parallax/2.5D treatment, never a static hold
       - Gaps are flagged to the user, never silently filled with an unrelated clip
     gate_commands:
+      - name: word_timings
+        run: "python3 scripts/align_narration.py --project {project_id} --check"
+        blocking: true
+        why: >
+          Run #1's word timings came from transcribing the narration and
+          matching the result back to the script — two jobs at once, and it
+          failed at both: 128 words came back with the recogniser's spelling
+          and 60 came back with no duration, one eight-word sentence occupying
+          30 milliseconds. Forced alignment is told the words, so it only has
+          to decide when they were said. Any word under 40ms after that is a
+          failure, not a rounding error.
       - name: sound_design
         run: "python3 lib/sound_design.py {artifacts}/sound_design.json"
         blocking: true

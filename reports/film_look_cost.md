@@ -70,11 +70,8 @@ The visible differences, in order of how much they matter:
 3. **Grain that belongs to the image** rather than a fixed tile sitting on top
    of it.
 
-One thing the frames show that is a tuning gap rather than a property of
-either approach: the shader pass currently sits **brighter** than the CSS
-treatment, because the grade is applied as `BrightnessContrast` on one side
-and a flat darkening wash on the other. Matching exposure is a half-hour's
-work and should happen before anyone judges the two on mood.
+(The first set of frames also differed in exposure, which made them useless as
+a comparison. That is fixed — see the addendum below.)
 
 ## The decision — taken 2026-10-20
 

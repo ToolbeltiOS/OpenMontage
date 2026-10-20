@@ -126,6 +126,7 @@ def group(words: list[dict[str, Any]],
             close()
     close()
 
+    _hold_into_gaps(cues)
     repaired = _repair_short_cues(cues, min_seconds, max_chars, max_lines)
     for cue in cues:
         cue.pop("_words", None)
@@ -134,6 +135,28 @@ def group(words: list[dict[str, Any]],
             f"{repaired} cues were shorter than {min_seconds}s and were given "
             f"room from the silence around them")
     return cues
+
+
+#: How far a cue may hold past its last word, into the silence that follows.
+HOLD_INTO_GAP_S = 1.5
+#: And how much of that silence is left clear before the next cue.
+GAP_GUARD_S = 0.08
+
+
+def _hold_into_gaps(cues: list[dict[str, Any]]) -> None:
+    """Let a cue stay on screen into the pause after it.
+
+    A cue that ends on its last word gives the viewer no reading time in the
+    silence that follows, which is where most of the reading actually happens.
+    Ending on the word is also why 92 of 311 cues read as "too fast" the first
+    time a properly aligned track went through here: the words were right and
+    the reading time was missing.
+    """
+    for i, cue in enumerate(cues):
+        limit = (cues[i + 1]["startMs"] - int(GAP_GUARD_S * 1000)
+                 if i + 1 < len(cues) else cue["endMs"] + int(HOLD_INTO_GAP_S * 1000))
+        cue["endMs"] = max(cue["endMs"],
+                           min(limit, cue["endMs"] + int(HOLD_INTO_GAP_S * 1000)))
 
 
 def _repair_short_cues(cues: list[dict[str, Any]], min_seconds: float,
