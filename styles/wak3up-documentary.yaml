@@ -471,6 +471,28 @@ sources:
     nara: "DOWN — search returns non-JSON. Marked down by owner decision; DO NOT RETRY THIS RUN."
     nasa_esa: "Responds but returns nothing for non-space subjects. Expected and correct; irrelevant to this topic."
   do_not_retry_this_run: [loc, nara]
+  # ── licence policy (ADDED 2026-10-20) ─────────────────────────────────
+  # The channel is monetised and the films are re-cut and re-graded, so
+  # NonCommercial and NoDerivatives are both unusable. Filtered at FETCH time
+  # rather than at selection: an asset that was never downloaded cannot end up
+  # in a film by accident, and the bank's licence column cannot drift from
+  # what the adapter actually fetched.
+  licence_policy:
+    permitted: [CC0, public_domain, CC-BY, CC-BY-SA]
+    refused: [CC-BY-NC, CC-BY-ND, in_copyright, editorial_use_only, unknown]
+    unknown_is_refusal: true
+    enforced_by: tools/video/stock_sources/licences.py
+    rule: >
+      Every NC and ND string also contains "BY", so a substring check for
+      "CC BY" accepts exactly the licences that must be refused. The classifier
+      tests the refusals first and is tested in both directions.
+    unknown_rule: >
+      An unrecognised licence string is REFUSED. A museum API returning an
+      empty rights field is saying it does not know, and a film taken down
+      because an adapter guessed is worse than a smaller bank. Every rejection
+      records the string it refused, so a missing pattern shows up as a
+      rejection to read rather than as silence.
+
   licence_required_on_every_asset: true
   rule: "Keyed and scraped stock fills gaps; it never sets the look. One unrelated clip is what makes a viewer stop trusting the piece."
 
