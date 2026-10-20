@@ -52,7 +52,8 @@ class PixabayMusic(BaseTool):
 
     agent_skills = ["music"]
 
-    capabilities = ["search_music", "download_music", "stock_music"]
+    capabilities = ["search_music", "download_music", "stock_music",
+                    "search_sound_effects"]
     supports = {
         "duration_filter": True,
         "free_commercial_use": True,
@@ -60,6 +61,7 @@ class PixabayMusic(BaseTool):
     }
     best_for = [
         "quick background music with zero setup (no API key)",
+        "ambience, room tone and one-shot sound effects (category=sound_effects)",
         "royalty-free music for any commercial project",
         "high-quality produced tracks (not raw samples)",
     ]
@@ -78,6 +80,17 @@ class PixabayMusic(BaseTool):
             "query": {
                 "type": "string",
                 "description": "Search query for music (e.g., 'upbeat corporate background')",
+            },
+            "category": {
+                "type": "string",
+                "enum": ["music", "sound_effects"],
+                "default": "music",
+                "description": (
+                    "Which Pixabay library to search. Sound effects live at a "
+                    "sibling path behind the same bootstrap endpoint, and the "
+                    "sound-design layer needs ambience, room tone and one-shots "
+                    "rather than tracks."
+                ),
             },
             "min_duration": {
                 "type": "number",
@@ -219,7 +232,9 @@ class PixabayMusic(BaseTool):
         query = inputs["query"]
         slug = re.sub(r"\s+", "-", query.strip().lower())
         slug = urllib.parse.quote(slug, safe="-")
-        search_url = f"https://pixabay.com/music/search/{slug}/"
+        section = ("sound-effects" if inputs.get("category") == "sound_effects"
+                   else "music")
+        search_url = f"https://pixabay.com/{section}/search/{slug}/"
 
         opener = self._build_opener()
 

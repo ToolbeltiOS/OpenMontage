@@ -22,6 +22,7 @@ ARTIFACT_NAMES = [
     "action_timeline",
     "asset_manifest",
     "edit_decisions",
+    "sound_design",
     "render_report",
     "publish_log",
     "review",

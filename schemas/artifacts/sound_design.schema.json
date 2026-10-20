@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "sound_design.schema.json",
+  "title": "SoundDesign",
+  "description": "The sound-design layer's spec: ambience per act, room tone under every silence, risers into landing lines, impacts on reveal cuts and stings on act boundaries. Rendered by lib/sound_design.py inside lib/mix_audio.py — the stage that rebuilds the audio — so that it survives a re-render. Levels are not in this artifact: they are offsets from the music bed, declared once in the playbook, because the bed's own level is auditioned and the floor has to move with it.",
+  "type": "object",
+  "required": ["version", "room_tone", "ambience"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "string" },
+    "project_id": { "type": "string" },
+    "room_tone": {
+      "$ref": "#/definitions/sound",
+      "description": "Runs under the whole film. Written air with nothing under it reads as a dropout."
+    },
+    "ambience": {
+      "type": "array",
+      "description": "One per act, spanning that act.",
+      "items": {
+        "allOf": [
+          { "$ref": "#/definitions/sound" },
+          {
+            "type": "object",
+            "required": ["act", "palette", "start_seconds", "end_seconds"],
+            "properties": {
+              "act": { "type": ["integer", "string"] },
+              "palette": { "type": "string", "enum": ["wind", "stone", "sea", "desert"] },
+              "start_seconds": { "type": "number", "minimum": 0 },
+              "end_seconds": { "type": "number", "minimum": 0 }
+            }
+          }
+        ]
+      }
+    },
+    "risers": {
+      "type": "array",
+      "description": "Each ENDS on the first word of its landing line; it never crosses it.",
+      "items": {
+        "allOf": [
+          { "$ref": "#/definitions/sound" },
+          {
+            "type": "object",
+            "required": ["at_seconds", "seconds"],
+            "properties": {
+              "at_seconds": { "type": "number", "minimum": 0, "description": "the word the riser lands on" },
+              "seconds": { "type": "number", "minimum": 0, "maximum": 2 },
+              "section_id": { "type": "string" }
+            }
+          }
+        ]
+      }
+    },
+    "impacts": {
+      "type": "array",
+      "description": "A low hit landing WITH the picture on a hard cut into a reveal.",
+      "items": {
+        "allOf": [
+          { "$ref": "#/definitions/sound" },
+          {
+            "type": "object",
+            "required": ["at_seconds"],
+            "properties": {
+              "at_seconds": { "type": "number", "minimum": 0 },
+              "act": { "type": ["integer", "string"] },
+              "cut_id": { "type": "string" }
+            }
+          }
+        ]
+      }
+    },
+    "stings": {
+      "type": "array",
+      "description": "One per act boundary, under the fade through black.",
+      "items": {
+        "allOf": [
+          { "$ref": "#/definitions/sound" },
+          {
+            "type": "object",
+            "required": ["at_seconds"],
+            "properties": {
+              "at_seconds": { "type": "number", "minimum": 0 },
+              "boundary": { "type": "string" }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "sound": {
+      "type": "object",
+      "required": ["path", "provider", "url", "licence"],
+      "description": "Provenance travels with every sound, on the same terms as every picture.",
+      "properties": {
+        "path": { "type": "string", "description": "relative to projects/<id>/assets/audio/sound_design/" },
+        "provider": { "type": "string" },
+        "url": { "type": "string" },
+        "licence": { "type": "string" },
+        "attribution": { "type": "string" },
+        "title": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,128 @@
+{
+ "version": "1.0",
+ "project_id": "they-said-it-couldnt-be-built",
+ "room_tone": {
+  "path": "room_tone.mp3",
+  "provider": "pixabay",
+  "url": "https://pixabay.com/sound-effects/",
+  "licence": "Pixabay Content License",
+  "title": "Ambience RoomTone-33",
+  "attribution": "StereogenicStudio"
+ },
+ "ambience": [
+  {
+   "path": "ambience_sea.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "ocean waves sea beach close stereo",
+   "attribution": "freesound_community",
+   "act": "cold_open",
+   "palette": "sea",
+   "start_seconds": 0.0,
+   "end_seconds": 44.0
+  },
+  {
+   "path": "ambience_stone.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cavewind Ambience",
+   "attribution": "Alex_Jauk",
+   "act": "act1",
+   "palette": "stone",
+   "start_seconds": 44.0,
+   "end_seconds": 297.2
+  },
+  {
+   "path": "ambience_sea.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "ocean waves sea beach close stereo",
+   "attribution": "freesound_community",
+   "act": "act2",
+   "palette": "sea",
+   "start_seconds": 297.2,
+   "end_seconds": 560.0
+  },
+  {
+   "path": "ambience_desert.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Desert  wind 2",
+   "attribution": "TanwerAman",
+   "act": "act3",
+   "palette": "desert",
+   "start_seconds": 560.0,
+   "end_seconds": 919.6
+  },
+  {
+   "path": "ambience_wind.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Wind Blowing",
+   "attribution": "SoundReality",
+   "act": "act4",
+   "palette": "wind",
+   "start_seconds": 919.6,
+   "end_seconds": 1182.4
+  }
+ ],
+ "stings": [
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 44.0,
+   "boundary": "cold_open->act1"
+  },
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 297.2,
+   "boundary": "act1->act2"
+  },
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 560.0,
+   "boundary": "act2->act3"
+  },
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 919.6,
+   "boundary": "act3->act4"
+  },
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 1182.4,
+   "boundary": "act4->outro"
+  }
+ ],
+ "risers": [],
+ "impacts": []
+}

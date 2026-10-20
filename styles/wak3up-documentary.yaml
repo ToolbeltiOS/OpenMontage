@@ -509,6 +509,59 @@ audio:
   voice_style: "measured, grave, unhurried; slower on the reveal and a beat of silence after it; no hype, no upspeak"
   sfx_style: "sparse — paper handling, distant room tone, a single low hit on an act boundary at most"
 
+  # ── sound design (ADDED 2026-10-20) ───────────────────────────────────
+  # A layer under the music, not beside it. Every level here is stated as an
+  # offset from the music bed's own level, so moving the bed moves the floor
+  # with it and the balance survives the A/B the owner will judge by ear.
+  #
+  # Why it exists: the references' beds sit 4-15 dB under the voice against
+  # our 20, and part of what fills that distance is not music. It is wind,
+  # room tone and the occasional hit. A bed raised on its own to close the gap
+  # would be a louder tune; a floor built under it is the thing being copied.
+  sound_design:
+    enabled: true
+    layer_order: [narration, music_bed, sound_design]
+    ducking: same_envelope_as_music      # the explicit gain envelope, not a second compressor
+    levels_relative_to_music_bed_db:
+      ambience: -6                       # the per-act bed: wind, stone, sea, desert
+      room_tone: -12                     # under every silence, always present
+      riser_peak: +6                     # at the top of the riser, into the landing
+      impact_peak: +12                   # the low hit on a hard cut at a reveal
+      sting_peak: +14                    # the act boundary, under the fade to black
+    ambience:
+      per_act: true
+      palettes: [wind, stone, sea, desert]
+      rule: "One ambience per act, chosen for the act's place, not its mood.
+             An act that moves between two places keeps the ambience of the
+             place the narration is in, and changes on the act boundary."
+      loop_crossfade_seconds: 8
+    room_tone:
+      under_every_silence: true
+      rule: "Written air is never digital silence. A gap with nothing under it
+             reads as a dropout — the viewer checks whether the audio broke.
+             Room tone runs the whole film at its level and is simply what is
+             left when the voice stops."
+    riser:
+      max_seconds: 2.0
+      into: landing_line
+      rule: "A soft riser, no more than two seconds, ending ON the first word
+             of the landing line. It never crosses the line it is leading to."
+    impact:
+      on: hard_cut_at_reveal
+      max_per_act: 2
+      rule: "A low impact lands with the picture on the cut into a reveal, not
+             after it. At most two per act; three is a trailer."
+    sting:
+      on: act_boundary
+      rule: "One per boundary, under the fade through black, timed to the music
+             crossfade at 2.5s. The act card is already silent furniture — the
+             sting is what makes the silence deliberate."
+    licence:
+      sources_in_order: ["freesound CC0", "pixabay content licence"]
+      recorded_per_asset: true
+      rule: "Every sound carries provider, URL and licence in the sound_design
+             artifact, on the same terms as every picture."
+
   # ── music selection (binding) ──────────────────────────────────────────
   # Run #1 picked beds by mood word and they carried tunes under the
   # narration. The criteria are now stated as properties a track either has

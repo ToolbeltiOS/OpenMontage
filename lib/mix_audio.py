@@ -291,6 +291,49 @@ def speech_envelope(voice: np.ndarray) -> np.ndarray:
     return np.repeat(flag, hop)[:len(mono)]
 
 
+def build_sound_design(total: float, bed_ducked: np.ndarray):
+    """Render the sound-design layer, if this project has a spec for one.
+
+    Returns (samples, report). A project without a spec gets (None, a report
+    saying so) rather than a silent skip: an absent floor should be visible in
+    the mix report, because that is where anyone looks when the film sounds
+    thin.
+    """
+    spec_path = os.path.join(PROJ, "artifacts", "sound_design.json")
+    if not os.path.exists(spec_path):
+        return None, {"present": False,
+                      "why": "no artifacts/sound_design.json for this project"}
+
+    import yaml
+
+    from sound_design import build as build_design, check_spec
+
+    with open(spec_path, encoding="utf-8") as fh:
+        spec = json.load(fh)
+    with open(os.path.join(ROOT, "styles", "wak3up-documentary.yaml"),
+              encoding="utf-8") as fh:
+        playbook = yaml.safe_load(fh)
+
+    problems = check_spec(spec, playbook)
+    if problems:
+        raise SystemExit("sound design spec rejected:\n  - " +
+                         "\n  - ".join(problems))
+
+    # Every level is an offset from the music bed AS IT SITS UNDER SPEECH, so
+    # the floor follows the bed through the -36 / -30 / -28 audition instead of
+    # needing three separate specs.
+    mono = bed_ducked.mean(axis=1) if bed_ducked.ndim > 1 else bed_ducked
+    loud = mono[np.abs(mono) > 0]
+    bed_db = float(20 * np.log10(np.sqrt(np.mean(loud.astype(np.float64) ** 2)) + 1e-12)) \
+        if loud.size else -60.0
+
+    samples, report = build_design(
+        spec, total, bed_db, playbook,
+        os.path.join(PROJ, "assets", "audio", "sound_design"))
+    report["present"] = True
+    return samples, report
+
+
 def measure_air(voice: np.ndarray, total: float) -> dict:
     """Silence in the finished voice track: how much, how many gaps, how long.
 
@@ -389,9 +432,18 @@ def main() -> int:
     air.update(measure_air(voice, total))
 
     env_db = smooth(gain_envelope(voice, offsets, n, under_speech), ATTACK_MS, RELEASE_MS)
-    bed_ducked = bed * (10 ** (env_db[:, None] / 20)).astype(np.float32)
+    duck = (10 ** (env_db[:, None] / 20)).astype(np.float32)
+    bed_ducked = bed * duck
+
+    # The sound-design layer rides the SAME envelope as the music. A second
+    # ducker on the same voice would fight the first one, and the floor would
+    # pump where the bed does not.
+    design, design_report = build_sound_design(total, bed_ducked)
+    design_ducked = (design[:n, None] * duck) if design is not None else None
 
     mix = voice + bed_ducked
+    if design_ducked is not None:
+        mix = mix + design_ducked
     pre = os.path.join(OUT, ".mix_pre.wav")
     sf.write(pre, mix, SR)
 
@@ -417,6 +469,7 @@ def main() -> int:
         "eq": "highpass 120 Hz x2, lowpass 7 kHz x2, -4 dB at 3 kHz (Q~1.4)",
         "narration": measure(voice_path),
         "air": air,
+        "sound_design": design_report,
         "bed_under_speech": measure(bed_path),
         "final": measure(out_path),
         "note": "LRA is recorded, not targeted: narration-led material has little range.",

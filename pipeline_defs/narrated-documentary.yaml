@@ -263,10 +263,23 @@ stages:
       - Provenance (provider, original_url, license) present on every asset
       - Narration rendered act-by-act and total runtime measured, not estimated
       - Music bed selected from the music library and its licence recorded
+      - "Sound design acquired — room tone, one ambience per act chosen for
+         the act's PLACE, plus risers, impacts and stings, each with provider,
+         URL and licence"
       - Stills carry a parallax/2.5D treatment, never a static hold
       - Gaps are flagged to the user, never silently filled with an unrelated clip
+    gate_commands:
+      - name: sound_design
+        run: "python3 lib/sound_design.py {artifacts}/sound_design.json"
+        blocking: true
+        why: >
+          The sound-design layer names real files with real licences. A spec
+          that points at a file which is not on disk renders as silence, and a
+          silent floor is indistinguishable in the mix report from one nobody
+          asked for. Checked here rather than at render time.
     success_criteria:
       - Schema-valid asset_manifest artifact
+      - Schema-valid sound_design artifact with every asset on disk and licensed
       - One visual asset per scene slot
       - Narration audio exists for every act with measured durations
       - metadata.search_stats present (fast path) OR metadata.corpus_stats present (standard path)

@@ -38,6 +38,8 @@ projects/**
 !projects/*/
 !projects/*/artifacts/
 !projects/*/artifacts/edit_decisions.json
+!projects/*/artifacts/sound_design.json
+!projects/*/artifacts/narration_plan.json
 !projects/*/artifacts/scene_plan.json
 !projects/*/artifacts/research_brief.json
 !projects/*/artifacts/asset_bank.json
