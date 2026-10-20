@@ -121,36 +121,45 @@ def dur(path: str) -> float:
     ).strip())
 
 
-UNDER_SPEECH_LUFS = -36.0
+def music_spans(music_dir: str, ed: dict, offsets: list[float],
+                total: float) -> tuple[list[dict], float]:
+    """Act-aligned bed spans, read from the EDL.
 
-# One bed per two acts, crossfaded on the boundary between them. The audition's
-# fifth bed was rejected ("cadence is too fast for a documentary"); these three
-# are the approved selection, and the acts they cover are what mix_audio uses
-# to place each crossfade under a fade to black.
-MUSIC_BEDS = [
-    ("open_act1", ["cold_open", "act1"], "Spooked - Mini Vandals.mp3"),
-    ("act2_act3", ["act2", "act3"], "TORSION - Density & Time.mp3"),
-    ("act4_outro", ["act4", "outro"],
-     "Rapid Unscheduled Disassembly - The Grey Room _ Density & Time.mp3"),
-]
+    edit_decisions["music"] is the source of truth: the beds, the acts each
+    covers and the levels all come from there, and renders/mix_report.json is
+    the measured result of this block rather than a second opinion. A hardcoded
+    bed list here is what let a re-render reinstate music that had already been
+    rejected, so there is no longer one.
+    """
+    music = ed.get("music") or {}
+    beds = music.get("beds") or []
+    if not beds:
+        raise SystemExit(
+            "edit_decisions['music']['beds'] is empty: no bed has been chosen. "
+            "Choose by ear and write the selection into the EDL; the mixer "
+            "will not pick one for you.")
 
-
-def music_spans(music_dir: str, offsets: list[float], total: float) -> list[dict]:
-    """Act-aligned bed spans for lib/mix_audio.py."""
+    banned = {r["track"] for r in music.get("rejected", [])}
     idx = {s: i for i, s in enumerate(SECTIONS)}
     spans, missing = [], []
-    for name, acts, track in MUSIC_BEDS:
-        path = os.path.join(music_dir, track)
+    for bed in beds:
+        track = bed["track"]
+        if track in banned:
+            raise SystemExit(f"bed {track!r} is on the rejected list in the EDL")
+        path = bed.get("path") or os.path.join(music_dir, track)
         if not os.path.exists(path):
             missing.append(track)
             continue
+        acts = bed["acts"]
         after = idx[acts[-1]] + 1
-        spans.append({"name": name, "acts": acts, "track": path,
+        spans.append({"name": bed.get("name") or acts[0], "acts": acts, "track": path,
                       "start": round(offsets[idx[acts[0]]], 2),
                       "end": round(offsets[after] if after < len(offsets) else total, 2)})
     if missing:
-        raise SystemExit("approved music beds not found: " + ", ".join(missing))
-    return spans
+        raise SystemExit("music beds named in the EDL were not found: " + ", ".join(missing))
+    under = float((music.get("levels") or {}).get("under_speech_lufs", -36.0))
+    return spans, under
+
 
 
 def build_audio(music_dir: str, ed: dict, reuse: bool = False) -> tuple[str, list[float]]:
@@ -195,9 +204,9 @@ def build_audio(music_dir: str, ed: dict, reuse: bool = False) -> tuple[str, lis
     # and nothing measured the music on its own.
     #
     # The approved mixer is now the only path to a mix.
-    spans = music_spans(music_dir, offsets, total)
+    spans, under_speech = music_spans(music_dir, ed, offsets, total)
     subprocess.run([sys.executable, os.path.join(ROOT, "lib", "mix_audio.py"),
-                    json.dumps(spans), str(UNDER_SPEECH_LUFS), final_path], check=True)
+                    json.dumps(spans), str(under_speech), final_path], check=True)
     return final_path, offsets
 
 
