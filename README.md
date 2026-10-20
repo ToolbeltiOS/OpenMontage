@@ -743,7 +743,10 @@ behind it are in `reports/reference_pacing.md`.
 | **Camera** | one push, 182 times | push/pull/lock/drift from the beat, one direction per run of stills, one speed ramp per act |
 | **Boundaries** | picture and sound cut together, 182 times | J-cuts 12–18 frames at act boundaries and reveals, L-cuts ≤10 at exposition, none at a landing |
 | **Captions** | burnt in, text on screen 99.4% of runtime | sidecar SRT uploaded with `captions.insert`; burn-in available, off, and layout-aware when on |
+| **Film look** | CSS grain/vignette/chromatic layers | shader pass available (`FilmLook`), measured, **not adopted** — see the decision list |
 | **Components** | — | `title_sequence` (default after the cold open) and `before_after` |
+| **Grade** | one look for four acts | per-act temperature, saturation and lift on photographic material; authored graphics keep the base palette |
+| **Maps** | flat dark silhouette | Natural Earth II terrain with shaded relief, palette ocean, 1–2% drift, plus a `globe_descent` that hands off to the same map |
 | **Outro** | right third reserved | right 40% reserved; headline column to the reserve boundary at 62px |
 | **Transitions** | — | five vendored from `GTKottman/remotion-transitions` @ `58df899`, MIT, copied not depended on |
 
@@ -757,6 +760,12 @@ python3 lib/camera_intent.py  {artifacts}/edit_decisions.json
 python3 lib/edit_leads.py     {artifacts}/edit_decisions.json
 python3 lib/verify_rhythm.py  {artifacts}/edit_decisions.json
 python3 lib/captions_srt.py   {artifacts}/render_props.json {artifacts}/captions.en.srt
+```
+
+Terrain tiles for a map shot are cut once, before the render:
+
+```bash
+python3 scripts/build_basemap_tile.py --name <slug> --bounds W S E N
 ```
 
 All are declared in `pipeline_defs/narrated-documentary.yaml` as blocking
@@ -774,7 +783,12 @@ evidence that they measure the right thing.
 - **Manim as the diagram route** (step 9) — side-by-sides pending.
 - **The two treatment tests** (step 10) — sketched reconstruction and halftone
   collage, one slot each, pending.
-- **CSS vs shader film look** (step 13) — three style frames pending.
+- **CSS vs shader film look** (step 13) — frames rendered, in
+  `remotion-composer/out/step13/compare_{hero,joint,quarry}.png`. **It misses
+  the +25% budget**: measured +79% at the floor and +100% for the full stack,
+  because the cost is the canvas pass itself and not the effect chain
+  (`reports/film_look_cost.md`). Three options there, including running it on
+  hero slots only.
 
 ### Known, recorded, not yet fixed
 
