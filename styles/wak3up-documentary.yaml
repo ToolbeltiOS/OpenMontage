@@ -75,6 +75,24 @@ structure:
       - "Opens on the most arresting concrete image or claim available."
       - "Plants the central question and does not answer it."
       - "No greeting, no channel intro, no 'in this video'."
+  # Added 2026-10-20. Run #1 went from the cold open straight into act 1, so
+  # the film never announced itself and the title existed only in the YouTube
+  # listing. Default ON: a film that opts out says so here.
+  title_sequence:
+    enabled: true
+    placement: immediately_after_cold_open
+    seconds_band: [6, 8]
+    scene_type: title_sequence          # see component-contract.json
+    rules:
+      - "The film's title in Display over a treated hero still, plus the channel mark."
+      - "One accent event only — the rule reaching full width — and it lands on
+         the sting. The audio stage places the sting on the component's
+         sting_at, so the hit and the move are one event, not two."
+      - "No persistent chrome. The frame returns on the first scene after it,
+         and its absence here is what makes the film read as having begun."
+      - "Not an act card: the act card is a chapter break inside a film that is
+         already running, holds shorter, and sets type a level down."
+
   # Mystery-first act shape. Every act opens on the unexplained, not on the
   # explanation. Method enters as the instrument of investigation.
   act_shape:

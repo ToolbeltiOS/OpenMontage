@@ -1,6 +1,8 @@
 import React from "react";
 import { AbsoluteFill, Img, staticFile } from "remotion";
 import { ActTitleCard } from "./scenes/ActTitleCard";
+import { TitleSequence } from "./scenes/TitleSequence";
+import { BeforeAfter } from "./scenes/BeforeAfter";
 import { EvidenceCard } from "./scenes/EvidenceCard";
 import { ScaleComparison } from "./scenes/ScaleComparison";
 import { DocCaption } from "./design/DocCaption";
@@ -21,6 +23,51 @@ export const DemoActTitleCard: React.FC = () => (
     title="The statues that walked and the stone that sailed"
     epigraph="Whatever the method was, it failed often enough to leave a trail."
     image={staticFile("doc/aswan_quarry.jpg")}
+  />
+);
+
+/**
+ * The film's title card, as it sits after the cold open. The sting lands at
+ * 1.8s; the audio stage places the hit on the same number.
+ */
+export const DemoTitleSequence: React.FC = () => (
+  <TitleSequence
+    title="They Said It Couldn't Be Built"
+    kicker="A WAK3UPSOCIETY FILM"
+    channel="WAK3UPSOCIETY"
+    image={staticFile("doc/outro_hero.jpg")}
+    sting_at={1.8}
+  />
+);
+
+/**
+ * Two framings of one plate: the Aswan quarry floor, and the dolerite pounder
+ * sitting in the hollow it made.
+ *
+ * It is deliberately NOT a then-now pair. The component's first use is
+ * restoration and then-now beats, and that needs two plates of one place in
+ * two eras from one angle — matched material the asset bank does not hold yet.
+ * Demonstrating it with a fabricated "archival" treatment of a modern photo
+ * would be the one thing the playbook's quality gate forbids, so the demo
+ * shows the other legitimate use — the repo's own two-framings-of-one-parent
+ * rule — until the bank has a real pair.
+ */
+export const DemoBeforeAfter: React.FC = () => (
+  <BeforeAfter
+    before={staticFile("doc/aswan_quarry.jpg")}
+    after={staticFile("doc/aswan_pounder_detail.jpg")}
+    before_label="Plate"
+    after_label="Detail"
+    mode="wipe"
+    at={0.7}
+    wipe_seconds={2.4}
+    rest={0.58}
+    title="One tool, left where it stopped"
+    caption="Unfinished obelisk quarry, Aswan — the dolerite pounder in its own hollow"
+    actNumber="03"
+    actTitle="The hole in the granite"
+    sceneIndex="S 118 / ASWAN"
+    source="Wikimedia Commons, CC BY-SA 4.0"
   />
 );
 

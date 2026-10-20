@@ -25,6 +25,8 @@ import { EmphasisLine } from "./design/Emphasis";
 import { Graded, FrameLayer } from "./design/Frame";
 import { SourceCaption } from "./design/Scene";
 import { ActTitleCard } from "./scenes/ActTitleCard";
+import { TitleSequence } from "./scenes/TitleSequence";
+import { BeforeAfter } from "./scenes/BeforeAfter";
 import { EvidenceCard } from "./scenes/EvidenceCard";
 import { ScaleComparison } from "./scenes/ScaleComparison";
 import { OutroCta } from "./components/OutroCta";
@@ -282,6 +284,16 @@ export interface Cut {
   epigraph?: string;
   fade_in?: number;
   fade_out?: number;
+  // title_sequence (channel is shared with outro_cta)
+  sting_at?: number;
+  // before_after
+  before?: string;
+  after?: string;
+  before_label?: string;
+  after_label?: string;
+  mode?: "wipe" | "split";
+  wipe_seconds?: number;
+  rest?: number;
   // evidence_card
   claim?: string;
   attribution?: string;
@@ -728,6 +740,19 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
   if (cut.type === "act_title_card" && cut.act && cut.title) {
     return (<ActTitleCard act={cut.act} title={cut.title} epigraph={cut.epigraph}
       image={cut.backgroundImage} fade_in={cut.fade_in} fade_out={cut.fade_out} />);
+  }
+  if (cut.type === "title_sequence" && cut.title) {
+    return (<TitleSequence title={cut.title} channel={cut.channel}
+      kicker={cut.kicker} image={cut.backgroundImage} sting_at={cut.sting_at}
+      fade_in={cut.fade_in} fade_out={cut.fade_out} />);
+  }
+  if (cut.type === "before_after" && cut.before && cut.after) {
+    return (<BeforeAfter before={cut.before} after={cut.after}
+      before_label={cut.before_label} after_label={cut.after_label}
+      mode={cut.mode} at={cut.at} wipe_seconds={cut.wipe_seconds} rest={cut.rest}
+      title={cut.title} caption={cut.caption}
+      actNumber={cut.actNumber} actTitle={cut.actTitle} sceneIndex={cut.sceneIndex}
+      coords={cut.coords} kicker={cut.kicker} source={cut.sourceLine} />);
   }
   if (cut.type === "evidence_card" && cut.claim && cut.attribution) {
     return (<EvidenceCard index={cut.index} claim={cut.claim} attribution={cut.attribution}

@@ -224,6 +224,38 @@ export const ScaleComparisonSchema = z.object({
 });
 
 
+/**
+ * The film's own title card, placed after the cold open. Distinct from
+ * act_title_card: that one is a chapter break inside a running film.
+ */
+export const TitleSequenceSchema = z.object({
+  title: z.string().min(1),
+  channel: z.string().optional(),
+  kicker: z.string().optional().describe("the register, one line — not a summary"),
+  image: z.string().optional(),
+  sting_at: sec.optional().describe("the audio stage puts the sting on this same second"),
+  fade_in: z.number().min(0).optional(),
+  fade_out: z.number().min(0).optional(),
+});
+
+/**
+ * Two framings of ONE subject, divided. Same place, same angle — two plates of
+ * different subjects read as a cut, not as a comparison.
+ */
+export const BeforeAfterSchema = z.object({
+  before: z.string().min(1),
+  after: z.string().min(1),
+  before_label: z.string().optional(),
+  after_label: z.string().optional(),
+  mode: z.enum(["wipe", "split"]).optional(),
+  at: sec.optional().describe("when the divider starts moving (wipe)"),
+  wipe_seconds: z.number().positive().optional(),
+  rest: unit.optional().describe("where the divider rests, 0..1 from the left"),
+  title: z.string().optional(),
+  caption: z.string().optional(),
+  ...CHROME,
+});
+
 export const DOC_COMPONENT_SCHEMAS = {
   annotated_still: AnnotatedStillSchema,
   schematic: SchematicSchema,
@@ -231,6 +263,8 @@ export const DOC_COMPONENT_SCHEMAS = {
   timeline: TimelineSchema,
   document_reveal: DocumentRevealSchema,
   act_title_card: ActTitleCardSchema,
+  title_sequence: TitleSequenceSchema,
+  before_after: BeforeAfterSchema,
   evidence_card: EvidenceCardSchema,
   scale_comparison: ScaleComparisonSchema,
   texture_field: z.object({

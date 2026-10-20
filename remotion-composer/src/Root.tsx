@@ -21,7 +21,8 @@ import {
   SlotAct4S171, SlotAct3S110, SlotAct2S078,
 } from "./DocDemos";
 import {
-  DemoActTitleCard, DemoEvidenceCard, DemoScaleComparison, DemoDocCaption, DocStyleSheet,
+  DemoActTitleCard, DemoTitleSequence, DemoBeforeAfter,
+  DemoEvidenceCard, DemoScaleComparison, DemoDocCaption, DocStyleSheet,
 } from "./DocStyle";
 import { SlotPreview, SlotPreviewProps } from "./SlotPreview";
 import { OutroCta } from "./components/OutroCta";
@@ -212,6 +213,22 @@ export const Root: React.FC = () => {
         id="DocActTitleCard"
         component={DemoActTitleCard}
         durationInFrames={180}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="DocTitleSequence"
+        component={DemoTitleSequence}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="DocBeforeAfter"
+        component={DemoBeforeAfter}
+        durationInFrames={150}
         fps={30}
         width={1920}
         height={1080}

@@ -31,7 +31,7 @@
           "reveal_at"
         ]
       },
-      "purpose": "default for cross-section / diagram slots \u2014 a real still with timed annotations"
+      "purpose": "default for cross-section / diagram slots — a real still with timed annotations"
     },
     "schematic": {
       "required": [
@@ -86,7 +86,7 @@
           "data"
         ]
       },
-      "purpose": "authored vector section with a timed reveal \u2014 mechanisms a photo cannot show"
+      "purpose": "authored vector section with a timed reveal — mechanisms a photo cannot show"
     },
     "map_route": {
       "required": [
@@ -245,7 +245,7 @@
         "lightingTo",
         "vignette"
       ],
-      "purpose": "stock \u2014 stills with particles + camera motion"
+      "purpose": "stock — stills with particles + camera motion"
     },
     "section_title": {
       "required": [
@@ -255,7 +255,7 @@
         "accentColor",
         "position"
       ],
-      "purpose": "stock overlay \u2014 lower third"
+      "purpose": "stock overlay — lower third"
     },
     "stat_reveal": {
       "required": [
@@ -332,7 +332,44 @@
         "fade_in",
         "fade_out"
       ],
-      "purpose": "act boundary card \u2014 the one scene with no persistent chrome, carrying its own fade in/out so it lives inside the fade-through-black at the act change"
+      "purpose": "act boundary card — the one scene with no persistent chrome, carrying its own fade in/out so it lives inside the fade-through-black at the act change"
+    },
+    "title_sequence": {
+      "required": [
+        "title"
+      ],
+      "optional": [
+        "channel",
+        "kicker",
+        "image",
+        "sting_at",
+        "fade_in",
+        "fade_out"
+      ],
+      "purpose": "the film's own title card, 6-8s after the cold open — title in Display over a treated hero still, channel mark, and one accent event landing on the sting; no persistent chrome, like the act card"
+    },
+    "before_after": {
+      "required": [
+        "before",
+        "after"
+      ],
+      "optional": [
+        "before_label",
+        "after_label",
+        "mode",
+        "at",
+        "wipe_seconds",
+        "rest",
+        "title",
+        "caption",
+        "actNumber",
+        "actTitle",
+        "sceneIndex",
+        "coords",
+        "kicker",
+        "source"
+      ],
+      "purpose": "two framings of ONE subject either side of a travelling or fixed divider, for restoration and then-now beats; both plates take the same grade so the visible difference is the material, not the treatment"
     },
     "evidence_card": {
       "required": [
@@ -360,7 +397,7 @@
           "claim"
         ]
       },
-      "purpose": "the citation beat \u2014 who established a thing, which no photograph can show. The status chip is what stops a contested claim reading as settled"
+      "purpose": "the citation beat — who established a thing, which no photograph can show. The status chip is what stops a contested claim reading as settled"
     },
     "scale_comparison": {
       "required": [
@@ -389,7 +426,7 @@
       "min_items": {
         "items": 2
       },
-      "purpose": "comparative magnitude \u2014 bars plus counted figures, for the numbers narration cannot make felt. Two items minimum: one bar compares nothing"
+      "purpose": "comparative magnitude — bars plus counted figures, for the numbers narration cannot make felt. Two items minimum: one bar compares nothing"
     },
     "outro_cta": {
       "required": [],
@@ -406,7 +443,7 @@
         "fadeOutSeconds"
       ],
       "defaults_supplied_by_schema": true,
-      "purpose": "the default end card for every narrated-documentary film: dimmed hero still, headline, drawn like / subscribe / bell timed to the narration, schedule line. Left two thirds only \u2014 the right third and bottom fifth stay clear for YouTube End Screen elements. No platform marks.",
+      "purpose": "the default end card for every narrated-documentary film: dimmed hero still, headline, drawn like / subscribe / bell timed to the narration, schedule line. Left two thirds only — the right third and bottom fifth stay clear for YouTube End Screen elements. No platform marks.",
       "timing": "likeAt and subscribeAt are seconds into THIS scene, taken from the word-level captions for the words 'like' and 'subscribe'."
     },
     "texture_field": {
