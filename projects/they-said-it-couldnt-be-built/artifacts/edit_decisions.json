@@ -1,0 +1,8494 @@
+{
+ "version": "1.0",
+ "render_runtime": "remotion",
+ "composition_mode": "templated",
+ "renderer_family": "narrated-documentary",
+ "cuts": [
+  {
+   "id": "c001",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_681925.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.09,
+   "layer": 0,
+   "transition_in": "fade",
+   "transition_duration": 1.0,
+   "reason": "act_boundary | cold_open_s001 | open from black"
+  },
+  {
+   "id": "c002",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/stills_site/clips/wikimedia_59271075.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "dissolve",
+   "transition_duration": 0.533,
+   "reason": "still_dissolve | cold_open_s002 | cross-dissolve between consecutive stills within a beat"
+  },
+  {
+   "id": "c003",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | cold_open_s003 | straight cut on meaning change",
+   "type": "map_route",
+   "actNumber": "00",
+   "actTitle": "Cold open",
+   "sceneIndex": "S 003 / RAPA NUI",
+   "kicker": "Where this starts",
+   "title": "Rapa Nui",
+   "route": [
+    [
+     -109.35,
+     -27.12
+    ],
+    [
+     -71.5,
+     -33.0
+    ]
+   ],
+   "arc": true,
+   "markers": [
+    {
+     "lon": -109.35,
+     "lat": -27.12,
+     "label": "Rapa Nui",
+     "at": 0.5,
+     "dx": 24,
+     "dy": -14
+    },
+    {
+     "lon": -71.5,
+     "lat": -33.0,
+     "label": "South America",
+     "at": 2.6,
+     "dx": 22,
+     "dy": 28
+    }
+   ],
+   "center": [
+    -92.0,
+    -29.0
+   ],
+   "scale": 420,
+   "draw_at": 1.0,
+   "draw_seconds": 2.8,
+   "caption": "More than 900 statues were made here, and moved",
+   "claim_refs": [
+    "c36"
+   ],
+   "source": "Ledger c36"
+  },
+  {
+   "id": "c004",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_24487589.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.09,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | cold_open_s004 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c005",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | cold_open_s005 | straight cut on meaning change",
+   "type": "scale_comparison",
+   "actNumber": "00",
+   "actTitle": "Cold open",
+   "sceneIndex": "S 005 / RANO RARAKU",
+   "kicker": "The quarry",
+   "title": "What came out of one hillside",
+   "unit": "tonnes",
+   "at": 0.6,
+   "items": [
+    {
+     "label": "Ahu Tongariki moai",
+     "value": 86,
+     "note": "heaviest ever erected",
+     "hero": true
+    },
+    {
+     "label": "Paro",
+     "value": 82,
+     "note": "tallest erected — 9.8 m"
+    }
+   ],
+   "footnote": "More than 900 statues were produced and transported. An unfinished figure still in the quarry is larger again; its published masses disagree, so no figure is given for it.",
+   "caption": "Erected masses are solid; quarry estimates are not",
+   "claim_refs": [
+    "c36",
+    "c37"
+   ],
+   "source": "Ledger c36, c37"
+  },
+  {
+   "id": "c006",
+   "source": "projects/they-said-it-couldnt-be-built/assets/video/texture_elemental/clips/pixabay_video_147667.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | cold_open_s006 | straight cut on meaning change"
+  },
+  {
+   "id": "c007",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_71577590.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.09,
+   "layer": 0,
+   "transition_in": "grain_light_leak",
+   "transition_duration": 0.6,
+   "reason": "hero_entry | cold_open_s007 | hero-slot entry — the one reserved grain/light-leak this act"
+  },
+  {
+   "id": "c008",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_18276964_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "fade",
+   "transition_duration": 2.5,
+   "reason": "act_boundary | act1_s008 | fade through black at the act boundary, matched to the music crossfade"
+  },
+  {
+   "id": "c009",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_49620466.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.91,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act1_s009 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c010",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s010 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 010 / TIRYNS",
+   "kicker": "The wall",
+   "title": "Unwrought stones, matched face to face",
+   "caption": "No mortar — the fit is the only thing holding the course",
+   "layers": [
+    {
+     "id": "ground",
+     "kind": "line",
+     "x": 300,
+     "y": 830,
+     "x2": 1620,
+     "y2": 830,
+     "stroke": "#3A3630",
+     "strokeWidth": 3
+    },
+    {
+     "id": "faceL",
+     "kind": "polyline",
+     "points": "620,830 604,752 628,676 606,598 630,520 612,448",
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "faceR",
+     "kind": "polyline",
+     "points": "1120,830 1140,748 1112,672 1138,596 1114,520 1136,448",
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "top",
+     "kind": "line",
+     "x": 612,
+     "y": 448,
+     "x2": 1136,
+     "y2": 448,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "core1",
+     "kind": "circle",
+     "x": 760,
+     "y": 690,
+     "r": 26,
+     "stroke": "#55514A",
+     "strokeWidth": 2
+    },
+    {
+     "id": "core2",
+     "kind": "circle",
+     "x": 860,
+     "y": 620,
+     "r": 34,
+     "stroke": "#55514A",
+     "strokeWidth": 2
+    },
+    {
+     "id": "core3",
+     "kind": "circle",
+     "x": 970,
+     "y": 700,
+     "r": 30,
+     "stroke": "#55514A",
+     "strokeWidth": 2
+    },
+    {
+     "id": "core4",
+     "kind": "circle",
+     "x": 900,
+     "y": 770,
+     "r": 22,
+     "stroke": "#55514A",
+     "strokeWidth": 2
+    },
+    {
+     "id": "fig",
+     "kind": "path",
+     "d": "M 430 830 L 430 760 M 430 760 L 408 720 M 430 760 L 452 720 M 430 760 L 430 700 M 430 700 L 406 672 M 430 700 L 454 672 M 430 686 a 15 15 0 1 0 0.1 0",
+     "stroke": "#C08A3E",
+     "strokeWidth": 3
+    },
+    {
+     "id": "dimL",
+     "kind": "line",
+     "x": 612,
+     "y": 890,
+     "x2": 1136,
+     "y2": 890,
+     "stroke": "#8A8578",
+     "strokeWidth": 1.5
+    },
+    {
+     "id": "dimT1",
+     "kind": "line",
+     "x": 612,
+     "y": 876,
+     "x2": 612,
+     "y2": 904,
+     "stroke": "#8A8578",
+     "strokeWidth": 1.5
+    },
+    {
+     "id": "dimT2",
+     "kind": "line",
+     "x": 1136,
+     "y": 876,
+     "x2": 1136,
+     "y2": 904,
+     "stroke": "#8A8578",
+     "strokeWidth": 1.5
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "ground",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "faceL",
+     "at": 0.4,
+     "effect": "draw",
+     "duration": 0.9
+    },
+    {
+     "layer_id": "faceR",
+     "at": 0.7,
+     "effect": "draw",
+     "duration": 0.9
+    },
+    {
+     "layer_id": "top",
+     "at": 1.5,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "core1",
+     "at": 2.0,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "core2",
+     "at": 2.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "core3",
+     "at": 2.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "core4",
+     "at": 2.3,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "fig",
+     "at": 2.9,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "dimL",
+     "at": 3.6,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "dimT1",
+     "at": 3.6,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "dimT2",
+     "at": 4.0,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "dressed outer face",
+     "x": 500,
+     "y": 416,
+     "at": 1.9,
+     "anchor": "start"
+    },
+    {
+     "text": "rubble core",
+     "x": 1230,
+     "y": 614,
+     "at": 2.5,
+     "anchor": "start",
+     "accent": true
+    },
+    {
+     "text": "a standing adult",
+     "x": 430,
+     "y": 646,
+     "at": 3.3,
+     "anchor": "middle"
+    },
+    {
+     "text": "wall thickness",
+     "x": 874,
+     "y": 948,
+     "at": 4.3,
+     "anchor": "middle",
+     "level": "data"
+    }
+   ],
+   "claim_refs": [
+    "c02"
+   ],
+   "source": "After Pausanias, Description of Greece II"
+  },
+  {
+   "id": "c011",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_49620440.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.91,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act1_s011 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c012",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_361350_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s012 | straight cut on meaning change"
+  },
+  {
+   "id": "c013",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_107181175.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act1_s013 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c014",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/stills_site/clips/wikimedia_78501543.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.91,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s014 | straight cut on meaning change",
+   "type": "annotated_still",
+   "backgroundImage": "projects/they-said-it-couldnt-be-built/assets/images/stills_site/clips/wikimedia_78501543.jpg",
+   "parallax": true,
+   "annotations": [
+    {
+     "label": "block-to-block contact",
+     "x": 0.54,
+     "y": 0.42,
+     "reveal_at": 0.8,
+     "side": "left"
+    },
+    {
+     "label": "no mortar",
+     "x": 0.4,
+     "y": 0.26,
+     "reveal_at": 2.6,
+     "side": "right"
+    }
+   ],
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 014 / MYCENAE",
+   "caption": "Mycenae — the fortification wall, close",
+   "sourceLine": "Wikimedia Commons · CC BY-SA"
+  },
+  {
+   "id": "c015",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s015 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 015 / THE JOINT",
+   "kicker": "The fit",
+   "title": "Irregular to irregular",
+   "caption": "Each face is cut to the face it meets, and to no other",
+   "layers": [
+    {
+     "id": "lower",
+     "kind": "path",
+     "d": "M 420 760 L 1500 760 L 1500 640 L 1380 628 L 1250 664 L 1100 622 L 960 668 L 820 618 L 680 658 L 540 622 L 420 648 Z",
+     "stroke": "#EDE6D8",
+     "fill": "#14141A",
+     "strokeWidth": 3
+    },
+    {
+     "id": "upper",
+     "kind": "path",
+     "d": "M 420 644 L 540 618 L 680 654 L 820 614 L 960 664 L 1100 618 L 1250 660 L 1380 624 L 1500 636 L 1500 420 L 420 420 Z",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "contact",
+     "kind": "path",
+     "d": "M 420 646 L 540 620 L 680 656 L 820 616 L 960 666 L 1100 620 L 1250 662 L 1380 626 L 1500 638",
+     "stroke": "#C08A3E",
+     "strokeWidth": 4
+    },
+    {
+     "id": "gapcall",
+     "kind": "line",
+     "x": 960,
+     "y": 666,
+     "x2": 1060,
+     "y2": 862,
+     "stroke": "#C08A3E",
+     "strokeWidth": 1.5
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "lower",
+     "at": 0.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "upper",
+     "at": 1.0,
+     "effect": "slide-in"
+    },
+    {
+     "layer_id": "contact",
+     "at": 2.4,
+     "effect": "draw",
+     "duration": 1.4
+    },
+    {
+     "layer_id": "gapcall",
+     "at": 4.1,
+     "effect": "draw",
+     "duration": 0.4
+    }
+   ],
+   "labels": [
+    {
+     "text": "upper course",
+     "x": 470,
+     "y": 500,
+     "at": 1.8,
+     "anchor": "start"
+    },
+    {
+     "text": "lower course",
+     "x": 470,
+     "y": 724,
+     "at": 0.9,
+     "anchor": "start"
+    },
+    {
+     "text": "no mortar layer",
+     "x": 1070,
+     "y": 898,
+     "at": 4.4,
+     "anchor": "start",
+     "accent": true
+    }
+   ],
+   "claim_refs": [
+    "c01",
+    "c02"
+   ]
+  },
+  {
+   "id": "c016",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bank/wm_240337811.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.91,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act1_s016 | hold reached the 6s ceiling for this treatment",
+   "sourceLine": "Catsimpoolas, Nicholas · Public domain"
+  },
+  {
+   "id": "c017",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_133545_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 5.91,
+   "layer": 0,
+   "transition_in": "dissolve",
+   "transition_duration": 0.533,
+   "reason": "still_dissolve | act1_s017 | cross-dissolve between consecutive stills within a beat"
+  },
+  {
+   "id": "c018",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s018 | straight cut on meaning change",
+   "type": "timeline",
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 018 / CHRONOLOGY",
+   "kicker": "Chronology",
+   "title": "Fourteen centuries of silence",
+   "events": [
+    {
+     "year": -1400,
+     "label": "Tiryns at its peak",
+     "at": 0.5
+    },
+    {
+     "year": -1200,
+     "label": "the Mycenaean world ends",
+     "at": 1.6
+    },
+    {
+     "year": 170,
+     "label": "Pausanias writes",
+     "at": 3.0,
+     "accent": true
+    }
+   ],
+   "span": [
+    -1700,
+    500
+   ],
+   "caption": "The walls were already 1,400 years old when the account was written",
+   "claim_refs": [
+    "c02",
+    "c03"
+   ],
+   "source": "Ledger c02, c03"
+  },
+  {
+   "id": "c019",
+   "in_seconds": 0.0,
+   "out_seconds": 5.91,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act1_s019 | hold reached the 6s ceiling for this treatment",
+   "type": "texture_field",
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 019",
+   "kind": "depth_field",
+   "seed": "cyclops-absent-019",
+   "density": 24,
+   "angle": 36,
+   "speed": 0.2
+  },
+  {
+   "id": "c020",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s020 | straight cut on meaning change",
+   "type": "document_reveal",
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 020 / TIRYNS",
+   "kicker": "The record",
+   "headline": "Pausanias, Description of Greece",
+   "lines": [
+    {
+     "text": "“…the wall at Tiryns, which is made of unwrought stones,",
+     "at": 0.6
+    },
+    {
+     "text": "every stone being so big that a pair of mules",
+     "at": 1.8
+    },
+    {
+     "text": "could not move the smallest from its place.”",
+     "at": 3.0,
+     "emphasis": true
+    }
+   ],
+   "paper": "dark",
+   "light_sweep": true,
+   "sweep_at": 3.6,
+   "claim_refs": [
+    "c02"
+   ],
+   "source": "Book II, 2nd century CE — ledger c02"
+  },
+  {
+   "id": "c021",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_83519503.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act1_s021 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c022",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_135218418.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.91,
+   "layer": 0,
+   "transition_in": "dissolve",
+   "transition_duration": 0.533,
+   "reason": "still_dissolve | act1_s022 | cross-dissolve between consecutive stills within a beat"
+  },
+  {
+   "id": "c023",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s023 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 023 / THE INFERENCE",
+   "kicker": "The shape of the reasoning",
+   "title": "Too big for the men available",
+   "caption": "No retrieved source gives a haulage figure — this is the inference, not a measurement",
+   "layers": [
+    {
+     "id": "block",
+     "kind": "rect",
+     "x": 360,
+     "y": 470,
+     "w": 420,
+     "h": 300,
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "men",
+     "kind": "polyline",
+     "points": "900,770 900,700 876,660 900,700 924,660 900,700",
+     "stroke": "#8A8578",
+     "strokeWidth": 3
+    },
+    {
+     "id": "men2",
+     "kind": "polyline",
+     "points": "980,770 980,700 956,660 980,700 1004,660 980,700",
+     "stroke": "#8A8578",
+     "strokeWidth": 3
+    },
+    {
+     "id": "men3",
+     "kind": "polyline",
+     "points": "1060,770 1060,700 1036,660 1060,700 1084,660 1060,700",
+     "stroke": "#8A8578",
+     "strokeWidth": 3
+    },
+    {
+     "id": "gap",
+     "kind": "line",
+     "x": 800,
+     "y": 620,
+     "x2": 1480,
+     "y2": 620,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2,
+     "dashed": true
+    },
+    {
+     "id": "concl",
+     "kind": "rect",
+     "x": 1180,
+     "y": 470,
+     "w": 380,
+     "h": 300,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3,
+     "dashed": true
+    },
+    {
+     "id": "base",
+     "kind": "line",
+     "x": 300,
+     "y": 772,
+     "x2": 1620,
+     "y2": 772,
+     "stroke": "#3A3630",
+     "strokeWidth": 3
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "base",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "block",
+     "at": 0.5,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "men",
+     "at": 1.4,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "men2",
+     "at": 1.6,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "men3",
+     "at": 1.8,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "gap",
+     "at": 2.8,
+     "effect": "draw",
+     "duration": 0.8
+    },
+    {
+     "layer_id": "concl",
+     "at": 4.0,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "the stone",
+     "x": 570,
+     "y": 430,
+     "at": 1.0,
+     "anchor": "middle"
+    },
+    {
+     "text": "the men",
+     "x": 980,
+     "y": 820,
+     "at": 2.2,
+     "anchor": "middle"
+    },
+    {
+     "text": "therefore: a stronger builder",
+     "x": 1370,
+     "y": 430,
+     "at": 4.4,
+     "anchor": "middle",
+     "accent": true
+    }
+   ],
+   "claim_refs": [
+    "c01",
+    "c02"
+   ]
+  },
+  {
+   "id": "c024",
+   "source": "projects/they-said-it-couldnt-be-built/assets/video/texture_elemental/clips/pixabay_video_108420.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s024 | straight cut on meaning change"
+  },
+  {
+   "id": "c025",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/derived/wm_595950890_detail.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.91,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s025 | straight cut on meaning change",
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 025 / HAULAGE",
+   "caption": "Modern reproduction of the Djehutihotep haulage scene, Deir el-Bersha",
+   "sourceLine": "Youssef Grace · CC BY-SA 4.0"
+  },
+  {
+   "id": "c026",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/act1_s026__Ice_core_drill_head.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act1_s026 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c027",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_324822_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s027 | straight cut on meaning change"
+  },
+  {
+   "id": "c028",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "grain_light_leak",
+   "transition_duration": 0.6,
+   "reason": "hero_entry | act1_s028 | hero-slot entry — the one reserved grain/light-leak this act",
+   "type": "map_route",
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 028 / THE SHELF",
+   "kicker": "Where nobody has dug",
+   "title": "The coastlines that are now under water",
+   "route": [
+    [
+     -9.0,
+     36.5
+    ],
+    [
+     -1.5,
+     44.0
+    ],
+    [
+     -4.5,
+     50.0
+    ],
+    [
+     -6.0,
+     54.0
+    ],
+    [
+     -2.0,
+     58.0
+    ]
+   ],
+   "arc": false,
+   "markers": [
+    {
+     "lon": -9.0,
+     "lat": 36.5,
+     "label": "Iberian shelf",
+     "at": 0.8,
+     "dx": 24,
+     "dy": 26
+    },
+    {
+     "lon": -2.0,
+     "lat": 58.0,
+     "label": "North Sea shelf",
+     "at": 3.0,
+     "dx": 22,
+     "dy": -12
+    }
+   ],
+   "center": [
+    -4.0,
+    48.0
+   ],
+   "scale": 760,
+   "draw_at": 1.1,
+   "draw_seconds": 2.6,
+   "caption": "Hancock's standing argument: the Sahara, the Amazon and the drowned coasts are unexplored",
+   "claim_refs": [
+    "c34"
+   ],
+   "source": "Ledger c34 — attributed, not endorsed"
+  },
+  {
+   "id": "c029",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_256072_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s029 | straight cut on meaning change"
+  },
+  {
+   "id": "c030",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_349220_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s030 | straight cut on meaning change"
+  },
+  {
+   "id": "c031",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bycat/act1_s031__Algeria_Sahara_Desert_Photo_From_Drone_5.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act1_s031 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c032",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_107336_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s032 | straight cut on meaning change"
+  },
+  {
+   "id": "c033",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s033 | straight cut on meaning change",
+   "type": "timeline",
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 033 / YOUNGER DRYAS",
+   "kicker": "The claimed date",
+   "title": "About 12,900 years ago",
+   "events": [
+    {
+     "year": -10900,
+     "label": "Younger Dryas onset",
+     "at": 0.7,
+     "accent": true
+    },
+    {
+     "year": -1400,
+     "label": "Tiryns at its peak",
+     "at": 2.4
+    },
+    {
+     "year": 170,
+     "label": "Pausanias writes",
+     "at": 3.6
+    }
+   ],
+   "span": [
+    -13500,
+    600
+   ],
+   "caption": "Hancock dates the loss to the Younger Dryas; most relevant experts reject the impact claim",
+   "claim_refs": [
+    "c32",
+    "c33"
+   ],
+   "source": "Ledger c32, c33"
+  },
+  {
+   "id": "c034",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_199856_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s034 | straight cut on meaning change"
+  },
+  {
+   "id": "c035",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_64276278.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.91,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act1_s035 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c036",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s036 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 036 / MECHANISMS",
+   "kicker": "The mainstream account",
+   "title": "Two explanations, neither cinematic",
+   "caption": "Meltwater influx into the Atlantic, or volcanism",
+   "layers": [
+    {
+     "id": "divider",
+     "kind": "line",
+     "x": 960,
+     "y": 360,
+     "x2": 960,
+     "y2": 880,
+     "stroke": "#3A3630",
+     "strokeWidth": 1.5
+    },
+    {
+     "id": "seaL",
+     "kind": "path",
+     "d": "M 300 760 L 880 760 L 880 880 L 300 880 Z",
+     "stroke": "#3A3630",
+     "fill": "#14141A",
+     "strokeWidth": 2
+    },
+    {
+     "id": "ice",
+     "kind": "path",
+     "d": "M 330 640 L 470 540 L 610 616 L 700 560 L 760 650 L 760 760 L 330 760 Z",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "melt1",
+     "kind": "line",
+     "x": 700,
+     "y": 690,
+     "x2": 800,
+     "y2": 756,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3
+    },
+    {
+     "id": "melt2",
+     "kind": "line",
+     "x": 740,
+     "y": 650,
+     "x2": 840,
+     "y2": 752,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3
+    },
+    {
+     "id": "volc",
+     "kind": "path",
+     "d": "M 1080 880 L 1300 580 L 1520 880 Z",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "plume",
+     "kind": "path",
+     "d": "M 1300 580 C 1250 480 1360 440 1300 350",
+     "stroke": "#C08A3E",
+     "strokeWidth": 3,
+     "dashed": true
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "divider",
+     "at": 0.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "seaL",
+     "at": 0.5,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "ice",
+     "at": 0.9,
+     "effect": "draw",
+     "duration": 1.0
+    },
+    {
+     "layer_id": "melt1",
+     "at": 2.1,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "melt2",
+     "at": 2.3,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "volc",
+     "at": 3.1,
+     "effect": "draw",
+     "duration": 0.9
+    },
+    {
+     "layer_id": "plume",
+     "at": 4.1,
+     "effect": "draw",
+     "duration": 0.8
+    }
+   ],
+   "labels": [
+    {
+     "text": "glacial meltwater",
+     "x": 600,
+     "y": 470,
+     "at": 2.6,
+     "anchor": "middle",
+     "accent": true
+    },
+    {
+     "text": "volcanism",
+     "x": 1300,
+     "y": 950,
+     "at": 4.6,
+     "anchor": "middle",
+     "accent": true
+    }
+   ],
+   "claim_refs": [
+    "c33"
+   ],
+   "source": "Ledger c33"
+  },
+  {
+   "id": "c037",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_116393865_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s037 | straight cut on meaning change"
+  },
+  {
+   "id": "c038",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_106677623.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.91,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act1_s038 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c039",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s039 | straight cut on meaning change",
+   "type": "document_reveal",
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 039 / DATING",
+   "kicker": "The dating",
+   "headline": "Tiryns — Mycenaean phase",
+   "lines": [
+    {
+     "text": "Tiryns peaked between 1400 and 1200 BC.",
+     "at": 0.6
+    },
+    {
+     "text": "The Cyclopean masonry is dated to Late Helladic IIIA,",
+     "at": 1.9
+    },
+    {
+     "text": "roughly 1,400 to 1,500 years before Pausanias wrote.",
+     "at": 3.1,
+     "emphasis": true
+    }
+   ],
+   "paper": "light",
+   "light_sweep": true,
+   "sweep_at": 3.8,
+   "claim_refs": [
+    "c03"
+   ],
+   "source": "Ledger c03"
+  },
+  {
+   "id": "c040",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_198547_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s040 | straight cut on meaning change"
+  },
+  {
+   "id": "c041",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/named/clips/wikimedia_145519775.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.91,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act1_s041 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c042",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s042 | straight cut on meaning change",
+   "type": "timeline",
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 042 / THE SAME GAP, TWICE",
+   "kicker": "The same distance",
+   "title": "Tiryns to Pausanias, laid against the Vikings to us",
+   "events": [
+    {
+     "year": -1400,
+     "label": "Tiryns built",
+     "at": 0.5
+    },
+    {
+     "year": 170,
+     "label": "Pausanias writes",
+     "at": 1.7,
+     "accent": true
+    },
+    {
+     "year": 800,
+     "label": "the Viking age begins",
+     "at": 2.9
+    },
+    {
+     "year": 2026,
+     "label": "now",
+     "at": 4.0,
+     "accent": true
+    }
+   ],
+   "span": [
+    -1700,
+    2300
+   ],
+   "caption": "Two gaps of about fourteen centuries, drawn to the same scale",
+   "claim_refs": [
+    "c03"
+   ],
+   "source": "Ledger c03"
+  },
+  {
+   "id": "c043",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_83468234.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act1_s043 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c044",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/stills_site/clips/wikimedia_3534971.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.91,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act1_s044 | straight cut on meaning change",
+   "type": "annotated_still",
+   "backgroundImage": "projects/they-said-it-couldnt-be-built/assets/images/stills_site/clips/wikimedia_3534971.jpg",
+   "parallax": true,
+   "annotations": [
+    {
+     "label": "one stone",
+     "x": 0.3,
+     "y": 0.3,
+     "reveal_at": 0.9,
+     "side": "right"
+    },
+    {
+     "label": "flanking ashlar",
+     "x": 0.88,
+     "y": 0.22,
+     "reveal_at": 2.8,
+     "side": "left"
+    }
+   ],
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 044 / LION GATE",
+   "caption": "The Lion Gate, Mycenae",
+   "sourceLine": "Wikimedia Commons · CC BY-SA"
+  },
+  {
+   "id": "c045",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/named/clips/wikimedia_5083314.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.91,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act1_s045 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c046",
+   "in_seconds": 0.0,
+   "out_seconds": 6.6,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "landing_line | act1_s046 | cut held across a landing line; narration takes the beat",
+   "reused_from": "act1_s034",
+   "actNumber": "01",
+   "actTitle": "A verdict two thousand years old",
+   "sceneIndex": "S 046",
+   "type": "texture_field",
+   "kind": "dust",
+   "seed": "shaft-light-046",
+   "density": 120,
+   "angle": 72,
+   "speed": 0.8
+  },
+  {
+   "id": "c047",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/stills_site/clips/wikimedia_5537742.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.31,
+   "layer": 0,
+   "transition_in": "fade",
+   "transition_duration": 2.5,
+   "reason": "act_boundary | act2_s047 | fade through black at the act boundary, matched to the music crossfade"
+  },
+  {
+   "id": "c048",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s048 | straight cut on meaning change",
+   "type": "map_route",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 048 / RAPA NUI",
+   "kicker": "Quarry to coast",
+   "title": "One hillside, and the whole island",
+   "route": [
+    [
+     -109.2887,
+     -27.1212
+    ],
+    [
+     -109.277,
+     -27.1259
+    ],
+    [
+     -109.33,
+     -27.145
+    ],
+    [
+     -109.43,
+     -27.15
+    ],
+    [
+     -109.44,
+     -27.09
+    ]
+   ],
+   "markers": [
+    {
+     "lon": -109.2887,
+     "lat": -27.1212,
+     "label": "Rano Raraku",
+     "at": 0.6,
+     "dx": -26,
+     "dy": -16
+    },
+    {
+     "lon": -109.277,
+     "lat": -27.1259,
+     "label": "Ahu Tongariki",
+     "at": 2.2,
+     "dx": 22,
+     "dy": 28
+    }
+   ],
+   "center": [
+    -109.36,
+    -27.12
+   ],
+   "scale": 70000,
+   "draw_at": 1.0,
+   "draw_seconds": 3.0,
+   "caption": "Almost every statue came out of one quarry; the platforms are on the coast",
+   "claim_refs": [
+    "c36"
+   ],
+   "source": "Ledger c36"
+  },
+  {
+   "id": "c049",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_133096.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s049 | straight cut on meaning change",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 049 / RANO RARAKU",
+   "caption": "Rano Raraku — statues still in and below the quarry",
+   "sourceLine": "Wikimedia Commons · CC BY-SA"
+  },
+  {
+   "id": "c050",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_21013494.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.31,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act2_s050 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c051",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_232185_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s051 | straight cut on meaning change"
+  },
+  {
+   "id": "c052",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s052 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 052 / BASE GEOMETRY",
+   "kicker": "The design",
+   "title": "A wide D-shaped base and a forward lean",
+   "caption": "The team modelled the geometry in three dimensions from real statues",
+   "layers": [
+    {
+     "id": "ground",
+     "kind": "line",
+     "x": 300,
+     "y": 880,
+     "x2": 1620,
+     "y2": 880,
+     "stroke": "#3A3630",
+     "strokeWidth": 3
+    },
+    {
+     "id": "body",
+     "kind": "path",
+     "d": "M 740 880 L 772 500 L 900 330 L 1010 350 L 1040 540 L 1010 880 Z",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "baseD",
+     "kind": "path",
+     "d": "M 740 880 L 1010 880 L 1004 846 a 136 46 0 0 0 -258 0 Z",
+     "stroke": "#C08A3E",
+     "strokeWidth": 4
+    },
+    {
+     "id": "plumb",
+     "kind": "line",
+     "x": 876,
+     "y": 330,
+     "x2": 876,
+     "y2": 940,
+     "stroke": "#55514A",
+     "strokeWidth": 2,
+     "dashed": true
+    },
+    {
+     "id": "com",
+     "kind": "circle",
+     "x": 906,
+     "y": 640,
+     "r": 13,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3
+    },
+    {
+     "id": "comdrop",
+     "kind": "line",
+     "x": 906,
+     "y": 640,
+     "x2": 906,
+     "y2": 880,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2,
+     "dashed": true
+    },
+    {
+     "id": "lean",
+     "kind": "path",
+     "d": "M 876 420 a 120 120 0 0 1 44 16",
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "ground",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "body",
+     "at": 0.4,
+     "effect": "draw",
+     "duration": 1.2
+    },
+    {
+     "layer_id": "baseD",
+     "at": 1.7,
+     "effect": "draw",
+     "duration": 0.8
+    },
+    {
+     "layer_id": "plumb",
+     "at": 2.7,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "lean",
+     "at": 3.2,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "com",
+     "at": 3.9,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "comdrop",
+     "at": 4.2,
+     "effect": "draw",
+     "duration": 0.4
+    }
+   ],
+   "labels": [
+    {
+     "text": "D-shaped footprint",
+     "x": 1070,
+     "y": 876,
+     "at": 2.3,
+     "anchor": "start",
+     "accent": true
+    },
+    {
+     "text": "forward lean",
+     "x": 950,
+     "y": 404,
+     "at": 3.6,
+     "anchor": "start"
+    },
+    {
+     "text": "centre of mass",
+     "x": 946,
+     "y": 630,
+     "at": 4.4,
+     "anchor": "start",
+     "accent": true
+    }
+   ],
+   "claim_refs": [
+    "c06"
+   ],
+   "source": "Ledger c06"
+  },
+  {
+   "id": "c053",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/derived/wm_543133505_detail.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.31,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act2_s053 | hold reached the 6s ceiling for this treatment",
+   "sourceLine": "Dennis G. Jarvis · CC BY-SA 2.0"
+  },
+  {
+   "id": "c054",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "grain_light_leak",
+   "transition_duration": 0.6,
+   "reason": "hero_entry | act2_s054 | hero-slot entry — the one reserved grain/light-leak this act",
+   "type": "schematic",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 054 / THE GAIT",
+   "kicker": "The method",
+   "title": "Pivot, swing, pivot",
+   "caption": "Three hemp ropes, eighteen people, a 4.35-tonne replica moved about 100 metres",
+   "layers": [
+    {
+     "id": "ground",
+     "kind": "line",
+     "x": 260,
+     "y": 840,
+     "x2": 1660,
+     "y2": 840,
+     "stroke": "#3A3630",
+     "strokeWidth": 3
+    },
+    {
+     "id": "p1",
+     "kind": "path",
+     "d": "M 430 840 L 452 560 L 520 470 L 576 490 L 596 600 L 582 840 Z",
+     "stroke": "#55514A",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "p2",
+     "kind": "path",
+     "d": "M 840 840 L 846 560 L 918 468 L 974 492 L 988 600 L 992 840 Z",
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "p3",
+     "kind": "path",
+     "d": "M 1250 840 L 1240 560 L 1314 470 L 1370 492 L 1386 600 L 1402 840 Z",
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "arc1",
+     "kind": "path",
+     "d": "M 506 450 a 300 300 0 0 1 400 0",
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5,
+     "dashed": true
+    },
+    {
+     "id": "arc2",
+     "kind": "path",
+     "d": "M 906 450 a 300 300 0 0 1 400 0",
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5,
+     "dashed": true
+    },
+    {
+     "id": "rope1",
+     "kind": "line",
+     "x": 520,
+     "y": 470,
+     "x2": 300,
+     "y2": 400,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "rope2",
+     "kind": "line",
+     "x": 576,
+     "y": 490,
+     "x2": 800,
+     "y2": 392,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "pivot1",
+     "kind": "circle",
+     "x": 582,
+     "y": 840,
+     "r": 9,
+     "fill": "#C08A3E",
+     "stroke": "none"
+    },
+    {
+     "id": "pivot2",
+     "kind": "circle",
+     "x": 840,
+     "y": 840,
+     "r": 9,
+     "fill": "#C08A3E",
+     "stroke": "none"
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "ground",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "p1",
+     "at": 0.4,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "rope1",
+     "at": 1.0,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "rope2",
+     "at": 1.2,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "pivot1",
+     "at": 1.6,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "arc1",
+     "at": 1.8,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "p2",
+     "at": 2.5,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "pivot2",
+     "at": 3.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "arc2",
+     "at": 3.3,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "p3",
+     "at": 4.0,
+     "effect": "draw",
+     "duration": 0.8
+    }
+   ],
+   "labels": [
+    {
+     "text": "rope teams",
+     "x": 300,
+     "y": 360,
+     "at": 1.5,
+     "anchor": "start",
+     "accent": true
+    },
+    {
+     "text": "pivot on the base edge",
+     "x": 700,
+     "y": 920,
+     "at": 2.2,
+     "anchor": "middle"
+    }
+   ],
+   "claim_refs": [
+    "c04",
+    "c06"
+   ],
+   "source": "Lipo, Hunt and Rapu Haoa (2012) — ledger c04"
+  },
+  {
+   "id": "c055",
+   "source": "projects/they-said-it-couldnt-be-built/assets/video/texture_elemental/clips/pixabay_video_2266.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s055 | straight cut on meaning change"
+  },
+  {
+   "id": "c056",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bank/wm_748006084.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.31,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act2_s056 | hold reached the 6s ceiling for this treatment",
+   "sourceLine": "Dennis G. Jarvis · CC BY-SA 2.0"
+  },
+  {
+   "id": "c057",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s057 | straight cut on meaning change",
+   "type": "evidence_card",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 057 / THE EXPERIMENT",
+   "index": "c04",
+   "claim": "A 4.35-tonne replica was walked about 100 metres by eighteen people on three hemp ropes.",
+   "attribution": "Lipo, Hunt and Rapu Haoa (2012), Journal of Archaeological Science",
+   "detail": "DOI 10.1016/j.jas.2012.09.029. Reported durations differ between accounts, so no time is given here.",
+   "status": "peer_reviewed",
+   "caption": "Crew and distance are solid; the clock is not",
+   "claim_refs": [
+    "c04"
+   ]
+  },
+  {
+   "id": "c058",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/stills_site/clips/wikimedia_54342588.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act2_s058 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c059",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s059 | straight cut on meaning change",
+   "type": "timeline",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 059 / THE FOLLOW-UP",
+   "kicker": "What came after",
+   "title": "The demonstration, then the survey",
+   "events": [
+    {
+     "year": 2012,
+     "label": "the replica is walked",
+     "at": 0.6,
+     "accent": true
+    },
+    {
+     "year": 2025,
+     "label": "962 moai analysed",
+     "at": 2.4,
+     "accent": true
+    }
+   ],
+   "span": [
+    2006,
+    2031
+   ],
+   "caption": "'The walking moai hypothesis' responds to critics and analysed 962 statues",
+   "claim_refs": [
+    "c04",
+    "c07"
+   ],
+   "source": "Ledger c04, c07"
+  },
+  {
+   "id": "c060",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/stills_site/clips/wikimedia_29809354.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.31,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act2_s060 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c061",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s061 | straight cut on meaning change",
+   "type": "evidence_card",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 061 / THE OBJECTION",
+   "index": "c08",
+   "claim": "“A stunt and not an experiment.”",
+   "attribution": "Jo Anne Van Tilburg, UCLA",
+   "detail": "The orthodox side is itself split: the objection is to whether the demonstration counts as an experiment at all.",
+   "status": "contested",
+   "caption": "Quoted as given",
+   "claim_refs": [
+    "c08"
+   ]
+  },
+  {
+   "id": "c062",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s062 | straight cut on meaning change",
+   "type": "document_reveal",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 062 / THE OBJECTION",
+   "kicker": "The published objection",
+   "headline": "What the demonstration does not settle",
+   "lines": [
+    {
+     "text": "The accounts do not agree on how long it took —",
+     "at": 0.6
+    },
+    {
+     "text": "one says under an hour, another forty minutes.",
+     "at": 1.8
+    },
+    {
+     "text": "“A stunt and not an experiment.”",
+     "at": 3.1,
+     "emphasis": true
+    }
+   ],
+   "paper": "dark",
+   "light_sweep": true,
+   "sweep_at": 3.8,
+   "claim_refs": [
+    "c05",
+    "c08"
+   ],
+   "source": "Van Tilburg, quoted in ScienceAlert — ledger c05, c08"
+  },
+  {
+   "id": "c063",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_373249_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.31,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act2_s063 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c064",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_13278936.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.31,
+   "layer": 0,
+   "transition_in": "dissolve",
+   "transition_duration": 0.533,
+   "reason": "still_dissolve | act2_s064 | cross-dissolve between consecutive stills within a beat"
+  },
+  {
+   "id": "c065",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/refill/clips/wikimedia_113522482.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "dissolve",
+   "transition_duration": 0.533,
+   "reason": "still_dissolve | act2_s065 | cross-dissolve between consecutive stills within a beat"
+  },
+  {
+   "id": "c066",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bycat/act2_s066__Stonehenge_and_Aerodrome_1928.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "dissolve",
+   "transition_duration": 0.533,
+   "reason": "still_dissolve | act2_s066 | cross-dissolve between consecutive stills within a beat"
+  },
+  {
+   "id": "c067",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/refill2/clips/wikimedia_118335544.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.31,
+   "layer": 0,
+   "transition_in": "dissolve",
+   "transition_duration": 0.533,
+   "reason": "still_dissolve | act2_s067 | cross-dissolve between consecutive stills within a beat"
+  },
+  {
+   "id": "c068",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bank/wm_651155044.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.42,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s068 | straight cut on meaning change",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 068 / PRESELI",
+   "sourceLine": "Helge Klaus Rieder · CC0"
+  },
+  {
+   "id": "c069",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s069 | straight cut on meaning change",
+   "type": "map_route",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 069 / PRESELI",
+   "kicker": "Transport",
+   "title": "Preseli to Salisbury Plain",
+   "route": [
+    [
+     -4.74,
+     51.99
+    ],
+    [
+     -4.1,
+     51.78
+    ],
+    [
+     -3.2,
+     51.5
+    ],
+    [
+     -2.4,
+     51.3
+    ],
+    [
+     -1.826,
+     51.179
+    ]
+   ],
+   "markers": [
+    {
+     "lon": -4.74,
+     "lat": 51.99,
+     "label": "Carn Goedog",
+     "at": 0.6,
+     "dx": -24,
+     "dy": -14
+    },
+    {
+     "lon": -1.826,
+     "lat": 51.179,
+     "label": "Stonehenge",
+     "at": 2.8,
+     "dx": 18,
+     "dy": 30
+    }
+   ],
+   "scale": 5200,
+   "draw_at": 1.0,
+   "draw_seconds": 2.6,
+   "distance_callout": {
+    "text": "140 mi · 180 mi · 230 km",
+    "at": 4.0
+   },
+   "caption": "Manchester says 140 miles; UCL and Southampton say almost 180. No source reconciles them",
+   "claim_refs": [
+    "c09",
+    "c10"
+   ],
+   "source": "Ledger c09, c10"
+  },
+  {
+   "id": "c070",
+   "source": "projects/they-said-it-couldnt-be-built/assets/video/act2_s070_embers_crop.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.31,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act2_s070 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c071",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "landing_line | act2_s071 | cut held across a landing line; narration takes the beat",
+   "type": "document_reveal",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 071 / THE QUARRIES",
+   "kicker": "The dating",
+   "headline": "Carn Goedog and Craig Rhos-y-felin",
+   "lines": [
+    {
+     "text": "Spotted dolerite at Carn Goedog; rhyolite at Craig Rhos-y-felin.",
+     "at": 0.6
+    },
+    {
+     "text": "Charcoal from those quarries dates the work",
+     "at": 2.0
+    },
+    {
+     "text": "to around 3000 BC.",
+     "at": 3.2,
+     "emphasis": true
+    }
+   ],
+   "paper": "light",
+   "light_sweep": true,
+   "sweep_at": 3.9,
+   "claim_refs": [
+    "c09"
+   ],
+   "source": "UCL — ledger c09"
+  },
+  {
+   "id": "c072",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s072 | straight cut on meaning change",
+   "type": "document_reveal",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 072 / CORRECTION",
+   "kicker": "Correction",
+   "headline": "We told you this, and it was wrong",
+   "lines": [
+    {
+     "text": "An earlier video on this channel said Stonehenge's key stones",
+     "at": 0.6
+    },
+    {
+     "text": "travelled seven hundred miles.",
+     "at": 1.9
+    },
+    {
+     "text": "No retrieved source supports that figure.",
+     "at": 3.1,
+     "emphasis": true
+    }
+   ],
+   "paper": "dark",
+   "light_sweep": true,
+   "sweep_at": 3.8,
+   "claim_refs": [
+    "c10",
+    "c11"
+   ],
+   "source": "Issued on screen — ledger c10, c11"
+  },
+  {
+   "id": "c073",
+   "in_seconds": 0.0,
+   "out_seconds": 6.31,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s073 | straight cut on meaning change",
+   "reused_from": "act2_s070",
+   "actNumber": "02",
+   "actTitle": "Where the stones came from",
+   "sceneIndex": "S 073",
+   "type": "texture_field",
+   "kind": "strata",
+   "seed": "map-creases-073",
+   "density": 30,
+   "angle": 6,
+   "speed": 0.15
+  },
+  {
+   "id": "c074",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s074 | straight cut on meaning change",
+   "type": "scale_comparison",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 074 / THE DISAGREEMENT",
+   "kicker": "Three figures",
+   "title": "The same journey, three published distances",
+   "unit": "miles",
+   "at": 0.6,
+   "items": [
+    {
+     "label": "University of Manchester",
+     "value": 140,
+     "note": "published"
+    },
+    {
+     "label": "ScienceAlert",
+     "value": 143,
+     "note": "given as about 230 km"
+    },
+    {
+     "label": "UCL and Southampton",
+     "value": 180,
+     "note": "“almost 180”",
+     "hero": true
+    }
+   ],
+   "footnote": "No retrieved source explains the discrepancy. The disagreement is itself the fact.",
+   "caption": "Institutions publish different figures for the same journey",
+   "claim_refs": [
+    "c10"
+   ],
+   "source": "Ledger c10"
+  },
+  {
+   "id": "c075",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bycat/act2_s075__Stonehenge-Altar-Stone_P1110732.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.31,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act2_s075 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c076",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s076 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 076 / PROVENANCE",
+   "kicker": "The method",
+   "title": "Three minerals, matched by age",
+   "caption": "Zircon, apatite and rutile from fragments MS3 and 2010K.240, by in-situ U-Pb, Lu-Hf and trace-element data",
+   "layers": [
+    {
+     "id": "axis",
+     "kind": "line",
+     "x": 420,
+     "y": 820,
+     "x2": 1540,
+     "y2": 820,
+     "stroke": "#3A3630",
+     "strokeWidth": 2
+    },
+    {
+     "id": "g1",
+     "kind": "path",
+     "d": "M 560 700 L 614 660 L 660 700 L 640 766 L 580 766 Z",
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "g2",
+     "kind": "path",
+     "d": "M 900 690 L 964 656 L 1004 706 L 972 768 L 912 760 Z",
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "g3",
+     "kind": "path",
+     "d": "M 1240 700 L 1300 654 L 1348 700 L 1326 768 L 1262 764 Z",
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "band",
+     "kind": "rect",
+     "x": 480,
+     "y": 430,
+     "w": 980,
+     "h": 86,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3,
+     "dashed": true
+    },
+    {
+     "id": "t1",
+     "kind": "line",
+     "x": 610,
+     "y": 656,
+     "x2": 610,
+     "y2": 520,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "t2",
+     "kind": "line",
+     "x": 955,
+     "y": 652,
+     "x2": 955,
+     "y2": 520,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "t3",
+     "kind": "line",
+     "x": 1298,
+     "y": 652,
+     "x2": 1298,
+     "y2": 520,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "axis",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "g1",
+     "at": 0.5,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "g2",
+     "at": 0.9,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "g3",
+     "at": 1.3,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "t1",
+     "at": 2.2,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "t2",
+     "at": 2.5,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "t3",
+     "at": 2.8,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "band",
+     "at": 3.6,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "zircon",
+     "x": 610,
+     "y": 880,
+     "at": 1.0,
+     "anchor": "middle"
+    },
+    {
+     "text": "apatite",
+     "x": 955,
+     "y": 880,
+     "at": 1.4,
+     "anchor": "middle"
+    },
+    {
+     "text": "rutile",
+     "x": 1298,
+     "y": 880,
+     "at": 1.8,
+     "anchor": "middle"
+    },
+    {
+     "text": "one isotopic age band",
+     "x": 970,
+     "y": 396,
+     "at": 4.0,
+     "anchor": "middle",
+     "accent": true
+    }
+   ],
+   "claim_refs": [
+    "c12"
+   ],
+   "source": "Ledger c12"
+  },
+  {
+   "id": "c077",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_135278222_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.42,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s077 | straight cut on meaning change",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 077 / NORTH ATLANTIC",
+   "caption": "North Atlantic coast — not the Orcadian outcrop itself",
+   "sourceLine": "Wikimedia Commons · CC BY-SA"
+  },
+  {
+   "id": "c078",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s078 | straight cut on meaning change",
+   "type": "map_route",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 078 / ORCADIAN BASIN",
+   "kicker": "Transport",
+   "title": "The Altar Stone's journey",
+   "route": [
+    [
+     -3.0,
+     58.6
+    ],
+    [
+     -3.6,
+     57.6
+    ],
+    [
+     -5.6,
+     55.9
+    ],
+    [
+     -5.2,
+     53.4
+    ],
+    [
+     -4.6,
+     51.9
+    ],
+    [
+     -1.826,
+     51.179
+    ]
+   ],
+   "markers": [
+    {
+     "lon": -3.0,
+     "lat": 58.6,
+     "label": "Orcadian Basin",
+     "at": 0.6,
+     "dx": 22,
+     "dy": -12
+    },
+    {
+     "lon": -1.826,
+     "lat": 51.179,
+     "label": "Stonehenge",
+     "at": 3.0,
+     "dx": 20,
+     "dy": 28
+    }
+   ],
+   "scale": 1500,
+   "draw_at": 1.0,
+   "draw_seconds": 2.8,
+   "distance_callout": {
+    "text": "≥ 750 km",
+    "at": 4.1
+   },
+   "caption": "A source at least 750 km away, for a 6-tonne stone. The authors argue sea transport is likelier",
+   "claim_refs": [
+    "c11",
+    "c13"
+   ],
+   "source": "Clarke et al., Nature 632, 570–575 (2024) — ledger c11, c13"
+  },
+  {
+   "id": "c079",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_325636_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s079 | straight cut on meaning change"
+  },
+  {
+   "id": "c080",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s080 | straight cut on meaning change",
+   "type": "texture_field",
+   "actNumber": "02",
+   "actTitle": "Where the stones came from",
+   "sceneIndex": "S 080",
+   "kind": "depth_field",
+   "seed": "scottish-coast-080",
+   "density": 44,
+   "angle": 2,
+   "speed": 0.38
+  },
+  {
+   "id": "c081",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s081 | straight cut on meaning change",
+   "type": "evidence_card",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 081 / PROVENANCE",
+   "index": "c11",
+   "claim": "The Altar Stone came from the Orcadian Basin in northeast Scotland.",
+   "attribution": "Clarke, Kirkland, Bevins, Pearce, Glorie and Ixer, Nature 632, 570–575 (2024)",
+   "detail": "The previously favoured Welsh source, the Cosheston Subgroup, was ruled out on petrography and detrital zircon ages.",
+   "status": "peer_reviewed",
+   "caption": "A Scottish provenance for the Altar Stone",
+   "claim_refs": [
+    "c11",
+    "c14"
+   ]
+  },
+  {
+   "id": "c082",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bank/wm_524874984.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.31,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s082 | straight cut on meaning change",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 082 / ALTAR STONE",
+   "caption": "Quarried granite, Aswan",
+   "sourceLine": "CC0"
+  },
+  {
+   "id": "c083",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_59291_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s083 | straight cut on meaning change"
+  },
+  {
+   "id": "c084",
+   "in_seconds": 0.0,
+   "out_seconds": 6.31,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s084 | straight cut on meaning change",
+   "reused_from": "act2_s083",
+   "actNumber": "02",
+   "actTitle": "Where the stones came from",
+   "sceneIndex": "S 084",
+   "type": "texture_field",
+   "kind": "strata",
+   "seed": "empty-horizon-084",
+   "density": 16,
+   "angle": 0,
+   "speed": 0.14,
+   "caption": "No retrieved source describes the vessel"
+  },
+  {
+   "id": "c085",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bank/wm_653522284.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.42,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "landing_line | act2_s085 | cut held across a landing line; narration takes the beat",
+   "actNumber": "02",
+   "actTitle": "The statues that walked",
+   "sceneIndex": "S 085 / STONEHENGE",
+   "sourceLine": "Derek Jensen · CC BY 2.0"
+  },
+  {
+   "id": "c086",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_306_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 7.26,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act2_s086 | straight cut on meaning change"
+  },
+  {
+   "id": "c087",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_125670310.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "fade",
+   "transition_duration": 2.5,
+   "reason": "act_boundary | act3_s087 | fade through black at the act boundary, matched to the music crossfade"
+  },
+  {
+   "id": "c088",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s088 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 088 / THE CORE",
+   "kicker": "The object",
+   "title": "The core, in profile",
+   "caption": "Waste — what is left behind when someone drills a hole",
+   "layers": [
+    {
+     "id": "core",
+     "kind": "rect",
+     "x": 820,
+     "y": 300,
+     "w": 280,
+     "h": 620,
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "top",
+     "kind": "path",
+     "d": "M 820 300 a 140 44 0 0 0 280 0",
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "sp1",
+     "kind": "path",
+     "d": "M 820 400 a 140 44 0 0 0 280 0",
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "sp2",
+     "kind": "path",
+     "d": "M 820 520 a 140 44 0 0 0 280 0",
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "sp3",
+     "kind": "path",
+     "d": "M 820 640 a 140 44 0 0 0 280 0",
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "sp4",
+     "kind": "path",
+     "d": "M 820 760 a 140 44 0 0 0 280 0",
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "pitch",
+     "kind": "line",
+     "x": 1180,
+     "y": 400,
+     "x2": 1180,
+     "y2": 520,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    },
+    {
+     "id": "pt1",
+     "kind": "line",
+     "x": 1160,
+     "y": 400,
+     "x2": 1200,
+     "y2": 400,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    },
+    {
+     "id": "pt2",
+     "kind": "line",
+     "x": 1160,
+     "y": 520,
+     "x2": 1200,
+     "y2": 520,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "core",
+     "at": 0.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "top",
+     "at": 0.6,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "sp1",
+     "at": 1.4,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "sp2",
+     "at": 1.7,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "sp3",
+     "at": 2.0,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "sp4",
+     "at": 2.3,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "pitch",
+     "at": 3.2,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "pt1",
+     "at": 3.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "pt2",
+     "at": 3.6,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "spiral groove",
+     "x": 760,
+     "y": 600,
+     "at": 2.8,
+     "anchor": "end",
+     "accent": true
+    },
+    {
+     "text": "pitch — one revolution",
+     "x": 1222,
+     "y": 466,
+     "at": 4.0,
+     "anchor": "start",
+     "level": "data"
+    }
+   ],
+   "claim_refs": [
+    "c19"
+   ]
+  },
+  {
+   "id": "c089",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/stills_site/clips/wikimedia_18750894.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s089 | straight cut on meaning change",
+   "type": "annotated_still",
+   "backgroundImage": "projects/they-said-it-couldnt-be-built/assets/images/stills_site/clips/wikimedia_18750894.jpg",
+   "parallax": true,
+   "annotations": [
+    {
+     "label": "dolerite pounder",
+     "x": 0.584,
+     "y": 0.633,
+     "reveal_at": 0.9,
+     "side": "right"
+    },
+    {
+     "label": "worked face",
+     "x": 0.3,
+     "y": 0.33,
+     "reveal_at": 2.7,
+     "side": "right"
+    }
+   ],
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 089 / ASWAN",
+   "caption": "Aswan — a dolerite pounder on the pink granite",
+   "sourceLine": "Wikimedia Commons · CC BY-SA"
+  },
+  {
+   "id": "c090",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s090 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 090 / HARDNESS",
+   "kicker": "Why it is strange",
+   "title": "A groove that does not slow in the hard mineral",
+   "caption": "Dunn could not determine as surely as Petrie whether the groove ran deeper through the quartz than the feldspar",
+   "layers": [
+    {
+     "id": "face",
+     "kind": "rect",
+     "x": 400,
+     "y": 420,
+     "w": 1120,
+     "h": 380,
+     "stroke": "#3A3630",
+     "fill": "#14141A",
+     "strokeWidth": 2
+    },
+    {
+     "id": "q1",
+     "kind": "rect",
+     "x": 400,
+     "y": 420,
+     "w": 210,
+     "h": 380,
+     "stroke": "none",
+     "fill": "#1C1C24",
+     "strokeWidth": 0
+    },
+    {
+     "id": "q2",
+     "kind": "rect",
+     "x": 760,
+     "y": 420,
+     "w": 230,
+     "h": 380,
+     "stroke": "none",
+     "fill": "#1C1C24",
+     "strokeWidth": 0
+    },
+    {
+     "id": "q3",
+     "kind": "rect",
+     "x": 1180,
+     "y": 420,
+     "w": 200,
+     "h": 380,
+     "stroke": "none",
+     "fill": "#1C1C24",
+     "strokeWidth": 0
+    },
+    {
+     "id": "groove",
+     "kind": "line",
+     "x": 400,
+     "y": 610,
+     "x2": 1520,
+     "y2": 610,
+     "stroke": "#C08A3E",
+     "strokeWidth": 7
+    },
+    {
+     "id": "expect",
+     "kind": "path",
+     "d": "M 400 700 L 610 700 L 660 736 L 760 736 L 810 700 L 990 700 L 1040 736 L 1180 736 L 1230 700 L 1380 700 L 1430 736 L 1520 736",
+     "stroke": "#55514A",
+     "strokeWidth": 3,
+     "dashed": true
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "face",
+     "at": 0.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "q1",
+     "at": 0.6,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "q2",
+     "at": 0.8,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "q3",
+     "at": 1.0,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "groove",
+     "at": 2.0,
+     "effect": "draw",
+     "duration": 1.2
+    },
+    {
+     "layer_id": "expect",
+     "at": 3.6,
+     "effect": "draw",
+     "duration": 1.1
+    }
+   ],
+   "labels": [
+    {
+     "text": "quartz — harder",
+     "x": 505,
+     "y": 382,
+     "at": 1.4,
+     "anchor": "middle"
+    },
+    {
+     "text": "feldspar — softer",
+     "x": 1070,
+     "y": 382,
+     "at": 1.6,
+     "anchor": "middle"
+    },
+    {
+     "text": "the groove as cut",
+     "x": 400,
+     "y": 572,
+     "at": 3.2,
+     "anchor": "start",
+     "accent": true
+    },
+    {
+     "text": "what a tool should do",
+     "x": 400,
+     "y": 800,
+     "at": 4.6,
+     "anchor": "start"
+    }
+   ],
+   "claim_refs": [
+    "c20"
+   ],
+   "source": "Ledger c20"
+  },
+  {
+   "id": "c091",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_110724_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s091 | straight cut on meaning change",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 091"
+  },
+  {
+   "id": "c092",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s092 | straight cut on meaning change",
+   "reused_from": "act3_s087",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 092 / TOOL MARKS",
+   "caption": "Drawn, not photographed: the bank holds no worked-granite interior",
+   "sourceLine": "Wikimedia Commons · CC BY-SA",
+   "type": "schematic",
+   "kicker": "What Petrie recorded",
+   "title": "Marks on the inside face",
+   "source": "Ledger c24, c26",
+   "layers": [
+    {
+     "id": "box",
+     "kind": "polyline",
+     "points": "420,340 1500,340 1500,840 420,840 420,340",
+     "stroke": "#8A8578",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "cavity",
+     "kind": "rect",
+     "x": 500,
+     "y": 410,
+     "w": 920,
+     "h": 360,
+     "stroke": "#EDE6D8",
+     "fill": "#0C0C0E",
+     "strokeWidth": 3
+    },
+    {
+     "id": "m1",
+     "kind": "line",
+     "x": 540,
+     "y": 440,
+     "x2": 540,
+     "y2": 740,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "m2",
+     "kind": "line",
+     "x": 596,
+     "y": 440,
+     "x2": 596,
+     "y2": 740,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "m3",
+     "kind": "line",
+     "x": 652,
+     "y": 440,
+     "x2": 652,
+     "y2": 740,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "m4",
+     "kind": "line",
+     "x": 708,
+     "y": 440,
+     "x2": 708,
+     "y2": 740,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "arc",
+     "kind": "path",
+     "d": "M 1180 470 a 150 150 0 0 0 0 240",
+     "stroke": "#C08A3E",
+     "strokeWidth": 3
+    },
+    {
+     "id": "lead",
+     "kind": "line",
+     "x": 760,
+     "y": 590,
+     "x2": 980,
+     "y2": 590,
+     "stroke": "#3A3630",
+     "strokeWidth": 2
+    },
+    {
+     "id": "lead2",
+     "kind": "line",
+     "x": 1196,
+     "y": 706,
+     "x2": 1528,
+     "y2": 706,
+     "stroke": "#3A3630",
+     "strokeWidth": 2
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "box",
+     "at": 0.1,
+     "effect": "draw",
+     "duration": 0.8
+    },
+    {
+     "layer_id": "cavity",
+     "at": 0.9,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "m1",
+     "at": 1.8,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "m2",
+     "at": 1.95,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "m3",
+     "at": 2.1,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "m4",
+     "at": 2.25,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "arc",
+     "at": 2.8,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "lead",
+     "at": 3.4,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "lead2",
+     "at": 3.9,
+     "effect": "draw",
+     "duration": 0.4
+    }
+   ],
+   "labels": [
+    {
+     "text": "parallel striations",
+     "x": 1004,
+     "y": 598,
+     "at": 3.7,
+     "anchor": "start",
+     "accent": true
+    },
+    {
+     "text": "rounded corner",
+     "x": 1544,
+     "y": 712,
+     "at": 4.2,
+     "anchor": "start"
+    }
+   ],
+   "claim_refs": [
+    "c24",
+    "c26"
+   ]
+  },
+  {
+   "id": "c093",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s093 | straight cut on meaning change",
+   "type": "evidence_card",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 093 / THE CLAIM",
+   "index": "c19",
+   "claim": "The spiral groove reads as a feed rate of about 0.100 inch per drill revolution.",
+   "attribution": "Christopher Dunn, engineer",
+   "detail": "Presented as evidence of machining. Whether the groove indicates machining at all is disputed.",
+   "status": "claim",
+   "caption": "Attributed by name, as the playbook requires",
+   "claim_refs": [
+    "c19"
+   ]
+  },
+  {
+   "id": "c094",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s094 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 094 / FEED RATE",
+   "kicker": "The figure",
+   "title": "0.100 inch per revolution",
+   "caption": "Dunn's modern comparison — roughly 900 rpm and about 0.2 inch per revolution — is an interview anecdote, not a controlled test",
+   "layers": [
+    {
+     "id": "stone",
+     "kind": "rect",
+     "x": 420,
+     "y": 500,
+     "w": 1080,
+     "h": 340,
+     "stroke": "#8A8578",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "rev1",
+     "kind": "line",
+     "x": 560,
+     "y": 500,
+     "x2": 1360,
+     "y2": 500,
+     "stroke": "#3A3630",
+     "strokeWidth": 1.5
+    },
+    {
+     "id": "rev2",
+     "kind": "line",
+     "x": 560,
+     "y": 568,
+     "x2": 1360,
+     "y2": 568,
+     "stroke": "#3A3630",
+     "strokeWidth": 1.5
+    },
+    {
+     "id": "rev3",
+     "kind": "line",
+     "x": 560,
+     "y": 636,
+     "x2": 1360,
+     "y2": 636,
+     "stroke": "#3A3630",
+     "strokeWidth": 1.5
+    },
+    {
+     "id": "rev4",
+     "kind": "line",
+     "x": 560,
+     "y": 704,
+     "x2": 1360,
+     "y2": 704,
+     "stroke": "#3A3630",
+     "strokeWidth": 1.5
+    },
+    {
+     "id": "dim",
+     "kind": "line",
+     "x": 1560,
+     "y": 500,
+     "x2": 1560,
+     "y2": 568,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "dt1",
+     "kind": "line",
+     "x": 1538,
+     "y": 500,
+     "x2": 1582,
+     "y2": 500,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "dt2",
+     "kind": "line",
+     "x": 1538,
+     "y": 568,
+     "x2": 1582,
+     "y2": 568,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "stone",
+     "at": 0.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "rev1",
+     "at": 0.9,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "rev2",
+     "at": 1.2,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "rev3",
+     "at": 1.5,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "rev4",
+     "at": 1.8,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "dim",
+     "at": 2.8,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "dt1",
+     "at": 2.8,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "dt2",
+     "at": 3.2,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "one revolution",
+     "x": 1510,
+     "y": 448,
+     "at": 3.6,
+     "anchor": "end",
+     "accent": true
+    },
+    {
+     "text": "0.100 in",
+     "x": 1510,
+     "y": 548,
+     "at": 4.0,
+     "anchor": "end",
+     "level": "data"
+    }
+   ],
+   "claim_refs": [
+    "c19",
+    "c21"
+   ],
+   "source": "Ledger c19, c21"
+  },
+  {
+   "id": "c095",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_372070_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s095 | straight cut on meaning change"
+  },
+  {
+   "id": "c096",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s096 | straight cut on meaning change",
+   "reused_from": "act3_s095",
+   "actNumber": "03",
+   "actTitle": "What the stone itself says",
+   "sceneIndex": "S 096",
+   "type": "texture_field",
+   "kind": "scanline",
+   "seed": "drill-rig-096",
+   "density": 96,
+   "angle": 0,
+   "speed": 1.8
+  },
+  {
+   "id": "c097",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/stills_record/clips/wikimedia_177000730.png",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act3_s097 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c098",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_14955_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s098 | straight cut on meaning change"
+  },
+  {
+   "id": "c099",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bank/wm_911328159.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "grain_light_leak",
+   "transition_duration": 0.6,
+   "reason": "hero_entry | act3_s099 | hero-slot entry — the one reserved grain/light-leak this act",
+   "sourceLine": "CC0"
+  },
+  {
+   "id": "c100",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bank/wm_869537399.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s100 | straight cut on meaning change",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 100 / ASWAN",
+   "sourceLine": "Holger Uwe Schmitt · CC BY-SA 4.0"
+  },
+  {
+   "id": "c101",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s101 | straight cut on meaning change",
+   "type": "evidence_card",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 101 / THE TESTING",
+   "index": "c22",
+   "claim": "Copper saws and tubular drills, with sand abrasive, were tested on Aswan granite.",
+   "attribution": "Denys Stocks, Antiquity (2001)",
+   "detail": "In one run a slot 3 cm deep and 95 cm long took 14 hours. Dry sand with a smooth blade performed best.",
+   "status": "peer_reviewed",
+   "caption": "Somebody did the experiment",
+   "claim_refs": [
+    "c22"
+   ]
+  },
+  {
+   "id": "c102",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_25055190.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s102 | straight cut on meaning change",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 102 / HARDNESS",
+   "caption": "A Mohs hardness set — reference specimens, not Egyptian tools",
+   "sourceLine": "Wikimedia Commons · CC BY-SA"
+  },
+  {
+   "id": "c103",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s103 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 103 / TUBE DRILL",
+   "kicker": "Mechanism",
+   "title": "Barrel, kerf, core",
+   "caption": "The copper is a carrier; the sand grinds the stone away",
+   "layers": [
+    {
+     "id": "stone",
+     "kind": "rect",
+     "x": 460,
+     "y": 560,
+     "w": 1000,
+     "h": 330,
+     "stroke": "#8A8578",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "kerf",
+     "kind": "rect",
+     "x": 880,
+     "y": 560,
+     "w": 160,
+     "h": 220,
+     "stroke": "#3A3630",
+     "fill": "#0C0C0E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "tubeL",
+     "kind": "line",
+     "x": 880,
+     "y": 250,
+     "x2": 880,
+     "y2": 775,
+     "stroke": "#C08A3E",
+     "strokeWidth": 7
+    },
+    {
+     "id": "tubeR",
+     "kind": "line",
+     "x": 1040,
+     "y": 250,
+     "x2": 1040,
+     "y2": 775,
+     "stroke": "#C08A3E",
+     "strokeWidth": 7
+    },
+    {
+     "id": "core",
+     "kind": "rect",
+     "x": 902,
+     "y": 600,
+     "w": 116,
+     "h": 290,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 2,
+     "dashed": true
+    },
+    {
+     "id": "sand1",
+     "kind": "circle",
+     "x": 892,
+     "y": 740,
+     "r": 7,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "sand2",
+     "kind": "circle",
+     "x": 1030,
+     "y": 700,
+     "r": 6,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "sand3",
+     "kind": "circle",
+     "x": 893,
+     "y": 660,
+     "r": 5,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "rot",
+     "kind": "path",
+     "d": "M 836 214 a 124 44 0 1 0 248 0",
+     "stroke": "#8A8578",
+     "strokeWidth": 3
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "stone",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "tubeL",
+     "at": 0.6,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "tubeR",
+     "at": 0.6,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "kerf",
+     "at": 1.4,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "core",
+     "at": 1.9,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "sand1",
+     "at": 2.4,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "sand2",
+     "at": 2.6,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "sand3",
+     "at": 2.8,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "rot",
+     "at": 3.4,
+     "effect": "draw",
+     "duration": 0.8
+    }
+   ],
+   "labels": [
+    {
+     "text": "copper barrel",
+     "x": 1105,
+     "y": 320,
+     "at": 1.2,
+     "anchor": "start",
+     "accent": true
+    },
+    {
+     "text": "sand in the kerf",
+     "x": 1105,
+     "y": 700,
+     "at": 3.1,
+     "anchor": "start",
+     "accent": true
+    },
+    {
+     "text": "core forming",
+     "x": 830,
+     "y": 962,
+     "at": 2.2,
+     "anchor": "end"
+    }
+   ],
+   "claim_refs": [
+    "c24"
+   ],
+   "source": "Ledger c24"
+  },
+  {
+   "id": "c104",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act3_s104 | hold reached the 6s ceiling for this treatment",
+   "type": "texture_field",
+   "actNumber": "03",
+   "actTitle": "What the stone itself says",
+   "sceneIndex": "S 104",
+   "kind": "grain_drift",
+   "seed": "poured-sand-104",
+   "density": 170,
+   "angle": 84,
+   "speed": 1.25
+  },
+  {
+   "id": "c105",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s105 | straight cut on meaning change",
+   "reused_from": "act3_s097",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 105 / KERF, PLAN",
+   "caption": "The cut is an annulus. Sand fills it; the core is what is left standing",
+   "sourceLine": "Wikimedia Commons · CC BY-SA",
+   "type": "schematic",
+   "kicker": "Mechanism — from above",
+   "title": "Part-way through",
+   "source": "Ledger c22, c24",
+   "layers": [
+    {
+     "id": "block",
+     "kind": "rect",
+     "x": 560,
+     "y": 220,
+     "w": 800,
+     "h": 640,
+     "stroke": "#8A8578",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "outer",
+     "kind": "circle",
+     "x": 960,
+     "y": 540,
+     "r": 230,
+     "stroke": "#3A3630",
+     "fill": "#0C0C0E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "inner",
+     "kind": "circle",
+     "x": 960,
+     "y": 540,
+     "r": 170,
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 2
+    },
+    {
+     "id": "tubeO",
+     "kind": "circle",
+     "x": 960,
+     "y": 540,
+     "r": 222,
+     "stroke": "#C08A3E",
+     "fill": "none",
+     "strokeWidth": 6
+    },
+    {
+     "id": "tubeI",
+     "kind": "circle",
+     "x": 960,
+     "y": 540,
+     "r": 178,
+     "stroke": "#C08A3E",
+     "fill": "none",
+     "strokeWidth": 6
+    },
+    {
+     "id": "g1",
+     "kind": "circle",
+     "x": 960,
+     "y": 340,
+     "r": 6,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "g2",
+     "kind": "circle",
+     "x": 1098,
+     "y": 468,
+     "r": 5,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "g3",
+     "kind": "circle",
+     "x": 1060,
+     "y": 690,
+     "r": 6,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "g4",
+     "kind": "circle",
+     "x": 838,
+     "y": 650,
+     "r": 5,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "g5",
+     "kind": "circle",
+     "x": 806,
+     "y": 452,
+     "r": 6,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "lead",
+     "kind": "line",
+     "x": 1182,
+     "y": 540,
+     "x2": 1368,
+     "y2": 540,
+     "stroke": "#3A3630",
+     "strokeWidth": 2
+    },
+    {
+     "id": "leadc",
+     "kind": "line",
+     "x": 960,
+     "y": 370,
+     "x2": 960,
+     "y2": 258,
+     "stroke": "#3A3630",
+     "strokeWidth": 2
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "block",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "outer",
+     "at": 0.6,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "inner",
+     "at": 0.9,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "tubeO",
+     "at": 1.6,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "tubeI",
+     "at": 1.6,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "g1",
+     "at": 2.4,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "g2",
+     "at": 2.55,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "g3",
+     "at": 2.7,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "g4",
+     "at": 2.85,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "g5",
+     "at": 3.0,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "lead",
+     "at": 3.3,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "leadc",
+     "at": 3.8,
+     "effect": "draw",
+     "duration": 0.4
+    }
+   ],
+   "labels": [
+    {
+     "text": "sand in the kerf",
+     "x": 1392,
+     "y": 548,
+     "at": 3.6,
+     "anchor": "start",
+     "accent": true
+    },
+    {
+     "text": "core",
+     "x": 960,
+     "y": 232,
+     "at": 4.1,
+     "anchor": "middle"
+    }
+   ],
+   "claim_refs": [
+    "c22",
+    "c24"
+   ]
+  },
+  {
+   "id": "c106",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s106 | straight cut on meaning change",
+   "type": "scale_comparison",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 106 / FOURTEEN HOURS",
+   "kicker": "The cost in time",
+   "title": "One slot, 3 cm deep and 95 cm long",
+   "unit": "hours",
+   "at": 0.6,
+   "items": [
+    {
+     "label": "a working day",
+     "value": 8,
+     "note": "for reference"
+    },
+    {
+     "label": "that one slot",
+     "value": 14,
+     "note": "Stocks, Antiquity 2001",
+     "hero": true
+    }
+   ],
+   "footnote": "Dry sand with a smooth blade performed best.",
+   "caption": "The method works. The question is what it costs",
+   "claim_refs": [
+    "c22"
+   ],
+   "source": "Ledger c22"
+  },
+  {
+   "id": "c107",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_23567_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s107 | straight cut on meaning change"
+  },
+  {
+   "id": "c108",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s108 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 108 / WET OR DRY",
+   "kicker": "The result",
+   "title": "Dry sand, smooth blade",
+   "caption": "Of the combinations tested, this one performed best",
+   "layers": [
+    {
+     "id": "div",
+     "kind": "line",
+     "x": 960,
+     "y": 380,
+     "x2": 960,
+     "y2": 840,
+     "stroke": "#3A3630",
+     "strokeWidth": 1.5
+    },
+    {
+     "id": "dryBox",
+     "kind": "rect",
+     "x": 440,
+     "y": 440,
+     "w": 400,
+     "h": 340,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3
+    },
+    {
+     "id": "wetBox",
+     "kind": "rect",
+     "x": 1080,
+     "y": 440,
+     "w": 400,
+     "h": 340,
+     "stroke": "#3A3630",
+     "strokeWidth": 2
+    },
+    {
+     "id": "d1",
+     "kind": "circle",
+     "x": 560,
+     "y": 640,
+     "r": 8,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "d2",
+     "kind": "circle",
+     "x": 620,
+     "y": 600,
+     "r": 7,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "d3",
+     "kind": "circle",
+     "x": 690,
+     "y": 660,
+     "r": 9,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "w1",
+     "kind": "circle",
+     "x": 1200,
+     "y": 640,
+     "r": 8,
+     "fill": "#55514A",
+     "stroke": "none"
+    },
+    {
+     "id": "w2",
+     "kind": "circle",
+     "x": 1262,
+     "y": 604,
+     "r": 7,
+     "fill": "#55514A",
+     "stroke": "none"
+    },
+    {
+     "id": "w3",
+     "kind": "circle",
+     "x": 1330,
+     "y": 662,
+     "r": 9,
+     "fill": "#55514A",
+     "stroke": "none"
+    },
+    {
+     "id": "tick",
+     "kind": "path",
+     "d": "M 596 876 L 636 916 L 714 834",
+     "stroke": "#C08A3E",
+     "strokeWidth": 5
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "div",
+     "at": 0.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "dryBox",
+     "at": 0.6,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "wetBox",
+     "at": 0.9,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "d1",
+     "at": 1.5,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "d2",
+     "at": 1.7,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "d3",
+     "at": 1.9,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "w1",
+     "at": 2.4,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "w2",
+     "at": 2.6,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "w3",
+     "at": 2.8,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "tick",
+     "at": 3.8,
+     "effect": "draw",
+     "duration": 0.6
+    }
+   ],
+   "labels": [
+    {
+     "text": "dry sand",
+     "x": 640,
+     "y": 410,
+     "at": 1.2,
+     "anchor": "middle",
+     "accent": true
+    },
+    {
+     "text": "wet sand",
+     "x": 1280,
+     "y": 410,
+     "at": 1.4,
+     "anchor": "middle"
+    }
+   ],
+   "claim_refs": [
+    "c22"
+   ],
+   "source": "Ledger c22"
+  },
+  {
+   "id": "c109",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bank/wm_790477717.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s109 | straight cut on meaning change",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 109",
+   "caption": "Copper-alloy tool heads, corroded and worn",
+   "sourceLine": "Unknown authorUnknown author · CC BY 4.0"
+  },
+  {
+   "id": "c110",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s110 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 110 / THE CARRIER",
+   "kicker": "Mechanism",
+   "title": "Copper does not cut",
+   "caption": "The copper holds and drags an abrasive. The quartz sand does the cutting",
+   "layers": [
+    {
+     "id": "stone",
+     "kind": "rect",
+     "x": 420,
+     "y": 600,
+     "w": 1080,
+     "h": 290,
+     "stroke": "#8A8578",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "blade",
+     "kind": "rect",
+     "x": 600,
+     "y": 380,
+     "w": 720,
+     "h": 34,
+     "stroke": "#C08A3E",
+     "fill": "#0C0C0E",
+     "strokeWidth": 4
+    },
+    {
+     "id": "kerf",
+     "kind": "rect",
+     "x": 600,
+     "y": 600,
+     "w": 720,
+     "h": 90,
+     "stroke": "#3A3630",
+     "fill": "#0C0C0E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "drag",
+     "kind": "line",
+     "x": 660,
+     "y": 300,
+     "x2": 1260,
+     "y2": 300,
+     "stroke": "#8A8578",
+     "strokeWidth": 3
+    },
+    {
+     "id": "s1",
+     "kind": "circle",
+     "x": 700,
+     "y": 640,
+     "r": 9,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "s2",
+     "kind": "circle",
+     "x": 860,
+     "y": 660,
+     "r": 8,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "s3",
+     "kind": "circle",
+     "x": 1020,
+     "y": 636,
+     "r": 10,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "s4",
+     "kind": "circle",
+     "x": 1180,
+     "y": 656,
+     "r": 8,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "stone",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "blade",
+     "at": 0.6,
+     "effect": "slide-in"
+    },
+    {
+     "layer_id": "drag",
+     "at": 1.4,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "kerf",
+     "at": 2.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "s1",
+     "at": 2.6,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "s2",
+     "at": 2.8,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "s3",
+     "at": 3.0,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "s4",
+     "at": 3.2,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "copper — the carrier",
+     "x": 960,
+     "y": 340,
+     "at": 1.9,
+     "anchor": "middle",
+     "accent": true
+    },
+    {
+     "text": "quartz sand — the cutter",
+     "x": 960,
+     "y": 962,
+     "at": 3.6,
+     "anchor": "middle",
+     "accent": true
+    }
+   ],
+   "claim_refs": [
+    "c24"
+   ],
+   "source": "Ledger c24"
+  },
+  {
+   "id": "c111",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_105572152.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s111 | straight cut on meaning change",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 111 / LIMESTONE",
+   "caption": "Limestone hardground — the stone that cuts fifteen times faster",
+   "sourceLine": "Wikimedia Commons · CC BY-SA"
+  },
+  {
+   "id": "c112",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act3_s112 | hold reached the 6s ceiling for this treatment",
+   "type": "schematic",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 112 / THE TEST",
+   "kicker": "How hardness is decided",
+   "title": "One scratches the other, or it does not",
+   "caption": "The test is a groove. Which material leaves it is the whole question",
+   "source": "Ledger c24",
+   "layers": [
+    {
+     "id": "plate",
+     "kind": "rect",
+     "x": 420,
+     "y": 560,
+     "w": 1080,
+     "h": 230,
+     "stroke": "#8A8578",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "groove",
+     "kind": "line",
+     "x": 520,
+     "y": 600,
+     "x2": 1270,
+     "y2": 600,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 4
+    },
+    {
+     "id": "stylus",
+     "kind": "polyline",
+     "points": "1300,420 1356,420 1328,576 1300,420",
+     "stroke": "#C08A3E",
+     "fill": "none",
+     "strokeWidth": 5
+    },
+    {
+     "id": "arrow",
+     "kind": "line",
+     "x": 1250,
+     "y": 480,
+     "x2": 980,
+     "y2": 480,
+     "stroke": "#8A8578",
+     "strokeWidth": 3
+    },
+    {
+     "id": "head",
+     "kind": "polyline",
+     "points": "1004,468 980,480 1004,492",
+     "stroke": "#8A8578",
+     "fill": "none",
+     "strokeWidth": 3
+    },
+    {
+     "id": "spoil1",
+     "kind": "circle",
+     "x": 1282,
+     "y": 588,
+     "r": 5,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    },
+    {
+     "id": "spoil2",
+     "kind": "circle",
+     "x": 1296,
+     "y": 572,
+     "r": 4,
+     "fill": "#EDE6D8",
+     "stroke": "none"
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "plate",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "stylus",
+     "at": 0.7,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "arrow",
+     "at": 1.5,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "head",
+     "at": 1.9,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "groove",
+     "at": 2.2,
+     "effect": "draw",
+     "duration": 1.4
+    },
+    {
+     "layer_id": "spoil1",
+     "at": 3.4,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "spoil2",
+     "at": 3.6,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "harder material",
+     "x": 1328,
+     "y": 384,
+     "at": 1.2,
+     "anchor": "middle",
+     "accent": true
+    },
+    {
+     "text": "softer material",
+     "x": 460,
+     "y": 860,
+     "at": 3.0,
+     "anchor": "start"
+    }
+   ],
+   "claim_refs": [
+    "c24"
+   ]
+  },
+  {
+   "id": "c113",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s113 | straight cut on meaning change",
+   "type": "scale_comparison",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 113 / HARDNESS",
+   "kicker": "Why it works",
+   "title": "Quartz is harder than the stone; copper is not",
+   "unit": "Mohs hardness",
+   "decimals": 1,
+   "at": 0.6,
+   "items": [
+    {
+     "label": "copper",
+     "value": 3.0,
+     "note": "the carrier"
+    },
+    {
+     "label": "granite",
+     "value": 6.5,
+     "note": "the stone being cut"
+    },
+    {
+     "label": "quartz sand",
+     "value": 7.0,
+     "note": "the abrasive",
+     "hero": true
+    }
+   ],
+   "footnote": "Mohs values are standard mineral reference, not a finding of this study.",
+   "caption": "Softer than the stone, and that is not the objection it sounds like",
+   "claim_refs": [
+    "c24"
+   ],
+   "source": "Ledger c24"
+  },
+  {
+   "id": "c114",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_92837_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s114 | straight cut on meaning change",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 114"
+  },
+  {
+   "id": "c115",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_18691743.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act3_s115 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c116",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s116 | straight cut on meaning change",
+   "type": "scale_comparison",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 116 / RATE",
+   "kicker": "The rate",
+   "title": "Limestone cut about fifteen times faster",
+   "unit": "relative cutting rate",
+   "at": 0.6,
+   "items": [
+    {
+     "label": "granite",
+     "value": 1,
+     "note": "5.2 cubic cm per hour",
+     "hero": true
+    },
+    {
+     "label": "limestone",
+     "value": 15,
+     "note": "about fifteen times faster"
+    }
+   ],
+   "footnote": "Stocks suggested the granite rate could roughly double with more experienced operators.",
+   "caption": "The stone that matters is the slow one",
+   "claim_refs": [
+    "c23"
+   ],
+   "source": "Ledger c23"
+  },
+  {
+   "id": "c117",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/derived/wm_378206248_detail.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act3_s117 | hold reached the 6s ceiling for this treatment",
+   "caption": "Limestone at Giza — the stone Stocks found cut about fifteen times faster",
+   "sourceLine": "Rodolfo Vittorio Lanzone · CC0"
+  },
+  {
+   "id": "c118",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s118 | straight cut on meaning change",
+   "type": "scale_comparison",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 118 / BARREL LOSS",
+   "kicker": "The metal cost",
+   "title": "Less than one part copper to a hundred of stone",
+   "unit": "ratio, barrel lost : depth cut",
+   "at": 0.6,
+   "items": [
+    {
+     "label": "stone penetrated",
+     "value": 100,
+     "note": "depth achieved",
+     "hero": true
+    },
+    {
+     "label": "copper barrel lost",
+     "value": 1,
+     "note": "reported as under 1:100"
+    }
+   ],
+   "footnote": "Stocks, 1993 coring experiment. This disposes of the idea that the method would consume mountains of metal.",
+   "caption": "The objection from metal consumption does not survive the measurement",
+   "claim_refs": [
+    "c25"
+   ],
+   "source": "Ledger c25"
+  },
+  {
+   "id": "c119",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_176303_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s119 | straight cut on meaning change",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 119"
+  },
+  {
+   "id": "c120",
+   "source": "projects/they-said-it-couldnt-be-built/assets/video/texture/clips/pixabay_video_17013.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s120 | straight cut on meaning change",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 120"
+  },
+  {
+   "id": "c121",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_22555_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s121 | straight cut on meaning change",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 121"
+  },
+  {
+   "id": "c122",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s122 | straight cut on meaning change",
+   "type": "evidence_card",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 122 / WET SAND",
+   "index": "c15",
+   "claim": "Wetting sand stiffens it, collapsing the heap that builds in front of a sledge.",
+   "attribution": "Bonn et al., Physical Review Letters (2014)",
+   "detail": "‘Sliding Friction on Wet and Dry Sand’ — Daniel Bonn, University of Amsterdam, with Christian Wagner's group at Saarland.",
+   "status": "peer_reviewed",
+   "caption": "Capillary bridges, measured in a laboratory tray",
+   "claim_refs": [
+    "c15"
+   ]
+  },
+  {
+   "id": "c123",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s123 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 123 / THE HEAP",
+   "kicker": "Dry sand",
+   "title": "The heap fights you",
+   "caption": "Dry sand builds a heap in front of the runners",
+   "layers": [
+    {
+     "id": "bed",
+     "kind": "line",
+     "x": 340,
+     "y": 760,
+     "x2": 1580,
+     "y2": 760,
+     "stroke": "#3A3630",
+     "strokeWidth": 3
+    },
+    {
+     "id": "runner",
+     "kind": "path",
+     "d": "M 820 760 L 1240 760 L 1240 700 L 820 700 Z",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "heap",
+     "kind": "path",
+     "d": "M 820 760 C 760 760 700 700 640 760 Z",
+     "stroke": "#C08A3E",
+     "fill": "#1C1810",
+     "strokeWidth": 3
+    },
+    {
+     "id": "f1",
+     "kind": "line",
+     "x": 760,
+     "y": 660,
+     "x2": 660,
+     "y2": 660,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3
+    },
+    {
+     "id": "f2",
+     "kind": "line",
+     "x": 760,
+     "y": 620,
+     "x2": 680,
+     "y2": 620,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3
+    },
+    {
+     "id": "pull",
+     "kind": "line",
+     "x": 1260,
+     "y": 660,
+     "x2": 1480,
+     "y2": 660,
+     "stroke": "#8A8578",
+     "strokeWidth": 3
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "bed",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "runner",
+     "at": 0.5,
+     "effect": "slide-in"
+    },
+    {
+     "layer_id": "pull",
+     "at": 1.4,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "heap",
+     "at": 2.3,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "f1",
+     "at": 3.2,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "f2",
+     "at": 3.5,
+     "effect": "draw",
+     "duration": 0.4
+    }
+   ],
+   "labels": [
+    {
+     "text": "sledge runner",
+     "x": 1030,
+     "y": 666,
+     "at": 1.1,
+     "anchor": "middle"
+    },
+    {
+     "text": "the heap",
+     "x": 640,
+     "y": 820,
+     "at": 2.8,
+     "anchor": "middle",
+     "accent": true
+    },
+    {
+     "text": "pull",
+     "x": 1500,
+     "y": 670,
+     "at": 1.9,
+     "anchor": "start"
+    }
+   ],
+   "claim_refs": [
+    "c15"
+   ],
+   "source": "Ledger c15"
+  },
+  {
+   "id": "c124",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act3_s124 | hold reached the 6s ceiling for this treatment",
+   "type": "texture_field",
+   "actNumber": "03",
+   "actTitle": "What the stone itself says",
+   "sceneIndex": "S 124",
+   "kind": "strata",
+   "seed": "slump-ridge-124",
+   "density": 40,
+   "angle": 11,
+   "speed": 0.3
+  },
+  {
+   "id": "c125",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s125 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 125 / CAPILLARY BRIDGES",
+   "kicker": "Wet sand",
+   "title": "The grains bind, and the bed stiffens",
+   "caption": "Coverage cites an optimum of roughly 2 to 5 percent water by volume — too dry fails, too wet fails",
+   "layers": [
+    {
+     "id": "g1",
+     "kind": "circle",
+     "x": 700,
+     "y": 560,
+     "r": 74,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "g2",
+     "kind": "circle",
+     "x": 880,
+     "y": 620,
+     "r": 86,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "g3",
+     "kind": "circle",
+     "x": 1070,
+     "y": 548,
+     "r": 70,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "g4",
+     "kind": "circle",
+     "x": 950,
+     "y": 780,
+     "r": 62,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "b1",
+     "kind": "path",
+     "d": "M 772 586 C 800 610 806 600 800 560",
+     "stroke": "#C08A3E",
+     "strokeWidth": 5
+    },
+    {
+     "id": "b2",
+     "kind": "path",
+     "d": "M 962 592 C 990 600 996 570 1002 566",
+     "stroke": "#C08A3E",
+     "strokeWidth": 5
+    },
+    {
+     "id": "b3",
+     "kind": "path",
+     "d": "M 912 700 C 930 722 918 730 926 720",
+     "stroke": "#C08A3E",
+     "strokeWidth": 5
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "g1",
+     "at": 0.3,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "g2",
+     "at": 0.6,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "g3",
+     "at": 0.9,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "g4",
+     "at": 1.2,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "b1",
+     "at": 2.4,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "b2",
+     "at": 2.7,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "b3",
+     "at": 3.0,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "capillary bridges",
+     "x": 1200,
+     "y": 640,
+     "at": 3.5,
+     "anchor": "start",
+     "accent": true
+    },
+    {
+     "text": "2–5% water by volume",
+     "x": 1200,
+     "y": 690,
+     "at": 3.9,
+     "anchor": "start",
+     "level": "data"
+    }
+   ],
+   "claim_refs": [
+    "c15",
+    "c16"
+   ],
+   "source": "Ledger c15, c16"
+  },
+  {
+   "id": "c126",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act3_s126 | hold reached the 6s ceiling for this treatment",
+   "type": "texture_field",
+   "actNumber": "03",
+   "actTitle": "What the stone itself says",
+   "sceneIndex": "S 126",
+   "kind": "strata",
+   "seed": "soak-front-126",
+   "density": 34,
+   "angle": 4,
+   "speed": 0.35
+  },
+  {
+   "id": "c127",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "dissolve",
+   "transition_duration": 0.533,
+   "reason": "still_dissolve | act3_s127 | cross-dissolve between consecutive stills within a beat",
+   "type": "texture_field",
+   "actNumber": "03",
+   "actTitle": "What the stone itself says",
+   "sceneIndex": "S 127",
+   "kind": "grain_drift",
+   "seed": "bound-grains-127",
+   "density": 240,
+   "angle": 28,
+   "speed": 1.5
+  },
+  {
+   "id": "c128",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s128 | straight cut on meaning change",
+   "type": "scale_comparison",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 128 / PULLING FORCE",
+   "kicker": "The window",
+   "title": "Too dry fails, too wet fails",
+   "unit": "percent water by volume",
+   "at": 0.6,
+   "items": [
+    {
+     "label": "dry",
+     "value": 0,
+     "note": "the heap builds"
+    },
+    {
+     "label": "optimum",
+     "value": 5,
+     "note": "roughly 2 to 5 percent",
+     "hero": true
+    },
+    {
+     "label": "over-wet",
+     "value": 12,
+     "note": "performance falls away again"
+    }
+   ],
+   "footnote": "The widely quoted ‘half the people’ figure is a press-release extrapolation from a laboratory tray, not a measurement from any pyramid.",
+   "caption": "A narrow window, and a figure that travelled further than its evidence",
+   "claim_refs": [
+    "c16",
+    "c17"
+   ],
+   "source": "Ledger c16, c17"
+  },
+  {
+   "id": "c129",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bank/wm_595950890.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act3_s129 | hold reached the 6s ceiling for this treatment",
+   "caption": "Modern reproduction of the Djehutihotep scene, Deir el-Bersha",
+   "sourceLine": "Youssef Grace · CC BY-SA 4.0"
+  },
+  {
+   "id": "c130",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s130 | straight cut on meaning change",
+   "type": "document_reveal",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 130 / DJEHUTIHOTEP",
+   "kicker": "The painting",
+   "headline": "The tomb of Djehutihotep",
+   "lines": [
+    {
+     "text": "A wall painting shows a worker pouring liquid",
+     "at": 0.6
+    },
+    {
+     "text": "in front of a sledge.",
+     "at": 1.8
+    },
+    {
+     "text": "Some historians read the pouring as ritual, not practical.",
+     "at": 3.0,
+     "emphasis": true
+    }
+   ],
+   "paper": "light",
+   "light_sweep": true,
+   "sweep_at": 3.8,
+   "claim_refs": [
+    "c18"
+   ],
+   "source": "Ledger c18"
+  },
+  {
+   "id": "c131",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s131 | straight cut on meaning change",
+   "type": "timeline",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 131 / THREE DATES",
+   "kicker": "Unreconciled",
+   "title": "Three dates for one painting",
+   "events": [
+    {
+     "year": -1900,
+     "label": "about 1900 BC",
+     "at": 0.6,
+     "accent": true
+    },
+    {
+     "year": -1880,
+     "label": "1880 BC",
+     "at": 1.8,
+     "accent": true
+    },
+    {
+     "year": -1800,
+     "label": "1800 BC",
+     "at": 3.0,
+     "accent": true
+    }
+   ],
+   "span": [
+    -1990,
+    -1710
+   ],
+   "caption": "Retrieved coverage dates it variously; no source reconciles them",
+   "claim_refs": [
+    "c18"
+   ],
+   "source": "Ledger c18"
+  },
+  {
+   "id": "c132",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s132 | straight cut on meaning change",
+   "type": "texture_field",
+   "actNumber": "03",
+   "actTitle": "What the stone itself says",
+   "sceneIndex": "S 132",
+   "kind": "grain_drift",
+   "seed": "thin-stream-132",
+   "density": 90,
+   "angle": 86,
+   "speed": 1.1
+  },
+  {
+   "id": "c133",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s133 | straight cut on meaning change",
+   "reused_from": "act3_s115",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 133 / THE TRAY",
+   "caption": "An extrapolation from a laboratory tray",
+   "sourceLine": "Wikimedia Commons · CC BY-SA",
+   "type": "schematic",
+   "kicker": "What was actually measured",
+   "title": "A tray, and what was read from it",
+   "source": "Ledger c15, c17",
+   "layers": [
+    {
+     "id": "tray",
+     "kind": "rect",
+     "x": 300,
+     "y": 700,
+     "w": 420,
+     "h": 110,
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "sand",
+     "kind": "rect",
+     "x": 306,
+     "y": 752,
+     "w": 408,
+     "h": 54,
+     "stroke": "none",
+     "fill": "#3A3630"
+    },
+    {
+     "id": "sled",
+     "kind": "polyline",
+     "points": "420,752 540,752 528,724 432,724 420,752",
+     "stroke": "#C08A3E",
+     "fill": "none",
+     "strokeWidth": 4
+    },
+    {
+     "id": "pull",
+     "kind": "line",
+     "x": 540,
+     "y": 738,
+     "x2": 626,
+     "y2": 718,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    },
+    {
+     "id": "gap",
+     "kind": "line",
+     "x": 760,
+     "y": 756,
+     "x2": 1120,
+     "y2": 756,
+     "stroke": "#3A3630",
+     "strokeWidth": 2,
+     "dashed": true
+    },
+    {
+     "id": "col",
+     "kind": "rect",
+     "x": 1180,
+     "y": 420,
+     "w": 300,
+     "h": 390,
+     "stroke": "#8A8578",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "colsled",
+     "kind": "polyline",
+     "points": "1150,810 1510,810 1486,854 1174,854 1150,810",
+     "stroke": "#C08A3E",
+     "fill": "none",
+     "strokeWidth": 4
+    },
+    {
+     "id": "ground",
+     "kind": "line",
+     "x": 240,
+     "y": 854,
+     "x2": 1680,
+     "y2": 854,
+     "stroke": "#3A3630",
+     "strokeWidth": 2
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "ground",
+     "at": 0.1,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "tray",
+     "at": 0.6,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "sand",
+     "at": 1.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "sled",
+     "at": 1.5,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "pull",
+     "at": 2.0,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "gap",
+     "at": 2.6,
+     "effect": "draw",
+     "duration": 0.9
+    },
+    {
+     "layer_id": "col",
+     "at": 3.5,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "colsled",
+     "at": 3.9,
+     "effect": "draw",
+     "duration": 0.5
+    }
+   ],
+   "labels": [
+    {
+     "text": "measured here",
+     "x": 510,
+     "y": 666,
+     "at": 2.2,
+     "anchor": "middle",
+     "accent": true
+    },
+    {
+     "text": "claimed for this",
+     "x": 1330,
+     "y": 386,
+     "at": 4.3,
+     "anchor": "middle"
+    }
+   ],
+   "claim_refs": [
+    "c15",
+    "c17"
+   ]
+  },
+  {
+   "id": "c134",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_175767228.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act3_s134 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c135",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/act3_s135__Giza_pyramid_complex_4fr.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "dissolve",
+   "transition_duration": 0.533,
+   "reason": "still_dissolve | act3_s135 | cross-dissolve between consecutive stills within a beat"
+  },
+  {
+   "id": "c136",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s136 | straight cut on meaning change",
+   "type": "scale_comparison",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 136 / THE SHORTFALL",
+   "kicker": "What the rate implies",
+   "title": "5.2 cubic centimetres an hour",
+   "unit": "cubic cm per hour, granite",
+   "decimals": 1,
+   "at": 0.6,
+   "items": [
+    {
+     "label": "reported rate",
+     "value": 5.2,
+     "note": "Stocks, dry quartz sand",
+     "hero": true
+    },
+    {
+     "label": "with experienced operators",
+     "value": 10.4,
+     "note": "‘could roughly double’"
+    }
+   ],
+   "footnote": "Stocks acknowledged that producing deep, rapid cuts comparable to Petrie's core required extensive time and labour.",
+   "caption": "The method is not in doubt. The arithmetic of doing it at scale is the open question",
+   "claim_refs": [
+    "c23",
+    "c26"
+   ],
+   "source": "Ledger c23, c26"
+  },
+  {
+   "id": "c137",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_66238775.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act3_s137 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c138",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/broad/clips/wikimedia_3254365.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "dissolve",
+   "transition_duration": 0.533,
+   "reason": "still_dissolve | act3_s138 | cross-dissolve between consecutive stills within a beat"
+  },
+  {
+   "id": "c139",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s139 | straight cut on meaning change",
+   "type": "document_reveal",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 139 / FALSIFICATION",
+   "kicker": "In his own words",
+   "headline": "Dunn's own condition",
+   "lines": [
+    {
+     "text": "“…couldn't support any theory of advanced machining",
+     "at": 0.6
+    },
+    {
+     "text": "if Petrie's dimensions of .100 inch feedrate",
+     "at": 1.8
+    },
+    {
+     "text": "cannot be verified.”",
+     "at": 3.0,
+     "emphasis": true
+    }
+   ],
+   "paper": "dark",
+   "light_sweep": true,
+   "sweep_at": 3.8,
+   "claim_refs": [
+    "c20"
+   ],
+   "source": "Christopher Dunn — ledger c20"
+  },
+  {
+   "id": "c140",
+   "in_seconds": 0.0,
+   "out_seconds": 6.88,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act3_s140 | straight cut on meaning change",
+   "type": "document_reveal",
+   "actNumber": "03",
+   "actTitle": "The hole in the granite",
+   "sceneIndex": "S 140 / CONCESSION",
+   "kicker": "In his own words",
+   "headline": "Stocks' concession",
+   "lines": [
+    {
+     "text": "Producing deep, rapid cuts comparable to Petrie's core",
+     "at": 0.6
+    },
+    {
+     "text": "required extensive time and labour.",
+     "at": 2.0,
+     "emphasis": true
+    }
+   ],
+   "paper": "light",
+   "light_sweep": true,
+   "sweep_at": 3.2,
+   "claim_refs": [
+    "c26"
+   ],
+   "source": "Denys Stocks — ledger c26"
+  },
+  {
+   "id": "c141",
+   "in_seconds": 0.0,
+   "out_seconds": 5.89,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "landing_line | act3_s141 | cut held across a landing line; narration takes the beat",
+   "reused_from": "act3_s098",
+   "actNumber": "03",
+   "actTitle": "What the stone itself says",
+   "sceneIndex": "S 141",
+   "type": "texture_field",
+   "kind": "strata",
+   "seed": "tool-down-141",
+   "density": 18,
+   "angle": 2,
+   "speed": 0.12
+  },
+  {
+   "id": "c142",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "fade",
+   "transition_duration": 2.5,
+   "reason": "act_boundary | act4_s142 | fade through black at the act boundary, matched to the music crossfade",
+   "reused_from": "act4_s143",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 142 / FOUR FILES",
+   "caption": "Four questions the literature has not closed",
+   "sourceLine": "Wikimedia Commons · CC BY-SA",
+   "type": "schematic",
+   "kicker": "Act four",
+   "title": "Four files. Still open",
+   "source": "Ledger c11",
+   "layers": [
+    {
+     "id": "f1",
+     "kind": "polyline",
+     "points": "300,470 452,452 486,588 334,620 300,470",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "f2",
+     "kind": "polyline",
+     "points": "640,444 800,470 776,606 626,586 640,444",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "f3",
+     "kind": "polyline",
+     "points": "980,462 1140,440 1166,598 1004,610 980,462",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "f4",
+     "kind": "polyline",
+     "points": "1320,450 1486,468 1460,604 1306,590 1320,450",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "base",
+     "kind": "line",
+     "x": 280,
+     "y": 660,
+     "x2": 1510,
+     "y2": 660,
+     "stroke": "#3A3630",
+     "strokeWidth": 2
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "base",
+     "at": 0.1,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "f1",
+     "at": 0.8,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "f2",
+     "at": 1.3,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "f3",
+     "at": 1.8,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "f4",
+     "at": 2.3,
+     "effect": "draw",
+     "duration": 0.5
+    }
+   ],
+   "labels": [
+    {
+     "text": "01",
+     "x": 393,
+     "y": 724,
+     "at": 2.9,
+     "anchor": "middle",
+     "level": "data"
+    },
+    {
+     "text": "02",
+     "x": 713,
+     "y": 724,
+     "at": 3.1,
+     "anchor": "middle",
+     "level": "data"
+    },
+    {
+     "text": "03",
+     "x": 1073,
+     "y": 724,
+     "at": 3.3,
+     "anchor": "middle",
+     "level": "data"
+    },
+    {
+     "text": "04",
+     "x": 1396,
+     "y": 724,
+     "at": 3.5,
+     "anchor": "middle",
+     "level": "data"
+    }
+   ],
+   "claim_refs": [
+    "c11"
+   ]
+  },
+  {
+   "id": "c143",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s144 | straight cut on meaning change",
+   "type": "map_route",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 144 / FILE 1",
+   "kicker": "File 1",
+   "title": "Six tonnes, on water",
+   "route": [
+    [
+     -3.0,
+     58.6
+    ],
+    [
+     -3.6,
+     57.6
+    ],
+    [
+     -5.6,
+     55.9
+    ],
+    [
+     -5.2,
+     53.4
+    ],
+    [
+     -4.6,
+     51.9
+    ],
+    [
+     -1.826,
+     51.179
+    ]
+   ],
+   "markers": [
+    {
+     "lon": -3.0,
+     "lat": 58.6,
+     "label": "Orcadian Basin",
+     "at": 0.6,
+     "dx": 22,
+     "dy": -12
+    },
+    {
+     "lon": -1.826,
+     "lat": 51.179,
+     "label": "Stonehenge",
+     "at": 2.8,
+     "dx": 20,
+     "dy": 28
+    }
+   ],
+   "scale": 1500,
+   "draw_at": 0.9,
+   "draw_seconds": 2.6,
+   "distance_callout": {
+    "text": "≥ 750 km",
+    "at": 3.9
+   },
+   "caption": "The authors call sea transport likelier. How it was done is a gap in the literature",
+   "claim_refs": [
+    "c13"
+   ],
+   "source": "Ledger c13"
+  },
+  {
+   "id": "c144",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_40196788.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act4_s143 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c145",
+   "source": "projects/they-said-it-couldnt-be-built/assets/video/texture_elemental/clips/pixabay_video_10339.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s145 | straight cut on meaning change"
+  },
+  {
+   "id": "c146",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s146 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 146 / FILE 1",
+   "kicker": "File 1 — the open part",
+   "title": "Displacement, load, and then nothing",
+   "caption": "No retrieved source describes the vessel. The third panel is left blank on purpose",
+   "layers": [
+    {
+     "id": "water",
+     "kind": "line",
+     "x": 300,
+     "y": 700,
+     "x2": 1620,
+     "y2": 700,
+     "stroke": "#3A3630",
+     "strokeWidth": 3
+    },
+    {
+     "id": "hull",
+     "kind": "path",
+     "d": "M 460 700 L 500 780 L 760 780 L 800 700 Z",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "load",
+     "kind": "rect",
+     "x": 540,
+     "y": 620,
+     "w": 180,
+     "h": 80,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3
+    },
+    {
+     "id": "disp",
+     "kind": "line",
+     "x": 420,
+     "y": 700,
+     "x2": 420,
+     "y2": 780,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    },
+    {
+     "id": "dt1",
+     "kind": "line",
+     "x": 400,
+     "y": 700,
+     "x2": 440,
+     "y2": 700,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    },
+    {
+     "id": "dt2",
+     "kind": "line",
+     "x": 400,
+     "y": 780,
+     "x2": 440,
+     "y2": 780,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    },
+    {
+     "id": "blank",
+     "kind": "rect",
+     "x": 1040,
+     "y": 540,
+     "w": 440,
+     "h": 300,
+     "stroke": "#3A3630",
+     "strokeWidth": 2,
+     "dashed": true
+    },
+    {
+     "id": "qm",
+     "kind": "line",
+     "x": 1040,
+     "y": 540,
+     "x2": 1480,
+     "y2": 840,
+     "stroke": "#3A3630",
+     "strokeWidth": 1.5
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "water",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "hull",
+     "at": 0.5,
+     "effect": "draw",
+     "duration": 0.8
+    },
+    {
+     "layer_id": "load",
+     "at": 1.5,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "disp",
+     "at": 2.2,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "dt1",
+     "at": 2.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "dt2",
+     "at": 2.5,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "blank",
+     "at": 3.6,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "qm",
+     "at": 4.2,
+     "effect": "draw",
+     "duration": 0.6
+    }
+   ],
+   "labels": [
+    {
+     "text": "6 tonnes",
+     "x": 630,
+     "y": 596,
+     "at": 1.9,
+     "anchor": "middle",
+     "accent": true,
+     "level": "data"
+    },
+    {
+     "text": "displacement",
+     "x": 380,
+     "y": 746,
+     "at": 2.8,
+     "anchor": "end"
+    },
+    {
+     "text": "the method",
+     "x": 1260,
+     "y": 500,
+     "at": 4.0,
+     "anchor": "middle"
+    }
+   ],
+   "claim_refs": [
+    "c13"
+   ],
+   "source": "Ledger c13"
+  },
+  {
+   "id": "c147",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s147 | straight cut on meaning change",
+   "reused_from": "act4_s145",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 147 / FILE 1",
+   "type": "texture_field",
+   "kind": "strata",
+   "seed": "no-horizon-147",
+   "density": 26,
+   "angle": -3,
+   "speed": 0.22
+  },
+  {
+   "id": "c148",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bank/wm_63128291.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act4_s148 | hold reached the 6s ceiling for this treatment",
+   "sourceLine": "JERRYE AND ROY KLOTZ MD · CC BY-SA 3.0"
+  },
+  {
+   "id": "c149",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s149 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 149 / PUMAPUNKU",
+   "kicker": "File 2",
+   "title": "The largest block",
+   "caption": "7.81 m long, 5.17 m wide, averaging 1.07 m thick, estimated at about 131 tonnes",
+   "layers": [
+    {
+     "id": "ground",
+     "kind": "line",
+     "x": 280,
+     "y": 820,
+     "x2": 1640,
+     "y2": 820,
+     "stroke": "#3A3630",
+     "strokeWidth": 3
+    },
+    {
+     "id": "block",
+     "kind": "path",
+     "d": "M 480 820 L 480 700 L 1340 700 L 1340 820 Z",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "top",
+     "kind": "path",
+     "d": "M 480 700 L 620 580 L 1480 580 L 1340 700 Z",
+     "stroke": "#EDE6D8",
+     "fill": "#1A1A20",
+     "strokeWidth": 3
+    },
+    {
+     "id": "side",
+     "kind": "path",
+     "d": "M 1340 820 L 1340 700 L 1480 580 L 1480 700 Z",
+     "stroke": "#EDE6D8",
+     "fill": "#121218",
+     "strokeWidth": 3
+    },
+    {
+     "id": "dimL",
+     "kind": "line",
+     "x": 480,
+     "y": 880,
+     "x2": 1340,
+     "y2": 880,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "dl1",
+     "kind": "line",
+     "x": 480,
+     "y": 862,
+     "x2": 480,
+     "y2": 898,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "dl2",
+     "kind": "line",
+     "x": 1340,
+     "y": 862,
+     "x2": 1340,
+     "y2": 898,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "dimT",
+     "kind": "line",
+     "x": 420,
+     "y": 700,
+     "x2": 420,
+     "y2": 820,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    },
+    {
+     "id": "dt1",
+     "kind": "line",
+     "x": 402,
+     "y": 700,
+     "x2": 438,
+     "y2": 700,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    },
+    {
+     "id": "dt2",
+     "kind": "line",
+     "x": 402,
+     "y": 820,
+     "x2": 438,
+     "y2": 820,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "ground",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "block",
+     "at": 0.5,
+     "effect": "draw",
+     "duration": 0.9
+    },
+    {
+     "layer_id": "top",
+     "at": 1.3,
+     "effect": "draw",
+     "duration": 0.9
+    },
+    {
+     "layer_id": "side",
+     "at": 2.0,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "dimL",
+     "at": 2.9,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "dl1",
+     "at": 2.9,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "dl2",
+     "at": 3.4,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "dimT",
+     "at": 4.0,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "dt1",
+     "at": 4.0,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "dt2",
+     "at": 4.3,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "7.81 m",
+     "x": 910,
+     "y": 938,
+     "at": 3.7,
+     "anchor": "middle",
+     "accent": true,
+     "level": "data"
+    },
+    {
+     "text": "1.07 m avg",
+     "x": 382,
+     "y": 772,
+     "at": 4.6,
+     "anchor": "end",
+     "level": "data"
+    },
+    {
+     "text": "≈ 131 t",
+     "x": 1540,
+     "y": 640,
+     "at": 5.0,
+     "anchor": "start",
+     "accent": true,
+     "level": "data"
+    }
+   ],
+   "claim_refs": [
+    "c30"
+   ],
+   "source": "Ledger c30"
+  },
+  {
+   "id": "c150",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/refill3/clips/wikimedia_18763699.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.45,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s150 | straight cut on meaning change",
+   "type": "annotated_still",
+   "backgroundImage": "projects/they-said-it-couldnt-be-built/assets/images/refill3/clips/wikimedia_18763699.jpg",
+   "parallax": true,
+   "annotations": [
+    {
+     "label": "H-shaped block",
+     "x": 0.7,
+     "y": 0.64,
+     "reveal_at": 0.9,
+     "side": "left"
+    },
+    {
+     "label": "a person, for scale",
+     "x": 0.516,
+     "y": 0.35,
+     "reveal_at": 2.8,
+     "side": "right"
+    }
+   ],
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 150 / PUMAPUNKU",
+   "caption": "Pumapunku — worked andesite on the altiplano",
+   "sourceLine": "Wikimedia Commons · CC BY-SA"
+  },
+  {
+   "id": "c151",
+   "source": "projects/they-said-it-couldnt-be-built/assets/video/texture_elemental/clips/pixabay_video_316355.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s151 | straight cut on meaning change",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 151"
+  },
+  {
+   "id": "c152",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/derived/wm_408920787_detail.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s152 | straight cut on meaning change",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 152 / PUMAPUNKU",
+   "sourceLine": "Gonzalo Rivero · CC BY-SA 3.0"
+  },
+  {
+   "id": "c153",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s153 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 153 / TWO HYPOTHESES",
+   "kicker": "File 2",
+   "title": "Carved, or cast",
+   "caption": "The geopolymer finding is reported, not established — no primary paper was retrieved and it is not independently replicated",
+   "layers": [
+    {
+     "id": "div",
+     "kind": "line",
+     "x": 960,
+     "y": 380,
+     "x2": 960,
+     "y2": 860,
+     "stroke": "#3A3630",
+     "strokeWidth": 1.5
+    },
+    {
+     "id": "rawL",
+     "kind": "path",
+     "d": "M 480 820 L 520 560 L 800 540 L 840 820 Z",
+     "stroke": "#55514A",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "cutL",
+     "kind": "rect",
+     "x": 540,
+     "y": 600,
+     "w": 240,
+     "h": 220,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "chipA",
+     "kind": "line",
+     "x": 520,
+     "y": 560,
+     "x2": 540,
+     "y2": 600,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "chipB",
+     "kind": "line",
+     "x": 800,
+     "y": 540,
+     "x2": 780,
+     "y2": 600,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "mould",
+     "kind": "path",
+     "d": "M 1120 820 L 1120 600 L 1160 600 L 1160 780 L 1400 780 L 1400 600 L 1440 600 L 1440 820 Z",
+     "stroke": "#55514A",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "pour",
+     "kind": "path",
+     "d": "M 1280 420 C 1270 500 1290 540 1280 596",
+     "stroke": "#C08A3E",
+     "strokeWidth": 3,
+     "dashed": true
+    },
+    {
+     "id": "cast",
+     "kind": "rect",
+     "x": 1160,
+     "y": 640,
+     "w": 240,
+     "h": 140,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3,
+     "dashed": true
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "div",
+     "at": 0.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "rawL",
+     "at": 0.5,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "cutL",
+     "at": 1.3,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "chipA",
+     "at": 1.8,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "chipB",
+     "at": 2.0,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "mould",
+     "at": 2.8,
+     "effect": "draw",
+     "duration": 0.8
+    },
+    {
+     "layer_id": "pour",
+     "at": 3.7,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "cast",
+     "at": 4.4,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "carved from a monolith",
+     "x": 660,
+     "y": 344,
+     "at": 1.6,
+     "anchor": "middle"
+    },
+    {
+     "text": "cast — reported, not replicated",
+     "x": 1280,
+     "y": 344,
+     "at": 4.8,
+     "anchor": "middle",
+     "accent": true
+    }
+   ],
+   "claim_refs": [
+    "c30",
+    "c31"
+   ],
+   "source": "Ledger c31"
+  },
+  {
+   "id": "c154",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s154 | straight cut on meaning change",
+   "type": "document_reveal",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 154 / THE REPORT",
+   "kicker": "Held as reported",
+   "headline": "The geochemical finding",
+   "lines": [
+    {
+     "text": "The H-shaped blocks reportedly match local andesitic sand",
+     "at": 0.6
+    },
+    {
+     "text": "but also contain organo-mineral binders.",
+     "at": 1.9
+    },
+    {
+     "text": "Not independently replicated. No primary paper retrieved.",
+     "at": 3.2,
+     "emphasis": true
+    }
+   ],
+   "paper": "dark",
+   "light_sweep": true,
+   "sweep_at": 3.9,
+   "claim_refs": [
+    "c31"
+   ],
+   "source": "Ledger c31 — a reported finding, not an established one"
+  },
+  {
+   "id": "c155",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_76274175.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s155 | straight cut on meaning change",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 155 / THE QUARRY",
+   "caption": "Corot, Abandoned Quarry, c. 1850",
+   "sourceLine": "Wikimedia Commons · public domain"
+  },
+  {
+   "id": "c156",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bank/wm_734418284.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act4_s156 | hold reached the 6s ceiling for this treatment",
+   "sourceLine": "Mohamed abdelzaher · CC BY-SA 4.0"
+  },
+  {
+   "id": "c157",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_63768813_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s157 | straight cut on meaning change"
+  },
+  {
+   "id": "c158",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "grain_light_leak",
+   "transition_duration": 0.6,
+   "reason": "hero_entry | act4_s158 | hero-slot entry — the one reserved grain/light-leak this act",
+   "type": "schematic",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 158 / GIZA",
+   "kicker": "File 3",
+   "title": "Khufu's Pyramid — section",
+   "caption": "A void with a cross-section similar to the Grand Gallery and a minimum length of 30 metres",
+   "layers": [
+    {
+     "id": "ground",
+     "kind": "line",
+     "x": 260,
+     "y": 880,
+     "x2": 1660,
+     "y2": 880,
+     "stroke": "#3A3630",
+     "strokeWidth": 3
+    },
+    {
+     "id": "outline",
+     "kind": "path",
+     "d": "M 960 190 L 1655 878 L 265 878 Z",
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "gallery",
+     "kind": "path",
+     "d": "M 790 735 L 1010 505",
+     "stroke": "#8A8578",
+     "strokeWidth": 10
+    },
+    {
+     "id": "queen",
+     "kind": "rect",
+     "x": 735,
+     "y": 745,
+     "w": 110,
+     "h": 54,
+     "stroke": "#8A8578",
+     "strokeWidth": 3
+    },
+    {
+     "id": "void",
+     "kind": "rect",
+     "x": 880,
+     "y": 405,
+     "w": 300,
+     "h": 66,
+     "stroke": "#C08A3E",
+     "strokeWidth": 4,
+     "dashed": true
+    },
+    {
+     "id": "entry",
+     "kind": "line",
+     "x": 560,
+     "y": 690,
+     "x2": 735,
+     "y2": 772,
+     "stroke": "#8A8578",
+     "strokeWidth": 5
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "ground",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "outline",
+     "at": 0.4,
+     "effect": "draw",
+     "duration": 1.3
+    },
+    {
+     "layer_id": "entry",
+     "at": 1.5,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "queen",
+     "at": 2.0,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "gallery",
+     "at": 2.4,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "void",
+     "at": 3.6,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "Grand Gallery",
+     "x": 1040,
+     "y": 560,
+     "at": 3.1,
+     "anchor": "start"
+    },
+    {
+     "text": "Big Void — min. 30 m",
+     "x": 1222,
+     "y": 442,
+     "at": 4.1,
+     "anchor": "start",
+     "accent": true,
+     "level": "data"
+    },
+    {
+     "text": "Queen's chamber",
+     "x": 700,
+     "y": 836,
+     "at": 2.3,
+     "anchor": "end"
+    }
+   ],
+   "claim_refs": [
+    "c38",
+    "c39"
+   ],
+   "source": "Morishima et al., Nature 552, 386–390 (2017) — ledger c38"
+  },
+  {
+   "id": "c159",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/stills_site/clips/wikimedia_99892692.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act4_s159 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c160",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/refill/clips/wikimedia_131998284.png",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s160 | straight cut on meaning change",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 160 / DETECTORS",
+   "caption": "Detectors installed in the Descending Corridor and the Queen's chamber",
+   "sourceLine": "ScanPyramids · Wikimedia Commons"
+  },
+  {
+   "id": "c161",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s161 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 161 / MUONS",
+   "kicker": "The method",
+   "title": "Three technologies, three independent analyses",
+   "caption": "Nuclear emulsion films and scintillator hodoscopes in the Queen's chamber, gas detectors outside the pyramid",
+   "layers": [
+    {
+     "id": "ground",
+     "kind": "line",
+     "x": 260,
+     "y": 880,
+     "x2": 1660,
+     "y2": 880,
+     "stroke": "#3A3630",
+     "strokeWidth": 3
+    },
+    {
+     "id": "outline",
+     "kind": "path",
+     "d": "M 960 260 L 1560 878 L 360 878 Z",
+     "stroke": "#8A8578",
+     "strokeWidth": 3
+    },
+    {
+     "id": "void",
+     "kind": "rect",
+     "x": 880,
+     "y": 470,
+     "w": 260,
+     "h": 60,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3,
+     "dashed": true
+    },
+    {
+     "id": "m1",
+     "kind": "line",
+     "x": 700,
+     "y": 330,
+     "x2": 820,
+     "y2": 880,
+     "stroke": "#55514A",
+     "strokeWidth": 2
+    },
+    {
+     "id": "m2",
+     "kind": "line",
+     "x": 900,
+     "y": 330,
+     "x2": 950,
+     "y2": 880,
+     "stroke": "#55514A",
+     "strokeWidth": 2
+    },
+    {
+     "id": "m3",
+     "kind": "line",
+     "x": 1060,
+     "y": 330,
+     "x2": 1010,
+     "y2": 880,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "m4",
+     "kind": "line",
+     "x": 1200,
+     "y": 330,
+     "x2": 1120,
+     "y2": 880,
+     "stroke": "#55514A",
+     "strokeWidth": 2
+    },
+    {
+     "id": "det1",
+     "kind": "rect",
+     "x": 900,
+     "y": 820,
+     "w": 120,
+     "h": 36,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "det2",
+     "kind": "rect",
+     "x": 1600,
+     "y": 830,
+     "w": 120,
+     "h": 36,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "ground",
+     "at": 0.1,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "outline",
+     "at": 0.4,
+     "effect": "draw",
+     "duration": 1.0
+    },
+    {
+     "layer_id": "void",
+     "at": 1.5,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "det1",
+     "at": 2.0,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "det2",
+     "at": 2.3,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "m1",
+     "at": 2.9,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "m2",
+     "at": 3.1,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "m3",
+     "at": 3.3,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "m4",
+     "at": 3.5,
+     "effect": "draw",
+     "duration": 0.5
+    }
+   ],
+   "labels": [
+    {
+     "text": "in the Queen's chamber",
+     "x": 880,
+     "y": 946,
+     "at": 2.5,
+     "anchor": "end"
+    },
+    {
+     "text": "outside the pyramid",
+     "x": 1596,
+     "y": 946,
+     "at": 2.8,
+     "anchor": "end"
+    },
+    {
+     "text": "fewer muons absorbed",
+     "x": 1180,
+     "y": 440,
+     "at": 4.2,
+     "anchor": "start",
+     "accent": true
+    }
+   ],
+   "claim_refs": [
+    "c39"
+   ],
+   "source": "Ledger c39"
+  },
+  {
+   "id": "c162",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/pixabay_video_200941_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s162 | straight cut on meaning change",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 162"
+  },
+  {
+   "id": "c163",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act4_s163 | hold reached the 6s ceiling for this treatment",
+   "type": "schematic",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 163 / FILE 3",
+   "kicker": "Three methods, three teams",
+   "title": "Agreeing independently",
+   "caption": "Nuclear emulsion, scintillator hodoscopes and gas detectors — three groups",
+   "source": "Ledger c39",
+   "layers": [
+    {
+     "id": "u1",
+     "kind": "rect",
+     "x": 300,
+     "y": 430,
+     "w": 300,
+     "h": 210,
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "u2",
+     "kind": "rect",
+     "x": 810,
+     "y": 430,
+     "w": 300,
+     "h": 210,
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "u3",
+     "kind": "rect",
+     "x": 1320,
+     "y": 430,
+     "w": 300,
+     "h": 210,
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "p1",
+     "kind": "line",
+     "x": 340,
+     "y": 470,
+     "x2": 560,
+     "y2": 470,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "p2",
+     "kind": "line",
+     "x": 340,
+     "y": 500,
+     "x2": 560,
+     "y2": 500,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "g1",
+     "kind": "circle",
+     "x": 960,
+     "y": 500,
+     "r": 9,
+     "stroke": "#C08A3E",
+     "fill": "none",
+     "strokeWidth": 3
+    },
+    {
+     "id": "g2",
+     "kind": "circle",
+     "x": 960,
+     "y": 570,
+     "r": 9,
+     "stroke": "#C08A3E",
+     "fill": "none",
+     "strokeWidth": 3
+    },
+    {
+     "id": "h1",
+     "kind": "line",
+     "x": 1360,
+     "y": 470,
+     "x2": 1360,
+     "y2": 600,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "h2",
+     "kind": "line",
+     "x": 1420,
+     "y": 470,
+     "x2": 1420,
+     "y2": 600,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "h3",
+     "kind": "line",
+     "x": 1480,
+     "y": 470,
+     "x2": 1480,
+     "y2": 600,
+     "stroke": "#C08A3E",
+     "strokeWidth": 2
+    },
+    {
+     "id": "track",
+     "kind": "line",
+     "x": 300,
+     "y": 300,
+     "x2": 1620,
+     "y2": 300,
+     "stroke": "#3A3630",
+     "strokeWidth": 2,
+     "dashed": true
+    },
+    {
+     "id": "d1",
+     "kind": "line",
+     "x": 450,
+     "y": 300,
+     "x2": 450,
+     "y2": 430,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    },
+    {
+     "id": "d2",
+     "kind": "line",
+     "x": 960,
+     "y": 300,
+     "x2": 960,
+     "y2": 430,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    },
+    {
+     "id": "d3",
+     "kind": "line",
+     "x": 1470,
+     "y": 300,
+     "x2": 1470,
+     "y2": 430,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "track",
+     "at": 0.1,
+     "effect": "draw",
+     "duration": 0.8
+    },
+    {
+     "layer_id": "u1",
+     "at": 0.8,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "u2",
+     "at": 1.1,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "u3",
+     "at": 1.4,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "p1",
+     "at": 2.0,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "p2",
+     "at": 2.1,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "g1",
+     "at": 2.3,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "g2",
+     "at": 2.45,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "h1",
+     "at": 2.6,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "h2",
+     "at": 2.7,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "h3",
+     "at": 2.8,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "d1",
+     "at": 3.3,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "d2",
+     "at": 3.5,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "d3",
+     "at": 3.7,
+     "effect": "draw",
+     "duration": 0.4
+    }
+   ],
+   "labels": [
+    {
+     "text": "emulsion film",
+     "x": 450,
+     "y": 700,
+     "at": 4.0,
+     "anchor": "middle"
+    },
+    {
+     "text": "gas detectors",
+     "x": 960,
+     "y": 700,
+     "at": 4.2,
+     "anchor": "middle"
+    },
+    {
+     "text": "scintillator",
+     "x": 1470,
+     "y": 700,
+     "at": 4.4,
+     "anchor": "middle"
+    },
+    {
+     "text": "same signal",
+     "x": 960,
+     "y": 252,
+     "at": 4.7,
+     "anchor": "middle",
+     "accent": true
+    }
+   ],
+   "claim_refs": [
+    "c39"
+   ]
+  },
+  {
+   "id": "c164",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s165 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 165 / NORTH FACE",
+   "kicker": "The second structure",
+   "title": "The corridor behind the Chevron",
+   "caption": "About 9 metres long, roughly 2 by 2 metres, on a 7.5 degree incline",
+   "layers": [
+    {
+     "id": "face",
+     "kind": "path",
+     "d": "M 420 880 L 980 300 L 980 880 Z",
+     "stroke": "#8A8578",
+     "fill": "#14141A",
+     "strokeWidth": 3
+    },
+    {
+     "id": "chev1",
+     "kind": "polyline",
+     "points": "640,700 720,610 800,700",
+     "stroke": "#EDE6D8",
+     "strokeWidth": 5
+    },
+    {
+     "id": "chev2",
+     "kind": "polyline",
+     "points": "606,742 720,616 834,742",
+     "stroke": "#EDE6D8",
+     "strokeWidth": 5
+    },
+    {
+     "id": "corr",
+     "kind": "path",
+     "d": "M 740 672 L 1420 584",
+     "stroke": "#C08A3E",
+     "strokeWidth": 14
+    },
+    {
+     "id": "dimL",
+     "kind": "line",
+     "x": 740,
+     "y": 760,
+     "x2": 1420,
+     "y2": 670,
+     "stroke": "#8A8578",
+     "strokeWidth": 2
+    },
+    {
+     "id": "angle",
+     "kind": "path",
+     "d": "M 860 660 a 120 120 0 0 1 24 -16",
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "sect",
+     "kind": "rect",
+     "x": 1480,
+     "y": 520,
+     "w": 120,
+     "h": 120,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "face",
+     "at": 0.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "chev1",
+     "at": 0.8,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "chev2",
+     "at": 1.1,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "corr",
+     "at": 2.0,
+     "effect": "draw",
+     "duration": 1.1
+    },
+    {
+     "layer_id": "dimL",
+     "at": 3.3,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "angle",
+     "at": 4.0,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "sect",
+     "at": 4.5,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "the Chevron",
+     "x": 600,
+     "y": 580,
+     "at": 1.6,
+     "anchor": "end"
+    },
+    {
+     "text": "≈ 9 m",
+     "x": 1090,
+     "y": 770,
+     "at": 3.9,
+     "anchor": "middle",
+     "accent": true,
+     "level": "data"
+    },
+    {
+     "text": "7.5°",
+     "x": 920,
+     "y": 630,
+     "at": 4.4,
+     "anchor": "start",
+     "level": "data"
+    },
+    {
+     "text": "≈ 2 × 2 m",
+     "x": 1540,
+     "y": 494,
+     "at": 4.9,
+     "anchor": "middle",
+     "level": "data"
+    }
+   ],
+   "claim_refs": [
+    "c40",
+    "c41",
+    "c43"
+   ],
+   "source": "Nature Communications 14:1144 (2023) — ledger c40, c43"
+  },
+  {
+   "id": "c165",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/refill/clips/wikimedia_15985836.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act4_s164 | hold reached the 6s ceiling for this treatment"
+  },
+  {
+   "id": "c166",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/derived/wm_378206248_extreme.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "dissolve",
+   "transition_duration": 0.533,
+   "reason": "still_dissolve | act4_s166 | cross-dissolve between consecutive stills within a beat",
+   "sourceLine": "Rodolfo Vittorio Lanzone · CC0"
+  },
+  {
+   "id": "c167",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/bank/wm_747623856.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.45,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s169 | straight cut on meaning change",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 169 / SACSAYHUAMÁN",
+   "sourceLine": "Draceane · CC BY-SA 4.0"
+  },
+  {
+   "id": "c168",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s167 | straight cut on meaning change",
+   "reused_from": "act4_s164",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 167 / FILE 4",
+   "caption": "The entrance to the Great Pyramid",
+   "sourceLine": "Boston Public Library · Wikimedia Commons",
+   "type": "texture_field",
+   "kind": "depth_field",
+   "seed": "narrow-gap-167",
+   "density": 30,
+   "angle": 90,
+   "speed": 0.3
+  },
+  {
+   "id": "c169",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act4_s168 | hold reached the 6s ceiling for this treatment",
+   "type": "texture_field",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 168 / FILE 4",
+   "kind": "dust",
+   "seed": "torch-falloff-168",
+   "density": 38,
+   "angle": 64,
+   "speed": 0.45
+  },
+  {
+   "id": "c170",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_56169734_1080.mp4",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s170 | straight cut on meaning change"
+  },
+  {
+   "id": "c171",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/derived/wm_591878752_detail.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act4_s171 | hold reached the 6s ceiling for this treatment",
+   "sourceLine": "Martin St-Amant (S23678) · CC BY 3.0"
+  },
+  {
+   "id": "c172",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s172 | straight cut on meaning change",
+   "type": "texture_field",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 172 / FILE 4",
+   "kind": "grain_drift",
+   "seed": "river-cobbles-172",
+   "density": 54,
+   "angle": 16,
+   "speed": 0.5
+  },
+  {
+   "id": "c173",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s173 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 173 / TWO STAGES",
+   "kicker": "The shaping",
+   "title": "Pecked, then abraded",
+   "caption": "River-cobble hammerstones of roughly 3 to 15 kg, then sand and water. Abandoned blocks at Rumiqolqa carry matching tool marks",
+   "layers": [
+    {
+     "id": "div",
+     "kind": "line",
+     "x": 960,
+     "y": 380,
+     "x2": 960,
+     "y2": 860,
+     "stroke": "#3A3630",
+     "strokeWidth": 1.5
+    },
+    {
+     "id": "blockL",
+     "kind": "path",
+     "d": "M 480 820 L 492 580 L 820 566 L 836 820 Z",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "ham",
+     "kind": "circle",
+     "x": 660,
+     "y": 460,
+     "r": 44,
+     "stroke": "#C08A3E",
+     "strokeWidth": 4
+    },
+    {
+     "id": "strike",
+     "kind": "line",
+     "x": 660,
+     "y": 506,
+     "x2": 660,
+     "y2": 560,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3,
+     "dashed": true
+    },
+    {
+     "id": "pits",
+     "kind": "polyline",
+     "points": "500,574 560,588 620,570 680,586 740,568 800,582",
+     "stroke": "#8A8578",
+     "strokeWidth": 3
+    },
+    {
+     "id": "blockR",
+     "kind": "path",
+     "d": "M 1120 820 L 1120 580 L 1460 580 L 1460 820 Z",
+     "stroke": "#EDE6D8",
+     "fill": "#17171C",
+     "strokeWidth": 3
+    },
+    {
+     "id": "slurry",
+     "kind": "path",
+     "d": "M 1120 560 L 1460 560",
+     "stroke": "#C08A3E",
+     "strokeWidth": 7
+    },
+    {
+     "id": "sweep",
+     "kind": "path",
+     "d": "M 1160 520 L 1420 520",
+     "stroke": "#8A8578",
+     "strokeWidth": 3,
+     "dashed": true
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "div",
+     "at": 0.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "blockL",
+     "at": 0.5,
+     "effect": "draw",
+     "duration": 0.8
+    },
+    {
+     "layer_id": "ham",
+     "at": 1.4,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "strike",
+     "at": 1.9,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "pits",
+     "at": 2.3,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "blockR",
+     "at": 3.2,
+     "effect": "draw",
+     "duration": 0.7
+    },
+    {
+     "layer_id": "slurry",
+     "at": 4.0,
+     "effect": "draw",
+     "duration": 0.5
+    },
+    {
+     "layer_id": "sweep",
+     "at": 4.5,
+     "effect": "draw",
+     "duration": 0.5
+    }
+   ],
+   "labels": [
+    {
+     "text": "hammerstone, 3–15 kg",
+     "x": 660,
+     "y": 388,
+     "at": 2.0,
+     "anchor": "middle",
+     "accent": true,
+     "level": "data"
+    },
+    {
+     "text": "sand and water",
+     "x": 1290,
+     "y": 470,
+     "at": 4.8,
+     "anchor": "middle",
+     "accent": true
+    }
+   ],
+   "claim_refs": [
+    "c27"
+   ],
+   "source": "Protzen — ledger c27"
+  },
+  {
+   "id": "c174",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/derived/wm_393469054_detail.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "hold_cap | act4_s174 | hold reached the 6s ceiling for this treatment",
+   "sourceLine": "YanelaSh · CC BY-SA 4.0"
+  },
+  {
+   "id": "c175",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s175 | straight cut on meaning change",
+   "type": "evidence_card",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 175 / THE SHAPING",
+   "index": "c27",
+   "claim": "The shaping is not a mystery.",
+   "attribution": "Jean-Pierre Protzen, Inca quarrying and stonecutting",
+   "detail": "Faces were pecked and pounded with harder river-cobble hammerstones, then abraded smooth with sand and water. Abandoned blocks at the Rumiqolqa quarry carry matching tool marks.",
+   "status": "measured",
+   "caption": "Somebody went and did it",
+   "claim_refs": [
+    "c27"
+   ]
+  },
+  {
+   "id": "c176",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s176 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 176 / THE FITTING",
+   "kicker": "Still unsettled",
+   "title": "Three accounts of the fit, none marked correct",
+   "caption": "Secondary sources conflict on what Protzen showed. Vince Lee proposed carving to fit in advance; a scribing method has also been proposed",
+   "layers": [
+    {
+     "id": "l1",
+     "kind": "line",
+     "x": 700,
+     "y": 400,
+     "x2": 700,
+     "y2": 880,
+     "stroke": "#3A3630",
+     "strokeWidth": 1.5
+    },
+    {
+     "id": "l2",
+     "kind": "line",
+     "x": 1220,
+     "y": 400,
+     "x2": 1220,
+     "y2": 880,
+     "stroke": "#3A3630",
+     "strokeWidth": 1.5
+    },
+    {
+     "id": "a1",
+     "kind": "rect",
+     "x": 300,
+     "y": 600,
+     "w": 320,
+     "h": 120,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "a2",
+     "kind": "path",
+     "d": "M 300 760 L 620 760 L 620 740 L 300 740 Z",
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "arrow1",
+     "kind": "line",
+     "x": 460,
+     "y": 540,
+     "x2": 460,
+     "y2": 592,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3,
+     "dashed": true
+    },
+    {
+     "id": "b1",
+     "kind": "rect",
+     "x": 800,
+     "y": 600,
+     "w": 320,
+     "h": 120,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "b2",
+     "kind": "path",
+     "d": "M 800 760 L 1120 760 L 1120 740 L 800 740 Z",
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "scribe",
+     "kind": "path",
+     "d": "M 800 736 L 880 726 L 960 740 L 1040 724 L 1120 738",
+     "stroke": "#C08A3E",
+     "strokeWidth": 3
+    },
+    {
+     "id": "c1",
+     "kind": "rect",
+     "x": 1320,
+     "y": 560,
+     "w": 320,
+     "h": 120,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "logs",
+     "kind": "circle",
+     "x": 1380,
+     "y": 740,
+     "r": 24,
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "logs2",
+     "kind": "circle",
+     "x": 1460,
+     "y": 740,
+     "r": 24,
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "logs3",
+     "kind": "circle",
+     "x": 1540,
+     "y": 740,
+     "r": 24,
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "l1",
+     "at": 0.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "l2",
+     "at": 0.3,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "a2",
+     "at": 0.6,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "a1",
+     "at": 0.9,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "arrow1",
+     "at": 1.3,
+     "effect": "draw",
+     "duration": 0.4
+    },
+    {
+     "layer_id": "b2",
+     "at": 2.0,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "b1",
+     "at": 2.3,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "scribe",
+     "at": 2.7,
+     "effect": "draw",
+     "duration": 0.6
+    },
+    {
+     "layer_id": "c1",
+     "at": 3.6,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "logs",
+     "at": 4.0,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "logs2",
+     "at": 4.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "logs3",
+     "at": 4.4,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "lower, check, lift, dress",
+     "x": 460,
+     "y": 940,
+     "at": 1.8,
+     "anchor": "middle"
+    },
+    {
+     "text": "scribe the irregularities",
+     "x": 960,
+     "y": 940,
+     "at": 3.2,
+     "anchor": "middle"
+    },
+    {
+     "text": "carve to fit, then ramp",
+     "x": 1480,
+     "y": 940,
+     "at": 4.7,
+     "anchor": "middle"
+    }
+   ],
+   "claim_refs": [
+    "c28",
+    "c29"
+   ],
+   "source": "Ledger c28, c29"
+  },
+  {
+   "id": "c177",
+   "source": "projects/they-said-it-couldnt-be-built/assets/images/sacsay/act4_s171_joint_crop.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.45,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s177 | straight cut on meaning change",
+   "type": "annotated_still",
+   "backgroundImage": "projects/they-said-it-couldnt-be-built/assets/images/sacsay/act4_s171_joint_crop.jpg",
+   "parallax": true,
+   "annotations": [
+    {
+     "label": "contact line",
+     "x": 0.47,
+     "y": 0.5,
+     "reveal_at": 0.8,
+     "side": "right"
+    },
+    {
+     "label": "no mortar",
+     "x": 0.8,
+     "y": 0.3,
+     "reveal_at": 2.7,
+     "side": "left"
+    }
+   ],
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 177 / THE JOINT",
+   "caption": "The contact line, traced by shadow",
+   "sourceLine": "Diego Delso · CC BY-SA 4.0"
+  },
+  {
+   "id": "c178",
+   "source": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/they-said-it-couldnt-be-built/renders/proxies/wikimedia_77688831.jpg",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "landing_line | act4_s178 | cut held across a landing line; narration takes the beat"
+  },
+  {
+   "id": "c179",
+   "in_seconds": 0.0,
+   "out_seconds": 7.49,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s179 | straight cut on meaning change",
+   "type": "schematic",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 179 / THE SAME SHAPE",
+   "kicker": "The structure of the reasoning",
+   "title": "Two inferences, drawn to the same shape",
+   "caption": "Only the builder we find plausible has changed",
+   "layers": [
+    {
+     "id": "div",
+     "kind": "line",
+     "x": 960,
+     "y": 360,
+     "x2": 960,
+     "y2": 900,
+     "stroke": "#3A3630",
+     "strokeWidth": 1.5
+    },
+    {
+     "id": "o1",
+     "kind": "rect",
+     "x": 360,
+     "y": 440,
+     "w": 440,
+     "h": 92,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "o2",
+     "kind": "rect",
+     "x": 360,
+     "y": 600,
+     "w": 440,
+     "h": 92,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "o3",
+     "kind": "rect",
+     "x": 360,
+     "y": 760,
+     "w": 440,
+     "h": 92,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3,
+     "dashed": true
+    },
+    {
+     "id": "oa1",
+     "kind": "line",
+     "x": 580,
+     "y": 532,
+     "x2": 580,
+     "y2": 596,
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "oa2",
+     "kind": "line",
+     "x": 580,
+     "y": 692,
+     "x2": 580,
+     "y2": 756,
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "n1",
+     "kind": "rect",
+     "x": 1120,
+     "y": 440,
+     "w": 440,
+     "h": 92,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "n2",
+     "kind": "rect",
+     "x": 1120,
+     "y": 600,
+     "w": 440,
+     "h": 92,
+     "stroke": "#EDE6D8",
+     "strokeWidth": 3
+    },
+    {
+     "id": "n3",
+     "kind": "rect",
+     "x": 1120,
+     "y": 760,
+     "w": 440,
+     "h": 92,
+     "stroke": "#C08A3E",
+     "strokeWidth": 3,
+     "dashed": true
+    },
+    {
+     "id": "na1",
+     "kind": "line",
+     "x": 1340,
+     "y": 532,
+     "x2": 1340,
+     "y2": 596,
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    },
+    {
+     "id": "na2",
+     "kind": "line",
+     "x": 1340,
+     "y": 692,
+     "x2": 1340,
+     "y2": 756,
+     "stroke": "#8A8578",
+     "strokeWidth": 2.5
+    }
+   ],
+   "reveals": [
+    {
+     "layer_id": "div",
+     "at": 0.2,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "o1",
+     "at": 0.5,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "oa1",
+     "at": 1.0,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "o2",
+     "at": 1.3,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "oa2",
+     "at": 1.7,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "o3",
+     "at": 2.0,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "n1",
+     "at": 2.9,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "na1",
+     "at": 3.3,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "n2",
+     "at": 3.6,
+     "effect": "fade"
+    },
+    {
+     "layer_id": "na2",
+     "at": 4.0,
+     "effect": "draw",
+     "duration": 0.3
+    },
+    {
+     "layer_id": "n3",
+     "at": 4.3,
+     "effect": "fade"
+    }
+   ],
+   "labels": [
+    {
+     "text": "the stones are too large",
+     "x": 580,
+     "y": 496,
+     "at": 0.8,
+     "anchor": "middle"
+    },
+    {
+     "text": "no men could move them",
+     "x": 580,
+     "y": 656,
+     "at": 1.6,
+     "anchor": "middle"
+    },
+    {
+     "text": "therefore: giants",
+     "x": 580,
+     "y": 816,
+     "at": 2.4,
+     "anchor": "middle",
+     "accent": true
+    },
+    {
+     "text": "the cut is too precise",
+     "x": 1340,
+     "y": 496,
+     "at": 3.2,
+     "anchor": "middle"
+    },
+    {
+     "text": "no hand tool matches it",
+     "x": 1340,
+     "y": 656,
+     "at": 3.9,
+     "anchor": "middle"
+    },
+    {
+     "text": "therefore: machines",
+     "x": 1340,
+     "y": 816,
+     "at": 4.7,
+     "anchor": "middle",
+     "accent": true
+    }
+   ],
+   "claim_refs": [
+    "c01",
+    "c19"
+   ]
+  },
+  {
+   "id": "c180",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s180 | straight cut on meaning change",
+   "reused_from": "act4_s159",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 180",
+   "caption": "The Grand Gallery",
+   "sourceLine": "Wikimedia Commons · CC BY-SA",
+   "type": "texture_field",
+   "kind": "depth_field",
+   "seed": "dark-interior-180",
+   "density": 20,
+   "angle": 48,
+   "speed": 0.18
+  },
+  {
+   "id": "c181",
+   "in_seconds": 0.0,
+   "out_seconds": 6.24,
+   "layer": 0,
+   "transition_in": "cut",
+   "transition_duration": 0.0,
+   "reason": "meaning_change | act4_s181 | straight cut on meaning change",
+   "reused_from": "act4_s157",
+   "actNumber": "04",
+   "actTitle": "The cases nobody has closed",
+   "sceneIndex": "S 181",
+   "type": "texture_field",
+   "kind": "scanline",
+   "seed": "unresolved-181",
+   "density": 14,
+   "angle": 0,
+   "speed": 0.1
+  },
+  {
+   "id": "c182",
+   "type": "outro_cta",
+   "in_seconds": 0.0,
+   "out_seconds": 11.595,
+   "layer": 0,
+   "transition_in": "fade",
+   "transition_duration": 1.0,
+   "reason": "act_boundary | outro_s182 | fade through black into the end card",
+   "title": "They Said It Couldn't Be Built",
+   "kicker": "WAK3UP",
+   "like_at": 7.54,
+   "subscribe_at": 8.29,
+   "sceneIndex": "END / WAK3UPSOCIETY",
+   "actNumber": "END",
+   "actTitle": "WAK3UPSOCIETY"
+  }
+ ],
+ "overlays": [
+  {
+   "type": "text",
+   "text": "text — \"The arithmetic did not meet.\"",
+   "scene_id": "act1_s045"
+  },
+  {
+   "type": "text",
+   "text": "text — \"140 miles. 180 miles. Not 700.\"",
+   "scene_id": "act2_s073"
+  },
+  {
+   "type": "text",
+   "text": "text — \"No proposed method at all.\"",
+   "scene_id": "act2_s084"
+  },
+  {
+   "type": "text",
+   "text": "comparison — ancient reading vs modern quoted rate, labelled anecdote",
+   "scene_id": "act3_s097"
+  },
+  {
+   "type": "text",
+   "text": "text — \"Anecdote, not a controlled test.\"",
+   "scene_id": "act3_s098"
+  },
+  {
+   "type": "text",
+   "text": "text — \"The copper is a carrier.\"",
+   "scene_id": "act3_s111"
+  },
+  {
+   "type": "text",
+   "text": "stat — 5.2 cubic centimetres per hour",
+   "scene_id": "act3_s115"
+  },
+  {
+   "type": "text",
+   "text": "text — \"A real result. Not a fast one.\"",
+   "scene_id": "act3_s120"
+  },
+  {
+   "type": "text",
+   "text": "stat — optimum 2 to 5 percent water by volume",
+   "scene_id": "act3_s127"
+  },
+  {
+   "type": "text",
+   "text": "text — \"An extrapolation from a laboratory tray.\"",
+   "scene_id": "act3_s133"
+  },
+  {
+   "type": "text",
+   "text": "text — \"The mechanism is closed. The rate is not.\"",
+   "scene_id": "act3_s137"
+  },
+  {
+   "type": "text",
+   "text": "text — \"Four files. Still open.\"",
+   "scene_id": "act4_s142"
+  },
+  {
+   "type": "text",
+   "text": "text — \"No demonstrated method. Not even a candidate.\"",
+   "scene_id": "act4_s147"
+  },
+  {
+   "type": "text",
+   "text": "text — \"A reported finding. Not an established one.\"",
+   "scene_id": "act4_s155"
+  },
+  {
+   "type": "text",
+   "text": "stat — minimum 30 metres, first major inner structure since the 19th century",
+   "scene_id": "act4_s159"
+  },
+  {
+   "type": "text",
+   "text": "comparison — three technologies, three independent analyses",
+   "scene_id": "act4_s163"
+  },
+  {
+   "type": "text",
+   "text": "stat — about 9m long, 2 by 2m, inclined 7.5 degrees",
+   "scene_id": "act4_s166"
+  },
+  {
+   "type": "text",
+   "text": "text — \"Measured to the metre. Never entered.\"",
+   "scene_id": "act4_s168"
+  },
+  {
+   "type": "text",
+   "text": "text — \"Not settled. And no one has settled it.\"",
+   "scene_id": "act4_s177"
+  },
+  {
+   "type": "text",
+   "text": "text — \"Thirty metres no one has stood in.\"",
+   "scene_id": "act4_s181"
+  }
+ ],
+ "audio": {
+  "narration_files": [
+   "projects/they-said-it-couldnt-be-built/assets/audio/cold_open.wav",
+   "projects/they-said-it-couldnt-be-built/assets/audio/act1.wav",
+   "projects/they-said-it-couldnt-be-built/assets/audio/act2.wav",
+   "projects/they-said-it-couldnt-be-built/assets/audio/act3.wav",
+   "projects/they-said-it-couldnt-be-built/assets/audio/act4.wav",
+   "projects/they-said-it-couldnt-be-built/assets/audio/outro.wav"
+  ],
+  "measured_total_seconds": 1201.41,
+  "ducking_db": -18,
+  "target_lufs": -14,
+  "true_peak_db": -1.5
+ },
+ "subtitles": {
+  "source": "assets/captions/<section>/transcript.json",
+  "granularity": "word_level",
+  "burn": true
+ },
+ "music": {
+  "_authority": "This block is the source of truth for the film's music. lib/build_render_props.py reads the beds and the levels from here and passes them to lib/mix_audio.py; renders/mix_report.json is the measured RESULT of this block, not an independent decision. The props builder used to carry its own bed list and its own sidechain duck, so a full re-render rebuilt a mix that had already been rejected while every loudness check passed.",
+  "mixer": "lib/mix_audio.py",
+  "strategy": "one bed per two acts, crossfaded on the act boundary under the fade through black",
+  "crossfade_seconds": 2.5,
+  "levels": {
+   "under_speech_lufs": -36.0,
+   "gap_lufs": -26.0,
+   "gap_seconds": 1.5,
+   "boundary_lufs": -22.0,
+   "duck_attack_ms": 150,
+   "duck_release_ms": 900,
+   "eq": "highpass 120 Hz x2, lowpass 7 kHz x2, -4 dB at 3 kHz (Q~1.4)",
+   "ducking": "explicit gain envelope, not sidechaincompress"
+  },
+  "brief": "Soft melodic documentary beds -- piano, strings or pads. Slow. No percussion, no builds. Warm, not eerie.",
+  "beds": [
+   {
+    "name": "open_act1",
+    "acts": [
+     "cold_open",
+     "act1"
+    ],
+    "track": "Ancient Civilisations - Alex Jones _ Xander Jones.mp3",
+    "path": "/Users/mac/wak3up/assets/ambient_sources/Ancient Civilisations - Alex Jones _ Xander Jones.mp3",
+    "provider": "youtube_audio_library",
+    "licence": "YouTube Audio Library - free to use",
+    "source_url": "YouTube Audio Library",
+    "why": "the film's own subject, and the opening is where the sites are established",
+    "duration_seconds": 202.4
+   },
+   {
+    "name": "act2_act3",
+    "acts": [
+     "act2",
+     "act3"
+    ],
+    "track": "Lake Jupiter - John Patitucci.mp3",
+    "path": "/Users/mac/wak3up/assets/ambient_sources/Lake Jupiter - John Patitucci.mp3",
+    "provider": "youtube_audio_library",
+    "licence": "YouTube Audio Library - free to use",
+    "source_url": "YouTube Audio Library",
+    "why": "longest of the three and the least rhythmic in the library (0.197), so it carries the longest span (629s) with the least fatigue",
+    "duration_seconds": 217.0
+   },
+   {
+    "name": "act4_outro",
+    "acts": [
+     "act4",
+     "outro"
+    ],
+    "track": "Small Drama - documentary piano (Pixabay).mp3",
+    "path": "projects/they-said-it-couldnt-be-built/assets/audio/candidates/Small Drama - documentary piano (Pixabay).mp3",
+    "provider": "pixabay",
+    "licence": "Pixabay Content License",
+    "source_url": "https://pixabay.com/music/small-drama-documentary-piano-580861/",
+    "why": "plainest piano of the three, for the four unclosed files and the outro",
+    "duration_seconds": 176.0
+   }
+  ],
+  "rejected": [
+   {
+    "track": "Once Upon A Time - The Grey Room / Density & Time.mp3",
+    "reason": "run #1 set, mixed 18 dB under narration -- far too loud"
+   },
+   {
+    "track": "False Vacuum Decay - The Grey Room / Density & Time.mp3",
+    "reason": "run #1 set, far too loud"
+   },
+   {
+    "track": "Rapid Unscheduled Disassembly - The Grey Room / Density & Time.mp3",
+    "reason": "tension cue, wrong character for a documentary"
+   },
+   {
+    "track": "At All Costs - The Grey Room / Golden Palms.mp3",
+    "reason": "run #1 set, far too loud"
+   },
+   {
+    "track": "Care Is Heavy - Jeremy Korpas, Rick Barry.mp3",
+    "reason": "run #1 set, far too loud"
+   },
+   {
+    "track": "TORSION - Density & Time.mp3",
+    "reason": "tension cue; selected by minimising melody, wrong character"
+   },
+   {
+    "track": "Spooked - Mini Vandals.mp3",
+    "reason": "horror bed; selected by minimising melody, wrong character"
+   }
+  ],
+  "_rejected_note": "These must never be reinstated by a scoring pass. The second audition minimised melody because the brief then said 'no melody', which is how eerie drones scored top. Character is judged by ear, not by metric.",
+  "_run1_block": {
+   "beds": [
+    {
+     "act": "cold_open + act1",
+     "track": "Once Upon A Time - The Grey Room / Density & Time.mp3",
+     "duration_seconds": 201.82
+    },
+    {
+     "act": "act2a",
+     "track": "False Vacuum Decay - The Grey Room / Density & Time.mp3",
+     "duration_seconds": 225.0
+    },
+    {
+     "act": "act2b + act3a",
+     "track": "Rapid Unscheduled Disassembly - The Grey Room / Density & Time.mp3",
+     "duration_seconds": 337.19
+    },
+    {
+     "act": "act3b",
+     "track": "At All Costs - The Grey Room / Golden Palms.mp3",
+     "duration_seconds": 203.09
+    },
+    {
+     "act": "act4",
+     "track": "Care Is Heavy - Jeremy Korpas, Rick Barry.mp3",
+     "duration_seconds": 236.09
+    }
+   ],
+   "crossfade_seconds": 2.5,
+   "strategy": "continuous_with_act_crossfades",
+   "ducking_db": -18
+  },
+  "chosen_by": "owner, by ear, from ~/Downloads/wak3up-doc-music-r2 (round 2)"
+ },
+ "transitions": {
+  "vocabulary": [
+   "cut",
+   "dissolve",
+   "fade",
+   "grain_light_leak"
+  ],
+  "forbidden": [
+   "slide",
+   "wipe",
+   "flip",
+   "push",
+   "zoom_transition"
+  ],
+  "cross_dissolve_frames": 16,
+  "act_boundary": "fade_through_black",
+  "distinct_types_used": 4
+ },
+ "slideshow_risk_score": 0.0,
+ "metadata": {
+  "total_duration_seconds": 1201.41,
+  "cut_count": 183,
+  "narration_measured": {
+   "cold_open": 44.69,
+   "act1": 248.43,
+   "act2": 275.47,
+   "act3": 353.65,
+   "act4": 272.76,
+   "outro": 6.4
+  },
+  "timeline_basis": "MEASURED narration duration per section; slot holds rescaled to fit",
+  "transition_counts": {
+   "fade": 6,
+   "dissolve": 11,
+   "cut": 161,
+   "grain_light_leak": 5
+  },
+  "rule_counts": {
+   "act_boundary": 6,
+   "still_dissolve": 11,
+   "meaning_change": 115,
+   "hold_cap": 41,
+   "hero_entry": 5,
+   "landing_line": 5
+  },
+  "rule_vocabulary": [
+   "meaning_change",
+   "hold_cap",
+   "hero_entry",
+   "act_boundary",
+   "still_dissolve",
+   "landing_line"
+  ],
+  "landing_timestamps": [
+   288.21,
+   460.88,
+   558.77,
+   918.38,
+   1173.32
+  ],
+  "hero_entries": {
+   "cold_open": 1,
+   "act1": 1,
+   "act2": 1,
+   "act3": 1,
+   "act4": 1
+  },
+  "authored_slots_applied": {
+   "graphics": 83,
+   "resolved_photographic": 98,
+   "note": "Graphic slots carry component props from lib/authored/. The 40 slots that reached the edit as `authored:<description>` were photographic subjects with no asset; they are re-pointed at verified assets in lib/authored/resolved_sourced.py, with captions describing what is actually on screen."
+  },
+  "outro": {
+   "replaced": "outro_s182 (landscape still) + outro_s183 (title card)",
+   "with": "a single outro_cta cut",
+   "narration_seconds": 11.095,
+   "tail_seconds": 0.5,
+   "fade_through_black_into_it": "kept"
+  }
+ }
+}

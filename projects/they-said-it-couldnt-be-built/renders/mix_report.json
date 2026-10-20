@@ -1,0 +1,60 @@
+{
+ "output": "projects/they-said-it-couldnt-be-built/renders/mix_final.wav",
+ "spans": [
+  {
+   "name": "open_act1",
+   "acts": [
+    "cold_open",
+    "act1"
+   ],
+   "track": "Ancient Civilisations - Alex Jones _ Xander Jones.mp3",
+   "start": 0.0,
+   "end": 294.42
+  },
+  {
+   "name": "act2_act3",
+   "acts": [
+    "act2",
+    "act3"
+   ],
+   "track": "Lake Jupiter - John Patitucci.mp3",
+   "start": 294.42,
+   "end": 923.55
+  },
+  {
+   "name": "act4_outro",
+   "acts": [
+    "act4",
+    "outro"
+   ],
+   "track": "Small Drama - documentary piano (Pixabay).mp3",
+   "start": 923.55,
+   "end": 1207.41
+  }
+ ],
+ "under_speech_lufs": -36.0,
+ "gap_target_lufs": -26.0,
+ "boundary_target_lufs": -22.0,
+ "duck": {
+  "attack_ms": 150,
+  "release_ms": 900,
+  "gap_seconds": 1.5
+ },
+ "eq": "highpass 120 Hz x2, lowpass 7 kHz x2, -4 dB at 3 kHz (Q~1.4)",
+ "narration": {
+  "lufs": -16.0,
+  "lra": 1.9,
+  "peak_dbfs": -1.5
+ },
+ "bed_under_speech": {
+  "lufs": -36.1,
+  "lra": 7.7,
+  "peak_dbfs": -21.0
+ },
+ "final": {
+  "lufs": -14.0,
+  "lra": 1.9,
+  "peak_dbfs": -1.5
+ },
+ "note": "LRA is recorded, not targeted: narration-led material has little range."
+}

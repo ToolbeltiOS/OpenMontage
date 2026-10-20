@@ -1,0 +1,892 @@
+{
+  "version": "1.0",
+  "topic": "Transport and precision stonework: structures declared unbuildable by the people who built them, and what testing those claims actually shows",
+  "research_date": "2026-10-18",
+  "research_summary": "The organising discovery is that the 'they couldn't have built it' instinct is not modern. Classical Greeks looked at the Bronze Age walls of Mycenae and Tiryns and concluded the mythical Cyclopes must have raised them; Pausanias recorded the tradition in the 2nd century CE, roughly 1,400 years after the walls went up. Every later version of the claim — lost civilisations, forgotten machining, suppressed findings — sits in that same lineage. This brief assembles both sides at full strength: the alternative claims with their named proponents and strongest evidence, and the experimental work that has tested them. Three results matter for structure. First, several cases are genuinely closed by experiment (moai transport is demonstrated, the abrasive-drilling mechanism is demonstrated). Second, several are NOT closed, and those are the strongest material in the piece: the Altar Stone's 750 km journey, the unmatched drilling RATE, Puma Punku's 131-tonne blocks. Third, the channel's own earlier Short overstated the Stonehenge transport distance, and the true figures are stranger than the error.",
+  "landscape": {
+    "existing_content": [
+      {
+        "title": "Ancient Aliens / ancient-astronaut television treatments",
+        "url": "https://www.ancientaliensdebunked.com/puma-punku",
+        "source": "television / web",
+        "angle": "Precision stonework as prima facie evidence of non-human or lost-advanced builders",
+        "what_it_covers": "Treats precision stonework as self-evidently impossible; heavy on assertion, light on the experimental record",
+        "what_it_misses": "Never tests a claim on camera; never names what would falsify it"
+      },
+      {
+        "title": "Hancock-Dibble debate, Joe Rogan Experience #2136 (2024)",
+        "url": "https://podcasts.happyscribe.com/the-joe-rogan-experience/2136-graham-hancock-flint-dibble",
+        "source": "podcast",
+        "angle": "Adversarial head-to-head between alternative proponent and working archaeologist",
+        "what_it_covers": "Hours of direct argument between the best-known alternative proponent and an archaeologist",
+        "what_it_misses": "Adversarial format; the specific stonework cases get almost no airtime"
+      },
+      {
+        "title": "Academic experimental-archaeology literature (Protzen, Stocks, Lipo and Hunt)",
+        "url": "https://www.nature.com/articles/nature.2012.11613",
+        "source": "journals / university press releases",
+        "angle": "Replication-first: build the tool, move the stone, measure the rate",
+        "what_it_covers": "Actual replication — hammerstone shaping, copper-and-sand drilling, moai walking",
+        "what_it_misses": "Published for specialists; the results are almost never set against the alternative claims they answer"
+      }
+    ],
+    "saturated_angles": [
+      "'Aliens built it' asserted without a test",
+      "'Debunking' videos that mock proponents rather than testing claims",
+      "Generic pyramid-mystery compilations with no named sources"
+    ],
+    "underserved_gaps": [
+      "Nobody frames the impossibility claim as a 2,000-year-old habit with a documented first instance (Pausanias on the Cyclopes)",
+      "Nobody puts the alternative claim and its specific experimental test side by side, case by case, and then says honestly which cases remain open",
+      "The 2024 Altar Stone result is a genuinely stranger story than the lost-civilisation framing and is barely covered outside specialist press"
+    ]
+  },
+  "trending": {
+    "recent_developments": [
+      {
+        "headline": "A Scottish provenance for the Altar Stone of Stonehenge",
+        "url": "https://www.nature.com/articles/s41586-024-07652-1",
+        "date": "2024-08-14",
+        "relevance": "Replaces the Welsh origin for the Altar Stone with a source at least 750 km away in NE Scotland, and makes sea transport the likelier explanation. This is the film's open-question climax and it post-dates almost all existing content on Stonehenge transport."
+      },
+      {
+        "headline": "Hancock-Dibble debate, Joe Rogan Experience #2136",
+        "url": "https://podcasts.happyscribe.com/the-joe-rogan-experience/2136-graham-hancock-flint-dibble",
+        "date": "2024-05",
+        "relevance": "Establishes the current state of the argument and gives the alternative side a named, current, mainstream-platformed proponent to quote fairly."
+      }
+    ]
+  },
+  "audience_insights": {
+    "knowledge_level": "intermediate",
+    "common_questions": [
+      "How were multi-hundred-tonne blocks moved without wheels or draft animals?",
+      "How was granite cut and drilled with copper tools softer than the stone?",
+      "Why do the joints at Sacsayhuaman and Cusco fit without mortar?",
+      "Has anyone actually reproduced any of this, or is it all argument?",
+      "Which of these mysteries are actually solved, and which are still open?"
+    ],
+    "misconceptions": [
+      {
+        "myth": "The 'they couldn't have built it' claim is a modern or internet-era idea.",
+        "reality": "It is attested in classical Greece: the Greeks attributed the Bronze Age walls of Mycenae and Tiryns to the mythical Cyclopes, and Pausanias recorded the tradition in the 2nd century CE.",
+        "source": "https://en.wikipedia.org/wiki/Cyclopean_masonry"
+      },
+      {
+        "myth": "Copper tools cannot cut granite, so copper-age Egyptians could not have drilled it.",
+        "reality": "The copper is a carrier, not the cutting agent — the sand abrasive grinds the stone away. The objection targets the wrong part of the tool.",
+        "source": "https://www.motech.au/2026/08/how-egyptians-actually-cut-granite-and.html"
+      },
+      {
+        "myth": "Stonehenge's stones travelled roughly 700 miles — as the channel's own earlier Short stated.",
+        "reality": "No retrieved source supports 700 miles for the bluestones; institutional figures are 140-180 miles and disagree with each other. The long-haul figure of at least 750 km belongs to the Altar Stone, a different stone, traced to NE Scotland in 2024.",
+        "source": "https://www.nature.com/articles/s41586-024-07652-1"
+      },
+      {
+        "myth": "Replicating a mechanism settles the question.",
+        "reality": "It settles feasibility, not rate or scale. Both Dunn and Stocks say so in their own words — Dunn names his own falsification condition, and Stocks concedes deep rapid cuts demand extensive time and labour.",
+        "source": "https://thinkreload.com/ancient-granite-drill-core-giza/"
+      }
+    ],
+    "pain_points": [
+      "Alternative-history content asserts without testing; academic content tests without engaging the claim",
+      "Viewers are rarely told which cases are genuinely unresolved"
+    ]
+  },
+  "data_points": [
+    {
+      "claim": "Classical Greeks attributed the Bronze Age walls at Mycenae and Tiryns to the mythical Cyclopes; the term 'Cyclopean masonry' derives from that belief.",
+      "source_url": "https://en.wikipedia.org/wiki/Cyclopean_masonry",
+      "source_name": "Cyclopean masonry (encyclopedia)",
+      "credibility": "secondary_source",
+      "surprise_factor": "counterintuitive",
+      "usable_as": "[c01] COLD OPEN + ACT 1 ANCHOR. The impossibility claim's documented first instance."
+    },
+    {
+      "claim": "Pausanias (2nd century CE) recorded the tradition, writing that the walls at Tiryns were 'said to be the work of the Cyclopes', each stone so big 'that a pair of mules could not move the smallest from its place'.",
+      "source_url": "https://livius.org/articles/objects/cyclopean-walls",
+      "source_name": "Livius — Cyclopean Walls",
+      "credibility": "secondary_source",
+      "surprise_factor": "surprising",
+      "usable_as": "[c02] Quotable. Use the mules line verbatim in the cold open."
+    },
+    {
+      "claim": "Tiryns peaked between 1400 and 1200 BC; Cyclopean masonry is dated to Mycenaean Late Helladic IIIA, placing the walls roughly 1,400-1,500 years before Pausanias wrote about them.",
+      "source_url": "https://en.wikipedia.org/wiki/Tiryns",
+      "source_name": "Tiryns (encyclopedia)",
+      "credibility": "secondary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c03] The gap figure. NOTE: one blog claims 'nearly 2,000 years' — that overstates it. Use 1,400-1,500."
+    },
+    {
+      "claim": "Lipo, Hunt and Rapu Haoa (2012) walked a 4.35-tonne moai replica about 100 metres using 18 people and three hemp ropes. Journal of Archaeological Science, DOI 10.1016/j.jas.2012.09.029.",
+      "source_url": "https://www.nature.com/articles/nature.2012.11613",
+      "source_name": "Nature news — Easter Island statues 'walked' out of quarry",
+      "credibility": "primary_source",
+      "surprise_factor": "surprising",
+      "usable_as": "[c04] ACT 2 TEST. The duration is DISPUTED — see c05. Narrate the distance and crew, not a single time figure."
+    },
+    {
+      "claim": "Reported duration for the moai walk differs by source: Nature's coverage says under an hour; ScienceAlert says 40 minutes.",
+      "source_url": "https://www.sciencealert.com/rapa-nuis-famous-moai-statues-really-may-have-walked-into-place",
+      "source_name": "ScienceAlert",
+      "credibility": "secondary_source",
+      "surprise_factor": "expected",
+      "usable_as": "[c05] CONTESTED FIGURE. Do not state a single duration as fact."
+    },
+    {
+      "claim": "The statues' wide D-shaped bases and forward lean are the design features that make a rocking, zig-zag gait possible; the team modelled them in 3D.",
+      "source_url": "https://www.binghamton.edu/news/story/5830/easter-islands-statues-actually-walked-and-physics-backs-it-up",
+      "source_name": "Binghamton University",
+      "credibility": "primary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c06] The mechanism. Pairs with a motion graphic of the base geometry."
+    },
+    {
+      "claim": "A follow-up paper, 'The walking moai hypothesis', responds to critics and analysed 962 moai.",
+      "source_url": "https://news.artnet.com/art-world/easter-island-moai-statues-walked-study-2698453",
+      "source_name": "Artnet News",
+      "credibility": "secondary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c07] Scale of the follow-up evidence."
+    },
+    {
+      "claim": "Jo Anne Van Tilburg (UCLA) called the walking demonstration 'a stunt and not an experiment'.",
+      "source_url": "https://www.sciencealert.com/rapa-nuis-famous-moai-statues-really-may-have-walked-into-place",
+      "source_name": "ScienceAlert (quoting Van Tilburg)",
+      "credibility": "secondary_source",
+      "surprise_factor": "surprising",
+      "usable_as": "[c08] CONTESTED, ORTHODOX SIDE. Essential for both-directions handling: the mainstream is not unanimous either."
+    },
+    {
+      "claim": "Stonehenge's bluestone quarries are identified at Carn Goedog (spotted dolerite) and Craig Rhos-y-felin (rhyolite) in the Preseli Hills, Wales, with charcoal dating quarrying to around 3000 BC.",
+      "source_url": "https://www.ucl.ac.uk/news/2019/feb/quarrying-stonehenge-bluestones-dated-3000-bc",
+      "source_name": "UCL",
+      "credibility": "primary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c09] ACT 2. The established bluestone source."
+    },
+    {
+      "claim": "The bluestone transport distance is reported inconsistently: the University of Manchester says 140 miles, UCL and the University of Southampton say almost 180 miles, and ScienceAlert gives approximately 230 km. No retrieved source explains the discrepancy.",
+      "source_url": "https://www.manchester.ac.uk/discover/news/stonehenge-bluestone-quarries-confirmed-140-miles-away-in-wales",
+      "source_name": "University of Manchester / UCL / Southampton (conflicting)",
+      "credibility": "primary_source",
+      "surprise_factor": "surprising",
+      "usable_as": "[c10] THE CORRECTION + an act-4 open case. The channel's Short said 700 miles; no source supports that for the bluestones, and the institutions disagree with each other."
+    },
+    {
+      "claim": "The Altar Stone of Stonehenge has been traced to the Orcadian Basin in northeast Scotland. Clarke, Kirkland, Bevins, Pearce, Glorie and Ixer, Nature 632, 570-575 (2024).",
+      "source_url": "https://www.nature.com/articles/s41586-024-07652-1",
+      "source_name": "Nature 632, 570-575 (2024)",
+      "credibility": "primary_source",
+      "surprise_factor": "counterintuitive",
+      "usable_as": "[c11] ACT 2 CLIMAX / ACT 4. The replacement headline for the corrected claim."
+    },
+    {
+      "claim": "The Altar Stone study analysed zircon, apatite and rutile grains from fragments MS3 and 2010K.240 using in situ U-Pb, Lu-Hf and trace-element isotopic data, matching Old Red Sandstone of the Orcadian Basin.",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11324516",
+      "source_name": "PMC full record",
+      "credibility": "primary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c12] Method detail — grounds the claim as measurement, not speculation."
+    },
+    {
+      "claim": "The authors estimate a source at least 750 km from Stonehenge for the 6-tonne Altar Stone, and argue sea transport is more likely than overland haulage across topographic barriers.",
+      "source_url": "https://www.nature.com/articles/s41586-024-07652-1",
+      "source_name": "Nature 632, 570-575 (2024)",
+      "credibility": "primary_source",
+      "surprise_factor": "counterintuitive",
+      "usable_as": "[c13] THE OPEN QUESTION. A 6-tonne block moved 750 km in the Neolithic, probably by sea. Unexplained in detail."
+    },
+    {
+      "claim": "The previously favoured Welsh source for the Altar Stone, the Cosheston Subgroup, was ruled out on inconsistencies in petrography and detrital zircon ages.",
+      "source_url": "https://www.ucl.ac.uk/news/2024/aug/stonehenge-altar-stone-came-scotland-not-wales",
+      "source_name": "UCL",
+      "credibility": "primary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c14] Shows the field correcting itself — mirrors the channel correcting itself."
+    },
+    {
+      "claim": "A 2014 Physical Review Letters study, 'Sliding Friction on Wet and Dry Sand' (Daniel Bonn, University of Amsterdam, with Christian Wagner's group at Saarland), found that wetting sand stiffens it via capillary bridges, reducing the heap that builds in front of a sledge and lowering the required pulling force.",
+      "source_url": "https://iop.uva.nl/content/news/2014/00/prl-egyptian-pyramids.html",
+      "source_name": "University of Amsterdam",
+      "credibility": "secondary_source",
+      "surprise_factor": "surprising",
+      "usable_as": "[c15] ACT 2 TEST. NOTE: the PRL paper itself was not retrieved — see gaps."
+    },
+    {
+      "claim": "Coverage cites an optimum water content of roughly 2 to 5 percent of the volume of sand; too dry or too wet both perform worse.",
+      "source_url": "https://www.sci.news/physics/science-ancient-egyptians-wet-sand-01894.html",
+      "source_name": "Sci.News",
+      "credibility": "secondary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c16] The specific figure. Attribute to coverage, not to the paper, until verified."
+    },
+    {
+      "claim": "Bonn's widely quoted 'you need only half of the people' figure is a press-release estimate extrapolated from lab results, not a measured figure from pyramid construction.",
+      "source_url": "https://www.csmonitor.com/Science/2014/0501/How-did-ancient-Egyptians-move-those-huge-pyramid-stones",
+      "source_name": "Christian Science Monitor",
+      "credibility": "secondary_source",
+      "surprise_factor": "surprising",
+      "usable_as": "[c17] HONESTY BEAT. The most-repeated number in this field is an extrapolation. Say so."
+    },
+    {
+      "claim": "The wall painting in the tomb of Djehutihotep shows a worker pouring liquid in front of a sledge; retrieved coverage dates it variously to about 1900 BC, 1880 BC and 1800 BC, and some historians read the pouring as ritual rather than practical.",
+      "source_url": "https://www.nbcnews.com/science/science-news/solved-how-ancient-egyptians-moved-massive-pyramid-stones-n95171",
+      "source_name": "NBC News",
+      "credibility": "secondary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c18] CONTESTED BOTH WAYS. The painting is the evidence AND the ambiguity."
+    },
+    {
+      "claim": "Christopher Dunn reads the spiral groove on Petrie's granite core as a feed rate of about 0.100 inch per drill revolution, which he presents as evidence of machining.",
+      "source_url": "https://www.gizapower.com/petrie/chris6.htm",
+      "source_name": "Christopher Dunn (gizapower.com)",
+      "credibility": "anecdotal",
+      "surprise_factor": "surprising",
+      "usable_as": "[c19] ACT 3 ALTERNATIVE CLAIM, at full strength, attributed: 'Dunn's thesis is...'"
+    },
+    {
+      "claim": "Dunn has stated he 'couldn't support any theory of advanced machining if Petrie's dimensions of .100 inch feedrate cannot be verified', and that he could not determine as surely as Petrie whether the groove ran deeper through the quartz than the feldspar.",
+      "source_url": "https://www.gizapower.com/petrie/chris6.htm",
+      "source_name": "Christopher Dunn (gizapower.com)",
+      "credibility": "anecdotal",
+      "surprise_factor": "counterintuitive",
+      "usable_as": "[c20] FAIRNESS BEAT. The proponent's own stated falsification condition, in his words. Far stronger than a rebuttal."
+    },
+    {
+      "claim": "Dunn's modern comparison — a granite-drilling company quoting roughly 900 rpm and about 0.2 inch per revolution — is an informal anecdote from an interview, not a controlled test.",
+      "source_url": "https://www.happyscribe.com/public/the-joe-rogan-experience/2142-christopher-dunn",
+      "source_name": "Joe Rogan Experience #2142 transcript",
+      "credibility": "anecdotal",
+      "surprise_factor": "notable",
+      "usable_as": "[c21] Label clearly as anecdote if used at all."
+    },
+    {
+      "claim": "Denys Stocks tested copper saws and tubular drills with sand abrasive on Aswan granite; in one run a slot 3 cm deep and 95 cm long took 14 hours, and dry sand with a smooth blade performed best (Antiquity, 2001).",
+      "source_url": "https://www.science-frontiers.com/sf137/sf137p01.htm",
+      "source_name": "Science Frontiers summary of Stocks, Antiquity (2001)",
+      "credibility": "secondary_source",
+      "surprise_factor": "surprising",
+      "usable_as": "[c22] ACT 3 TEST. Real numbers. NOTE: Stocks' paper not retrieved directly — see gaps."
+    },
+    {
+      "claim": "Reported Stocks coring rate in granite with dry quartz sand abrasive is 5.2 cubic cm per hour; he suggested the rate could roughly double with more experienced operators, and that limestone cut about 15 times faster than granite.",
+      "source_url": "https://www.hallofmaat.com/unforbiddengeology/ancient-egyptian-copper-coring-drills/",
+      "source_name": "Hall of Maat",
+      "credibility": "secondary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c23] The rate that does NOT match Petrie's core. Act 3's unresolved core."
+    },
+    {
+      "claim": "In the abrasive method the copper is a carrier, not the cutting agent: the sand grinds the stone away.",
+      "source_url": "https://www.motech.au/2026/08/how-egyptians-actually-cut-granite-and.html",
+      "source_name": "Motech",
+      "credibility": "secondary_source",
+      "surprise_factor": "counterintuitive",
+      "usable_as": "[c24] Kills the 'copper is softer than granite' objection directly. Strong misconception beat."
+    },
+    {
+      "claim": "A Stocks 1993 coring experiment reported a ratio of copper barrel length lost to stone depth penetrated of less than 1:100.",
+      "source_url": "https://www.hallofmaat.com/unforbiddengeology/ancient-egyptian-copper-coring-drills/",
+      "source_name": "Hall of Maat",
+      "credibility": "secondary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c25] Answers the 'they'd have consumed mountains of copper' objection."
+    },
+    {
+      "claim": "Stocks himself acknowledged that producing deep, rapid cuts comparable to Petrie's core required extensive time and labour.",
+      "source_url": "https://thinkreload.com/ancient-granite-drill-core-giza/",
+      "source_name": "ThinkReload",
+      "credibility": "secondary_source",
+      "surprise_factor": "surprising",
+      "usable_as": "[c26] ACT 3 VERDICT. Mechanism closed, rate open — in the replicator's own words."
+    },
+    {
+      "claim": "Protzen's experiments indicate Inca block faces were pecked and pounded with harder river-cobble hammerstones of roughly 3 to 15 kg, then abraded smooth with sand and water; abandoned blocks at the Rumiqolqa quarry carry matching tool marks.",
+      "source_url": "https://en.wikipedia.org/wiki/Jean-Pierre_Protzen",
+      "source_name": "Jean-Pierre Protzen (encyclopedia) / secondary summaries",
+      "credibility": "secondary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c27] Sacsayhuaman shaping. NOTE: Protzen 1985 not retrieved directly — see gaps."
+    },
+    {
+      "claim": "The fitting method is described as iterative: a block is lowered, its contact points checked, lifted again and the high spots dressed away; a scribing method, tracing the lower stones' irregularities onto the new block, has also been proposed.",
+      "source_url": "https://en.wikipedia.org/wiki/Jean-Pierre_Protzen",
+      "source_name": "secondary summaries of Protzen",
+      "credibility": "secondary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c28] The mortarless-joint mechanism. Attribution is muddled in the literature — one source claims Protzen showed repeated lifting is NOT needed. Flag as unsettled."
+    },
+    {
+      "claim": "Architect Vince Lee proposed in the 1980s that the stones were carved to fit in advance, then hauled up a ramp and placed on a stack of logs.",
+      "source_url": "https://en.wikipedia.org/wiki/Jean-Pierre_Protzen",
+      "source_name": "secondary summary",
+      "credibility": "secondary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c29] A competing named hypothesis — useful for showing the orthodox side also disagrees internally."
+    },
+    {
+      "claim": "Pumapunku's largest stone block is 7.81 m long, 5.17 m wide, averages 1.07 m thick and is estimated at about 131 tonnes.",
+      "source_url": "https://en.wikipedia.org/wiki/Pumapunku",
+      "source_name": "Pumapunku (encyclopedia)",
+      "credibility": "secondary_source",
+      "surprise_factor": "surprising",
+      "usable_as": "[c30] ACT 4 scale figure."
+    },
+    {
+      "claim": "A geochemical analysis reportedly found that Pumapunku's H-shaped blocks match local andesitic sand but also contain organo-mineral binders, leading the researchers to describe them as a geopolymer-style, ceramic-like man-made stone.",
+      "source_url": "https://massivesci.com/notes/engineering-pumapunku-titicaca-archaeology/",
+      "source_name": "Massive Science",
+      "credibility": "secondary_source",
+      "surprise_factor": "counterintuitive",
+      "usable_as": "[c31] ACT 4 open case. If true it reframes the whole site. Primary paper NOT retrieved — must be labelled as a reported finding."
+    },
+    {
+      "claim": "Graham Hancock's thesis is that an advanced society with spiritual technology existed during the last Ice Age and was destroyed when comet impacts triggered the Younger Dryas about 12,900 years ago.",
+      "source_url": "https://en.wikipedia.org/wiki/Graham_Hancock",
+      "source_name": "Graham Hancock (encyclopedia)",
+      "credibility": "secondary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c32] The modern alternative claim, attributed by name. Act 1 lineage beat."
+    },
+    {
+      "claim": "The Younger Dryas impact hypothesis has been widely rejected by most relevant experts for lack of clear evidence of such an impact; mainstream explanations attribute the onset to a sudden influx of glacial meltwater into the Atlantic or to volcanism.",
+      "source_url": "https://en.wikipedia.org/wiki/Younger_Dryas_impact_hypothesis",
+      "source_name": "Younger Dryas impact hypothesis (encyclopedia)",
+      "credibility": "secondary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c33] The orthodox counter, stated plainly and without mockery."
+    },
+    {
+      "claim": "Hancock's standing argument is that large areas — the Sahara, the Amazon, and now-flooded Ice Age coastlines — remain archaeologically unexplored. He made it against archaeologist Flint Dibble on Joe Rogan Experience #2136 (around May 2024).",
+      "source_url": "https://www.dailygrail.com/2024/05/the-great-lost-civilization-debate-graham-hancock-vs-flint-dibble-on-the-joe-rogan-experience/",
+      "source_name": "Daily Grail",
+      "credibility": "secondary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c34] His strongest argument, in its strongest form — an argument from absence of survey, not from artefacts."
+    },
+    {
+      "claim": "Counter-claims note that the 90-degree corners praised in television treatments can be produced with basic squares, and that Pumapunku is not uniformly right-angled.",
+      "source_url": "https://www.ancientaliensdebunked.com/puma-punku",
+      "source_name": "Ancient Aliens Debunked",
+      "credibility": "anecdotal",
+      "surprise_factor": "notable",
+      "usable_as": "[c35] Use cautiously — partisan source. Verify independently before narrating."
+    },
+    {
+      "claim": "More than 900 moai were produced and transported on Rapa Nui.",
+      "source_url": "https://en.wikipedia.org/wiki/Moai",
+      "source_name": "Moai (encyclopedia)",
+      "credibility": "secondary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c36] COLD OPEN + act 2 scale. Replaces the previously unsourced 'nearly a thousand'."
+    },
+    {
+      "claim": "The heaviest moai ever erected stands at Ahu Tongariki and weighs about 86 tonnes; the tallest erected, Paro, was almost 10 metres high and weighed about 82 tonnes. An unfinished figure in the quarry would have stood about 21 metres and is estimated at 145-165 tonnes.",
+      "source_url": "https://en.wikipedia.org/wiki/Moai",
+      "source_name": "Moai (encyclopedia)",
+      "credibility": "secondary_source",
+      "surprise_factor": "surprising",
+      "usable_as": "[c37] SOURCES the 'more than eighty tonnes' figure that act 2 previously asserted without a ledger entry. Note a 270-tonne figure for the unfinished statue circulates on commercial sites and is unreliable."
+    },
+    {
+      "claim": "A large void was discovered inside Khufu's Pyramid above the Grand Gallery, with a cross-section similar to that corridor and a minimum length of 30 metres. Morishima et al., Nature 552, 386-390 (2017), DOI 10.1038/nature24647. It is the first major inner structure found in the Great Pyramid since the nineteenth century.",
+      "source_url": "https://www.nature.com/articles/nature24647",
+      "source_name": "Nature 552, 386-390 (2017)",
+      "credibility": "primary_source",
+      "surprise_factor": "counterintuitive",
+      "usable_as": "[c38] ACT 4 FILE 3 lead. Replaces the cut 'numbers travelling' beat."
+    },
+    {
+      "claim": "The Big Void was detected independently with three different muon technologies: nuclear emulsion films in the Queen's chamber (Nagoya University), scintillator hodoscopes in the same chamber (KEK), and gas detectors outside the pyramid (CEA, France). Three independent analyses detected it with high confidence.",
+      "source_url": "https://www.nature.com/articles/nature24647",
+      "source_name": "Nature 552, 386-390 (2017)",
+      "credibility": "primary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c39] The method. This is why the void is not a measurement artefact. One summary puts the significance above 10 sigma — attribute that figure to the summary, not the paper."
+    },
+    {
+      "claim": "A second structure, the ScanPyramids North Face Corridor, was characterised as about 9 metres long with a cross-section of roughly 2 by 2 metres, on a 7.5 degree incline. Nature Communications 14:1144 (2023), DOI 10.1038/s41467-023-36351-0.",
+      "source_url": "https://www.nature.com/articles/s41467-023-36351-0",
+      "source_name": "Nature Communications 14:1144 (2023)",
+      "credibility": "primary_source",
+      "surprise_factor": "surprising",
+      "usable_as": "[c40] ACT 4 FILE 3, second structure. Distinct from the Big Void — do not conflate them."
+    },
+    {
+      "claim": "The North Face Corridor sits behind the Chevron, a set of limestone blocks in an inverted double-V arrangement covering the original entrance to the Descending Corridor. The 2023 paper notes Khufu's is the first pyramid known to use chevron construction to cover internal structures and prevent their collapse.",
+      "source_url": "https://www.nature.com/articles/s41467-023-36351-0",
+      "source_name": "Nature Communications 14:1144 (2023)",
+      "credibility": "primary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c41] Gives the corridor a visible exterior feature — strong document-reveal and cross-section material."
+    },
+    {
+      "claim": "The purpose of both structures remains unknown. The 2023 authors suggest the corridor could have linked a temporary access route to the main entrance. No one has entered either space.",
+      "source_url": "https://www.nature.com/articles/s41467-023-36351-0",
+      "source_name": "Nature Communications 14:1144 (2023)",
+      "credibility": "primary_source",
+      "surprise_factor": "counterintuitive",
+      "usable_as": "[c42] THE OPEN BEAT. Found by particle physics, measured to the metre, purpose unknown, never entered."
+    },
+    {
+      "claim": "The corridor's reported length drifted between publications: earlier ScanPyramids muon results indicated a structure at least 5 metres long, which the 2023 analysis refined to about 9 metres. Some secondary sources still repeat the older figure. A separate 2025 Scientific Reports paper confirmed the corridor by fusing ground-penetrating radar, ultrasonic testing and electrical resistivity tomography.",
+      "source_url": "https://www.nature.com/articles/s41598-025-91115-8",
+      "source_name": "Scientific Reports (2025)",
+      "credibility": "primary_source",
+      "surprise_factor": "notable",
+      "usable_as": "[c43] Use the 9m figure and attribute it to the 2023 paper. The 2025 confirmation is a SEPARATE paper — do not conflate."
+    }
+  ],
+  "expert_voices": [
+    {
+      "name": "Carl Lipo",
+      "title_or_affiliation": "Binghamton University; co-author, 'The walking megalithic statues (moai) of Easter Island'",
+      "position": "The moai were walked upright; the statues' base geometry and forward lean were engineered for it, and statues abandoned along ancient roads support the hypothesis.",
+      "source_url": "https://www.binghamton.edu/news/story/5830/easter-islands-statues-actually-walked-and-physics-backs-it-up",
+      "contrarian": false
+    },
+    {
+      "name": "Jo Anne Van Tilburg",
+      "title_or_affiliation": "UCLA",
+      "position": "Called the moai walking demonstration 'a stunt and not an experiment'.",
+      "source_url": "https://www.sciencealert.com/rapa-nuis-famous-moai-statues-really-may-have-walked-into-place",
+      "contrarian": true
+    },
+    {
+      "name": "Christopher Dunn",
+      "title_or_affiliation": "Engineer; author on ancient machining",
+      "position": "Petrie's granite core shows a feed rate implying machining beyond known Egyptian toolkits — but he states his case fails if Petrie's 0.100 inch figure cannot be verified.",
+      "source_url": "https://www.gizapower.com/petrie/chris6.htm",
+      "contrarian": true
+    },
+    {
+      "name": "Denys Stocks",
+      "title_or_affiliation": "Experimental archaeologist",
+      "position": "Copper tubes and saws with sand abrasive reproduce the cuts; the copper carries, the sand cuts. He acknowledges deep rapid cuts demand extensive time and labour.",
+      "source_url": "https://www.science-frontiers.com/sf137/sf137p01.htm",
+      "contrarian": false
+    },
+    {
+      "name": "Daniel Bonn",
+      "title_or_affiliation": "University of Amsterdam; lead, 'Sliding Friction on Wet and Dry Sand' (PRL 2014)",
+      "position": "Wetting sand stiffens it and cuts the pulling force needed to drag a loaded sledge.",
+      "source_url": "https://iop.uva.nl/content/news/2014/00/prl-egyptian-pyramids.html",
+      "contrarian": false
+    },
+    {
+      "name": "Graham Hancock",
+      "title_or_affiliation": "Author",
+      "position": "An advanced Ice Age civilisation was destroyed in the Younger Dryas; unexplored regions mean absence of evidence is not evidence of absence.",
+      "source_url": "https://en.wikipedia.org/wiki/Graham_Hancock",
+      "contrarian": true
+    },
+    {
+      "name": "Flint Dibble",
+      "title_or_affiliation": "Archaeologist",
+      "position": "The archaeological record does not support a lost advanced civilisation; debated Hancock directly on JRE #2136.",
+      "source_url": "https://en.wikipedia.org/wiki/Flint_Dibble",
+      "contrarian": false
+    },
+    {
+      "name": "Jean-Pierre Protzen",
+      "title_or_affiliation": "UC Berkeley; 'Inca Quarrying and Stonecutting' (1985)",
+      "position": "Inca masonry was shaped by hammerstone percussion and abrasion, and fitted iteratively; quarry tool marks match experimental results.",
+      "source_url": "https://en.wikipedia.org/wiki/Jean-Pierre_Protzen",
+      "contrarian": false
+    },
+    {
+      "name": "Pausanias",
+      "title_or_affiliation": "Greek geographer, 2nd century CE",
+      "position": "Recorded that the walls of Tiryns were 'said to be the work of the Cyclopes', the stones too large for a pair of mules to move.",
+      "source_url": "https://livius.org/articles/objects/cyclopean-walls",
+      "contrarian": true
+    },
+    {
+      "name": "Kunihiro Morishima",
+      "title_or_affiliation": "Nagoya University; lead author, 'Discovery of a big void in Khufu's Pyramid' (Nature, 2017)",
+      "position": "A cavity of at least 30 metres exists above the Grand Gallery, detected independently by three muon technologies; its purpose is not established.",
+      "source_url": "https://www.nature.com/articles/nature24647",
+      "contrarian": false
+    }
+  ],
+  "angles_discovered": [
+    {
+      "name": "A two-thousand-year-old habit of disbelief",
+      "hook": "The Greeks looked at these walls and decided men could not have built them — and we never stopped.",
+      "type": "narrative",
+      "why_now": "The Pausanias record gives the impossibility claim a documented first instance and a clean through-line to Hancock. No existing treatment frames it this way, and it lets alternative claims be taken seriously as part of a long tradition rather than mocked.",
+      "grounded_in": [
+        "c01",
+        "c02",
+        "c03",
+        "c32",
+        "c34"
+      ]
+    },
+    {
+      "name": "Claim, test, verdict — case by case",
+      "hook": "Every impossible stone has had someone try to move one. Here is what happened when they did.",
+      "type": "evergreen",
+      "why_now": "The experimental record (Lipo/Hunt, Stocks, Protzen, Bonn) has never been set directly against the specific alternative claims it answers. Both sides have named proponents and real numbers.",
+      "grounded_in": [
+        "c04",
+        "c15",
+        "c19",
+        "c22",
+        "c27"
+      ]
+    },
+    {
+      "name": "The cases nobody has closed",
+      "hook": "Three of these mysteries were solved. The ones that weren't are stranger than the theories.",
+      "type": "contrarian",
+      "why_now": "The 2024 Altar Stone result opened a bigger question than it closed: a 6-tonne stone moved at least 750 km, probably by sea. Paired with the unmatched drilling rate and Pumapunku's 131-tonne blocks, this carries a full act and ends honestly open.",
+      "grounded_in": [
+        "c11",
+        "c13",
+        "c23",
+        "c26",
+        "c30",
+        "c31"
+      ]
+    },
+    {
+      "name": "We got this one wrong",
+      "hook": "Our own video said seven hundred miles. The truth is smaller, and then much larger.",
+      "type": "data_driven",
+      "why_now": "The channel's Short overstated the Stonehenge distance. The bluestone figure is 140-180 miles and the institutions disagree with each other; the 750 km figure belongs to the Altar Stone. Correcting it on camera buys credibility and hands the film its best open question.",
+      "grounded_in": [
+        "c09",
+        "c10",
+        "c11",
+        "c13",
+        "c14"
+      ]
+    }
+  ],
+  "visual_references": [
+    {
+      "description": "Wikimedia Commons holdings for Sacsayhuaman, moai at Rano Raraku, Stonehenge and Pumapunku",
+      "url": "https://commons.wikimedia.org/wiki/Category:Sacsayhuam%C3%A1n",
+      "what_works": "Verified-licence stills at usable resolution; the richest tier-1 source for this subject. Image-dominant, so these must carry parallax treatment to respect the 20% stills cap."
+    },
+    {
+      "description": "Map and timeline motion graphics for the Altar Stone's 750 km route and the Preseli quarry locations",
+      "url": "https://www.nature.com/articles/s41586-024-07652-1",
+      "what_works": "A traced sea route conveys the 750 km claim far better than any available footage, and the playbook already allows map and timeline scene types."
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://www.nature.com/articles/s41586-024-07652-1",
+      "title": "A Scottish provenance for the Altar Stone of Stonehenge (Nature 632, 570-575, 2024)",
+      "used_for": "Altar Stone provenance, 750 km distance, sea-transport argument",
+      "reliability": "primary"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11324516",
+      "title": "Altar Stone paper — full record (PMC)",
+      "used_for": "Isotopic method detail",
+      "reliability": "primary"
+    },
+    {
+      "url": "https://www.ucl.ac.uk/news/2024/aug/stonehenge-altar-stone-came-scotland-not-wales",
+      "title": "UCL — Altar Stone came from Scotland, not Wales",
+      "used_for": "Welsh source ruled out",
+      "reliability": "primary"
+    },
+    {
+      "url": "https://www.ucl.ac.uk/news/2019/feb/quarrying-stonehenge-bluestones-dated-3000-bc",
+      "title": "UCL — Quarrying of Stonehenge bluestones dated to 3000 BC",
+      "used_for": "Bluestone quarries, dating, ~180 mile figure",
+      "reliability": "primary"
+    },
+    {
+      "url": "https://www.manchester.ac.uk/discover/news/stonehenge-bluestone-quarries-confirmed-140-miles-away-in-wales",
+      "title": "University of Manchester — bluestone quarries 140 miles away",
+      "used_for": "The conflicting 140-mile figure",
+      "reliability": "primary"
+    },
+    {
+      "url": "https://www.nature.com/articles/nature.2012.11613",
+      "title": "Nature news — Easter Island statues 'walked' out of quarry",
+      "used_for": "Moai walking experiment, crew and distance",
+      "reliability": "primary"
+    },
+    {
+      "url": "https://www.binghamton.edu/news/story/5830/easter-islands-statues-actually-walked-and-physics-backs-it-up",
+      "title": "Binghamton University — Easter Island's statues actually 'walked'",
+      "used_for": "Base geometry, forward lean, Lipo's position",
+      "reliability": "primary"
+    },
+    {
+      "url": "https://www.sciencealert.com/rapa-nuis-famous-moai-statues-really-may-have-walked-into-place",
+      "title": "ScienceAlert — Rapa Nui's moai may really have walked",
+      "used_for": "Disputed duration; Van Tilburg's criticism",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://news.artnet.com/art-world/easter-island-moai-statues-walked-study-2698453",
+      "title": "Artnet — new evidence on the walking moai",
+      "used_for": "Follow-up paper, 962 moai analysed",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://iop.uva.nl/content/news/2014/00/prl-egyptian-pyramids.html",
+      "title": "University of Amsterdam — PRL Egyptian pyramids",
+      "used_for": "Wet-sand friction study, mechanism, Bonn",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://www.sci.news/physics/science-ancient-egyptians-wet-sand-01894.html",
+      "title": "Sci.News — Ancient Egyptians transported large objects over wet sand",
+      "used_for": "2-5% optimum water content",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://www.csmonitor.com/Science/2014/0501/How-did-ancient-Egyptians-move-those-huge-pyramid-stones",
+      "title": "Christian Science Monitor — how did ancient Egyptians move pyramid stones",
+      "used_for": "The 'half the people' figure as extrapolation",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://www.nbcnews.com/science/science-news/solved-how-ancient-egyptians-moved-massive-pyramid-stones-n95171",
+      "title": "NBC News — Solved! How ancient Egyptians moved massive pyramid stones",
+      "used_for": "Djehutihotep painting, disputed date, ritual reading",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://www.gizapower.com/petrie/chris6.htm",
+      "title": "Gizapower — The Petrie Museum 1999, Chris Dunn VI",
+      "used_for": "Dunn's feed-rate claim and his own falsification caveat",
+      "reliability": "anecdotal"
+    },
+    {
+      "url": "https://www.happyscribe.com/public/the-joe-rogan-experience/2142-christopher-dunn",
+      "title": "JRE #2142 transcript — Christopher Dunn",
+      "used_for": "Dunn's modern drilling-rate anecdote",
+      "reliability": "anecdotal"
+    },
+    {
+      "url": "https://www.science-frontiers.com/sf137/sf137p01.htm",
+      "title": "Science Frontiers — Granite-working in ancient Egypt (summarising Stocks, Antiquity 2001)",
+      "used_for": "Aswan saw and drill tests, 14-hour slot, dry sand result",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://www.hallofmaat.com/unforbiddengeology/ancient-egyptian-copper-coring-drills/",
+      "title": "Hall of Maat — Ancient Egyptian copper coring drills",
+      "used_for": "5.2 cm3/hour rate, copper-loss ratio, limestone comparison",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://thinkreload.com/ancient-granite-drill-core-giza/",
+      "title": "ThinkReload — The mystery of the ancient granite drill core at Giza",
+      "used_for": "Stocks' acknowledgement about deep rapid cuts",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://www.motech.au/2026/08/how-egyptians-actually-cut-granite-and.html",
+      "title": "Motech — How the Egyptians actually cut granite",
+      "used_for": "Copper as carrier, sand as cutting agent",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Cyclopean_masonry",
+      "title": "Cyclopean masonry",
+      "used_for": "Greek attribution to the Cyclopes; definition and examples",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Tiryns",
+      "title": "Tiryns",
+      "used_for": "Site dating 1400-1200 BC",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://livius.org/articles/objects/cyclopean-walls",
+      "title": "Livius — Cyclopean Walls",
+      "used_for": "Pausanias quotation on the Cyclopes and the mules",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Jean-Pierre_Protzen",
+      "title": "Jean-Pierre Protzen",
+      "used_for": "Hammerstone shaping, iterative fitting, Rumiqolqa tool marks, Vince Lee proposal",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Pumapunku",
+      "title": "Pumapunku",
+      "used_for": "Largest block dimensions and ~131 tonne estimate",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://massivesci.com/notes/engineering-pumapunku-titicaca-archaeology/",
+      "title": "Massive Science — Engineering Pumapunku",
+      "used_for": "Reported geopolymer / andesite binder finding",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Graham_Hancock",
+      "title": "Graham Hancock",
+      "used_for": "His thesis, stated for attribution",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Younger_Dryas_impact_hypothesis",
+      "title": "Younger Dryas impact hypothesis",
+      "used_for": "Scientific status of the impact claim; mainstream alternatives",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Flint_Dibble",
+      "title": "Flint Dibble",
+      "used_for": "Dibble's position and the JRE debate",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://www.dailygrail.com/2024/05/the-great-lost-civilization-debate-graham-hancock-vs-flint-dibble-on-the-joe-rogan-experience/",
+      "title": "Daily Grail — The great lost civilization debate",
+      "used_for": "Hancock's unexplored-regions argument; debate context",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://www.ancientaliensdebunked.com/puma-punku",
+      "title": "Ancient Aliens Debunked — Puma Punku",
+      "used_for": "Counter-claim on 90-degree corners (flagged partisan)",
+      "reliability": "anecdotal"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Moai",
+      "title": "Moai",
+      "used_for": "Statue count and mass figures; encyclopedia pull for the named entity",
+      "reliability": "secondary"
+    },
+    {
+      "url": "https://www.nature.com/articles/nature24647",
+      "title": "Discovery of a big void in Khufu's Pyramid by observation of cosmic-ray muons (Nature 552, 386-390, 2017)",
+      "used_for": "Big Void dimensions, location, detection methods",
+      "reliability": "primary"
+    },
+    {
+      "url": "https://www.nature.com/articles/s41467-023-36351-0",
+      "title": "Precise characterization of a corridor-shaped structure in Khufu's Pyramid by observation of cosmic-ray muons (Nature Communications 14:1144, 2023)",
+      "used_for": "North Face Corridor dimensions, incline, chevron, purpose hypothesis",
+      "reliability": "primary"
+    },
+    {
+      "url": "https://www.nature.com/articles/s41598-025-91115-8",
+      "title": "Confirmation of the ScanPyramids North Face Corridor using multi-modal image fusion (Scientific Reports, 2025)",
+      "used_for": "Independent confirmation of the corridor; the 5m-to-9m figure drift",
+      "reliability": "primary"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/ScanPyramids",
+      "title": "ScanPyramids",
+      "used_for": "Project context; encyclopedia pull for the named entity",
+      "reliability": "secondary"
+    }
+  ],
+  "metadata": {
+    "pipeline": "narrated-documentary",
+    "playbook": "wak3up-documentary",
+    "project_id": "they-said-it-couldnt-be-built",
+    "spine": "mystery_first",
+    "ledger_entry_count": 43,
+    "named_entity_encyclopedia_pulls": [
+      "Cyclopean masonry",
+      "Tiryns",
+      "Mycenae",
+      "Pausanias",
+      "Altar Stone (Stonehenge)",
+      "Pumapunku",
+      "Jean-Pierre Protzen",
+      "Graham Hancock",
+      "Flint Dibble",
+      "Younger Dryas impact hypothesis",
+      "Moai",
+      "ScanPyramids",
+      "Great Pyramid of Giza",
+      "Khufu"
+    ],
+    "claim_ledger_notes": "Full ledger is carried in data_points[]; each entry's `usable_as` opens with its claim_id in square brackets, e.g. '[c13]'. The script director references these ids as claim_refs. The research_brief schema closes data_points to additional properties, so the structured confidence/contested fields live below.",
+    "contested_claims": [
+      {
+        "claim_id": "c05",
+        "what_is_disputed": "Duration of the moai walk: 'under an hour' (Nature) vs '40 minutes' (ScienceAlert)",
+        "narrate_as": "contested — give crew and distance, not a single time"
+      },
+      {
+        "claim_id": "c08",
+        "what_is_disputed": "Whether the walking demonstration constitutes an experiment at all; Van Tilburg says it does not",
+        "narrate_as": "contested — the orthodox side is itself split"
+      },
+      {
+        "claim_id": "c10",
+        "what_is_disputed": "Bluestone transport distance: 140 miles (Manchester) vs almost 180 miles (UCL, Southampton) vs ~230 km (ScienceAlert). No source reconciles them.",
+        "narrate_as": "contested — state the disagreement as the fact"
+      },
+      {
+        "claim_id": "c18",
+        "what_is_disputed": "Date of the Djehutihotep painting (~1900 / 1880 / 1800 BC) and whether the water-pouring is practical or ritual",
+        "narrate_as": "contested in both directions"
+      },
+      {
+        "claim_id": "c19",
+        "what_is_disputed": "Whether Petrie's spiral groove indicates machining",
+        "narrate_as": "attributed to Dunn, paired with his own falsification condition (c20)"
+      },
+      {
+        "claim_id": "c28",
+        "what_is_disputed": "Whether Protzen showed repeated lifting is unnecessary; secondary sources conflict",
+        "narrate_as": "unsettled — do not attribute a specific finding to Protzen here"
+      },
+      {
+        "claim_id": "c31",
+        "what_is_disputed": "The Pumapunku geopolymer finding; no primary paper retrieved",
+        "narrate_as": "a reported finding, not an established one"
+      },
+      {
+        "claim_id": "c32",
+        "what_is_disputed": "Hancock's Ice Age civilisation thesis",
+        "narrate_as": "attributed by name; paired with c33, stated without mockery"
+      },
+      {
+        "claim_id": "c43",
+        "what_is_disputed": "The North Face Corridor's length: earlier muon results said at least 5 metres, the 2023 paper refined it to about 9 metres, and secondary sources still repeat the older figure.",
+        "narrate_as": "use 9 metres, attributed to the 2023 paper"
+      },
+      {
+        "claim_id": "c37",
+        "what_is_disputed": "Mass of the unfinished quarry moai: encyclopedia gives 145-165 tonnes, commercial sites give 270.",
+        "narrate_as": "do not state the unfinished statue's mass; the erected figures are solid"
+      }
+    ],
+    "gaps": [
+      "The PRL 2014 paper 'Sliding Friction on Wet and Dry Sand' was NOT retrieved directly. c15, c16 and c17 rest on institutional and press coverage. The 2-5% optimum and the 'half the people' figure must be attributed to coverage, not to the paper.",
+      "Stocks' Antiquity (2001) paper was NOT retrieved directly. c22, c23, c25 and c26 come from summaries, one of which (Hall of Maat) is a partisan forum site. Verify the 5.2 cm3/hour rate before putting it on screen as a figure.",
+      "Protzen, 'Inca Quarrying and Stonecutting' (1985) was NOT retrieved directly. c27, c28 and c29 are secondary. The fitting-method attribution is actively confused across sources.",
+      "No primary archaeological paper was retrieved for the Pumapunku geopolymer claim (c31).",
+      "No peer-reviewed direct reply to Dunn was found. The copper-and-sand rebuttal is attributed to Stocks in secondary sources but no detailed published response to Dunn specifically surfaced.",
+      "UNUSABLE: a claim that scanner studies show Sacsayhuaman joints contact only at the outer 10-20 cm is entirely uncited in the retrieved sources. Do not narrate it in any form until a primary source is found.",
+      "No source explains the bluestone distance discrepancy (c10). The disagreement itself is the reportable fact.",
+      "The exact wording and provenance of the Van Tilburg quote (c08) comes via ScienceAlert; the original context was not retrieved.",
+      "CITATION BREACH FOUND AND FIXED 2026-10-18: the approved script's act 2 asserted 'more than eighty tonnes' and 'nearly a thousand' moai with no ledger entry behind either. Both are now sourced as c36 and c37. The breach existed in the version approved at the script gate.",
+      "Neither pyramid void has been entered, so every statement about their PURPOSE is hypothesis, including the authors' own. Narrate purpose only as an open question."
+    ],
+    "correction_commissioned": {
+      "wrong_claim": "The channel's Short 'Stonehenge's Key Stone: 700 Miles Without Wheels' (615 views) states 700 miles.",
+      "why_wrong": "No retrieved source supports 700 miles for the bluestones. Institutional figures are 140-180 miles (and disagree with each other). The long-distance figure of at least 750 km (~466 miles) belongs to the Altar Stone, a different stone, traced to NE Scotland in 2024.",
+      "how_to_handle": "One sentence in act 2 acknowledging the channel's own earlier Short, then pivot to the Altar Stone's 750 km Scottish provenance as the act's open-question beat. Cite both c10 and c11/c13.",
+      "framing": "we got this one wrong, and the real story is stranger"
+    },
+    "duration_feasibility": {
+      "verdict": "The ledger supports the full 19-21 minute target.",
+      "reasoning": "Four acts each have a lead anomaly, a named alternative proponent, a specific experimental test and a verdict-or-gap. Act 4 is carried entirely by genuinely open cases (c13, c23, c26, c30, c31) rather than by recap, which is what the open-question ending requires.",
+      "risk": "Act 3 depends most heavily on secondary summaries of Stocks. If those figures cannot be verified, act 3's verdict beat weakens and act 3 may need to lean harder on c20 and c24, which are better sourced."
+    }
+  }
+}

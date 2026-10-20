@@ -25,8 +25,26 @@ output/
 pipeline/
 tests/qa/output/
 
-# Project workspaces (generated assets, renders — all regenerable)
-projects/
+# Project workspaces. Media, renders, proxies, caches and contact sheets are
+# regenerable and stay out. The JSON decision records are NOT: edit_decisions
+# carries the music the owner chose by ear and the by-name rejected list,
+# scene_plan carries the asset assignment that satisfies the reuse rule, and
+# run1_assignment is the frozen baseline the repair pass is measured against.
+# Losing them loses decisions, not bytes, so those files are tracked.
+#
+# Re-including a file needs every directory on its path re-included first,
+# which is what the bare `!projects/*/` lines below are for.
+projects/**
+!projects/*/
+!projects/*/artifacts/
+!projects/*/artifacts/edit_decisions.json
+!projects/*/artifacts/scene_plan.json
+!projects/*/artifacts/research_brief.json
+!projects/*/artifacts/asset_bank.json
+!projects/*/artifacts/run1_assignment.json
+!projects/*/artifacts/metadata.json
+!projects/*/renders/
+!projects/*/renders/mix_report.json
 
 # Corpus directories (downloaded stock clips, thumbnails, embeddings —
 # regenerable from source APIs via corpus_builder). Explicit rule even

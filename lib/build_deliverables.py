@@ -310,6 +310,13 @@ def main() -> int:
     }
     json.dump(metadata, open(os.path.join(DEST, "metadata.json"), "w", encoding="utf-8"),
               indent=2, ensure_ascii=False)
+    # A second copy inside the project, because DEST is outside the repository
+    # and the delivery record -- the hard-check results, the reuse metrics and
+    # the measured loudness -- is worth keeping under version control. Written
+    # by the same call rather than copied by hand, so the tracked copy cannot
+    # drift from the delivered one.
+    json.dump(metadata, open(os.path.join(ART, "metadata.json"), "w", encoding="utf-8"),
+              indent=2, ensure_ascii=False)
     shutil.copy2(os.path.join(ART, "research_brief.json"), os.path.join(DEST, "research_brief.json"))
 
     print(json.dumps(metadata["measured"], indent=1))
