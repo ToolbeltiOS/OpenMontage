@@ -652,17 +652,76 @@ audio:
     criteria forbid. Record the measured figure and move on.
   max_lufs_variation_between_acts: 2
 
+# ── captions ────────────────────────────────────────────────────────
+# CHANGED 2026-10-20. Run #1 burnt word-level captions into the picture for
+# the whole film, so text sat on screen for 99.4% of the runtime at one size
+# in one place. That is not a caption style, it is a subtitle track rendered
+# into the photograph, and it costs the bottom of every frame permanently to
+# serve viewers who could have had a track they can switch off or restyle.
+# None of the reference films burn their narration.
 captions:
   enabled: true
-  granularity: word_level
+  delivery: closed_captions          # long-form ships a sidecar, not a burn
+  granularity: word_level            # the source timing; the TRACK is phrase-level
   source_preference: ["tts_word_timestamps", "transcription_alignment"]
   alignment_rule: "The script is the authority for spelling; the transcript is the authority for timing."
-  style:
-    position: lower_centre
+
+  srt:
+    max_chars_per_line: 42
+    max_lines: 2
+    min_cue_seconds: 1.2
+    max_chars_per_second: 20         # broadcast practice is 15-20
+    max_intra_cue_gap_seconds: 1.0   # a cue never spans a pause
+    break_on: [sentence, box_overflow, pause]
+    builder: lib/captions_srt.py
+    rule: "A cue that cannot be read is worse than no cue. A short cue is
+           repaired from the silence around it, then by moving the boundary,
+           and a cue whose word timings are degenerate is REPORTED rather than
+           padded — the fix for that one belongs in the alignment."
+
+  publish:
+    method: captions.insert
+    language: en
+    name: "English"
+    draft: false
+    rule: "Uploaded at publish as a closed-caption track. The film is not
+           re-rendered to change a caption."
+
+  # Available, off by default. A short-form cut-down or a silent-autoplay
+  # context may want it; a twenty-minute documentary does not.
+  burn_in:
+    enabled: false
+    mode: layout_aware
+    preferred_zone: lower_third
     safe_margin_pct: 8
     max_lines: 2
     background: "rgba(12,12,14,0.55)"
-  legibility_check: "Check burned captions over the brightest frame in the piece, not a mid-grey frame."
+    rules:
+      - "Every component declares the regions it occupies. The caption layer
+         renders in the largest free zone, preferring the lower third."
+      - "While any text-bearing component is on screen the caption layer
+         suppresses itself. Two blocks of text competing for one frame is
+         worse than a missing line, and the component's text is the one that
+         carries meaning."
+      - "A caption never overlaps the persistent frame's data strips or the
+         source attribution."
+    legibility_check: "Check burned captions over the BRIGHTEST frame in the piece, not a mid-grey frame."
+
+  text_bearing_components:
+    - text_card
+    - stat_card
+    - callout
+    - comparison
+    - hero_title
+    - section_title
+    - act_title_card
+    - title_sequence
+    - evidence_card
+    - scale_comparison
+    - document_reveal
+    - timeline
+    - schematic
+    - outro_cta
 
 asset_generation:
   image_prompt_prefix: "archival documentary frame, desaturated warm neutrals, natural light, visible film grain, period-accurate, "

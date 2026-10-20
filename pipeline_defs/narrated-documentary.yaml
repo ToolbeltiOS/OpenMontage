@@ -381,8 +381,20 @@ stages:
       - Uniform grade applied across mixed-era footage
       - Narration is intelligible over the music bed at every point
       - Integrated loudness lands near the playbook target
-      - Captions are burned or sidecar-delivered as the playbook specifies
+      - Captions are delivered as the playbook specifies — for this playbook a
+        sidecar SRT, not a burn
       - No silent fallback from the approved visual promise
+    gate_commands:
+      - name: captions
+        run: "python3 lib/captions_srt.py {artifacts}/render_props.json {artifacts}/captions.en.srt"
+        blocking: true
+        why: >
+          Long-form ships a sidecar track rather than a burn, so the track is
+          a deliverable with its own failure modes: a cue too short to read, a
+          line over the 42-character rule, a cue spanning a pause, or a track
+          that outlasts the film. It also reports cues whose word timings are
+          degenerate rather than padding them, because that fix belongs in
+          the alignment.
     success_criteria:
       - Schema-valid render_report artifact
       - Output file exists and passes ffprobe validation
@@ -412,5 +424,7 @@ stages:
       - Every claim in the description traces to the research_brief
     success_criteria:
       - Schema-valid publish_log artifact
-      - Export package contains video, thumbnail, metadata JSON and research brief
+      - Export package contains video, thumbnail, metadata JSON, the caption
+        track and the research brief
+      - Caption track uploaded with captions.insert, language en, not a draft
       - publish_log records whether an upload occurred and to where

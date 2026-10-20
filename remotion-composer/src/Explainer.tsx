@@ -21,6 +21,7 @@ import { KPIGrid } from "./components/charts/KPIGrid";
 import { ProgressBar } from "./components/ProgressBar";
 import { CaptionOverlay, WordCaption } from "./components/CaptionOverlay";
 import { DocCaption } from "./design/DocCaption";
+import { captionBand } from "./design/captionRegions";
 import { EmphasisLine } from "./design/Emphasis";
 import { Graded, FrameLayer } from "./design/Frame";
 import { SourceCaption } from "./design/Scene";
@@ -412,6 +413,13 @@ export interface ExplainerProps {
    * over a scrim. See src/design/DocCaption.tsx for why.
    */
   caption_style?: "karaoke" | "documentary";
+  /**
+   * Burn the narration into the picture. OFF by default: long-form delivers
+   * an SRT uploaded with captions.insert, and run #1 showed what the burn
+   * costs — text on screen for 99.4% of the runtime at one size in one place.
+   * Switch it on for a short-form cut-down or a silent-autoplay context.
+   */
+  burn_in_captions?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -1071,7 +1079,10 @@ const OverlayRenderer: React.FC<{ overlay: Overlay; theme: ThemeConfig }> = ({
 export const Explainer: React.FC<ExplainerProps> = (props) => {
   const { cuts, overlays, captions, audio } = props;
   const captionStyle = props.caption_style ?? "karaoke";
-  const { fps, durationInFrames } = useVideoConfig();
+  // Long-form ships a sidecar track; the burn is opt-in. See the caption
+  // layer below and `captions.burn_in` in the playbook.
+  const burnInCaptions = props.burn_in_captions ?? false;
+  const { fps, durationInFrames, width, height } = useVideoConfig();
 
   // Resolve theme from props — playbook name, theme name, or custom themeConfig
   const theme = resolveTheme(props as Record<string, unknown>);
@@ -1107,11 +1118,37 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
         );
       })}
 
-      {/* Layer 3: Captions (word-by-word highlight) */}
-      {captions && captions.length > 0 && captionStyle === "documentary" && (
-        <DocCaption words={captions} />
+      {/*
+        Layer 3: Captions.
+
+        OFF by default for long-form — the film ships an SRT built by
+        lib/captions_srt.py and uploaded with captions.insert, because run #1
+        burnt word-level captions into the picture and paid the bottom of
+        every frame for 99.4% of its runtime. `burnInCaptions` switches the
+        layer back on for a cut-down or a silent-autoplay context, and when it
+        is on it is layout-aware: it sits in the largest free band and renders
+        nothing at all while a text-bearing scene is up.
+      */}
+      {burnInCaptions && captions && captions.length > 0 && captionStyle === "documentary" && (
+        <>
+          {cuts.map((cut, i) => {
+            const band = captionBand(cut as never);
+            if (!band) return null;
+            const from = Math.round(cut.in_seconds * fps);
+            const duration = Math.max(1, Math.round((cut.out_seconds - cut.in_seconds) * fps));
+            return (
+              <Sequence key={`cap-${cut.id ?? i}`} from={from} durationInFrames={duration}>
+                <DocCaption
+                  words={captions}
+                  bottom={Math.round((1 - (band.y + band.h)) * height)}
+                  maxWidth={Math.round(band.w * width)}
+                />
+              </Sequence>
+            );
+          })}
+        </>
       )}
-      {captions && captions.length > 0 && captionStyle !== "documentary" && (
+      {burnInCaptions && captions && captions.length > 0 && captionStyle !== "documentary" && (
         <CaptionOverlay
           words={captions}
           wordsPerPage={6}

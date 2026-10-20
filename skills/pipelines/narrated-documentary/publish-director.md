@@ -88,3 +88,30 @@ never covers an upload.
 - A description that asserts more than the narration does.
 - Dropping the attribution block because the sources were "public domain".
 - Shipping the video without the brief, leaving no provenance trail.
+
+## Caption Track (Binding)
+
+The film is no longer rendered with its narration burnt into the picture, so
+the caption track is a separate deliverable and it ships at publish.
+
+```bash
+python3 lib/captions_srt.py projects/<id>/artifacts/render_props.json \
+    projects/<id>/artifacts/captions.en.srt \
+    output/<id>/<id>.mp4
+```
+
+Then upload it with the `youtube_captions` tool (`captions.insert`), language
+`en`, name "English", `is_draft: false`. Run it with `dry_run: true` first —
+the dry run deliberately needs no token, so a publish can be rehearsed before
+anyone authorises a write scope on the channel.
+
+`captions.insert` needs the `youtube.force-ssl` scope. An upload-only token
+authenticates and then fails with an insufficient-permission error; the tool
+checks the scope up front and says so rather than retrying.
+
+Two things this buys that the burn did not:
+
+- a caption can be corrected without re-rendering a twenty-minute film;
+- the viewer can switch it off, restyle it, or auto-translate it.
+
+Record the caption id in the publish log beside the video id.

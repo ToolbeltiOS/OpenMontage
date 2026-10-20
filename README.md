@@ -728,6 +728,65 @@ For bugs, feature requests, and workflow discussions, use [GitHub Issues](https:
 
 ---
 
+## Run #2 checklist — *They Said It Couldn't Be Built*
+
+Fork-specific. Tracks the editor pass on branch `editor-pass`; the measurements
+behind it are in `reports/reference_pacing.md`.
+
+### What changed, and the defect each change answers
+
+| | what run #1 did | what run #2 does |
+|---|---|---|
+| **Rhythm** | 181 of 182 shots 5–8s; 8–10 cuts every minute | the beat sets the band — reveal 12–25s, exposition 6–10s, landing 4–8s, transition 1.5–3.5s. `lib/verify_rhythm.py` fails a flat curve |
+| **Air** | 13s of silence in 20 minutes; longest gap 2.8s | `[air 1.5s/2.5s/4.0s]` written into the script, synthesised as real gaps, 8–15% of runtime. Word band 2,500–2,700 |
+| **Sound** | music bed only | ambience per act, room tone under every silence, riser into each landing, impact on reveal cuts, sting per boundary — all offsets from the bed |
+| **Camera** | one push, 182 times | push/pull/lock/drift from the beat, one direction per run of stills, one speed ramp per act |
+| **Boundaries** | picture and sound cut together, 182 times | J-cuts 12–18 frames at act boundaries and reveals, L-cuts ≤10 at exposition, none at a landing |
+| **Captions** | burnt in, text on screen 99.4% of runtime | sidecar SRT uploaded with `captions.insert`; burn-in available, off, and layout-aware when on |
+| **Components** | — | `title_sequence` (default after the cold open) and `before_after` |
+| **Outro** | right third reserved | right 40% reserved; headline column to the reserve boundary at 62px |
+| **Transitions** | — | five vendored from `GTKottman/remotion-transitions` @ `58df899`, MIT, copied not depended on |
+
+### Gates a run #2 must pass
+
+```bash
+python3 lib/script_beats.py   {artifacts}/script.json --plan {artifacts}/narration_plan.json
+python3 lib/sound_design.py   {artifacts}/sound_design.json
+python3 lib/buildability.py   {artifacts}/scene_plan.json
+python3 lib/camera_intent.py  {artifacts}/edit_decisions.json
+python3 lib/edit_leads.py     {artifacts}/edit_decisions.json
+python3 lib/verify_rhythm.py  {artifacts}/edit_decisions.json
+python3 lib/captions_srt.py   {artifacts}/render_props.json {artifacts}/captions.en.srt
+```
+
+All are declared in `pipeline_defs/narrated-documentary.yaml` as blocking
+`gate_commands`. Three of them fail on run #1's own artifacts, which is the
+evidence that they measure the right thing.
+
+### Still needs the owner's decision
+
+- **Music bed level.** The references run 4–15.5 dB under the voice; we run 20.
+  −36 / −30 / −28 LUFS to be auditioned on act 2 **with the sound design
+  present**, by ear, as agreed. Nothing moves until then.
+- **Outro headline column.** Shipped at the reserve boundary (952px) at 62px
+  Display, because 900px orphaned "us". Frames for both readings are in
+  `remotion-composer/out/step7/`.
+- **Manim as the diagram route** (step 9) — side-by-sides pending.
+- **The two treatment tests** (step 10) — sketched reconstruction and halftone
+  collage, one slot each, pending.
+- **CSS vs shader film look** (step 13) — three style frames pending.
+
+### Known, recorded, not yet fixed
+
+- One caption cue in run #1 is unreadable: the forced aligner collapsed an
+  eight-word sentence into 30ms. 58 of 2,961 word timings are under 40ms. The
+  SRT builder reports it rather than padding it; the fix belongs in alignment.
+- `projects/.../edit_decisions.json` does not validate against its own schema
+  (`transitions` is an object where the schema wants an array; `layer` is an
+  integer where it wants a string enum). Run #1's record is left as published.
+
+---
+
 ## Testing
 
 ```bash
