@@ -4,61 +4,140 @@
   "title": "Style Playbook",
   "description": "Visual style definition controlling all aesthetic choices in a video pipeline. Schema v2 adds chart_palette, typography scale/weight systems, and color rules.",
   "type": "object",
-  "required": ["identity", "visual_language", "typography", "motion", "audio", "asset_generation", "quality_rules"],
+  "required": [
+    "identity",
+    "visual_language",
+    "typography",
+    "motion",
+    "audio",
+    "asset_generation",
+    "quality_rules"
+  ],
   "properties": {
     "identity": {
       "type": "object",
-      "required": ["name", "category", "mood", "pace"],
+      "required": [
+        "name",
+        "category",
+        "mood",
+        "pace"
+      ],
       "properties": {
-        "name": { "type": "string" },
+        "name": {
+          "type": "string"
+        },
         "category": {
           "type": "string",
-          "enum": ["motion-graphics", "whiteboard", "cinematic", "minimalist", "retro", "custom"]
+          "enum": [
+            "motion-graphics",
+            "whiteboard",
+            "cinematic",
+            "minimalist",
+            "retro",
+            "custom"
+          ]
         },
-        "mood": { "type": "string" },
+        "mood": {
+          "type": "string"
+        },
         "pace": {
           "type": "string",
-          "enum": ["slow", "deliberate", "moderate", "fast", "rapid"]
+          "enum": [
+            "slow",
+            "deliberate",
+            "moderate",
+            "fast",
+            "rapid"
+          ]
         },
-        "best_for": { "type": "string" }
+        "best_for": {
+          "type": "string"
+        }
       },
       "additionalProperties": false
     },
     "visual_language": {
       "type": "object",
-      "required": ["color_palette", "composition", "texture"],
+      "required": [
+        "color_palette",
+        "composition",
+        "texture"
+      ],
       "properties": {
         "color_palette": {
           "type": "object",
-          "required": ["primary", "accent", "background", "text"],
+          "required": [
+            "primary",
+            "accent",
+            "background",
+            "text"
+          ],
           "properties": {
-            "primary": { "type": "array", "items": { "type": "string" } },
-            "accent": { "type": "array", "items": { "type": "string" } },
-            "background": { "type": "string" },
-            "text": { "type": "string" },
-            "muted": { "type": "string" }
+            "primary": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "accent": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "background": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            },
+            "muted": {
+              "type": "string"
+            }
           },
           "additionalProperties": false
         },
-        "composition": { "type": "string" },
-        "texture": { "type": "string" }
+        "composition": {
+          "type": "string"
+        },
+        "texture": {
+          "type": "string"
+        }
       },
       "additionalProperties": false
     },
     "typography": {
       "type": "object",
-      "required": ["headings", "body"],
+      "required": [
+        "headings",
+        "body"
+      ],
       "properties": {
-        "headings": { "$ref": "#/$defs/font_spec" },
-        "body": { "$ref": "#/$defs/font_spec" },
-        "code": { "$ref": "#/$defs/font_spec" },
-        "stat_card": { "$ref": "#/$defs/font_spec" },
+        "headings": {
+          "$ref": "#/$defs/font_spec"
+        },
+        "body": {
+          "$ref": "#/$defs/font_spec"
+        },
+        "code": {
+          "$ref": "#/$defs/font_spec"
+        },
+        "stat_card": {
+          "$ref": "#/$defs/font_spec"
+        },
         "scale_system": {
           "description": "Modular type scale ratio. Named ratio or custom number.",
           "oneOf": [
             {
               "type": "string",
-              "enum": ["minor_second", "major_second", "minor_third", "major_third", "perfect_fourth", "golden"]
+              "enum": [
+                "minor_second",
+                "major_second",
+                "minor_third",
+                "major_third",
+                "perfect_fourth",
+                "golden"
+              ]
             },
             {
               "type": "number",
@@ -70,10 +149,26 @@
           "description": "Font weight mapping for each typographic role.",
           "type": "object",
           "properties": {
-            "title": { "type": "integer", "minimum": 100, "maximum": 900 },
-            "heading": { "type": "integer", "minimum": 100, "maximum": 900 },
-            "body": { "type": "integer", "minimum": 100, "maximum": 900 },
-            "caption": { "type": "integer", "minimum": 100, "maximum": 900 }
+            "title": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 900
+            },
+            "heading": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 900
+            },
+            "body": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 900
+            },
+            "caption": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 900
+            }
           },
           "additionalProperties": false
         }
@@ -82,39 +177,92 @@
     },
     "motion": {
       "type": "object",
-      "required": ["transitions", "animation_style", "pacing_rules"],
+      "required": [
+        "transitions",
+        "animation_style",
+        "pacing_rules"
+      ],
       "properties": {
         "transitions": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "minItems": 1
         },
-        "animation_style": { "type": "string" },
+        "animation_style": {
+          "type": "string"
+        },
         "pacing_rules": {
           "type": "object",
           "properties": {
-            "min_scene_hold_seconds": { "type": "number", "minimum": 0.5 },
-            "max_scene_hold_seconds": { "type": "number", "minimum": 1 },
-            "text_card_hold_seconds": { "type": "number", "minimum": 1 },
-            "stat_card_hold_seconds": { "type": "number", "minimum": 1 },
-            "transition_duration_seconds": { "type": "number", "minimum": 0.1 }
+            "min_scene_hold_seconds": {
+              "type": "number",
+              "minimum": 0.5
+            },
+            "max_scene_hold_seconds": {
+              "type": "number",
+              "minimum": 1
+            },
+            "text_card_hold_seconds": {
+              "type": "number",
+              "minimum": 1
+            },
+            "stat_card_hold_seconds": {
+              "type": "number",
+              "minimum": 1
+            },
+            "transition_duration_seconds": {
+              "type": "number",
+              "minimum": 0.1
+            },
+            "min_scene_hold_seconds_default": {
+              "type": "number",
+              "minimum": 0.5,
+              "description": "The hold a scene gets when no beat type reaches it. min/max_scene_hold_seconds are the film-wide outer limits; a beat-aware playbook sets its real bands in `rhythm.targets`."
+            },
+            "max_scene_hold_seconds_default": {
+              "type": "number",
+              "minimum": 1,
+              "description": "The ceiling a scene gets when no beat type reaches it."
+            }
           },
           "additionalProperties": false
         },
-        "entrance": { "type": "string" },
-        "exit": { "type": "string" }
+        "entrance": {
+          "type": "string"
+        },
+        "exit": {
+          "type": "string"
+        }
       },
       "additionalProperties": false
     },
     "audio": {
       "type": "object",
-      "required": ["voice_style", "music_mood", "music_volume"],
+      "required": [
+        "voice_style"
+      ],
       "properties": {
-        "voice_style": { "type": "string" },
-        "music_mood": { "type": "string" },
-        "music_volume": { "type": "number", "minimum": 0, "maximum": 1 },
-        "sfx_style": { "type": "string" },
-        "ducking_threshold_db": { "type": "number" },
+        "voice_style": {
+          "type": "string"
+        },
+        "music_mood": {
+          "type": "string",
+          "description": "A word for the bed's character. Sufficient on its own only for playbooks that do not set absolute levels."
+        },
+        "music_volume": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Relative bed level, 0-1. Do NOT set this alongside music_under_speech_lufs: two numbers for one level is how a rejected mix survived a re-render once already. Pick the form the playbook actually mixes to."
+        },
+        "sfx_style": {
+          "type": "string"
+        },
+        "ducking_threshold_db": {
+          "type": "number"
+        },
         "voice_variation_allowed": {
           "type": "boolean",
           "default": false,
@@ -127,19 +275,58 @@
         "transition_voice_shift": {
           "type": "string",
           "description": "How the voice should change at transitions, e.g., 'brief pause, then resume at slightly higher energy'"
+        },
+        "music_under_speech_lufs": {
+          "type": "number",
+          "description": "Absolute short-term loudness of the bed under narration, in LUFS. The mixer measures against it; a relative volume cannot be checked."
+        },
+        "music_in_gaps_lufs": {
+          "type": "number",
+          "description": "Bed loudness in a written gap."
+        },
+        "music_at_act_boundaries_lufs": {
+          "type": "number",
+          "description": "Bed loudness under the fade at an act boundary."
         }
-      }
+      },
+      "description": "Audio direction. A playbook states its music either as a mood and a relative volume, or as explicit loudness targets — `anyOf` below requires one of the two and forbids neither.",
+      "anyOf": [
+        {
+          "required": [
+            "music_mood",
+            "music_volume"
+          ],
+          "title": "mood and relative volume"
+        },
+        {
+          "required": [
+            "music_under_speech_lufs"
+          ],
+          "title": "explicit loudness targets"
+        }
+      ]
     },
     "asset_generation": {
       "type": "object",
-      "required": ["image_prompt_prefix", "consistency_anchors"],
+      "required": [
+        "image_prompt_prefix",
+        "consistency_anchors"
+      ],
       "properties": {
-        "image_prompt_prefix": { "type": "string" },
-        "image_negative_prompt": { "type": "string" },
-        "diagram_style": { "type": "string" },
+        "image_prompt_prefix": {
+          "type": "string"
+        },
+        "image_negative_prompt": {
+          "type": "string"
+        },
+        "diagram_style": {
+          "type": "string"
+        },
         "consistency_anchors": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "minItems": 1
         },
         "scene_type": {
@@ -178,22 +365,40 @@
       "description": "Per-overlay styling. Covers the in-scene overlay boxes plus the timed overlay types the Explainer composition renders (see remotion-composer/src/Explainer.tsx, `Overlay.type`).",
       "type": "object",
       "properties": {
-        "stat_card": { "$ref": "#/$defs/overlay_style" },
-        "key_term": { "$ref": "#/$defs/overlay_style" },
-        "code_block": { "$ref": "#/$defs/overlay_style" },
-        "section_title": { "$ref": "#/$defs/overlay_style" },
-        "stat_reveal": { "$ref": "#/$defs/overlay_style" },
-        "hero_title": { "$ref": "#/$defs/overlay_style" },
-        "provider_chip": { "$ref": "#/$defs/overlay_style" }
+        "stat_card": {
+          "$ref": "#/$defs/overlay_style"
+        },
+        "key_term": {
+          "$ref": "#/$defs/overlay_style"
+        },
+        "code_block": {
+          "$ref": "#/$defs/overlay_style"
+        },
+        "section_title": {
+          "$ref": "#/$defs/overlay_style"
+        },
+        "stat_reveal": {
+          "$ref": "#/$defs/overlay_style"
+        },
+        "hero_title": {
+          "$ref": "#/$defs/overlay_style"
+        },
+        "provider_chip": {
+          "$ref": "#/$defs/overlay_style"
+        }
       },
       "additionalProperties": false
     },
     "quality_rules": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "minItems": 1
     },
-    "taste_profile": { "$ref": "#/$defs/taste_profile" },
+    "taste_profile": {
+      "$ref": "#/$defs/taste_profile"
+    },
     "chart_palette": {
       "description": "Ordered array of hex colors for chart data series.",
       "type": "array",
@@ -209,7 +414,12 @@
       "properties": {
         "harmony_type": {
           "type": "string",
-          "enum": ["complementary", "analogous", "triadic", "split-complementary"]
+          "enum": [
+            "complementary",
+            "analogous",
+            "triadic",
+            "split-complementary"
+          ]
         },
         "contrast_validation": {
           "description": "Enable WCAG 2.1 contrast ratio checking on all text/bg pairs.",
@@ -236,13 +446,27 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["scene_id", "reason"],
+            "required": [
+              "scene_id",
+              "reason"
+            ],
             "properties": {
-              "scene_id": { "type": "string" },
-              "reason": { "type": "string", "description": "Why this scene deviates from the playbook" },
-              "color_override": { "type": "object" },
-              "typography_override": { "type": "object" },
-              "motion_override": { "type": "object" }
+              "scene_id": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string",
+                "description": "Why this scene deviates from the playbook"
+              },
+              "color_override": {
+                "type": "object"
+              },
+              "typography_override": {
+                "type": "object"
+              },
+              "motion_override": {
+                "type": "object"
+              }
             }
           }
         }
@@ -252,25 +476,49 @@
   "$defs": {
     "font_spec": {
       "type": "object",
-      "required": ["font"],
+      "required": [
+        "font"
+      ],
       "properties": {
-        "font": { "type": "string" },
-        "weight": { "type": "integer" },
-        "tracking": { "type": "string" },
-        "line_height": { "type": "number" },
-        "size_multiplier": { "type": "number" }
+        "font": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "integer"
+        },
+        "tracking": {
+          "type": "string"
+        },
+        "line_height": {
+          "type": "number"
+        },
+        "size_multiplier": {
+          "type": "number"
+        }
       },
       "additionalProperties": false
     },
     "overlay_style": {
       "type": "object",
       "properties": {
-        "bg": { "type": "string" },
-        "border": { "type": "string" },
-        "text": { "type": "string" },
-        "radius": { "type": "number" },
-        "shadow": { "type": "string" },
-        "highlight": { "type": "string" },
+        "bg": {
+          "type": "string"
+        },
+        "border": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "radius": {
+          "type": "number"
+        },
+        "shadow": {
+          "type": "string"
+        },
+        "highlight": {
+          "type": "string"
+        },
         "accent": {
           "type": "string",
           "description": "Accent color for overlay types that render one (maps to the renderer's accentColor prop)."
@@ -280,7 +528,12 @@
     },
     "taste_profile": {
       "type": "object",
-      "required": ["design_read", "visual_variance", "motion_intensity", "information_density"],
+      "required": [
+        "design_read",
+        "visual_variance",
+        "motion_intensity",
+        "information_density"
+      ],
       "properties": {
         "design_read": {
           "type": "string",
@@ -304,16 +557,26 @@
           "maximum": 10,
           "description": "How much information can be on screen at once."
         },
-        "palette_discipline": { "type": "string" },
-        "layout_variation": { "type": "string" },
-        "reference_strategy": { "type": "string" },
+        "palette_discipline": {
+          "type": "string"
+        },
+        "layout_variation": {
+          "type": "string"
+        },
+        "reference_strategy": {
+          "type": "string"
+        },
         "anti_patterns": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "quality_gates": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         }
       },
       "additionalProperties": false

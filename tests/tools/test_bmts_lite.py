@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 from pathlib import Path
 from unittest.mock import patch
 
@@ -89,7 +90,11 @@ def test_run_emits_mp4_timeline_audiomap_and_openmontage_report(tmp_path: Path) 
         )
 
     with (
-        patch.dict("os.environ", {"BGM_MONTAGE_LITE_ROOT": str(tmp_path), "BGM_MONTAGE_LITE_PYTHON": "python"}),
+        # sys.executable, not the literal "python": a machine with only
+        # python3 on PATH fails the interpreter lookup and the test reports a
+        # missing dependency rather than whatever it was written to check.
+        patch.dict("os.environ", {"BGM_MONTAGE_LITE_ROOT": str(tmp_path),
+                                  "BGM_MONTAGE_LITE_PYTHON": sys.executable}),
         patch.object(tool, "check_dependencies"),
         patch.object(tool, "run_command", side_effect=fake_run),
     ):
