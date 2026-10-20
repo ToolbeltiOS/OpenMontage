@@ -5,8 +5,9 @@
  * (schema exported below) and in component-contract.json as "outro_cta".
  *
  * Timing is narration-driven: pass likeAt / subscribeAt (seconds into THIS scene) taken
- * from the word-level captions. Everything lives in the left two-thirds; the right third
- * and bottom 20% stay clear for YouTube End Screen elements.
+ * from the word-level captions. Nothing of ours is drawn inside the reserved End Screen
+ * zone — the right END_SCREEN_RESERVE of the width and the bottom 20% — because YouTube
+ * draws its own elements there and covers whatever is underneath.
  *
  * Uses the design system tokens from ../design/system (palette, type, easing). If your
  * FrameLayer component exposes different prop names, adjust the one usage below.
@@ -46,6 +47,23 @@ const expoOut = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
 const expoInOut = (t: number) =>
   t <= 0 ? 0 : t >= 1 ? 1 : t < 0.5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2;
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
+
+/**
+ * Share of the frame width kept clear on the right for YouTube End Screen elements.
+ * Widened from a third to 0.40 on 2026-10-20: at a third, the element grid still
+ * clipped the end of the headline on a 16:9 player. Stated once here and used to
+ * derive the content limit, so the two cannot drift apart.
+ */
+const END_SCREEN_RESERVE = 0.40;
+const CONTENT_LEFT = 200;
+/**
+ * The headline column runs from CONTENT_LEFT to the reserve boundary — 952px on a
+ * 1920 canvas. The brief asked for 900; at 900, line 1 of the approved copy
+ * ("A like and a subscribe helps us") wraps and leaves "us" alone on its own line,
+ * measured at 62px Display. Running to the boundary keeps both of the other two
+ * figures — the 40% reserve and the 62px Display — and the line ends at x=1100,
+ * still 52px clear of the reserve.
+ */
 const seg = (t: number, a: number, b: number, e = expoOut) => e(clamp((t - a) / (b - a), 0, 1));
 
 const textIn = (t: number, at: number): React.CSSProperties => {
@@ -62,7 +80,10 @@ const press = (t: number, at: number) => {
 export const OutroCta: React.FC<OutroCtaProps> = (props) => {
   const p = outroCtaSchema.parse(props);
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
+  const { fps, durationInFrames, width } = useVideoConfig();
+  // The right edge content may not cross. 1920 * 0.60 = 1152, and the headline
+  // column ends at 1100.
+  const contentLimit = width * (1 - END_SCREEN_RESERVE);
   const t = frame / fps;
   const dur = durationInFrames / fps;
 
@@ -98,16 +119,25 @@ export const OutroCta: React.FC<OutroCtaProps> = (props) => {
       <AbsoluteFill style={{ background: "radial-gradient(70% 70% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.62) 100%)" }} />
 
       {/* headline block — left two-thirds */}
-      <div style={{ position: "absolute", left: 200, top: 300, width: 1000 }}>
+      <div
+        style={{
+          position: "absolute",
+          left: CONTENT_LEFT,
+          top: 300,
+          // Derived, so a narrower canvas wraps the headline inside the column
+          // rather than pushing it into the reserved zone.
+          width: contentLimit - CONTENT_LEFT,
+        }}
+      >
         <div style={{ ...textIn(t, 0.6), fontFamily: F.label, fontWeight: 500, fontSize: 26, letterSpacing: 7, color: C.ink, opacity: 0.62 * (textIn(t, 0.6).opacity as number) }}>
           {p.eyebrow}
         </div>
-        <div style={{ ...textIn(t, 0.7), fontFamily: F.display, fontWeight: 400, fontSize: 68, lineHeight: 1.15, color: C.ink, marginTop: 22 }}>{p.line1}</div>
-        <div style={{ ...textIn(t, 0.8), fontFamily: F.display, fontWeight: 400, fontSize: 68, lineHeight: 1.15, color: C.ink }}>{p.line2}</div>
+        <div style={{ ...textIn(t, 0.7), fontFamily: F.display, fontWeight: 400, fontSize: 62, lineHeight: 1.15, color: C.ink, marginTop: 22 }}>{p.line1}</div>
+        <div style={{ ...textIn(t, 0.8), fontFamily: F.display, fontWeight: 400, fontSize: 62, lineHeight: 1.15, color: C.ink }}>{p.line2}</div>
       </div>
 
       {/* LIKE */}
-      <svg style={{ position: "absolute", left: 200, top: 640 }} width={104} height={160} viewBox="0 0 104 160">
+      <svg style={{ position: "absolute", left: CONTENT_LEFT, top: 640 }} width={104} height={160} viewBox="0 0 104 160">
         <g transform={`translate(52 52) scale(${L.scale}) translate(-52 -52)`}>
           <circle cx={52} cy={52} r={52 + 40 * L.ring} fill="none" stroke={C.accent} strokeWidth={2} opacity={L.ring > 0 ? (1 - L.ring) * 0.9 : 0} />
           <path
@@ -129,7 +159,7 @@ export const OutroCta: React.FC<OutroCtaProps> = (props) => {
       </svg>
 
       {/* SUBSCRIBE */}
-      <svg style={{ position: "absolute", left: 360, top: 640 }} width={420} height={160} viewBox="-30 -30 420 160">
+      <svg style={{ position: "absolute", left: CONTENT_LEFT + 160, top: 640 }} width={420} height={160} viewBox="-30 -30 420 160">
         <defs>
           <linearGradient id="outroSweep" x1="0" x2="1">
             <stop offset="0" stopColor="#fff" stopOpacity="0" />
@@ -151,7 +181,7 @@ export const OutroCta: React.FC<OutroCtaProps> = (props) => {
       </svg>
 
       {/* BELL */}
-      <svg style={{ position: "absolute", left: 790, top: 640 }} width={80} height={110} viewBox="0 0 80 110">
+      <svg style={{ position: "absolute", left: CONTENT_LEFT + 590, top: 640 }} width={80} height={110} viewBox="0 0 80 110">
         <g transform={`translate(40 12) rotate(${bellAngle}) translate(-40 -12)`}>
           <path
             d="M40 14 v8 M24 70 a16 16 0 0 0 32 0 M40 22 c-16 0 -24 12 -24 28 v16 l-8 10 h64 l-8 -10 v-16 c0 -16 -8 -28 -24 -28 z M34 92 a6 6 0 0 0 12 0"
@@ -169,8 +199,8 @@ export const OutroCta: React.FC<OutroCtaProps> = (props) => {
         <path d="M74 36 a40 40 0 0 0 -10 -22" fill="none" stroke={C.accent} strokeWidth={3} strokeLinecap="round" opacity={arcs} />
       </svg>
 
-      {/* schedule line — kept above the bottom 20% (End Screen zone) */}
-      <div style={{ position: "absolute", left: 200, top: 820, display: "flex", alignItems: "center", gap: 20, ...textIn(t, nextAt) }}>
+      {/* schedule line — unchanged; already above the bottom 20% End Screen zone */}
+      <div style={{ position: "absolute", left: CONTENT_LEFT, top: 820, display: "flex", alignItems: "center", gap: 20, ...textIn(t, nextAt) }}>
         <span style={{ width: 52, height: 2, background: C.accent }} />
         <span style={{ fontFamily: F.label, fontWeight: 500, fontSize: 24, letterSpacing: 6, color: C.ink, opacity: 0.8 }}>{p.scheduleLine}</span>
       </div>
