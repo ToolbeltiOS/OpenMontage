@@ -43,6 +43,7 @@ projects/**
 !projects/*/artifacts/asset_bank.json
 !projects/*/artifacts/run1_assignment.json
 !projects/*/artifacts/metadata.json
+!projects/*/artifacts/publish.json
 !projects/*/renders/
 !projects/*/renders/mix_report.json
 
