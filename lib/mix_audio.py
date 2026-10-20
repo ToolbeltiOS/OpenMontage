@@ -47,6 +47,9 @@ GAP_SECONDS = 1.5
 GAP_TARGET_LUFS = -26.0        # absolute, not an offset
 BOUNDARY_TARGET_LUFS = -22.0
 BOUNDARY_WINDOW = 2.5      # the music crossfade length
+LOOP_XFADE = 8.0           # crossfade between repeats of a bed shorter than its span;
+                           # 4s left a 13 dB step on the two piano beds, which
+                           # reads as the music restarting rather than turning over
 ATTACK_MS = 150
 RELEASE_MS = 900
 
@@ -160,8 +163,28 @@ def build_bed(spans: list[dict], total: float, under_speech_lufs: float,
             run(["ffmpeg", "-v", "error", "-y", "-ss", f"{start:.3f}", "-i", sp["track"],
                  "-t", f"{need:.3f}", "-ar", str(SR), "-ac", "2", seg])
         else:
-            run(["ffmpeg", "-v", "error", "-y", "-stream_loop", "-1", "-i", sp["track"],
-                 "-t", f"{need:.3f}", "-ar", str(SR), "-ac", "2", seg])
+            # The bed is shorter than its span, so it repeats. -stream_loop
+            # restarts the file on a hard cut, which drops the listener back to
+            # bar one mid-phrase; under narration that reads as a mistake even
+            # when it does not click. The repeats are crossfaded instead, so a
+            # loop point sounds like the music turning over rather than
+            # starting again. All three chosen beds run 150-220s against spans
+            # of 284-629s, so every span has at least one of these.
+            reps = int(need // max(1.0, src_dur - LOOP_XFADE)) + 2
+            ins, chain, prev = [], [], None
+            for r in range(reps):
+                ins += ["-i", sp["track"]]
+            for r in range(1, reps):
+                label = f"l{r}"
+                a = prev or "0:a"
+                chain.append(f"[{a}][{r}:a]acrossfade=d={LOOP_XFADE}:c1=tri:c2=tri[{label}]")
+                prev = label
+            filt = ";".join(chain) if chain else None
+            cmd = ["ffmpeg", "-v", "error", "-y"] + ins
+            if filt:
+                cmd += ["-filter_complex", filt, "-map", f"[{prev}]"]
+            cmd += ["-t", f"{need:.3f}", "-ar", str(SR), "-ac", "2", seg]
+            run(cmd)
         parts.append(seg)
 
     joined = os.path.join(OUT, "bed_joined.wav")
