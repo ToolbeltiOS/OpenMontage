@@ -139,6 +139,35 @@
           "items": {
             "type": "string"
           }
+        },
+        "film_look": {
+          "type": "object",
+          "description": "Which path renders the film's grain, halation and vignette. The shader pass is a second render over finished frames; CSS is the fallback.",
+          "additionalProperties": true,
+          "properties": {
+            "path": {
+              "type": "string",
+              "enum": [
+                "shader",
+                "css"
+              ]
+            },
+            "stack": {
+              "type": "string",
+              "enum": [
+                "full",
+                "lean",
+                "minimal"
+              ]
+            },
+            "fallback": {
+              "type": "string",
+              "enum": [
+                "shader",
+                "css"
+              ]
+            }
+          }
         }
       },
       "additionalProperties": false

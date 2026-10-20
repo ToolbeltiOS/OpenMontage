@@ -184,5 +184,57 @@ export const gradeForAct = (act?: string | number): ActGrade => {
   return GRADE_BY_ACT[key] ?? BASE_ACT_GRADE;
 };
 
+/**
+ * The grade as a set of OPERATIONS, identical on both render paths.
+ *
+ * The CSS treatment and the shader pass were applying the same table by
+ * different arithmetic — a flat darkening wash on one side, an additive
+ * BrightnessContrast on the other — so the two differed in exposure before
+ * they differed in anything that mattered. A comparison of two exposures is
+ * not a comparison of two looks.
+ *
+ * Both paths now run the same chain: multiply by `multiply` x `brightness`,
+ * then saturate, then contrast. CSS does it with a filter plus a
+ * multiply-blended layer; the shader does it with the plane's material colour
+ * plus HueSaturation and BrightnessContrast. Same numbers, same order.
+ */
+export const BRIGHTNESS_PULL = 0.85;
+export const WARM_TINT = [1.0, 0.955, 0.885] as const;
+export const COOL_TINT = [0.925, 0.955, 1.0] as const;
+
+export type GradeOps = {
+  saturation: number;
+  contrast: number;
+  brightness: number;
+  /** linear multiply applied before saturation and contrast */
+  multiply: [number, number, number];
+};
+
+export const gradeOps = (act?: string | number): GradeOps => {
+  const g = gradeForAct(act);
+  const t = Math.abs(g.temperature) / 0.08;
+  const base = g.temperature >= 0 ? WARM_TINT : COOL_TINT;
+  // The lift opens the shadows, which on a multiply chain means raising the
+  // floor rather than adding light: a brightness just under 1 with the
+  // contrast pulled in slightly.
+  //
+  // BRIGHTNESS_PULL is the grade's own darkening — the thing that stops a
+  // bright blue-sky JPEG sitting several stops above the authored scenes it
+  // cuts against. It used to live only on the CSS path, as a flat black layer
+  // at 0.15, which is why the shader read a third brighter than CSS even once
+  // the rest of the chain matched. It is part of the grade, so it belongs in
+  // the operations both paths run.
+  return {
+    saturation: g.saturation,
+    contrast: 1 + 0.04 - g.lift * 0.35,
+    brightness: BRIGHTNESS_PULL * (1 - g.lift * 0.55),
+    multiply: [
+      1 + (base[0] - 1) * t,
+      1 + (base[1] - 1) * t,
+      1 + (base[2] - 1) * t,
+    ],
+  };
+};
+
 /** Stagger helper: nth element enters this many frames late. */
 export const stagger = (n: number) => n * SYS.stagger;

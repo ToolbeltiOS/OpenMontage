@@ -484,6 +484,32 @@ visual_language:
   composition: "full-bleed archive frame with a lower-left attribution zone; map and timeline frames centred with generous margins; one claim per frame"
   texture: "fine film grain over graded footage, paper-grain field behind document reveals, no gloss and no vignette beyond a slight natural falloff"
 
+  # ── film look (CHANGED 2026-10-20, owner decision) ────────────────────
+  # The shader pass is the DEFAULT path. The +25% render budget was withdrawn
+  # after it was measured: the floor of the approach is +79% a frame and the
+  # full stack is +100%, about fifteen extra minutes on a twenty-minute film,
+  # because the cost is having a WebGL canvas at all rather than the effects
+  # in it (reports/film_look_cost.md).
+  #
+  # Both paths run the SAME grade operations in the same order — multiply,
+  # saturate, contrast — so what differs between them is the look and not the
+  # exposure. Matched to within 2% of mean luminance on three plates.
+  film_look:
+    path: shader
+    stack: full            # grade + halation + lens aberration + vignette + grain
+    fallback: css          # a flag, not a mode: set film_look.path to css
+    pass: second           # over finished frames; a composition is DOM and WebGL cannot sample DOM
+    requires: "--gl=angle on this machine"
+    measured_ms_per_frame: {css: 24.4, shader_full: 48.9}
+    what_it_buys:
+      - "Halation: the highlights bloom and the stone does not. No CSS layer
+         can do this, because no layer knows which pixels are bright."
+      - "A vignette that falls off with distance instead of a dark ring."
+      - "Grain that belongs to the image rather than a fixed tile on top."
+    rule: "A caption, a title or any authored graphic is composited BEFORE the
+           pass, so the grain and the vignette sit over the whole frame rather
+           than under the furniture."
+
   # ── per-act grade (ADDED 2026-10-20) ──────────────────────────────────
   # The uniform grade stays: it is what stops a cut between an 1890s plate and
   # a modern photograph announcing its source. What it could not do is give an

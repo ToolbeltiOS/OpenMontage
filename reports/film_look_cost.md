@@ -76,13 +76,51 @@ treatment, because the grade is applied as `BrightnessContrast` on one side
 and a flat darkening wash on the other. Matching exposure is a half-hour's
 work and should happen before anyone judges the two on mood.
 
-## The decision
+## The decision — taken 2026-10-20
 
-Not mine to make. The options as measured:
+**Budget withdrawn by the owner. The full stack ships on every slot**, and the
+shader path is the playbook default; CSS stays as a fallback flag.
 
-- **Keep CSS.** Costs nothing, loses halation.
-- **Ship `full` at +100%.** About 15 extra minutes per 20-minute render, and
-  the look in the right-hand frames.
-- **Ship `full` on hero slots only.** The pass is per-composition, so it can
-  run over the reveals and act cards and leave the rest in CSS. Unmeasured,
-  but roughly a tenth of the film is hero material.
+## Addendum: matching exposure before comparing looks
+
+The first set of comparison frames was not a comparison. The two paths were
+applying the same grade table by different arithmetic — a flat black layer at
+0.15 on the CSS side, an additive `BrightnessContrast` on the shader side — so
+the shader read 31–36% brighter and that was the only thing anyone would see.
+
+Both paths now run one chain, `gradeOps()` in `design/system.ts`: multiply by
+tint × brightness, then saturate, then contrast. CSS does it with a filter and
+a multiply-blended layer; the shader does it with the plane's material colour
+plus `HueSaturation` and `BrightnessContrast`. The grade's own darkening —
+what stops a bright blue-sky JPEG sitting several stops above the authored
+scenes — moved into that chain as `BRIGHTNESS_PULL` instead of living on one
+side only.
+
+With the grade matched the gap was still +13 to +17%, and it was **not**
+halation: rendering with bloom off changed the mean by 0.1%. It was the
+vignette, whose two falloffs darken by different amounts overall. The shader's
+darkness is set to 0.85, where the means agree:
+
+| plate | CSS | shader | delta |
+|---|---|---|---|
+| Rapa Nui hero, act 2 | 64.78 | 63.41 | −2.1% |
+| Sacsayhuamán joint, act 3 | 84.30 | 84.68 | +0.4% |
+| Aswan quarry, act 4 | 80.46 | 79.03 | −1.8% |
+
+The two vignettes still fall off differently. That is the look, and it is now
+the thing the frames show.
+
+## Addendum: the texture race, finally
+
+Three versions of the source loader raced and lost, each more subtly than the
+last: releasing `delayRender` in the loader callback captured an empty plane;
+releasing it in an effect keyed on the texture still lost under load; two
+`requestAnimationFrame`s still produced a black frame in three of six renders.
+An intermittent black frame is worse than a slow one — it looks like a look
+rather than a bug, and it had already polluted one set of measurements.
+
+Remotion already blocks a frame until an `<Img>` has decoded. The pass now
+wraps the element Remotion has finished with, rather than fetching the same
+file a second time through `THREE.TextureLoader`. One guarantee, and it is the
+renderer's own. Three consecutive renders of the same frame now agree to the
+decimal.

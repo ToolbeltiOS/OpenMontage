@@ -3,8 +3,6 @@ import {
   AbsoluteFill,
   Img,
   OffthreadVideo,
-  continueRender,
-  delayRender,
   staticFile,
   useCurrentFrame,
   useVideoConfig,
@@ -22,7 +20,7 @@ import {
 } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import * as THREE from "three";
-import { SYS, gradeForAct } from "./design/system";
+import { SYS, gradeOps } from "./design/system";
 
 /**
  * The film look as a RENDER PASS, over finished frames.
@@ -57,6 +55,12 @@ export interface FilmLookProps {
   src?: string;
   /** which act's grade to apply; the pass carries the same table as the DOM */
   act?: string | number;
+  /**
+   * For a pass over a whole film: which act is on screen when. The grade is
+   * per act and the pass is per composition, so without this a twenty-minute
+   * film would be graded as whichever act was named first.
+   */
+  acts?: { act: string; from_seconds: number; to_seconds: number }[];
   grain?: number;
   bloom?: number;
   distortion?: number;
@@ -82,49 +86,58 @@ export interface FilmLookProps {
   stack?: "full" | "lean" | "minimal";
 }
 
-/** Fills the frame with the source texture, pixel for pixel. */
-const SourcePlane: React.FC<{ texture: THREE.Texture }> = ({ texture }) => {
+/**
+ * Fills the frame with the source texture, pixel for pixel, carrying the
+ * grade's multiply and brightness on the material — which is the same linear
+ * multiply the CSS path does with `brightness()` and a multiply-blended tint.
+ */
+const SourcePlane: React.FC<{ texture: THREE.Texture; tint: THREE.Color }> = ({
+  texture, tint,
+}) => {
   const { viewport } = useThree();
   return (
     <mesh>
       <planeGeometry args={[viewport.width, viewport.height]} />
-      <meshBasicMaterial map={texture} toneMapped={false} />
+      <meshBasicMaterial map={texture} color={tint} toneMapped={false} />
     </mesh>
   );
 };
 
-const useStillTexture = (src: string, enabled: boolean): THREE.Texture | null => {
-  const [handle] = React.useState(() => (enabled ? delayRender("film look source") : null));
-  const [tex, setTex] = React.useState<THREE.Texture | null>(null);
-  const [failed, setFailed] = React.useState(false);
+/**
+ * The source texture, gated by Remotion's own <Img> rather than by a loader
+ * of ours.
+ *
+ * Three versions of this raced and lost. Releasing delayRender in the loader
+ * callback captured an empty plane; releasing it in an effect keyed on the
+ * texture still lost under load; two requestAnimationFrames still produced a
+ * black frame in three of six comparison renders. Remotion already blocks the
+ * frame until an <Img> has decoded, so the image element it has finished with
+ * is wrapped as a texture instead of fetching the same file twice. One
+ * guarantee, and it is the renderer's own.
+ */
+const useImgTexture = (src: string, enabled: boolean) => {
+  const [el, setEl] = React.useState<HTMLImageElement | null>(null);
+  const texture = React.useMemo(() => {
+    if (!el) return null;
+    const t = new THREE.Texture(el);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.needsUpdate = true;
+    return t;
+  }, [el]);
 
-  React.useEffect(() => {
-    if (!enabled) return;
-    let live = true;
-    new THREE.TextureLoader().load(
-      src.startsWith("http") ? src : staticFile(src),
-      (t) => {
-        t.colorSpace = THREE.SRGBColorSpace;
-        if (live) setTex(t);
-      },
-      undefined,
-      () => {
-        if (live) setFailed(true);
-      },
-    );
-    return () => {
-      live = false;
-    };
-  }, [src, enabled]);
+  // onLoad, not a ref: a ref fires on mount, before the image has decoded,
+  // and a THREE.Texture built from an incomplete element uploads nothing and
+  // never updates. That rendered a black plane every time — which at least
+  // had the courtesy to be deterministic.
+  const img = enabled ? (
+    <Img
+      src={src.startsWith("http") ? src : staticFile(src)}
+      onLoad={(e) => setEl(e.currentTarget)}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0 }}
+    />
+  ) : null;
 
-  // Released only after a pass that had the texture — the same mistake as the
-  // globe, which captured an untextured sphere when the release happened in
-  // the loader callback.
-  React.useEffect(() => {
-    if (handle !== null && (tex || failed)) continueRender(handle);
-  }, [tex, failed, handle]);
-
-  return tex;
+  return { texture, img };
 };
 
 export const FilmLook: React.FC<FilmLookProps> = ({
@@ -133,21 +146,37 @@ export const FilmLook: React.FC<FilmLookProps> = ({
   grain = 0.055,
   bloom = 0.5,
   distortion = 0.0016,
-  vignette = 0.34,
+  // 0.85 is where the shader's mean luminance lands within 2% of the CSS
+  // path's on the same plate. The two vignettes still FALL OFF differently —
+  // that is the look being compared — but they no longer differ in level.
+  vignette = 0.85,
   isStill = false,
   stack = "full",
+  acts,
 }) => {
   const lean = stack !== "full";
   const bloomOn = stack !== "minimal";
-  const { width, height } = useVideoConfig();
+  const { width, height, fps } = useVideoConfig();
   const frame = useCurrentFrame();
-  const g = gradeForAct(act);
-  const texture = useStillTexture(src, isStill);
+  const t = frame / fps;
+  const activeAct =
+    acts?.find((a) => t >= a.from_seconds && t < a.to_seconds)?.act ?? act;
+  const g = gradeOps(activeAct);
+  const { texture, img } = useImgTexture(src, isStill);
+  const tint = React.useMemo(
+    () => new THREE.Color(
+      g.multiply[0] * g.brightness,
+      g.multiply[1] * g.brightness,
+      g.multiply[2] * g.brightness,
+    ),
+    [g.multiply, g.brightness],
+  );
 
   return (
     <AbsoluteFill style={{ backgroundColor: SYS.bg }}>
-      {/* The source. A video is drawn by Remotion and sampled by the canvas
-          below through its own DOM element; a still is loaded as a texture. */}
+      {/* The source. Remotion blocks the frame until this has decoded; the
+          canvas below samples the element it finished with. */}
+      {img}
       {!isStill && (
         <AbsoluteFill style={{ opacity: 0 }}>
           <OffthreadVideo src={src.startsWith("http") ? src : staticFile(src)} />
@@ -161,12 +190,13 @@ export const FilmLook: React.FC<FilmLookProps> = ({
         gl={{ antialias: false }}
         style={{ backgroundColor: SYS.bg }}
       >
-        {texture ? <SourcePlane texture={texture} /> : null}
+        {texture ? <SourcePlane texture={texture} tint={tint} /> : null}
 
         <EffectComposer>
-          {/* the act's grade, in the pass rather than as a wash over it */}
+          {/* the act's grade. The multiply and brightness are already on the
+              plane; these two finish the same chain the CSS path runs. */}
           <HueSaturation saturation={g.saturation - 1} hue={0} />
-          <BrightnessContrast brightness={g.lift * 0.4} contrast={0.04} />
+          <BrightnessContrast brightness={0} contrast={g.contrast - 1} />
 
           {/* halation: only the highlights bloom, which is the whole point —
               a CSS layer cannot know which pixels are bright */}
@@ -223,37 +253,36 @@ export const CssLook: React.FC<{ src?: string; act?: string }> = ({
   src = "doc/outro_hero.jpg",
   act = "act3",
 }) => {
-  const g = gradeForAct(act);
+  const g = gradeOps(act);
+  const rgb = (c: readonly number[]) =>
+    `rgb(${c.map((v) => Math.round(Math.min(1, v) * 255)).join(",")})`;
   return (
     <AbsoluteFill style={{ backgroundColor: SYS.bg }}>
-      <Img
-        src={staticFile(src)}
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          filter: `saturate(${g.saturation}) contrast(1.04)`,
-        }}
-      />
-      {/* the stack as it ships: a wash, a radial vignette, a flat darken */}
-      <AbsoluteFill
-        style={{
-          background:
-            g.temperature >= 0
-              ? "rgba(192,138,62,0.10)"
-              : "rgba(38,52,74,0.16)",
-          opacity: Math.abs(g.temperature) * 10,
-          mixBlendMode: "screen",
-        }}
-      />
+      {/* the identical chain: multiply, then saturate, then contrast */}
+      <AbsoluteFill style={{ isolation: "isolate" }}>
+        <Img
+          src={staticFile(src)}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            filter: `brightness(${g.brightness}) saturate(${g.saturation}) contrast(${g.contrast})`,
+          }}
+        />
+        <AbsoluteFill
+          style={{ background: rgb(g.multiply), mixBlendMode: "multiply" }}
+        />
+      </AbsoluteFill>
+
+      {/* and then the one layer the shader actually replaces: a radial
+          gradient that darkens evenly, against a vignette that falls off with
+          distance. Matched in strength, so what differs is the falloff. */}
       <AbsoluteFill
         style={{
           background:
             "radial-gradient(70% 70% at 50% 50%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.62) 100%)",
         }}
       />
-      <AbsoluteFill style={{ background: "#07070A", opacity: 0.15 }} />
-      <AbsoluteFill style={{ background: SYS.bg, opacity: g.lift }} />
     </AbsoluteFill>
   );
 };

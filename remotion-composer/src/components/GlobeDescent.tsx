@@ -128,7 +128,11 @@ const useGlobeTexture = (src: string): THREE.Texture | null => {
   // grey sphere whenever the file was not already in Chrome's cache, which
   // made it look intermittent rather than wrong.
   React.useEffect(() => {
-    if (map || failed) continueRender(handle);
+    if (!(map || failed)) return;
+    const id = requestAnimationFrame(() =>
+      requestAnimationFrame(() => continueRender(handle)),
+    );
+    return () => cancelAnimationFrame(id);
   }, [map, failed, handle]);
 
   return map;
