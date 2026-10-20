@@ -40,6 +40,7 @@ def slot_id(cut: dict) -> str | None:
 
 
 PROXY_MAX = 2560  # long edge; leaves headroom for the 1.0 -> 1.08 parallax push
+FPS = 30          # the composition's rate; a lead is counted in frames
 
 
 def proxy_image(path: str) -> str:
@@ -354,6 +355,31 @@ def main() -> int:
         cut["in_seconds"] = round(t, 3)
         cut["out_seconds"] = round(t + length, 3)
         t += length
+
+    # J-cuts and L-cuts move a BOUNDARY, after the back-to-back layout and
+    # before anything reads a duration. Applied here rather than in the edit
+    # artifact because this is the stage that rebuilds the timeline: a lead
+    # written into edit_decisions and not applied here would be a decision
+    # nothing acted on, which is the shape of every defect in this pipeline's
+    # history.
+    try:
+        from .edit_leads import apply_leads
+        from .camera_intent import to_props as camera_props
+    except ImportError:
+        from edit_leads import apply_leads
+        from camera_intent import to_props as camera_props
+    lead_report = apply_leads(ed["cuts"], fps=FPS)
+
+    # Camera intent becomes the still's actual numbers. Done after the leads,
+    # so a shot whose boundary moved travels at the speed its final length
+    # earns rather than the one it was planned at.
+    cam_applied = 0
+    for cut in ed["cuts"]:
+        if not cut.get("camera"):
+            continue
+        for key, value in camera_props(cut).items():
+            cut.setdefault(key, value)
+        cam_applied += 1
 
     # Overlays reference a scene_id and carry no timing, and their text still
     # has the plan's `text — "..."` wrapper around it. Both are resolved here:

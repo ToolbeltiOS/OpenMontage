@@ -41,6 +41,14 @@ export interface AnnotatedStillProps {
   parallax?: boolean;
   parallaxFrom?: number;
   parallaxTo?: number;
+  /**
+   * Lateral drift across the frame, as a fraction of its width. A drift of
+   * 0.04 moves the plate 4% of the width over the shot. The scale is raised
+   * automatically to cover it, because a drift on a plate at scale 1 shows
+   * the edge of the picture.
+   */
+  driftFrom?: number;
+  driftTo?: number;
   annotations?: StillAnnotation[];
   measurement?: MeasurementCallout;
   cutaway?: CutawayMask;
@@ -69,6 +77,8 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
   parallax = true,
   parallaxFrom = 1.0,
   parallaxTo = 1.08,
+  driftFrom = 0,
+  driftTo = 0,
   annotations = [],
   measurement,
   cutaway,
@@ -85,12 +95,21 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
   const frame = useCurrentFrame();
   const { fps, width, height, durationInFrames } = useVideoConfig();
 
-  const scale = parallax
+  const rawScale = parallax
     ? interpolate(frame, [0, durationInFrames], [parallaxFrom, parallaxTo], {
         extrapolateRight: "clamp",
         easing: Easing.bezier(...EXPO_IN_OUT),
       })
     : 1;
+  const drift = interpolate(frame, [0, durationInFrames], [driftFrom, driftTo], {
+    extrapolateRight: "clamp",
+    easing: Easing.bezier(...EXPO_IN_OUT),
+  });
+  // A drift at scale 1 slides the edge of the picture into frame. The cover
+  // is twice the largest excursion, because the plate moves both ways from
+  // centre.
+  const cover = 1 + 2 * Math.max(Math.abs(driftFrom), Math.abs(driftTo));
+  const scale = Math.max(rawScale, cover);
 
   const appear = (atSeconds: number, frames: number = SYS.unit) =>
     interpolate(frame, [atSeconds * fps, atSeconds * fps + frames], [0, 1], {
@@ -110,7 +129,7 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
       sceneIndex={sceneIndex}
       coords={coords}
     >
-      <AbsoluteFill style={{ transform: `scale(${scale})` }}>
+      <AbsoluteFill style={{ transform: `scale(${scale}) translateX(${drift * 100}%)` }}>
         <Graded>
           <Img src={resolveAsset(image)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </Graded>

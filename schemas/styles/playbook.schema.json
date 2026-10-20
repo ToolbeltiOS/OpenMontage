@@ -234,6 +234,43 @@
         },
         "exit": {
           "type": "string"
+        },
+        "max_push_pct_per_second": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Ceiling on how fast a push or pull may travel, in percent of scale per second."
+        },
+        "camera_intent": {
+          "type": "object",
+          "description": "Which way the camera moves, chosen from the beat rather than applied uniformly. A playbook without this gets one move for the whole film.",
+          "additionalProperties": true,
+          "properties": {
+            "by_beat": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "enum": [
+                  "push",
+                  "pull",
+                  "drift",
+                  "lock"
+                ]
+              }
+            },
+            "speed_pct_per_second": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "rules": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
         }
       },
       "additionalProperties": false

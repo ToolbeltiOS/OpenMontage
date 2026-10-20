@@ -490,7 +490,38 @@ edit_rules:
 
 motion:
   transitions: [cut, dissolve, fade-to-black]   # at most 4 distinct types across the piece
-  animation_style: "slow ease-out, archival restraint; push-ins under 4% scale per second; no bounce, no whip, no speed ramps"
+  animation_style: "slow ease-out, archival restraint; push-ins under 4% scale per second; no bounce, no whip"
+  max_push_pct_per_second: 4.0
+
+  # ── camera intent (ADDED 2026-10-20) ──────────────────────────────────
+  # Run #1 gave every still the same push. The treatment list below has three
+  # entries and one of them carried 182 shots, so the film's only camera idea
+  # was "in", at one speed, for twenty minutes. The move now comes from the
+  # beat, and the reason is recorded on the cut.
+  camera_intent:
+    by_beat:
+      reveal: push        # the frame closes on what is being revealed
+      exposition: pull    # context arrives as the frame opens
+      landing: lock       # the picture stops with the voice; the air is held
+      transition: drift   # lateral movement carries the eye to the next subject
+    speed_pct_per_second:
+      push: 2.4
+      pull: 2.0
+      drift: 1.2
+      lock: 0
+    rules:
+      - "A run of consecutive stills keeps ONE direction. Two drifts that go
+         opposite ways throw the eye back where it came from and read as a
+         mistake."
+      - "One speed ramp per act, and only into a hard cut. It is the single
+         place a move changes speed inside a shot; a second one is a trailer."
+      - "A lock carries no parallax at all rather than a move of zero, so the
+         renderer does no work on a shot that does not move."
+      - "Every move records its reason on the cut. A move with no reason is
+         the default by another name."
+    # NOTE: the earlier "no speed ramps" clause in animation_style was dropped
+    # on 2026-10-20 in favour of exactly one per act, into a hard cut. The
+    # ramp is the only acceleration in the piece and it is budgeted.
   pacing_rules:
     # Film-wide floor and ceiling. The per-beat bands in `rhythm.targets` sit
     # inside them and are what the planner actually reads; these two are the

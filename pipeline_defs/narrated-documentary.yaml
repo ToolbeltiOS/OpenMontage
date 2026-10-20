@@ -308,6 +308,21 @@ stages:
       - total_duration_seconds matches the sum of cut durations
       - Every cut has a reason
     gate_commands:
+      - name: camera_intent
+        run: "python3 lib/camera_intent.py {artifacts}/edit_decisions.json"
+        blocking: true
+        why: >
+          Run #1 gave every still the same push, because nothing recorded a
+          choice. A move now comes from the beat and carries its reason; a
+          move with no reason is the default under another name.
+      - name: edit_leads
+        run: "python3 lib/edit_leads.py {artifacts}/edit_decisions.json"
+        blocking: true
+        why: >
+          Every one of run #1's 182 boundaries cut picture and sound at the
+          same instant. The leads are small and budgeted — 12-18 frames at act
+          boundaries and reveals, at most 10 the other way at exposition cuts,
+          and none at a landing, whose picture holds through written air.
       - name: rhythm
         run: "python3 lib/verify_rhythm.py {artifacts}/edit_decisions.json"
         blocking: true
@@ -323,6 +338,8 @@ stages:
       - Timeline duration within 10% of the script duration
       - edit_decisions.render_runtime equals proposal_packet.production_plan.render_runtime
       - Cuts carry their beat type, and each sits inside that beat's band
+      - Every cut carries a camera move and the reason for it
+      - Leads are inside budget, and no landing's boundary moves
       - The cuts-per-minute curve is not flat (lib/verify_rhythm.py)
 
   # ── Compose ─────────────────────────────────────────────────────

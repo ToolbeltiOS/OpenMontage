@@ -85,6 +85,50 @@ that is what makes a bed feel scored rather than pasted under.
 
 Crossfade at act boundaries; do not hard-cut music.
 
+### 6b. Give Every Cut A Camera Move
+
+The move comes from the beat, not from habit:
+
+| beat | move | why |
+|---|---|---|
+| `reveal` | **push** | the frame closes on what is being revealed |
+| `exposition` | **pull** | context arrives as the frame opens |
+| `landing` | **lock** | the picture stops with the voice and holds the air |
+| `transition` | **drift** | lateral movement carries the eye to the next subject |
+
+Two rules about neighbours rather than single shots:
+
+- a run of consecutive stills keeps **one direction** — two drifts going
+  opposite ways throw the eye back where it came from;
+- **one speed ramp per act**, and only into a hard cut.
+
+Write `camera: {move, speed_pct_per_second, direction, reason}` on the cut.
+`lib/camera_intent.py` fills it from the beat if you leave it empty, and a move
+you choose by hand outranks the table. The reason is not decoration: a move
+without one is the default under another name, which is how run #1 ended up
+giving the same push to 182 shots.
+
+### 6c. Let Sound And Picture Change At Different Moments
+
+Run #1 cut picture and narration together 182 times. Every boundary was square,
+and a square boundary tells the viewer twice, at the same instant, that
+something changed.
+
+Set `audio_lead_frames` on the cut:
+
+- **+12 to +18 frames** at an act boundary and into a reveal — the next
+  section is already speaking while the previous image is still up (a J-cut);
+- **down to −10 frames** at an exposition cut — the picture arrives before the
+  sentence that explains it (an L-cut), and only on roughly every third
+  exposition cut, because a lead on every cut is a style rather than
+  punctuation;
+- **0 at a landing.** The picture is holding through written air; moving that
+  boundary is the cut the air exists to prevent.
+
+Every non-zero lead carries a `lead_reason`. The leads are applied in
+`lib/build_render_props.py`, which moves the boundary and takes the frames from
+the neighbour, so the film's length never changes.
+
 ### 7. Give Every Cut A Reason
 
 Each cut carries a short `reason`. This is not ceremony — it is what makes the
@@ -104,6 +148,14 @@ Nothing essential in the last 20 seconds. The outro CTA is 10 seconds maximum.
 - Music present and ducked; crossfades at act boundaries.
 - Word-level caption track present.
 - `total_duration_seconds` equals the sum of cut durations.
+
+## Gate Commands (Blocking)
+
+```bash
+python3 lib/verify_rhythm.py  {artifacts}/edit_decisions.json
+python3 lib/camera_intent.py  {artifacts}/edit_decisions.json
+python3 lib/edit_leads.py     {artifacts}/edit_decisions.json
+```
 
 ## Common Pitfalls
 
