@@ -54,6 +54,11 @@ CUT_THRESHOLD = 16.0
 CUT_MIN_LEN_S = 0.27
 CUT_CONFIRM_CORR = 0.95
 
+#: Mean absolute 8-bit difference over a quarter second, above which a shot is
+#: treated as moving rather than a still under a camera move. A slow push on a
+#: photograph lands around 1-3; real footage is an order of magnitude above it.
+MOTION_PER_QUARTER_SECOND = 6.0
+
 # Collapsed onto three buckets after scoring; the prompts are deliberately
 # more specific than the buckets so CLIP has something to separate.
 CLIP_PROMPTS = {
@@ -443,11 +448,14 @@ def stage_material(ref_dir: Path, slug: str, duration: float, cuts: dict) -> dic
         mid = frame_at((a + b) / 2)
         if mid is None:
             continue
-        early = frame_at(min(a + 0.2, b - 0.05))
-        late = frame_at(max(b - 0.2, a + 0.05))
+        # Motion RATE, over a quarter second in the middle of the shot. The
+        # first version compared the shot's first frame to its last, which on a
+        # forty-second hold reports a huge number for a shot that barely moves.
+        mid_t = (a + b) / 2
+        nxt = frame_at(min(mid_t + 0.25, b - 0.05))
         motion = 0.0
-        if early is not None and late is not None:
-            small = [cv2.resize(f, (160, 90)).astype(np.float32) for f in (early, late)]
+        if nxt is not None:
+            small = [cv2.resize(f, (160, 90)).astype(np.float32) for f in (mid, nxt)]
             motion = float(np.mean(np.abs(small[0] - small[1])))
         p = ref_dir / "shot_frames"
         p.mkdir(exist_ok=True)
@@ -470,19 +478,19 @@ def stage_material(ref_dir: Path, slug: str, duration: float, cuts: dict) -> dic
     for s, row in zip(samples, sims):
         bucket = owner[int(np.argmax(row))]
         # A still frame classified as footage is a photograph held on screen.
-        if bucket == "footage" and s["motion"] < 1.0:
+        if bucket == "footage" and s["motion"] < MOTION_PER_QUARTER_SECOND:
             bucket = "archive"
         s["class"] = bucket
         counts[bucket] += 1
 
     total = sum(counts.values())
-    moving = sum(1 for s in samples if s["motion"] >= 1.0)
+    moving = sum(1 for s in samples if s["motion"] >= MOTION_PER_QUARTER_SECOND)
     return {
         "shots_classified": total,
         "ratio_pct": {k: round(100 * v / total, 1) for k, v in counts.items()},
         "moving_shot_pct": round(100 * moving / total, 1),
         "still_shot_pct": round(100 * (total - moving) / total, 1),
-        "motion_threshold": 1.0,
+        "motion_threshold": MOTION_PER_QUARTER_SECOND,
         "shots": samples,
     }
 
