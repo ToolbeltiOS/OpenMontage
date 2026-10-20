@@ -751,6 +751,24 @@ behind it are in `reports/reference_pacing.md`.
 | **Outro** | right third reserved | right 40% reserved; headline column to the reserve boundary at 62px |
 | **Transitions** | — | five vendored from `GTKottman/remotion-transitions` @ `58df899`, MIT, copied not depended on |
 
+### In progress
+
+**Step 16 — source expansion.** The licence filter is done and is the part
+that matters: CC0 / public domain / CC BY / CC BY-SA only, refused at fetch
+time, unknown treated as refusal, 43 tests both ways. Three keyless adapters
+live-tested — the Met, the Art Institute, Cleveland. **Still to do:**
+Smithsonian, Walters, Getty IIIF, Europeana, NYPL, the Library of Congress
+fix, the Internet Archive TEXTS plate extractor, Sketchfab + `model_orbit`,
+Sentinel-2 / Worldview stills, Copernicus DEM, and the bank re-run with
+per-subject yield before and after.
+
+**Step 17 — mood.** The table is done: five registers × four beats, each row
+naming a move, speed, transition family, hold multiplier and whether the music
+may rise; a push into a dense asset becomes a lock. **Still to do:** the CLIP
+pass that classifies the bank, Essentia arousal so a rise only lands where the
+music is already rising, and PySceneDetect so no cut falls within 12 frames of
+a source scene change.
+
 ### Gates a run #2 must pass
 
 ```bash
@@ -761,6 +779,14 @@ python3 lib/camera_intent.py  {artifacts}/edit_decisions.json
 python3 lib/edit_leads.py     {artifacts}/edit_decisions.json
 python3 lib/verify_rhythm.py  {artifacts}/edit_decisions.json
 python3 lib/captions_srt.py   {artifacts}/render_props.json {artifacts}/captions.en.srt
+python3 lib/alignment_qa.py   --project <id> --fix
+python3 scripts/align_narration.py --project <id> --check
+```
+
+After a render, the critic pass — fails on structure, reports the rest:
+
+```bash
+python3 scripts/critic_pass.py --project <id> --film <mp4>
 ```
 
 Terrain tiles for a map shot are cut once, before the render:
@@ -784,7 +810,7 @@ evidence that they measure the right thing.
 - **Manim as the diagram route** (step 9) — side-by-sides pending.
 - **The two treatment tests** (step 10) — sketched reconstruction and halftone
   collage, one slot each, pending.
-- **The bed level.** Three mixes of the demo window are in
+- **The bed level — still open.** Three mixes of the demo window are in
   `projects/they-said-it-couldnt-be-built/renders/demo/` — `act2_demo_bed36.wav`
   (approved), `bed30`, `bed28` — each with the sound design present. Judge by
   ear; nothing moves until you do.
