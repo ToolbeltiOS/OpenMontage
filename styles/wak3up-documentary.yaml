@@ -487,6 +487,24 @@ asset_reuse:
        different one. When the picture changes, the caption, the annotation
        anchors and the annotated_still type all go with it."
 
+# The music is mixed by lib/mix_audio.py and by nothing else. The props
+# builder used to carry its own bed-and-sidechain mix; that mix was rejected
+# and the replacement was applied by re-muxing onto a finished render, so the
+# props builder never learned about it and the next full re-render put the
+# rejected music back. A fix that lives downstream of the stage that rebuilds
+# the file is not a fix.
+music_authority:
+  mixer: "lib/mix_audio.py"
+  bed_under_speech_lufs: -36
+  beds: "at most 3, assigned by act, crossfaded on the boundary under the fade to black"
+  ducking: "explicit gain envelope, attack 150ms / release 900ms -- not sidechaincompress"
+  blocking_check: "the delivered film's bed must measure -36 LUFS +/- 1.5 LU"
+  why_the_other_checks_missed_it: >
+    Integrated loudness of narration-led material is set by the voice. The film
+    measured -14.0 LUFS and -1.4 dBTP with a bed 25 dB louder than approved,
+    and every loudness check passed. Measure the music on its own or do not
+    claim to have checked the music.
+
 quality_rules:
   - "Minimum contrast ratio 4.5:1 for all text against its actual backing frame"
   - "No more than 2 accent colors on screen at once"

@@ -59,6 +59,10 @@ def stream_durations(path: str) -> dict:
     return out
 
 
+APPROVED_BED_LUFS = -36.0   # the level the music was signed off at
+BED_TOLERANCE_LU = 1.5
+
+
 def hard_checks(final: str, tail_seconds: float = 0.5) -> list[dict]:
     """Three things that must be true of a delivered film. Any failure is fatal.
 
@@ -141,6 +145,30 @@ def main() -> int:
 
     # Hard checks first: nothing is delivered if any of them fails.
     checks = hard_checks(mp4)
+    # The music, measured on its own.
+    #
+    # Every check above passed on a film whose bed sat at -11.2 LUFS against an
+    # approved -36: a full re-render had rebuilt the rejected mix, and because
+    # the FILM was still -14 LUFS integrated and -1.4 dBTP, nothing noticed.
+    # Integrated loudness of a narration-led mix is set by the voice; it says
+    # almost nothing about the music underneath it. So the bed is checked
+    # against the figure it was approved at, from the mixer's own report.
+    mix_report = os.path.join(ROOT, "projects", SLUG, "renders", "mix_report.json")
+    bed_ok, bed_detail = False, "mix_report.json not found"
+    if os.path.exists(mix_report):
+        mr = json.load(open(mix_report, encoding="utf-8"))
+        want = float(mr.get("under_speech_lufs", APPROVED_BED_LUFS))
+        got = float(mr["bed_under_speech"]["lufs"])
+        bed_ok = (abs(got - APPROVED_BED_LUFS) <= BED_TOLERANCE_LU
+                  and abs(want - APPROVED_BED_LUFS) <= BED_TOLERANCE_LU)
+        bed_detail = {"bed_lufs": got, "requested": want,
+                      "approved": APPROVED_BED_LUFS, "tolerance_lu": BED_TOLERANCE_LU,
+                      "tracks": [os.path.basename(sp["track"]) for sp in mr.get("spans", [])]}
+    checks.append({
+        "check": f"music bed sits at {APPROVED_BED_LUFS:.0f} LUFS under speech",
+        "pass": bed_ok,
+        "detail": bed_detail,
+    })
     checks.append({
         "check": "scene plan obeys the reuse rule",
         "pass": not reuse_violations,

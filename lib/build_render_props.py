@@ -121,6 +121,38 @@ def dur(path: str) -> float:
     ).strip())
 
 
+UNDER_SPEECH_LUFS = -36.0
+
+# One bed per two acts, crossfaded on the boundary between them. The audition's
+# fifth bed was rejected ("cadence is too fast for a documentary"); these three
+# are the approved selection, and the acts they cover are what mix_audio uses
+# to place each crossfade under a fade to black.
+MUSIC_BEDS = [
+    ("open_act1", ["cold_open", "act1"], "Spooked - Mini Vandals.mp3"),
+    ("act2_act3", ["act2", "act3"], "TORSION - Density & Time.mp3"),
+    ("act4_outro", ["act4", "outro"],
+     "Rapid Unscheduled Disassembly - The Grey Room _ Density & Time.mp3"),
+]
+
+
+def music_spans(music_dir: str, offsets: list[float], total: float) -> list[dict]:
+    """Act-aligned bed spans for lib/mix_audio.py."""
+    idx = {s: i for i, s in enumerate(SECTIONS)}
+    spans, missing = [], []
+    for name, acts, track in MUSIC_BEDS:
+        path = os.path.join(music_dir, track)
+        if not os.path.exists(path):
+            missing.append(track)
+            continue
+        after = idx[acts[-1]] + 1
+        spans.append({"name": name, "acts": acts, "track": path,
+                      "start": round(offsets[idx[acts[0]]], 2),
+                      "end": round(offsets[after] if after < len(offsets) else total, 2)})
+    if missing:
+        raise SystemExit("approved music beds not found: " + ", ".join(missing))
+    return spans
+
+
 def build_audio(music_dir: str, ed: dict, reuse: bool = False) -> tuple[str, list[float]]:
     """Narration concat + crossfaded music bed, ducked, then loudness-normalised."""
     os.makedirs(OUT, exist_ok=True)
@@ -146,59 +178,27 @@ def build_audio(music_dir: str, ed: dict, reuse: bool = False) -> tuple[str, lis
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0",
                     "-i", concat_list, "-c", "copy", narration], check=True)
 
-    beds = [os.path.join(music_dir, b["track"].replace("/", "_")) for b in ed["music"]["beds"]]
-    beds = [b if os.path.exists(b) else None for b in beds]
-    missing = [b["track"] for b, p in zip(ed["music"]["beds"], beds) if p is None]
-    if missing:
-        raise SystemExit("music beds not found: " + ", ".join(missing))
-
-    # Crossfade the beds into one continuous bed, then loop-trim to narration.
-    xf = ed["music"]["crossfade_seconds"]
-    music_raw = os.path.join(OUT, "music_bed.wav")
-    cmd = ["ffmpeg", "-v", "error", "-y"]
-    for b in beds:
-        cmd += ["-i", b]
-    chain, prev = [], "0:a"
-    for i in range(1, len(beds)):
-        label = f"x{i}"
-        chain.append(f"[{prev}][{i}:a]acrossfade=d={xf}:c1=tri:c2=tri[{label}]")
-        prev = label
-    chain.append(f"[{prev}]apad,atrim=0:{total:.3f},asetpts=N/SR/TB[mout]")
-    cmd += ["-filter_complex", ";".join(chain), "-map", "[mout]", music_raw]
-    subprocess.run(cmd, check=True)
-
-    # Duck the bed under narration, mix, then normalise to the playbook target.
-    duck_db = ed["audio"]["ducking_db"]
-    lufs = ed["audio"]["target_lufs"]
-    tp = ed["audio"]["true_peak_db"]
-    mixed = os.path.join(OUT, "mix.wav")
-    subprocess.run([
-        "ffmpeg", "-v", "error", "-y", "-i", narration, "-i", music_raw,
-        "-filter_complex",
-        f"[0:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo,asplit=2[nar][key];"
-        f"[1:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo,volume={duck_db / 3:.2f}dB[bed];"
-        f"[bed][key]sidechaincompress=threshold=0.05:ratio=8:attack=20:release=400:makeup=1[ducked];"
-        f"[nar][ducked]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[pre];"
-        f"[pre]loudnorm=I={lufs}:TP={tp}:LRA=11[out]",
-        "-map", "[out]", "-ar", "48000", "-ac", "2", mixed,
-    ], check=True)
-
-    # Single-pass loudnorm lands about 1.3 LU hot on a mix this dense, so the
-    # mix is measured and corrected. Two passes, not an estimate.
-    final = os.path.join(OUT, "mix_final.wav")
-    probe = subprocess.run(
-        ["ffmpeg", "-nostats", "-i", mixed, "-af",
-         f"loudnorm=I={lufs}:TP={tp}:LRA=11:print_format=json", "-f", "null", "/dev/null"],
-        capture_output=True, text=True).stderr
-    m = json.loads(re.search(r'\{[^{}]*"input_i"[\s\S]*?\}', probe).group(0))
-    subprocess.run([
-        "ffmpeg", "-v", "error", "-y", "-i", mixed, "-af",
-        f"loudnorm=I={lufs}:TP={tp}:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:"
-        f"measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:"
-        f"offset={m['target_offset']}:linear=true",
-        "-ar", "48000", "-ac", "2", final,
-    ], check=True)
-    return final, offsets
+    # MUSIC IS NOT MIXED HERE.
+    #
+    # This function used to build its own bed and duck it with
+    # sidechaincompress. That mix was rejected -- too loud and the wrong
+    # character -- and replaced by lib/mix_audio.py: sparse ambient pads, at
+    # most three beds assigned by act, crossfaded on the act boundaries under
+    # the fade to black, and ducked by an explicit gain envelope rather than a
+    # compressor, with the bed at -36 LUFS under speech.
+    #
+    # That replacement was applied by re-muxing onto a finished render, so it
+    # never reached this function. The next full re-render rebuilt the rejected
+    # mix and put it back into the film -- a bed at -11.2 LUFS against an
+    # approved -36 -- and every loudness check still passed, because the FILM
+    # was still -14 LUFS integrated and -1.4 dBTP. Only the music was wrong,
+    # and nothing measured the music on its own.
+    #
+    # The approved mixer is now the only path to a mix.
+    spans = music_spans(music_dir, offsets, total)
+    subprocess.run([sys.executable, os.path.join(ROOT, "lib", "mix_audio.py"),
+                    json.dumps(spans), str(UNDER_SPEECH_LUFS), final_path], check=True)
+    return final_path, offsets
 
 
 def _norm(w: str) -> str:
