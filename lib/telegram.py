@@ -39,6 +39,17 @@ API = "https://api.telegram.org/bot{token}/{method}"
 #: worse than a short one.
 MAX_MESSAGE = 4096
 
+#: How many times a multipart upload is tried before it is called a failure.
+#:
+#: The first rehearsal on the dedicated bot lost one upload to
+#: ConnectionResetError(54) — a reset peer part-way through a multipart POST,
+#: the ordinary way a several-hundred-kilobyte body fails on a domestic
+#: connection. Nothing was wrong with the file or the token, and the next
+#: attempt would have worked. A text message is one small request and is left
+#: alone; an upload gets three tries with a widening gap.
+UPLOAD_ATTEMPTS = 3
+UPLOAD_RETRY_SECONDS = 2.0
+
 
 class TelegramNotConfigured(RuntimeError):
     """No token or no chat id. Raised by the load-bearing calls only."""
@@ -105,27 +116,55 @@ def send(text: str, *, quiet: bool = False) -> dict | None:
         return None
 
 
+def escape(text: str) -> str:
+    """For text going inside an HTML message rather than being one.
+
+    Everything here posts with parse_mode HTML, so a script containing a bare
+    "<" or an ampersand is rejected by Telegram with "can't parse entities"
+    — a load-bearing message that raises on the content of the film.
+    """
+    return (text.replace("&", "&amp;").replace("<", "&lt;")
+                .replace(">", "&gt;"))
+
+
+def _upload(method: str, field: str, path: Path, caption: str) -> dict | None:
+    """One multipart POST, retried through transport failures.
+
+    The handle is reopened per attempt: a body that was half-read when the
+    peer reset cannot be re-sent from the same file object.
+
+    Only transport errors are retried. A rejection from Telegram itself — a
+    file too large, a bad chat id — is deterministic, and retrying it twice
+    more only delays the log line.
+    """
+    import requests
+
+    for attempt in range(1, UPLOAD_ATTEMPTS + 1):
+        try:
+            with path.open("rb") as handle:
+                return _call(method, {"caption": caption[:1024]},
+                             files={field: (path.name, handle)}, timeout=180)
+        except requests.exceptions.RequestException as error:
+            last = error
+            if attempt < UPLOAD_ATTEMPTS:
+                print(f"telegram: {path.name} upload attempt {attempt} "
+                      f"failed ({error}); retrying", file=sys.stderr)
+                time.sleep(UPLOAD_RETRY_SECONDS * attempt)
+        except Exception as error:
+            print(f"telegram: {error}", file=sys.stderr)
+            return None
+    print(f"telegram: {path.name} failed {UPLOAD_ATTEMPTS} uploads: {last}",
+          file=sys.stderr)
+    return None
+
+
 def send_document(path: str | Path, caption: str = "") -> dict | None:
     """Best effort, for a script or a report."""
-    path = Path(path)
-    try:
-        with path.open("rb") as handle:
-            return _call("sendDocument", {"caption": caption[:1024]},
-                         files={"document": (path.name, handle)}, timeout=180)
-    except Exception as error:
-        print(f"telegram: {error}", file=sys.stderr)
-        return None
+    return _upload("sendDocument", "document", Path(path), caption)
 
 
 def send_photo(path: str | Path, caption: str = "") -> dict | None:
-    path = Path(path)
-    try:
-        with path.open("rb") as handle:
-            return _call("sendPhoto", {"caption": caption[:1024]},
-                         files={"photo": (path.name, handle)}, timeout=180)
-    except Exception as error:
-        print(f"telegram: {error}", file=sys.stderr)
-        return None
+    return _upload("sendPhoto", "photo", Path(path), caption)
 
 
 def require(text: str) -> dict:

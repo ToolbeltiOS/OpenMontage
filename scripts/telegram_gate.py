@@ -27,6 +27,12 @@ THE REPLY
     silence         ABORT, never continue. A film that publishes because
                     nobody said no is what this exists to prevent.
 
+AND IF THE GATE CANNOT SHOW, IT SAYS SO TOO. The script and the frames go up
+as multipart uploads, and the first rehearsal on the dedicated bot lost one of
+them to a reset peer. An upload is retried three times now, and anything that
+still will not go is named in the message that asks for the reply — because an
+"ok" given to a missing frame is indistinguishable from an informed one.
+
 AND IF THE GATE CANNOT READ, IT SAYS SO. The first live rehearsal returned
 "no reply in 12h" while the owner was looking at their reply: another process
 was polling the same bot token and consuming the messages. Silence and
@@ -67,19 +73,76 @@ def outline_of(script: dict) -> list[str]:
     return lines
 
 
+def post_script_as_text(script_path: Path) -> None:
+    """The fallback when the attachment will not upload.
+
+    The script is the one thing the reply is actually about, so it is not
+    allowed to go missing quietly. Sent in whole messages; `require` raises if
+    even this cannot be delivered, and a gate that cannot show the script is a
+    gate that must not collect an "ok".
+    """
+    # Escape first, then split. A line of narration containing "<" or "&"
+    # grows when escaped, so measuring the raw text is measuring the wrong
+    # string and the message comes back too long.
+    limit = telegram.MAX_MESSAGE - 80          # the <pre> wrapper and the label
+    chunks, current = [], ""
+    for line in script_path.read_text().splitlines(keepends=True):
+        line = telegram.escape(line)
+        if len(current) + len(line) > limit and current:
+            chunks.append(current)
+            current = ""
+        current += line[:limit]
+    if current:
+        chunks.append(current)
+    telegram.require(f"The attachment would not upload — the script follows "
+                     f"as {len(chunks)} message(s).")
+    for i, chunk in enumerate(chunks, 1):
+        telegram.require(f"<i>script {i}/{len(chunks)}</i>\n<pre>{chunk}</pre>")
+
+
 def post(project: str, script_path: Path, frames: list[Path],
-         title: str, outline: list[str], attempt: int = 1) -> None:
+         title: str, outline: list[str], attempt: int = 1) -> dict:
+    """Post the four things, and report what of it actually arrived.
+
+    The header and the instruction are load-bearing (`require`). The script
+    and the frames used to be best effort with no retry, which meant a reset
+    peer part-way through one upload could ask for approval of a film the
+    person could not see — and the "ok" would look identical to an informed
+    one. Now an upload that fails is said out loud, in the same message that
+    asks for the reply.
+    """
     header = (f"<b>{title}</b>\n"
               f"<i>{project}</i> — script gate"
               + (" (revised)" if attempt > 1 else "") + "\n\n"
               + "\n".join(outline[:40]))
     telegram.require(header)
-    telegram.send_document(script_path, caption="the full script")
+
+    report = {"script": True, "frames_sent": 0,
+              "frames_expected": len(frames[:HERO_FRAMES]), "missing": []}
+
+    if telegram.send_document(script_path, caption="the full script") is None:
+        report["script"] = False
+        post_script_as_text(script_path)
+
     for frame in frames[:HERO_FRAMES]:
-        telegram.send_photo(frame)
+        if telegram.send_photo(frame) is None:
+            report["missing"].append(frame.name)
+        else:
+            report["frames_sent"] += 1
+
+    note = ""
+    if not report["script"]:
+        note += "\n\n<i>The .txt attachment failed; the script is above as text.</i>"
+    if report["missing"]:
+        note += (f"\n\n<i>{len(report['missing'])} of "
+                 f"{report['frames_expected']} style frames would not upload "
+                 f"({', '.join(report['missing'][:4])}). Reply <b>no</b> if "
+                 f"you will not approve a look you cannot see.</i>")
+
     telegram.require(
         "Reply <b>ok</b> to continue, <b>no</b> to abort, or send notes.\n"
-        "Notes are applied and reposted once. Silence aborts.")
+        "Notes are applied and reposted once. Silence aborts." + note)
+    return report
 
 
 def main() -> int:
@@ -138,7 +201,9 @@ def main() -> int:
         return 6
 
     offset = telegram.drain()
-    post(args.project, text_path, frames, title, outline, args.attempt)
+    report = post(args.project, text_path, frames, title, outline, args.attempt)
+    print(f"posted: script={'attached' if report['script'] else 'AS TEXT'}, "
+          f"frames {report['frames_sent']}/{report['frames_expected']}")
 
     verdict, text = telegram.await_reply(offset, args.hours)
     print(f"gate: {verdict}")

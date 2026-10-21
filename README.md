@@ -852,6 +852,33 @@ Three things have to be true, and each says so plainly when it is not:
   while the owner was looking at their reply on screen. The second rehearsal,
   on the same bot, worked — it is a race, not a wall.
 
+  **Rehearsed on the dedicated bot** (`@Wak3docs_bot`, bot id `8955138581`),
+  which is what the weekly run uses:
+
+  ```
+  telegram: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))
+  gate: ok
+  GATE EXIT: 0
+  ```
+
+  `exclusive()` reported `no webhook, and TELEGRAM_DOCS_BOT_TOKEN is set` —
+  no warning, for the first time. No `telegram poll:` line in the whole
+  window, so no poll failed. That closes the shared-bot race for the weekly
+  chain.
+
+  The one stderr line is a different fault, and it is why there is a `posted:`
+  line in the gate's log now. A reset peer part-way through one multipart
+  upload lost one item; the gate had already asked for a reply by then, so the
+  `ok` was collected for evidence that was one item short, and the verdict
+  said nothing about it. An upload is retried three times now, a failed script
+  attachment falls back to the script as text, and anything that still will
+  not go is named in the same message that asks for the reply:
+
+  ```
+  posted: script=attached, frames 3/3
+  gate: ok
+  ```
+
   **It cannot be detected, only avoided.** A competing consumer leaves
   nothing behind: the update is gone, and through this API that is
   indistinguishable from nobody having written one. Measured, to be sure of

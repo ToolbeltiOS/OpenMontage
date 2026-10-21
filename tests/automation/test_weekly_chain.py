@@ -519,3 +519,121 @@ class TestTheSharedBotCannotBeMadeSafe:
                             __import__("pathlib").Path("/nonexistent"))
         ok, why = telegram.exclusive()
         assert ok and "WARNING" in why
+
+
+class TestAnUploadThatDoesNotArrive:
+    """What the dedicated-bot rehearsal measured.
+
+    The reply came back "ok" and exit 0, and one line of stderr said
+    ConnectionResetError(54) — a reset peer part-way through one multipart
+    upload. The gate had already asked for approval by then, so the "ok" was
+    collected for a set of evidence that was one item short, and nothing in
+    the verdict said which item or that anything was missing.
+    """
+
+    def test_a_reset_peer_is_retried_rather_than_logged(self, monkeypatch, tmp_path):
+        import requests
+
+        path = tmp_path / "script.txt"
+        path.write_text("the script")
+        calls = []
+
+        def flaky(method, data=None, files=None, timeout=60):
+            calls.append(method)
+            if len(calls) == 1:
+                raise requests.exceptions.ConnectionError(
+                    "('Connection aborted.', ConnectionResetError(54, "
+                    "'Connection reset by peer'))")
+            return {"message_id": 7}
+
+        monkeypatch.setattr(telegram, "_call", flaky)
+        monkeypatch.setattr(telegram.time, "sleep", lambda s: None)
+        assert telegram.send_document(path) == {"message_id": 7}
+        assert len(calls) == 2, "the upload must be tried again"
+
+    def test_a_rejection_from_telegram_is_not_retried(self, monkeypatch, tmp_path):
+        """A file too large or a bad chat id fails the same way three times."""
+        path = tmp_path / "script.txt"
+        path.write_text("x")
+        calls = []
+
+        def rejected(*args, **kwargs):
+            calls.append(1)
+            raise RuntimeError("telegram sendDocument failed: file is too big")
+
+        monkeypatch.setattr(telegram, "_call", rejected)
+        assert telegram.send_document(path) is None
+        assert len(calls) == 1
+
+    def test_an_upload_that_never_goes_gives_up_and_says_none(self, monkeypatch, tmp_path):
+        import requests
+
+        path = tmp_path / "frame.png"
+        path.write_bytes(b"\x89PNG")
+        calls = []
+
+        def down(*args, **kwargs):
+            calls.append(1)
+            raise requests.exceptions.ConnectionError("reset")
+
+        monkeypatch.setattr(telegram, "_call", down)
+        monkeypatch.setattr(telegram.time, "sleep", lambda s: None)
+        assert telegram.send_photo(path) is None
+        assert len(calls) == telegram.UPLOAD_ATTEMPTS
+
+    def test_the_script_is_html_escaped_when_it_goes_as_text(self):
+        """Every message posts as HTML, so a script containing "<" would be
+        rejected for unparseable entities — on the content of the film."""
+        assert telegram.escape('a <b> & "c"') == 'a &lt;b&gt; &amp; "c"'
+
+
+class TestTheReplyIsOnlyWorthWhatWasShown:
+    def test_a_missing_frame_is_named_in_the_message_that_asks(self, monkeypatch, tmp_path):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "telegram_gate", "scripts/telegram_gate.py")
+        gate = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(gate)
+
+        asked = []
+        frames = []
+        for name in ("a.png", "b.png"):
+            p = tmp_path / name
+            p.write_bytes(b"\x89PNG")
+            frames.append(p)
+        script = tmp_path / "script.txt"
+        script.write_text("the script")
+
+        monkeypatch.setattr(gate.telegram, "require", lambda t: asked.append(t))
+        monkeypatch.setattr(gate.telegram, "send_document", lambda *a, **k: {"ok": 1})
+        monkeypatch.setattr(gate.telegram, "send_photo",
+                            lambda p, caption="": None if p.name == "b.png" else {"ok": 1})
+
+        report = gate.post("rehearsal", script, frames, "T", ["1 act"])
+        assert report["frames_sent"] == 1 and report["missing"] == ["b.png"]
+        assert "b.png" in asked[-1], "the ask must name what did not arrive"
+        assert "1 of 2" in asked[-1]
+
+    def test_a_failed_attachment_falls_back_to_the_script_as_text(self, monkeypatch, tmp_path):
+        """The script is what the reply is about; it does not go missing
+        quietly just because the upload would not."""
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "telegram_gate", "scripts/telegram_gate.py")
+        gate = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(gate)
+
+        sent = []
+        script = tmp_path / "script.txt"
+        script.write_text("a < b & c\n" * 2000)   # over one message, and HTML-unsafe
+
+        monkeypatch.setattr(gate.telegram, "require", lambda t: sent.append(t))
+        monkeypatch.setattr(gate.telegram, "send_document", lambda *a, **k: None)
+        monkeypatch.setattr(gate.telegram, "send_photo", lambda *a, **k: {"ok": 1})
+
+        report = gate.post("rehearsal", script, [], "T", ["1 act"])
+        assert report["script"] is False
+        chunks = [s for s in sent if "script " in s and "/" in s]
+        assert len(chunks) >= 2, "a long script is split, not truncated"
+        assert all(len(c) <= telegram.MAX_MESSAGE for c in sent)
+        assert "as text" in sent[-1]
