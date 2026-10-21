@@ -158,7 +158,16 @@ def music_spans(music_dir: str, ed: dict, offsets: list[float],
                       "end": round(offsets[after] if after < len(offsets) else total, 2)})
     if missing:
         raise SystemExit("music beds named in the EDL were not found: " + ", ".join(missing))
-    under = float((music.get("levels") or {}).get("under_speech_lufs", -36.0))
+    # The EDL's own level if it states one — run #1's record says -36 and is
+    # published — and otherwise the playbook's, which since 2026-10-21 is -30,
+    # decided by ear from an A/B with the sound design present. The fallback
+    # used to be -36 written here, which meant a film that stated nothing
+    # silently inherited run #1's level from a constant in a function.
+    from mix_audio import playbook_under_speech_lufs
+
+    levels = music.get("levels") or {}
+    under = float(levels["under_speech_lufs"]) if "under_speech_lufs" in levels \
+        else playbook_under_speech_lufs()
     return spans, under
 
 

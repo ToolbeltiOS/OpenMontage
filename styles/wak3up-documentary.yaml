@@ -881,7 +881,17 @@ audio:
   # ── levels (measure, do not assume) ───────────────────────────────────
   narration_short_term_lufs: -16     # the voice is the show
   narration_true_peak_db: -1.5
-  music_under_speech_lufs: -36       # absolute, not a ratio
+  # DECIDED BY EAR 2026-10-21, on the act 2 demo with the sound design
+  # present: -30, from an A/B of -36 (run #1's level), -30 and -28. The
+  # references run their beds 4-15.5 dB under the voice and run #1 ran 20, so
+  # this closes most of that gap without the bed becoming a second subject.
+  # The sound-design floor is stated as an offset from the bed and tracks it:
+  # it measured -40.4 dB at this level, against -46.4 at -36.
+  #
+  # Auditioned WITH the sound design on purpose. The references fill part of
+  # the distance between voice and bed with wind and room tone rather than
+  # music, so a bed judged without a floor under it is the wrong test.
+  music_under_speech_lufs: -30       # absolute, not a ratio
   music_in_gaps_lufs: -26            # gaps longer than 1.5s
   music_at_act_boundaries_lufs: -22  # under the fade through black
   duck:

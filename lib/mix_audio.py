@@ -409,12 +409,34 @@ def smooth(target: np.ndarray, attack_ms: float, release_ms: float) -> np.ndarra
     return out
 
 
+def playbook_under_speech_lufs() -> float:
+    """The bed level, from the playbook, which is where the decision lives.
+
+    It was an argument, which meant the level that shipped was whatever was
+    typed that day. It was decided by ear on 2026-10-21 — -30, from an A/B of
+    -36, -30 and -28 with the sound design present — and a decision made by
+    ear belongs in the playbook, not in a shell history.
+    """
+    import yaml
+
+    with open(os.path.join(ROOT, "styles", "wak3up-documentary.yaml"),
+              encoding="utf-8") as fh:
+        return float(yaml.safe_load(fh)["audio"]["music_under_speech_lufs"])
+
+
 def main() -> int:
-    """argv: <spans json> <under-speech LUFS> <out> [window json]"""
+    """argv: <spans json> <out> [under-speech LUFS] [window json]
+
+    The level defaults to the playbook's and only needs stating to audition
+    something else.
+    """
     spans = json.loads(sys.argv[1])
-    under_speech = float(sys.argv[2])
-    out_path = sys.argv[3]
+    out_path = sys.argv[2]
+    under_speech = (float(sys.argv[3]) if len(sys.argv) > 3 and sys.argv[3] != "-"
+                    else playbook_under_speech_lufs())
     window = json.loads(sys.argv[4]) if len(sys.argv) > 4 else None
+    print(f"bed under speech: {under_speech} LUFS"
+          + ("" if len(sys.argv) > 3 and sys.argv[3] != "-" else " (from the playbook)"))
 
     voice_path, offsets, air = build_narration()
     total = len(sf.read(voice_path, dtype="float32")[0]) / SR

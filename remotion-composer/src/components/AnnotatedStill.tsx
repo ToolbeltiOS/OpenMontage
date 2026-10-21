@@ -112,6 +112,23 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
   const cover = 1 + 2 * Math.max(Math.abs(driftFrom), Math.abs(driftTo));
   const scale = Math.max(rawScale, cover);
 
+  /**
+   * Where a point of the PHOTOGRAPH is on screen, once the image has moved.
+   *
+   * The image layer carries `scale(S) translateX(D%)`, which CSS applies
+   * right to left about the element's centre: a point travels by D first and
+   * is then scaled away from the middle. D is a percentage of the element's
+   * own width, so it is `drift * width` in pixels.
+   *
+   * This is the only place the camera move is inverted, and it has to agree
+   * with the style below exactly — a sign or an ordering wrong here puts
+   * every anchor somewhere plausible and wrong.
+   */
+  const toScreen = (nx: number, ny: number): [number, number] => [
+    width / 2 + scale * (nx * width + drift * width - width / 2),
+    height / 2 + scale * (ny * height - height / 2),
+  ];
+
   const appear = (atSeconds: number, frames: number = SYS.unit) =>
     interpolate(frame, [atSeconds * fps, atSeconds * fps + frames], [0, 1], {
       extrapolateLeft: "clamp",
@@ -193,36 +210,38 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
       ) : null}
 
       {/*
-        ANNOTATIONS ARE IN FRAME COORDINATES, NOT IMAGE COORDINATES.
+        AN ANNOTATION HAS ITS TWO ENDS IN DIFFERENT COORDINATE SYSTEMS.
 
-        The image above moves — that is its camera move — and everything from
-        here down does not: the anchor, the leader and the label are all
-        positioned against the frame, outside that transform. So no annotation
-        shook when the authored scenes did, and none of them needed the fix
-        that SceneShell got.
+        The anchor is a point on the PHOTOGRAPH — "the dolerite pounder is
+        here" — so it travels with the photograph, through `toScreen` below.
+        The label is type, so it is locked: type moved by a fraction of a
+        pixel is re-rasterised rather than moved, and every edge crawls. The
+        leader is what makes that possible. It is redrawn every frame between
+        the moving anchor and the locked label, which is the whole reason an
+        annotation can do this and a plain overlay cannot.
 
-        The cost is real and worth stating: over a long push the photograph
-        slides under a stationary anchor, so a dot that starts on a feature
-        ends up beside it — about 67px at the frame edge over a seven-second
-        push at the playbook's 2.4%/s. The alternative is to let the anchor and
-        the leader travel with the image and re-anchor the line to a locked
-        label, which is the better behaviour and is NOT implemented here,
-        because nothing in the act 2 demo carries an annotation and an
-        unverified geometry change is worse than a documented limit. The
-        measurement would stay locked either way: its number cannot leave its
-        line, and a number that moves is the defect this all began with.
+        That is the rule, and it is also the limit: AN OVERLAY WITH A LEADER
+        CAN HAVE ITS ENDS IN TWO COORDINATE SYSTEMS; ONE WITHOUT A LEADER
+        CANNOT. The measurement and the cutaway below have no leader — a
+        dimension's number sits on its own line, a cutaway's label sits on its
+        own box — so each stays locked as a unit. A number that has drifted
+        away from its line is worse than a line that has drifted slightly off
+        its feature, and a number that moves is the defect all of this began
+        with.
       */}
       <svg width={width} height={height} style={{ position: "absolute", inset: 0 }}>
         {annotations.map((a, i) => {
           const o = appear(a.reveal_at);
           if (o <= 0) return null;
-          const ax = a.x * width;
-          const ay = a.y * height;
+          // the anchor rides the photograph; the label's end of the leader
+          // is where the locked label is, and does not
+          const [ax, ay] = toScreen(a.x, a.y);
           const side = a.side ?? (a.x > 0.55 ? "left" : "right");
-          const dx = side === "right" ? 92 : -92;
+          const lx = a.x * width + (side === "right" ? 92 : -92);
+          const ly = a.y * height - 46;
           return (
             <g key={i}>
-              {/* ring draws on; dot is the fixed anchor */}
+              {/* ring draws on; dot marks the feature, wherever it has got to */}
               <circle cx={ax} cy={ay} r={7} fill={SYS.accent} opacity={o} />
               <circle
                 cx={ax}
@@ -240,8 +259,8 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
                 <line
                   x1={ax}
                   y1={ay}
-                  x2={ax + dx * o}
-                  y2={ay - 46 * o}
+                  x2={ax + (lx - ax) * o}
+                  y2={ay + (ly - ay) * o}
                   stroke={SYS.accent}
                   strokeWidth={1}
                   opacity={0.9}
