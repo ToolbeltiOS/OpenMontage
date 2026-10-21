@@ -109,20 +109,57 @@ class TestPixabay:
         assert licence.commercial and licence.derivatives
         assert not licence.attribution and not licence.share_alike
 
-    def test_it_is_not_permitted_by_default(self):
-        """Widening the permitted set is the owner's decision, not a default."""
-        from tools.video.stock_sources.licences import PERMITTED_EXTRA, classify
+    def test_it_is_permitted_by_the_owner_s_decision(self):
+        """Admitted 2026-10-21, as a NAMED licence and not folded into CC0."""
+        from tools.video.stock_sources.licences import PERMITTED, PERMITTED_EXTRA, classify
 
-        assert PERMITTED_EXTRA == ()
-        assert not classify(self.RAW).permitted
+        assert "PIXABAY" in PERMITTED_EXTRA
+        assert "PIXABAY" not in PERMITTED      # named, not a CC family
+        assert classify(self.RAW).permitted
 
-    def test_the_switch_admits_it_without_touching_anything_else(self, monkeypatch):
+    def test_admitting_it_admitted_nothing_else(self, monkeypatch):
         from tools.video.stock_sources import licences
 
-        monkeypatch.setattr(licences, "PERMITTED_EXTRA", ("PIXABAY",))
-        assert licences.classify(self.RAW).permitted
         assert not licences.classify("CC BY-NC 4.0").permitted
+        assert not licences.classify("CC BY-ND 4.0").permitted
         assert not licences.classify("").permitted
+        assert not licences.classify("In copyright").permitted
+
+    def test_its_scope_is_narrower_than_cc0_and_recorded(self):
+        """Permitted is one bit; a licence is not.
+
+        Pixabay allows use WITHIN a produced video and not redistribution of
+        the asset on its own. Nothing the pipeline does breaches that, but a
+        future step that publishes assets rather than films would.
+        """
+        from tools.video.stock_sources.licences import use_scope
+
+        pixabay = use_scope("PIXABAY")
+        assert pixabay["in_produced_video"] is True
+        assert pixabay["commercial"] is True
+        assert pixabay["standalone_redistribution"] is False
+        assert use_scope("CC0")["standalone_redistribution"] is True
+
+    def test_the_scope_is_carried_onto_the_asset(self):
+        from dataclasses import dataclass, field
+
+        from tools.video.stock_sources.licences import filter_candidates
+
+        @dataclass
+        class _C:
+            license: str
+            extra: dict = field(default_factory=dict)
+
+        pixabay, cc0 = _C(self.RAW), _C("CC0 1.0")
+        filter_candidates([pixabay, cc0])
+        assert pixabay.extra["no_standalone_redistribution"] is True
+        assert "no_standalone_redistribution" not in cc0.extra
+
+    def test_attribution_is_unchanged_by_admitting_it(self):
+        """Pixabay asks for none, and admitting it asks for none."""
+        from tools.video.stock_sources.licences import classify
+
+        assert classify(self.RAW).attribution is False
 
     def test_it_is_not_mistaken_for_cc0(self):
         """Its own text says 'free' and 'no attribution', which is CC0's shape."""

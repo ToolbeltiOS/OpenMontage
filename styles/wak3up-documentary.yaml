@@ -432,6 +432,31 @@ visual_cadence:
     - timeline                      # placing an event against a span
     - document_reveal               # push-in on a scan or record ('declassified file' reveal)
     - lower_third                   # name, place, date — first mention only
+
+  # ── the diagram route (DECIDED 2026-10-21) ────────────────────────────
+  diagram_route:
+    default: remotion_component     # src/components/Schematic.tsx
+    manim: available_not_default
+    why: >
+      A Manim diagram arrives as a VIDEO, so its labels are pixels. They
+      cannot join the type pass, which means the film look's grain lands on
+      their edges; they cannot be locked while the plate moves, because they
+      ARE the plate; and the type_lock gate cannot read them. Everything built
+      to stop text shaking stops applying to text that arrives pre-rendered.
+      Measured on the same scene (S 015 / THE JOINT, four layers, three
+      labels): Manim rendered it in 2.6s against the component's 10.4s, and
+      drew a quarter of the frame — no act strip, no title, no caption, no
+      scene index, no plate, no grade. The component is slower and is the only
+      one of the two that produces a SCENE rather than a drawing.
+    use_manim_when: >
+      A genuinely mathematical animation the component's path-and-reveal
+      vocabulary cannot express — a function being transformed, a field being
+      integrated. Nothing in run #1 needed one.
+    manim_rule: >
+      If one is ever used, the diagram goes in as a PLATE-layer asset with its
+      labels re-drawn as type in the scene above it. Never baked into the clip.
+    probe: scripts/manim_schematic_probe.py
+    comparison: reports/step9_manim.md
   hero_slots:
     min_total: 2
     min_per_act: 1
@@ -521,9 +546,34 @@ sources:
   # what the adapter actually fetched.
   licence_policy:
     permitted: [CC0, public_domain, CC-BY, CC-BY-SA]
+    # ADMITTED BY THE OWNER 2026-10-21, as a NAMED licence rather than folded
+    # into CC0, because it is not CC0: it is narrower in one way that matters
+    # to anything that publishes assets rather than films.
+    permitted_named:
+      - name: Pixabay Content License
+        code: PIXABAY
+        commercial: true
+        derivatives: true
+        attribution_required: false
+        use_scope:
+          in_produced_video: true
+          standalone_redistribution: false
+        note: >
+          Use within a produced video, commercially. NOT for redistributing
+          the asset on its own — an asset pack, a reel of unused stills, or
+          shipping the bank itself would breach it. Nothing the pipeline does
+          today comes near that; the scope is recorded so a future step that
+          publishes assets can ask instead of assuming.
+        restored: >
+          The whole `elemental_texture` subject, 28 assets, which were the
+          only refusals in a bank of 146.
     refused: [CC-BY-NC, CC-BY-ND, in_copyright, editorial_use_only, unknown]
     unknown_is_refusal: true
     enforced_by: tools/video/stock_sources/licences.py
+    enforced_at: >
+      The fan-out in tools/video/corpus_builder.py, over every source's
+      results, whether the adapter asked or not. It was written into three
+      museum adapters and sixteen others never called it.
     rule: >
       Every NC and ND string also contains "BY", so a substring check for
       "CC BY" accepts exactly the licences that must be refused. The classifier
@@ -694,6 +744,64 @@ motion:
     asset_classes: [vast, intimate, dark, bright, dense, empty]
     classified_by: CLIP zero-shot on a fixed vocabulary, per bank asset
     never_push_into: [dense]
+
+    # ── plate treatments (DECIDED 2026-10-21) ────────────────────────────
+    # A note on where this sits. The owner asked for the halftone to be "the
+    # treatment for evidence/citation registers", and evidence and citation
+    # are not registers — the five registers are how a passage SOUNDS, and a
+    # citation is what a scene IS. So the treatment is keyed to the scene
+    # types that carry a citation, which is the thing that actually
+    # identifies those beats, and it lives here in the mood section because
+    # that is where it was asked for.
+    #
+    # Every treatment below is a PLATE treatment. It runs on the picture and
+    # never on type: the scene's labels are drawn over it in the type pass
+    # exactly as for an untreated still. A treatment that baked its own
+    # labels would take the film's grain on their edges.
+    treatments:
+      halftone_collage:
+        adopted: true
+        applies_to:
+          scene_types: [evidence_card, document_reveal]
+          also: "any still standing in for a printed record"
+        why: >
+          The register it buys is "this is from a record", which is what a
+          citation beat needs and what run #1 answered with a text card that
+          reads as a slide. Tested on S 044 / LION GATE: it reads as a plate
+          from a book.
+        screen:
+          angle_degrees: 15
+          cell_px: 6
+          paper_warmth_pct: 8
+        screen_rule: >
+          The screen is rotated because an unrotated one beats against the
+          pixel grid and reads as a digital artefact rather than as print.
+        caveat: >
+          A FIXED screen over a MOVING picture crawls: the dots stay put while
+          the image travels under them. On a locked frame it is fine. Under a
+          camera move the screen has to move with the image, which is not
+          implemented — so a treated slot takes a lock, or the move waits.
+        implemented_by: scripts/treatment_tests.py
+        frames: reports/step10/
+      sketched_reconstruction:
+        adopted: false
+        why_not: >
+          It keeps the real geometry, which is the whole argument for deriving
+          a drawing from a photograph rather than commissioning one, and it
+          still reads as an edge-detect rather than as a drawing. A site
+          drawing has a hand in it — line weight that follows what the
+          draughtsman thought mattered, and empty space where they decided
+          nothing did. This has uniform attention: it draws the grass as
+          carefully as the statue. Honest enough for a background plate; not
+          good enough for a beat asking a viewer to believe a reconstruction.
+        kept_because: >
+          The code and the frames stay, because the two things it taught are
+          worth keeping: a drawing is edges and not tone (adding ink in
+          proportion to darkness filled the moai into white silhouettes), and
+          every parameter in pixels means the same settings at two sizes are
+          two different drawings.
+        frames: reports/step10/
+
     table:
       # beat.register: [move, speed_pct_per_second, transition_family,
       #                 hold_multiplier, music_rise_allowed]

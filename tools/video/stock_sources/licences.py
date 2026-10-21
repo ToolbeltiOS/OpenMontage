@@ -28,23 +28,51 @@ from dataclasses import dataclass
 #: Families the playbook permits: free to use commercially, and derivable.
 #:
 #: The list is the brief's, verbatim, and widening it is the owner's call and
-#: not an adapter author's. PIXABAY is deliberately NOT in it — see below.
+#: not an adapter author's.
 PERMITTED = ("CC0", "PD", "CC-BY", "CC-BY-SA")
 
 #: Named licences that are permissive but outside the four families above.
 #:
-#: The Pixabay Content License is the live case: free for commercial use, no
-#: attribution required, modification allowed — functionally CC0 for this
-#: channel's purposes, and not CC0. Adding it to PERMITTED would make 28
-#: assets already in the bank usable again; leaving it out loses the whole
-#: `elemental_texture` subject. That is a decision about what the channel will
-#: stand behind, so it is written here as a switch with the measurement beside
-#: it rather than taken quietly either way.
+#: PIXABAY, admitted by the owner on 2026-10-21. The Pixabay Content License
+#: is free for commercial use, needs no attribution and allows modification —
+#: functionally CC0 for this channel's purposes, and not CC0, which is why it
+#: is named here rather than folded into that family.
 #:
-#: What classifying it DOES change, regardless of the switch: a refusal now
-#: says "PIXABAY", which is a licence we read and declined, instead of
-#: "UNKNOWN", which claims we could not tell.
-PERMITTED_EXTRA: tuple[str, ...] = ()
+#: IT IS NOT AS WIDE AS CC0, and the difference is recorded in USE_SCOPE
+#: below: it permits use WITHIN a produced video and does not permit
+#: redistributing the asset on its own. Nothing the pipeline does with an
+#: asset breaches that — assets are composited into a film — but an asset
+#: pack, a sample reel of unused stills, or shipping the bank itself would.
+#:
+#: Admitting it restored the whole `elemental_texture` subject: 28 assets,
+#: which were the only refusals in a bank of 146.
+PERMITTED_EXTRA: tuple[str, ...] = ("PIXABAY",)
+
+#: What a permitted licence actually permits, where that is narrower than
+#: "do anything". Keyed by code; absent means no restriction worth recording.
+#:
+#: This exists because "permitted" is one bit and a licence is not. A future
+#: feature that publishes assets rather than films has to be able to ask.
+USE_SCOPE: dict[str, dict[str, object]] = {
+    "PIXABAY": {
+        "in_produced_video": True,
+        "commercial": True,
+        "standalone_redistribution": False,
+        "attribution_required": False,
+        "note": "Use within a produced video, commercially. Not for "
+                "redistributing the asset on its own — an asset pack, a reel "
+                "of unused stills, or shipping the bank would breach it.",
+    },
+}
+
+
+def use_scope(code: str) -> dict[str, object]:
+    """What this licence allows, beyond the single bit of `permitted`."""
+    return dict(USE_SCOPE.get(code, {
+        "in_produced_video": True,
+        "commercial": True,
+        "standalone_redistribution": True,
+    }))
 
 
 @dataclass(frozen=True)
@@ -128,6 +156,12 @@ def filter_candidates(candidates, on_reject=None):
             candidate.extra["licence_code"] = licence.code
             candidate.extra["share_alike"] = licence.share_alike
             candidate.extra["attribution_required"] = licence.attribution
+            scope = use_scope(licence.code)
+            if not scope.get("standalone_redistribution", True):
+                # recorded on the asset, so a future step that publishes
+                # assets rather than films can see it without re-reading the
+                # licence text
+                candidate.extra["no_standalone_redistribution"] = True
             kept.append(candidate)
         elif on_reject is not None:
             on_reject(candidate, licence)
