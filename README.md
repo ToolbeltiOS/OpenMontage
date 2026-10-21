@@ -758,51 +758,46 @@ the last, and nothing in the repository disagreed.
 | **Outro** | right third reserved | right 40% reserved; headline column to the reserve boundary at 62px | frames in `remotion-composer/out/step7/` — judged by eye, not gated |
 | **Transitions** | — | five vendored from `GTKottman/remotion-transitions` @ `58df899`, MIT, copied not depended on | `reports/vendor_vetting_transitions.md` |
 
-### Steps 16 and 17 — done, with what credentials allowed
+### Steps 16 and 17 — done
 
-**Step 16 — source expansion and licence filtering.** The filter accepts CC0 /
-public domain / CC BY / CC BY-SA, refuses NC and ND, and treats unknown as
-refusal. The thing that mattered was not another adapter: the filter was
-wired into three museum adapters and **sixteen others never called it**. It
-now runs at the fan-out in the corpus builder, for every source, and the
-refusal count is reported beside the candidate count
-(`tests/tools/test_licence_enforced_centrally.py`).
+**Step 16 — source expansion and licence filtering.** The filter runs at the
+fan-out in the corpus builder, for **every** source — it had been wired into
+three museum adapters and sixteen others never called it. The Library of
+Congress adapter no longer invents a licence for items whose rights it cannot
+read.
 
-The Library of Congress adapter was the worst of them — it turned its own
-"rights status varies, verify per item" into a licence string and passed it
-on. It no longer invents a licence.
+Sources added: **NASA Worldview** (keyless, satellite stills of a named place,
+geocoded through Nominatim), **Internet Archive book plates**, and three that
+wait on a key in `.env` — **Smithsonian** (`SMITHSONIAN_API_KEY`),
+**Europeana** (`EUROPEANA_API_KEY`), **NYPL** (`NYPL_API_TOKEN`). Each reports
+itself unavailable without its key, so a run with no keys skips it.
 
-New source: **NASA Worldview**, satellite stills of a named place, keyless,
-geocoded through Nominatim. Live-tested on Rano Raraku and Aswan: 2 candidates
-each, both PD.
+Four licence misreadings were found by writing them, each of which would have
+quietly emptied a source: `NOT_IN_COPYRIGHT` (the Archive's public-domain
+determination, which contains `IN_COPYRIGHT`), the whole rightsstatements.org
+vocabulary that Europeana uses, the CC0 deed's own URL, and the Pixabay
+licence.
 
-Audited the bank against its own filter
-(`reports/bank_licence_audit_they-said-it-couldnt-be-built.md`): **146 assets,
-118 usable, 28 refused** — the whole `elemental_texture` subject, all carrying
-the Pixabay Content License. That licence is permissive and is not one of the
-four families, so it is refused but now *recognised*; admitting it is a switch
-with the measurement beside it, and **the owner's call**.
-
-Not written, and why: Smithsonian (403), Europeana (401), Walters (403) and
-NYPL (401) need credentials this repository does not have; Getty publishes no
-JSON search for open content; Internet Archive timed out on both its search
-endpoints. Sketchfab's search is keyless but its downloads need OAuth.
+**Audits.** The bank: 146 assets, **146 usable**
+(`reports/bank_licence_audit_*.md`). The published film, run backwards through
+the filter it predates: **98 of 98 pass, 0 refused, 0 unrecorded**
+(`reports/published_assets_*.md`). 33 of those pass by inheriting a source's
+licence — a 1080p proxy, a detail crop — which is a gap in the pipeline rather
+than in the rights: **the derivation step does not copy the licence forward.**
 
 **Step 17 — mood.** The table is done, and so are the three things that make
 it act:
 
 - **CLIP classifies the assets.** Asked as three contests (vast/intimate,
   dense/empty, and brightness measured rather than asked), because a frame can
-  be dark *and* vast. 98 of 182 film cuts now carry a class; the 84 without
-  are authored components. The veto fires on 14 of them.
+  be dark *and* vast. 98 of 182 film cuts carry a class; the 84 without are
+  authored components. The veto fires on 14 of them.
 - **No cut lands on a cut the source already had** (`source_cuts`). 12 frames.
   Timelapse steps are exempt, separated from real cuts by whether the frames
-  either side still correlate — measured at 0.95+ for steps against ≤0.71 for
-  cuts.
+  either side still correlate — 0.95+ for steps against ≤0.71 for cuts.
 - **A rise lands only where the music is already rising** (`music_rise`).
-  Essentia does not install here, so this is librosa and three signals —
-  loudness, brightness, onset density. On run #1's bed only **37% of the film
-  is rising** at any moment.
+  Essentia does not install here, so this is librosa and three signals. On run
+  #1's bed only **37% of the film is rising** at any moment.
 
 ### Steps 9, 10 and 15
 
@@ -888,31 +883,34 @@ evidence that they measure the right thing.
 
 ### Decided
 
-- **Music bed level: −30 LUFS under speech**, by ear on the act 2 demo with
-  the sound design present, from an A/B of −36 (run #1's level), −30 and −28.
-  The references run their beds 4–15.5 dB under the voice and run #1 ran 20,
-  so this closes most of that gap. It is in the playbook at
-  `audio.music_under_speech_lufs`, and `lib/mix_audio.py` reads it from there
-  — it used to be a command-line argument, so the level that shipped was
-  whatever was typed that day. Run #1's EDL states −36 and still gets it.
-  Floor measured at −40.4 dB at this level, against −46.4 at −36
-  (`renders/demo/demo_audio_report.json`).
+- **Music bed level: −30 LUFS under speech** (2026-10-21), by ear on the act 2
+  demo with the sound design present. In the playbook at
+  `audio.music_under_speech_lufs`; `lib/mix_audio.py` reads it from there.
+  Run #1's EDL states −36 and still gets it.
 - **The demo cut.** Approved 2026-10-21.
+- **The Pixabay Content License: admitted** (2026-10-21), as a *named* licence
+  and not folded into CC0, with its scope recorded — use within a produced
+  video, commercially; **not** redistribution of the asset on its own. The 28
+  `elemental_texture` assets are restored and the bank is 146 of 146. It was
+  load-bearing for the published film too: 28 of its 98 assets are Pixabay.
+- **Halftone collage: adopted** for citation beats, keyed in the playbook to
+  the scene types that carry one (`evidence_card`, `document_reveal`). Caveat
+  recorded: a fixed screen over a moving picture crawls, so a treated slot
+  takes a lock until the screen can move with the image.
+- **Sketched reconstruction: not adopted** — it keeps the real geometry and
+  still reads as an edge-detect, drawing the grass as carefully as the statue.
+  Reason in `motion.mood.treatments`; the code stays for what it taught.
+- **Manim: available, not default.** A Manim diagram arrives as a *video*, so
+  its labels are pixels — they cannot join the type pass, cannot be locked
+  while the plate moves, and cannot be read by the `type_lock` gate. In the
+  playbook at `visual_language.diagram_route`.
 
 ### Still needs the owner's decision
 
 - **Outro headline column.** Shipped at the reserve boundary (952px) at 62px
   Display, because 900px orphaned "us". Frames for both readings are in
   `remotion-composer/out/step7/`.
-- **The Pixabay Content License.** 28 assets already in the bank carry it —
-  the whole `elemental_texture` subject. It is permissive and it is not one of
-  the four families the brief named, so it is refused. Admitting it is one
-  constant (`PERMITTED_EXTRA`) and a decision about what the channel stands
-  behind.
-- **Halftone collage** (step 10) — recommended for adoption on citation beats;
-  frames in `reports/step10/`.
-- **Sketched reconstruction** (step 10) — recommended *against* as it stands;
-  frames in `reports/step10/`.
+- **Nothing outstanding.** Phase 2A is closed; Phase 2B (automation) is next.
 
 ### Delivered, and what the gates said
 
