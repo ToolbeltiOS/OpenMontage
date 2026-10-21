@@ -26,7 +26,25 @@ import re
 from dataclasses import dataclass
 
 #: Families the playbook permits: free to use commercially, and derivable.
+#:
+#: The list is the brief's, verbatim, and widening it is the owner's call and
+#: not an adapter author's. PIXABAY is deliberately NOT in it — see below.
 PERMITTED = ("CC0", "PD", "CC-BY", "CC-BY-SA")
+
+#: Named licences that are permissive but outside the four families above.
+#:
+#: The Pixabay Content License is the live case: free for commercial use, no
+#: attribution required, modification allowed — functionally CC0 for this
+#: channel's purposes, and not CC0. Adding it to PERMITTED would make 28
+#: assets already in the bank usable again; leaving it out loses the whole
+#: `elemental_texture` subject. That is a decision about what the channel will
+#: stand behind, so it is written here as a switch with the measurement beside
+#: it rather than taken quietly either way.
+#:
+#: What classifying it DOES change, regardless of the switch: a refusal now
+#: says "PIXABAY", which is a licence we read and declined, instead of
+#: "UNKNOWN", which claims we could not tell.
+PERMITTED_EXTRA: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -40,7 +58,7 @@ class Licence:
 
     @property
     def permitted(self) -> bool:
-        return self.code in PERMITTED
+        return self.code in PERMITTED or self.code in PERMITTED_EXTRA
 
 
 _UNKNOWN = ("UNKNOWN", False, False, False, False)
@@ -56,6 +74,11 @@ _PATTERNS: list[tuple[re.Pattern[str], tuple[str, bool, bool, bool, bool]]] = [
     (re.compile(r"in\s*copyright|all\s+rights\s+reserved|rights[\s_-]*reserved"
                 r"|educational\s+use|personal\s+use|editorial\s+use", re.I),
      ("RESTRICTED", False, False, False, False)),
+    # ── named, permissive, and not one of the four families ───────────────
+    # Tested before CC0 because Pixabay's own text says "free" and "no
+    # attribution", which the CC0 pattern would otherwise be asked to judge.
+    (re.compile(r"pixabay\s*(content\s*)?licen[cs]e", re.I),
+     ("PIXABAY", True, True, False, False)),
     # ── permitted ─────────────────────────────────────────────────────────
     (re.compile(r"cc0|creative\s*commons\s*zero|public\s*domain\s*dedication", re.I),
      ("CC0", True, True, False, False)),

@@ -85,3 +85,48 @@ class TestFilterAtFetchTime:
         filter_candidates([FakeCandidate("CC BY-NC 4.0"), FakeCandidate("")],
                           on_reject=lambda c, l: seen.append(l.code))
         assert seen == ["CC-BY-NC", "UNKNOWN"]
+
+
+class TestPixabay:
+    """A licence that is permissive and is not one of the four families.
+
+    It matters because 28 assets already in the bank carry it — the whole
+    `elemental_texture` subject — and because calling it UNKNOWN would claim
+    we could not read it when we can read it perfectly well.
+    """
+
+    RAW = "Pixabay Content License (free, no attribution required)"
+
+    def test_it_is_recognised_rather_than_unknown(self):
+        from tools.video.stock_sources.licences import classify
+
+        assert classify(self.RAW).code == "PIXABAY"
+
+    def test_it_is_commercial_and_derivable(self):
+        from tools.video.stock_sources.licences import classify
+
+        licence = classify(self.RAW)
+        assert licence.commercial and licence.derivatives
+        assert not licence.attribution and not licence.share_alike
+
+    def test_it_is_not_permitted_by_default(self):
+        """Widening the permitted set is the owner's decision, not a default."""
+        from tools.video.stock_sources.licences import PERMITTED_EXTRA, classify
+
+        assert PERMITTED_EXTRA == ()
+        assert not classify(self.RAW).permitted
+
+    def test_the_switch_admits_it_without_touching_anything_else(self, monkeypatch):
+        from tools.video.stock_sources import licences
+
+        monkeypatch.setattr(licences, "PERMITTED_EXTRA", ("PIXABAY",))
+        assert licences.classify(self.RAW).permitted
+        assert not licences.classify("CC BY-NC 4.0").permitted
+        assert not licences.classify("").permitted
+
+    def test_it_is_not_mistaken_for_cc0(self):
+        """Its own text says 'free' and 'no attribution', which is CC0's shape."""
+        from tools.video.stock_sources.licences import classify
+
+        assert classify(self.RAW).code != "CC0"
+        assert classify("CC0 1.0 Universal").code == "CC0"
