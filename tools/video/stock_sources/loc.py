@@ -28,12 +28,22 @@ from pathlib import Path
 from typing import Any
 
 from .base import Candidate, SearchFilters
+from .licences import filter_candidates
 
 _log = logging.getLogger(__name__)
 
 _SEARCH_URL = "https://www.loc.gov/search/"
 _LICENSE_PD = "Public domain (Library of Congress)"
-_LICENSE_CHECK = "Rights status varies — verify per item (Library of Congress)"
+
+# There is no second constant here on purpose.
+#
+# This adapter used to label anything whose rights it could not read
+# "Rights status varies — verify per item", and hand it on as a licence. That
+# is not a licence; it is the absence of one written in a way that reads like
+# a disclaimer rather than a refusal, and it travelled into the bank as the
+# licence column of items nobody had cleared. The item's own rights text is
+# passed through untouched now, and the filter decides — an unreadable rights
+# field classifies as UNKNOWN, and UNKNOWN is not permission.
 
 # Video-related format filters for the LoC API
 _VIDEO_FORMATS = ["film/video", "motion picture"]
@@ -95,7 +105,11 @@ class LibraryOfCongressSource:
             candidates = self._extract_candidates(item, kind, filters)
             out.extend(candidates)
 
-        return out
+        # Filtered here too, although the corpus builder now filters every
+        # source at the fan-out. This adapter is the one whose rights field
+        # most often says nothing, so it is worth it being visible in the file
+        # that the nothing is refused.
+        return filter_candidates(out)
 
     def _extract_candidates(
         self, item: dict, kind: str, filters: SearchFilters
@@ -126,7 +140,11 @@ class LibraryOfCongressSource:
             rights_str = " ".join(r for r in rights if isinstance(r, str)).lower()
         else:
             rights_str = str(rights).lower()
-        lic = _LICENSE_PD if "public domain" in rights_str or "no known" in rights_str else _LICENSE_CHECK
+        # The item's own words, or the library's PD wording when they say so.
+        # Never a sentence of this adapter's invention.
+        lic = (_LICENSE_PD
+               if "public domain" in rights_str or "no known" in rights_str
+               else rights_str)
 
         # Look for downloadable resources
         resources = item.get("resources", []) or []

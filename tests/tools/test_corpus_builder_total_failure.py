@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import pytest
 
@@ -9,7 +9,17 @@ from tools.video.corpus_builder import CorpusBuilder
 
 @dataclass
 class _Candidate:
+    """A stand-in for a real Candidate.
+
+    It carries a licence because the corpus builder now runs the licence
+    filter over every source's results, and a candidate with no licence is
+    UNKNOWN, which is not permission. A double that does not look like a real
+    candidate stops being a double for one.
+    """
+
     clip_id: str
+    license: str = "CC0 1.0"
+    extra: dict = field(default_factory=dict)
 
 
 class _Source:

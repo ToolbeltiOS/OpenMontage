@@ -316,6 +316,7 @@ class CorpusBuilder(BaseTool):
             skipped = 0
             failed = 0
             candidates_seen = 0
+            licence_refused = 0
 
             def filters_for(q_spec: dict) -> SearchFilters:
                 return SearchFilters(
@@ -346,6 +347,22 @@ class CorpusBuilder(BaseTool):
                             "error": f"{type(e).__name__}: {e}",
                         })
                         continue
+
+                    # THE LICENCE FILTER RUNS HERE, FOR EVERY SOURCE.
+                    #
+                    # It was written into three museum adapters and sixteen
+                    # others never called it — including the ones most likely
+                    # to need it, where rights are "varies, verify per item".
+                    # An adapter that has already filtered is filtered again
+                    # and nothing changes; an adapter whose author forgot is
+                    # covered anyway. A rule enforced per adapter is a rule
+                    # the next adapter can be written without.
+                    from tools.video.stock_sources.licences import filter_candidates
+
+                    before = len(cands)
+                    cands = filter_candidates(cands)
+                    if before != len(cands):
+                        licence_refused += before - len(cands)
 
                     candidates_seen += len(cands)
                     for cand in cands:
@@ -433,6 +450,7 @@ class CorpusBuilder(BaseTool):
                         "corpus_dir": str(corpus_dir),
                         "queries_run": len(queries),
                         "candidates_seen": candidates_seen,
+                        "licence_refused": licence_refused,
                         "clips_added": 0,
                         "clips_skipped_existing": skipped,
                         "clips_failed": failed,
@@ -448,6 +466,7 @@ class CorpusBuilder(BaseTool):
                     "corpus_dir": str(corpus_dir),
                     "queries_run": len(queries),
                     "candidates_seen": candidates_seen,
+                    "licence_refused": licence_refused,
                     "clips_added": len(added_ids),
                     "clips_skipped_existing": skipped,
                     "clips_failed": failed,
