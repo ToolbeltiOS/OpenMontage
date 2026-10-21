@@ -27,12 +27,12 @@ The Shorts that performed on King Tut keep returning to: king, curse, unexplaine
 | Amarna Period | 54 | 54.0 | yes |
 | Akhenaten | 39 | 39.0 | yes |
 | King Tut | 35 | 35.0 | yes |
-| Howard Carter | 31 | 31.0 | yes |
-| Horemheb | 20 | 20.0 | yes |
+| Discovery of the tomb of Tutankhamun | 4 | 23.5 | yes |
+| Eighteenth Dynasty of Egypt | 0 | 13.5 | yes |
 | George Herbert, 5th Earl of Carnarvon | 10 | 10.0 | yes |
 | Grand Egyptian Museum | 10 | 10.0 | yes |
 | Ankhesenamun | 9 | 9.0 | yes |
-| Neferneferuaten | 1 | 1.5 | **no** |
-| Ay (pharaoh) | 0 | 0.0 | **no** |
+| 317a and 317b mummies | 1 | 2.0 | **no** |
+| Curse of the pharaohs | 0 | 0.5 | **no** |
 
 Eligible: **6/6** of the top entities clear 8 usable assets each.

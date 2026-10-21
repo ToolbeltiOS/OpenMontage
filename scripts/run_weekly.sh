@@ -130,6 +130,10 @@ else
 fi
 
 # ── 3. the human ─────────────────────────────────────────────────────────
+if [[ "$DRY_RUN" == "1" ]]; then
+  say "dry run: skipping the script gate (there is no script to approve)"
+  say "         scripts/dry_run.py is what exercises the gate"
+else
 say "script gate (up to ${GATE_HOURS}h)"
 ATTEMPT=1
 while true; do
@@ -154,9 +158,11 @@ to projects/$SLUG/artifacts/script.json. Change nothing else." \
             || fail "applying notes" "$(tail -20 "$LOGDIR/script_stage.log")"
         fi
         ;;
+    5)  fail "script gate" "the script stage produced no script.json" ;;
     *)  fail "script gate" "unexpected exit $GATE" ;;
   esac
 done
+fi
 
 # ── 4. the render ────────────────────────────────────────────────────────
 if [[ "$DRY_RUN" == "1" ]]; then
@@ -172,6 +178,12 @@ scripts/render_film.py, which is the only full-film render path." \
 fi
 
 # ── 5. publish ───────────────────────────────────────────────────────────
+if [[ "$DRY_RUN" == "1" && ! -f "$REPO/projects/$SLUG/artifacts/listing.json" ]]; then
+  say "dry run: no listing for $SLUG, so there is nothing to publish"
+  say "         scripts/dry_run.py is what exercises the publisher"
+  say "done (dry run: topic and hand-offs only)"
+  exit 0
+fi
 say "publishing"
 PUBLISH_ARGS=(--project "$SLUG")
 [[ "$DRY_RUN" == "1" ]] && PUBLISH_ARGS+=(--dry-run)

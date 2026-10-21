@@ -25,12 +25,14 @@ The Shorts that performed on Noah keep returning to: noah, drunk, noah's, flood.
 | entity | category files | counted | clears 8 |
 |---|---|---|---|
 | Book of Genesis | 50 | 50.0 | yes |
+| Noah (name) | 0 | 20.0 | yes |
+| Noah's Ark | 4 | 20.0 | yes |
 | Noah | 2 | 18.5 | yes |
 | Lamech (father of Noah) | 0 | 18.0 | yes |
-| Epic of Gilgamesh | 16 | 16.0 | yes |
 | Shem | 13 | 13.0 | yes |
+| Genesis flood narrative | 0 | 12.5 | yes |
 | Giovanni Benedetto Castiglione | 10 | 10.0 | yes |
-| Quran | 9 | 9.0 | yes |
-| Ham (son of Noah) | 0 | 0.0 | **no** |
+| Noah's wife | 0 | 9.5 | yes |
+| Japheth | 7 | 8.0 | yes |
 
 Eligible: **6/6** of the top entities clear 8 usable assets each.

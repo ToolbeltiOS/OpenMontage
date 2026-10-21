@@ -90,11 +90,43 @@ REFUSED_CLASSES = {"Q4167410", "Q13406463", "Q4167836", "Q11266439"}
 #: `subclass of`. An item that has it is a KIND of thing.
 SUBCLASS_OF = "P279"
 
-#: How many language editions must write about a thing. Measured on this
-#: channel's own candidates: the subjects run 86-164 and the near-misses —
-#: a district in Bekasi called Pond, an academic journal called Britain —
-#: run 1 to 11.
+#: `contains administrative territorial entity`. An item that has it is a
+#: CONTAINER: Japan contains prefectures, Chile contains regions, and neither
+#: is a twenty-minute film — they are a shelf of them. Measured on this
+#: channel's candidates, it is true for Japan and Chile and false for Easter
+#: Island, Petra, Stonehenge, Orongo, Rano Raraku and Tutankhamun.
+CONTAINS_SUBDIVISIONS = "P150"
+
+#: ...and containers that hold things without holding administrative ones.
+#: Kept to a short explicit list: "administrative territorial entity" is NOT
+#: in it, because Easter Island is one and is exactly the size of a film.
+CONTAINER_CLASSES = {
+    "Q6256": "country",
+    "Q3624078": "sovereign state",
+    "Q5107": "continent",
+    "Q578": "century",
+    "Q39911": "decade",
+    "Q36507": "millennium",
+    "Q577": "year",
+    "Q82794": "geographic region",
+    "Q9430": "ocean",
+    "Q1496967": "territorial entity",
+}
+
+#: How many language editions must write about a thing before it can carry a
+#: WHOLE FILM. Measured on this channel's own candidates: the subjects run
+#: 86-164 and the near-misses — a district in Bekasi called Pond, an academic
+#: journal called Britain — run 1 to 11.
 MIN_SITELINKS = 20
+
+#: ...and the floor for a SUPPORTING entity, which only has to be real.
+#:
+#: Orongo, the birdman village on Easter Island, has articles in fourteen
+#: languages. It cannot carry a film and it is exactly the right size for an
+#: act, and a floor meant for clusters threw it out. The class and container
+#: tests still apply: a supporting entity may be obscure, not fictional and
+#: not a shelf.
+MIN_SITELINKS_SUPPORTING = 3
 
 
 def _get(params: dict[str, Any], timeout: int = 30) -> dict:
@@ -208,7 +240,7 @@ def describe(item_id: str) -> dict[str, Any]:
     """The claims that say what kind of thing this is."""
     try:
         found = _get({"action": "wbgetentities", "ids": item_id,
-                      "props": "claims|descriptions|sitelinks",
+                      "props": "claims|descriptions|sitelinks|labels",
                       "languages": "en"})
     except Exception:
         return {}
@@ -224,12 +256,23 @@ def describe(item_id: str) -> dict[str, Any]:
                 out.append(value["id"])
         return out
 
+    label = (((entity.get("labels") or {}).get("en") or {}).get("value", ""))
     return {
         "id": item_id,
+        "label": label,
         "description": (((entity.get("descriptions") or {}).get("en") or {})
                         .get("value", "")),
         "sitelinks": len(entity.get("sitelinks") or {}),
-        "is_a_class": SUBCLASS_OF in claims,
+        # A CLASS HAS `subclass of` AND A LOWERCASE LABEL. Wikidata's own
+        # convention is that a common noun is lowercase and a proper noun is
+        # not, and `subclass of` alone is not enough: rongorongo is a
+        # subclass of writing system and is also one specific undeciphered
+        # script from one island, which is a documentary. "Rongorongo" and
+        # "Linear A" are capitalised; "mountain", "rock", "pond" and
+        # "science" are not.
+        "is_a_class": (SUBCLASS_OF in claims
+                       and bool(label) and label[:1].islower()),
+        "contains_subdivisions": CONTAINS_SUBDIVISIONS in claims,
         "has_coordinates": COORDINATES in claims,
         "is_a_person": bool(set(claims) & {BIRTH, DEATH}),
         "is_dated": bool(set(claims) & {POINT_IN_TIME, START_TIME}),
@@ -237,19 +280,46 @@ def describe(item_id: str) -> dict[str, Any]:
     }
 
 
-def _verdict(phrase: str, item_id: str, facts: dict[str, Any]) -> dict[str, Any]:
+def _verdict(phrase: str, item_id: str, facts: dict[str, Any],
+             min_sitelinks: int = MIN_SITELINKS,
+             as_cluster: bool = True) -> dict[str, Any]:
+    """Can this carry a film (as_cluster), or merely appear in one?
+
+    The two questions are not the same and conflating them threw out half of
+    what a film is made of. A CLUSTER has to be a place, a person or a
+    structure, because a documentary needs something that can be filmed for
+    twenty minutes. A SUPPORTING entity only has to be real, citable and
+    not a container: rongorongo is a script with no coordinates, moai is a
+    class, Orongo has fourteen language editions, and all three belong in
+    the Easter Island film.
+    """
     classes = set(facts["instance_of"])
     if classes & REFUSED_CLASSES:
         return {"phrase": phrase, "subject": False, "item": item_id,
                 "description": facts["description"],
                 "why": "a disambiguation page or a list, not a thing"}
-    if facts["is_a_class"]:
+    if facts["is_a_class"] and as_cluster:
         return {"phrase": phrase, "subject": False, "item": item_id,
                 "description": facts["description"],
                 "sitelinks": facts["sitelinks"],
                 "why": "a kind of thing, not a thing — its instances are the "
                        "subjects"}
-    if facts["sitelinks"] < MIN_SITELINKS:
+
+    # FILM-SIZED. A container is a real thing and is not a documentary: it is
+    # a shelf of them. Japan contains prefectures; a film about Japan is a
+    # film about nothing in particular, and the subject is one of the things
+    # inside it.
+    container = (classes & set(CONTAINER_CLASSES)) or (
+        {"P150"} if facts.get("contains_subdivisions") else set())
+    if container:
+        named = (CONTAINER_CLASSES.get(sorted(classes & set(CONTAINER_CLASSES))[0])
+                 if classes & set(CONTAINER_CLASSES) else "container")
+        return {"phrase": phrase, "subject": False, "container": True,
+                "item": item_id, "description": facts["description"],
+                "sitelinks": facts["sitelinks"],
+                "why": f"a {named}, not a film — it contains the subjects "
+                       f"rather than being one"}
+    if facts["sitelinks"] < min_sitelinks:
         return {"phrase": phrase, "subject": False, "item": item_id,
                 "description": facts["description"],
                 "sitelinks": facts["sitelinks"],
@@ -263,6 +333,14 @@ def _verdict(phrase: str, item_id: str, facts: dict[str, Any]) -> dict[str, Any]
     # is neither and still filmable. A date supports those; it does not stand
     # in for them. A dated EVENT that is filmable almost always has
     # coordinates too.
+    if not as_cluster:
+        # real, named, not a shelf and not a disambiguation page: enough to
+        # be cited and enough to have a Commons category counted
+        return {"phrase": phrase, "item": item_id,
+                "description": facts["description"],
+                "sitelinks": facts["sitelinks"], "subject": True,
+                "why": "a named thing the film can cite"}
+
     reasons = []
     if facts["has_coordinates"]:
         reasons.append("it is somewhere")
@@ -285,7 +363,9 @@ def _verdict(phrase: str, item_id: str, facts: dict[str, Any]) -> dict[str, Any]
 
 
 @lru_cache(maxsize=2048)
-def is_a_subject(phrase: str) -> dict[str, Any]:
+def is_a_subject(phrase: str,
+                 min_sitelinks: int = MIN_SITELINKS,
+                 as_cluster: bool = True) -> dict[str, Any]:
     """Is this a place, a person, a structure or a dated event?
 
     Cached: the picker asks about the same phrase once as a cluster and
@@ -297,7 +377,7 @@ def is_a_subject(phrase: str) -> dict[str, Any]:
     if article:
         facts = describe(article)
         if facts:
-            verdict = _verdict(phrase, article, facts)
+            verdict = _verdict(phrase, article, facts, min_sitelinks, as_cluster)
             verdict["article"] = title
             return verdict
 
@@ -309,7 +389,8 @@ def is_a_subject(phrase: str) -> dict[str, Any]:
     for item_id in items:
         facts = describe(item_id)
         if facts:
-            verdicts.append(_verdict(phrase, item_id, facts))
+            verdicts.append(_verdict(phrase, item_id, facts, min_sitelinks,
+                                      as_cluster))
     if not verdicts:
         return {"phrase": phrase, "subject": False,
                 "why": "the items could not be read"}

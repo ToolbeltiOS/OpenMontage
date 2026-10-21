@@ -143,3 +143,181 @@ class TestMetricsRefuseToGuess:
         upload_only = _Credentials()
         upload_only.scopes = ["https://www.googleapis.com/auth/youtube.upload"]
         assert not has_analytics_scope(upload_only)
+
+
+def facts(**overrides):
+    """What `describe` returns, with everything off by default.
+
+    Constructed rather than fetched: the suite blocks the network, and a
+    test that passes because Wikidata was unreachable is worse than no test.
+    What is being pinned here is the RULE — which combination of properties
+    means what — and the rule is mine. The vocabulary itself is checked by
+    running the picker, which the briefs in reports/briefs/ are the output of.
+    """
+    return {"id": "Q1", "label": "A Thing", "description": "",
+            "sitelinks": 100, "is_a_class": False,
+            "contains_subdivisions": False, "has_coordinates": False,
+            "is_a_person": False, "is_dated": False, "instance_of": [],
+            **overrides}
+
+
+class TestFilmSized:
+    """A container is a real thing and is not a documentary."""
+
+    def test_something_that_contains_subdivisions_is_a_container(self):
+        from lib.entity_check import _verdict
+
+        verdict = _verdict("Japan", "Q17", facts(has_coordinates=True,
+                                                 contains_subdivisions=True))
+        assert not verdict["subject"] and verdict["container"] is True
+        assert "contains the subjects" in verdict["why"]
+
+    @pytest.mark.parametrize("qid,name", [
+        ("Q6256", "country"), ("Q5107", "continent"), ("Q578", "century")])
+    def test_and_so_is_a_container_class(self, qid, name):
+        from lib.entity_check import _verdict
+
+        verdict = _verdict("X", "Q1", facts(instance_of=[qid],
+                                            has_coordinates=True))
+        assert not verdict["subject"] and verdict["container"] is True
+        assert name in verdict["why"]
+
+    def test_a_place_that_contains_nothing_is_film_sized(self):
+        """Easter Island is an administrative territorial entity and is
+        exactly the size of a film, which is why that class is not on the
+        container list — only P150 and a short explicit set are."""
+        from lib.entity_check import _verdict
+
+        verdict = _verdict("Easter Island", "Q14452",
+                           facts(has_coordinates=True,
+                                 instance_of=["Q23442", "Q56061"]))
+        assert verdict["subject"] and "somewhere" in verdict["why"]
+
+    def test_a_container_is_split_rather_than_dropped(self, monkeypatch):
+        """The audience that watched two Shorts about Japan watched them for
+        something inside Japan.
+
+        Patched through sys.modules["entity_check"], not lib.entity_check.
+        The repository puts lib/ on sys.path, so a bare `import entity_check`
+        inside a function and `from lib import entity_check` at the top of a
+        test load TWO module objects, and patching one leaves the other
+        untouched — which is also two lru_caches and two rate-limit clocks,
+        and is worth knowing about.
+        """
+        import sys
+
+        from scripts import pick_topic
+
+        sys.path.insert(0, str(pick_topic.ROOT / "lib"))
+        import entity_check
+
+        monkeypatch.setattr(entity_check, "article_item",
+                            lambda p: ("Q1", "Japan"))
+        monkeypatch.setattr(entity_check, "article_links",
+                            lambda t, limit=40: ["Mount Fuji", "Himeji Castle"])
+        monkeypatch.setattr(entity_check, "is_a_subject",
+                            lambda p, *a, **k: {"subject": True, "why": "it is somewhere"})
+        parts = pick_topic.split_container({
+            "entity": "Japan", "median_views": 428, "shorts": 3,
+            "best_views": 800, "mean_engagement": 0.5,
+            "titles": [], "urls": []}, limit=2)
+        assert [p["entity"] for p in parts] == ["Mount Fuji", "Himeji Castle"]
+        for part in parts:
+            assert part["derived_from"] == "Japan"
+            assert part["median_views"] == 214, "the halving was not applied"
+            assert "weaker" in part["note"]
+
+    def test_a_part_ranks_where_its_halved_score_puts_it(self):
+        """Two parts of Japan at 214 came above Noah at 366 purely because
+        Japan was second in the list."""
+        candidates = [{"entity": "Part A", "median_views": 214, "shorts": 2},
+                      {"entity": "Noah", "median_views": 366, "shorts": 4}]
+        candidates.sort(key=lambda c: (c["median_views"], c["shorts"]),
+                        reverse=True)
+        assert candidates[0]["entity"] == "Noah"
+
+
+class TestClusterAndSupportingAreDifferentQuestions:
+    """A cluster must carry a film; a supporting entity must only be real."""
+
+    def test_a_script_with_no_coordinates_fails_as_a_cluster(self):
+        from lib.entity_check import _verdict
+
+        assert not _verdict("Rongorongo", "Q209764", facts())["subject"]
+
+    def test_and_passes_as_a_supporting_entity(self):
+        from lib.entity_check import _verdict
+
+        verdict = _verdict("Rongorongo", "Q209764", facts(sitelinks=40),
+                           min_sitelinks=3, as_cluster=False)
+        assert verdict["subject"] and "cite" in verdict["why"]
+
+    def test_an_obscure_place_fails_as_a_cluster_and_passes_as_support(self):
+        """Orongo has fourteen language editions: too few to carry a film,
+        and exactly the right size for an act."""
+        from lib.entity_check import _verdict
+
+        orongo = facts(sitelinks=14, has_coordinates=True)
+        assert not _verdict("Orongo", "Q1551834", orongo)["subject"]
+        assert _verdict("Orongo", "Q1551834", orongo,
+                        min_sitelinks=3, as_cluster=False)["subject"]
+
+    def test_a_class_passes_as_support_and_never_as_a_cluster(self):
+        """A film is made of moai; a film is not about "moai"."""
+        from lib.entity_check import _verdict
+
+        moai = facts(is_a_class=True, sitelinks=40)
+        assert not _verdict("Moai", "Q1", moai)["subject"]
+        assert _verdict("Moai", "Q1", moai, min_sitelinks=3,
+                        as_cluster=False)["subject"]
+
+    def test_a_container_fails_as_either(self):
+        from lib.entity_check import _verdict
+
+        japan = facts(contains_subdivisions=True, has_coordinates=True)
+        assert not _verdict("Japan", "Q17", japan)["subject"]
+        assert not _verdict("Japan", "Q17", japan, min_sitelinks=3,
+                            as_cluster=False)["subject"]
+
+    def test_a_named_thing_is_not_a_class_whatever_subclass_of_says(self):
+        """`subclass of` alone called rongorongo a kind of thing. Wikidata's
+        convention is that a class is lowercase and a proper noun is not, and
+        `describe` applies it."""
+        from lib.entity_check import SUBCLASS_OF
+
+        claims = {SUBCLASS_OF: [{}]}
+        assert (SUBCLASS_OF in claims and "Rongorongo"[:1].islower()) is False
+        assert (SUBCLASS_OF in claims and "mountain"[:1].islower()) is True
+
+
+class TestTheOwnerCanOverrideTheAngle:
+    def test_the_constraint_replaces_the_derived_angle(self):
+        """The picker cannot know what a previous film already argued."""
+        from scripts.pick_topic import angle_of
+
+        angle = angle_of({"entity": "Easter Island",
+                          "titles": ["The Walking Statues of Easter Island"]})
+        assert "constraint" in angle
+        assert "rongorongo" in angle["claim"]
+        assert "60 seconds" in angle["claim"]
+
+    def test_the_recap_is_capped_and_placed(self):
+        from scripts.pick_topic import ANGLE_CONSTRAINTS
+
+        recap = ANGLE_CONSTRAINTS["easter island"]["recap"]
+        assert recap["max_seconds"] == 60 and recap["where"] == "act 1"
+
+    def test_the_spine_entities_are_named_not_parsed(self):
+        """Guessing which words in a sentence are subjects would answer a
+        different question than "can the film be made as specified"."""
+        from scripts.pick_topic import ANGLE_CONSTRAINTS
+
+        named = ANGLE_CONSTRAINTS["easter island"]["entities"]
+        assert "Rongorongo" in named and "Orongo" in named
+
+    def test_a_subject_with_no_constraint_keeps_its_derived_angle(self):
+        from scripts.pick_topic import angle_of
+
+        angle = angle_of({"entity": "Petra", "titles": ["The Petra Problem"]})
+        assert "constraint" not in angle
+        assert "keep returning to" in angle["claim"]

@@ -230,7 +230,12 @@ def entities_of(candidate: dict[str, Any], ledger: list[dict[str, Any]],
         if name.lower() in seen or len(ordered) >= limit:
             return False
         seen.add(name.lower())
-        if not is_a_subject(name)["subject"]:
+        # A supporting entity only has to be real, not famous: Orongo has
+        # fourteen language editions and is exactly the size of an act.
+        from entity_check import MIN_SITELINKS_SUPPORTING
+
+        if not is_a_subject(name, MIN_SITELINKS_SUPPORTING,
+                            as_cluster=False)["subject"]:
             return False
         if check_relevance and not about_each_other(name, subject_title):
             return False

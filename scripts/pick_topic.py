@@ -194,6 +194,95 @@ TITLE_SHAPES = [
 ]
 
 
+def split_container(candidate: dict[str, Any], limit: int = 3
+                    ) -> list[dict[str, Any]]:
+    """The film-sized things inside a container, as candidates of their own.
+
+    A country is not a documentary; the thing in the country is. The parts
+    come from what the channel's own Shorts named first — that is what the
+    audience actually responded to — and then from the lead of the
+    container's article.
+
+    They inherit the container's measured performance, HALVED and marked
+    `derived_from`, because the Shorts were about the container and the
+    evidence for the part is weaker by exactly that much. A brief built from
+    one says so.
+    """
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(ROOT / "lib"))
+    from entity_check import article_item, article_links, is_a_subject
+
+    seen = {candidate["entity"].lower()}
+    parts: list[dict[str, Any]] = []
+
+    def consider(name: str) -> None:
+        if len(parts) >= limit or name.lower() in seen:
+            return
+        seen.add(name.lower())
+        verdict = is_a_subject(name)
+        if not verdict["subject"]:
+            return
+        parts.append({
+            **candidate,
+            "entity": name,
+            "derived_from": candidate["entity"],
+            "median_views": candidate["median_views"] // 2,
+            "wikidata": verdict,
+            "note": (f"split out of {candidate['entity']}, which is a "
+                     f"container. The Shorts were about "
+                     f"{candidate['entity']}; the evidence for this part is "
+                     f"weaker and its score is halved to say so."),
+        })
+
+    for title in candidate.get("titles", []):
+        for name in entities_in(title):
+            consider(name)
+    if len(parts) < limit:
+        _, article = article_item(candidate["entity"])
+        for name in article_links(article or candidate["entity"]):
+            consider(name)
+            if len(parts) >= limit:
+                break
+    return parts
+
+
+#: Angle constraints the owner has set on a specific subject, keyed by
+#: entity. These OVERRIDE the derived angle, because a derived angle is read
+#: off Shorts titles and the owner knows what the channel has already made.
+#:
+#: The picker cannot know that run #1 covered the walking statues; the
+#: ledger records the film, not its arguments.
+ANGLE_CONSTRAINTS: dict[str, dict[str, Any]] = {
+    "easter island": {
+        "spine": [
+            "rongorongo — the undeciphered script",
+            "the collapse debate — ecocide against rats and the 1862 slave "
+            "raids, both sides' best case",
+            "the buried statue bodies",
+            "the birdman cult at Orongo",
+        ],
+        "recap": {
+            "what": "the walking statues",
+            "max_seconds": 60,
+            "where": "act 1",
+            "why": "run #1 covered them; they are the hook the audience "
+                   "arrives with and not the film",
+        },
+        # Named explicitly rather than parsed out of the prose above: the
+        # depth check has to answer "can the film be made AS SPECIFIED",
+        # and guessing which words in a sentence are the subjects is how it
+        # would answer a different question.
+        "entities": [
+            "Rongorongo", "Orongo", "Rano Raraku", "Moai",
+            "Polynesian rat", "Ahu Tongariki",
+        ],
+        "set_by": "owner, 2026-10-21",
+    },
+}
+
+
 def angle_of(candidate: dict[str, Any]) -> dict[str, Any]:
     """What the audience actually responded to, in their own titles.
 
@@ -208,19 +297,31 @@ def angle_of(candidate: dict[str, Any]) -> dict[str, Any]:
     words = Counter(
         w.lower() for t in cleaned for w in re.findall(r"[A-Za-z']+", t)
         if w.lower() not in STOPWORDS and len(w) > 3)
-    return {
+    angle = {
         "recurring_words": [w for w, _ in words.most_common(8)],
         "source_titles": cleaned[:6],
         "claim": (f"The Shorts that performed on {candidate['entity']} keep "
                   f"returning to: " + ", ".join(w for w, _ in words.most_common(4))
                   + ". The film has to answer that, not introduce the subject."),
     }
+    constraint = ANGLE_CONSTRAINTS.get(candidate["entity"].lower())
+    if constraint:
+        angle["constraint"] = constraint
+        recap = constraint["recap"]
+        angle["claim"] = (
+            f"The open files are: "
+            + "; ".join(constraint["spine"]) + ". "
+            + f"{recap['what'].capitalize()} get a recap of no more than "
+            + f"{recap['max_seconds']} seconds in {recap['where']} and are "
+            + f"not the spine — {recap['why']}.")
+    return angle
 
 
 def write_brief(brief: dict[str, Any], out_dir: Path) -> Path:
     """One readable brief, for a human to choose from."""
     entity = brief["entity"]
     angle = brief["angle"]
+    constraint = angle.get("constraint")
     lines = [
         f"# Brief — {entity}",
         "",
@@ -233,6 +334,25 @@ def write_brief(brief: dict[str, Any], out_dir: Path) -> Path:
         "",
         angle["claim"],
         "",
+    ]
+    if constraint:
+        lines += [
+            f"*Set by {constraint['set_by']}; it overrides what the Shorts "
+            f"titles would suggest, because the picker cannot know what a "
+            f"previous film already argued.*",
+            "",
+            "**The spine, in order:**", "",
+        ]
+        lines += [f"{n}. {item}" for n, item in enumerate(constraint["spine"], 1)]
+        recap = constraint["recap"]
+        lines += [
+            "",
+            f"**{recap['what'].capitalize()}:** at most "
+            f"{recap['max_seconds']}s, in {recap['where']}, as a recap. "
+            f"{recap['why'].capitalize()}.",
+            "",
+        ]
+    lines += [
         "## Title candidates",
         "",
     ]
@@ -240,7 +360,23 @@ def write_brief(brief: dict[str, Any], out_dir: Path) -> Path:
     lines += ["", "## The Shorts this came from", ""]
     for title, url in zip(angle["source_titles"], brief.get("urls", [])):
         lines.append(f"- {title}  \n  {url}")
-    lines += ["", "## Entities, and how deep the archive is", "",
+    if brief.get("spine_entities"):
+        clears = sum(1 for r in brief["spine_entities"] if r["clears"])
+        lines += ["", "## The spine, and whether it can be sourced", "",
+                  "These are the film's own subjects, named in the "
+                  "constraint. The list below them is what the island's "
+                  "article suggests, which is a different and weaker "
+                  "question.", "",
+                  "| entity | category files | counted | clears 8 |",
+                  "|---|---|---|---|"]
+        for row in brief["spine_entities"]:
+            lines.append(f"| {row['entity']} | {row['category_files']} | "
+                         f"{row['counted']} | "
+                         f"{'yes' if row['clears'] else '**no**'} |")
+        lines += ["", f"**{clears} of {len(brief['spine_entities'])}** spine "
+                      f"entities clear {brief['min_assets']} usable assets.", ""]
+
+    lines += ["", "## What the island's article suggests", "",
               "| entity | category files | counted | clears 8 |",
               "|---|---|---|---|"]
     for row in brief.get("entities", [])[:10]:
@@ -265,6 +401,8 @@ def main() -> int:
     ap.add_argument("--out", default=None)
     ap.add_argument("--ledger-json", default=None,
                     help="read the ledger from a file instead of over SSH")
+    ap.add_argument("--split", type=int, default=3,
+                    help="how many sub-entities to take out of a container")
     ap.add_argument("--skip-depth", action="store_true",
                     help="rank only; do not count assets")
     args = ap.parse_args()
@@ -285,7 +423,8 @@ def main() -> int:
     print(f"after skipping {len(clusters) - len(fresh)} already made or blacklisted: "
           f"{len(fresh)}")
 
-    # Is it a thing? Cheap, and it removes most of what clustering invents.
+    # Is it a thing, and is it FILM-SIZED? Cheap, and it removes most of what
+    # clustering invents.
     from entity_check import is_a_subject
 
     subjects = []
@@ -293,12 +432,30 @@ def main() -> int:
         verdict = is_a_subject(candidate["entity"])
         if verdict["subject"]:
             subjects.append({**candidate, "wikidata": verdict})
+        elif verdict.get("container"):
+            # A CONTAINER IS SPLIT, NOT DROPPED. The audience that watched
+            # two Shorts about Japan watched them for something inside
+            # Japan, and throwing the cluster away throws that away too. The
+            # sub-entities inherit the evidence and are marked derived, so a
+            # brief never claims the Shorts were about it.
+            print(f"   container: {candidate['entity'][:26]:26s} "
+                  f"{verdict['why'][:46]}")
+            for part in split_container(candidate, args.split):
+                print(f"      -> {part['entity']}")
+                subjects.append(part)
         else:
             print(f"   not a subject: {candidate['entity'][:28]:28s} "
                   f"{verdict['why'][:52]}")
         if len(subjects) >= args.candidates:
             break
-    print(f"of those, {len(subjects)} name something")
+    # Re-sorted, because a split inserts its parts where the container was
+    # and a halved score has to rank where a halved score belongs. Without
+    # this, two parts of Japan at 214 came above Noah at 366 purely because
+    # Japan was second in the list.
+    subjects.sort(key=lambda c: (c["median_views"], c["shorts"]), reverse=True)
+    print(f"of those, {len(subjects)} name something "
+          f"({sum(1 for c in subjects if c.get('derived_from'))} split out of "
+          f"a container)")
 
     briefs = []
     if args.skip_depth:
@@ -316,6 +473,13 @@ def main() -> int:
                   f"{'ELIGIBLE' if depth['eligible'] else 'thin'}")
             if depth["eligible"]:
                 angle = angle_of(candidate)
+                constraint = angle.get("constraint")
+                if constraint and constraint.get("entities"):
+                    from source_depth import depth_of
+
+                    depth["spine_entities"] = [
+                        depth_of(name, MIN_ASSETS_PER_ENTITY)
+                        for name in constraint["entities"]]
                 briefs.append({
                     **candidate, **depth, "angle": angle,
                     "title_candidates": [

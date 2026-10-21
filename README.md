@@ -752,6 +752,50 @@ every gate in this repository and obvious to a viewer.
 
 **Silence is not approval.** No reply in 12 hours aborts the run.
 
+### The first run is attended
+
+The two `claude -p` invocations in `run_weekly.sh` are the one part of the
+chain that has never executed — the dry run proves the joins and cannot
+rehearse those. So the first run is launched by hand and watched, and the
+weekly agent stays **loaded but disabled** until it finishes end to end.
+
+```bash
+cd ~/Developer/wak3up-docs/OpenMontage
+
+# 1. install all three agents, then disable the weekly one
+for a in weekly metrics tripwire; do
+  cp launchd/com.wak3up.docs.$a.plist ~/Library/LaunchAgents/
+  launchctl bootout  gui/$UID/com.wak3up.docs.$a 2>/dev/null
+  launchctl bootstrap gui/$UID ~/Library/LaunchAgents/com.wak3up.docs.$a.plist
+done
+launchctl disable gui/$UID/com.wak3up.docs.weekly
+
+# 2. check it is loaded and will not fire
+launchctl print-disabled gui/$UID | grep com.wak3up.docs.weekly   # => true
+launchctl list | grep com.wak3up.docs
+```
+
+Then, Friday evening, run it yourself and watch:
+
+```bash
+cd ~/Developer/wak3up-docs/OpenMontage
+./scripts/run_weekly.sh --brief artifacts/topic_briefs.json 2>&1 | tee /tmp/weekly.log
+```
+
+`--brief` pins it to the Easter Island brief already on disk, so the attended
+run exercises the two `claude -p` stages rather than re-deciding the topic.
+Drop the flag to let it pick.
+
+The run logs to `logs/<date>/` regardless of the `tee`: `prompt.txt`,
+`script_stage.log`, `render_stage.log`, `publish.log`.
+
+**When it has finished end to end, enable the agent:**
+
+```bash
+launchctl enable gui/$UID/com.wak3up.docs.weekly
+launchctl print-disabled gui/$UID | grep com.wak3up.docs.weekly   # => false
+```
+
 ### Installing the agents
 
 ```bash

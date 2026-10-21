@@ -204,6 +204,13 @@ def main() -> int:
     project = ROOT / "projects" / args.project
     artifacts = project / "artifacts"
     listing_path = Path(args.listing) if args.listing else artifacts / "listing.json"
+    if not listing_path.exists():
+        # Same shape of failure as a missing script: an earlier stage exited
+        # 0 and wrote nothing. Said plainly rather than as a traceback.
+        print(f"no listing at {listing_path} — nothing to publish. The "
+              f"listing is built from the project's own artifacts by the "
+              f"compose stage.")
+        return 1
     listing = json.loads(listing_path.read_text())
     video = Path(args.video) if args.video else project / "renders" / "final.mp4"
     thumbnail = Path(args.thumbnail) if args.thumbnail else project / "renders" / "thumbnail.jpg"

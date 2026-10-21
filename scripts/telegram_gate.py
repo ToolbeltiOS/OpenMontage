@@ -92,6 +92,15 @@ def main() -> int:
     args = ap.parse_args()
 
     script_path = Path(args.script)
+    if not script_path.exists():
+        # The real failure this guards: the script stage exited 0 and wrote
+        # nothing. Without it the gate dies on a traceback at two in the
+        # morning and the Telegram message says "unexpected exit 1".
+        message = (f"no script at {script_path} — the script stage produced "
+                   f"nothing to approve")
+        print(message, file=sys.stderr)
+        telegram.send(f"<b>Script gate cannot run</b>\n{message}")
+        return 5
     script = json.loads(script_path.read_text())
     title = script.get("title") or args.project
     outline = outline_of(script)
