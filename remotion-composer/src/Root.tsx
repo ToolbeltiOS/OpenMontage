@@ -187,6 +187,15 @@ export const Root: React.FC = () => {
         width={1920}
         height={1080}
         defaultProps={{ dir: "demoframes", act: "act2", stack: "full" }}
+        // The length was hardcoded at 2724 — the act 2 demo's — which is
+        // ninety seconds of a twenty-minute film. A pass over a sequence is
+        // as long as the sequence.
+        calculateMetadata={({ props }) => ({
+          durationInFrames: Math.max(
+            1,
+            (props as { frames?: number }).frames ?? 2724,
+          ),
+        })}
       />
       <Composition
         id="CssLookOnly"

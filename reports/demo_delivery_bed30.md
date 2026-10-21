@@ -1,15 +1,15 @@
 # Demo delivery — act 2, bed -30
 
-`projects/they-said-it-couldnt-be-built/renders/demo/act2_demo.mp4` · 2694 frames · 89.8s · picture `remotion-composer/out/demo/act2_base.mp4`
+`projects/they-said-it-couldnt-be-built/renders/demo/act2_demo.mp4` · 2694 frames · 89.8s · plate `remotion-composer/out/demo/act2_base.mp4`
 
 ## Gates
 
 | check | measured | verdict |
 |---|---|---|
 | frame motion | 0.0% duplicate pairs, longest freeze 0.0s, timestamps constant | PASS |
-| frame order | 0 frames out of place, 0 isolated black, correlation with the picture render 0.9977 | PASS |
+| frame order | 0 frames out of place, 0 isolated black, correlation with the plate 0.9977 | PASS |
 | plate purity | 0 words legible in the plate pass | PASS |
-| type lock | 10 text-bearing scenes sampled a second apart, 0 with any word in a different place, worst 0.598px | PASS |
+| type lock | 10 text-bearing scenes sampled a second apart, 0 with a word in a different place, worst 0.598px | PASS |
 | delivery audio | -18.4 dBFS mean, -15.81 LUFS against the mix's -15.8 (-0.01 dB) | PASS |
 
 ## Luma map

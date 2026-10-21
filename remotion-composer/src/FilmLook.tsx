@@ -386,6 +386,8 @@ export const FilmLookFrames: React.FC<{
   act?: string;
   stack?: "full" | "lean" | "minimal";
   acts?: { act: string; from_seconds: number; to_seconds: number }[];
+  /** how long the sequence is; read by calculateMetadata, not used here */
+  frames?: number;
 }> = ({ dir = "demoframes", act = "act2", stack = "full", acts }) => {
   const frame = useCurrentFrame();
   const name = String(frame + 1).padStart(5, "0");

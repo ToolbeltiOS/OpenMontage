@@ -733,23 +733,30 @@ For bugs, feature requests, and workflow discussions, use [GitHub Issues](https:
 Fork-specific. Tracks the editor pass on branch `editor-pass`; the measurements
 behind it are in `reports/reference_pacing.md`.
 
+**A claim here carries the thing that measured it.** Nothing in this section
+describes a property of a delivered file without naming the gate or the report
+that checked it, and where no check has run yet the row says so. That rule
+exists because the act 2 demo was described in this README as "carrying the
+−36 mix" while its audio stream was digital silence from the first sample to
+the last, and nothing in the repository disagreed.
+
 ### What changed, and the defect each change answers
 
-| | what run #1 did | what run #2 does |
-|---|---|---|
-| **Rhythm** | 181 of 182 shots 5–8s; 8–10 cuts every minute | the beat sets the band — reveal 12–25s, exposition 6–10s, landing 4–8s, transition 1.5–3.5s. `lib/verify_rhythm.py` fails a flat curve |
-| **Air** | 13s of silence in 20 minutes; longest gap 2.8s | `[air 1.5s/2.5s/4.0s]` written into the script, synthesised as real gaps, 8–15% of runtime. Word band 2,500–2,700 |
-| **Sound** | music bed only | ambience per act, room tone under every silence, riser into each landing, impact on reveal cuts, sting per boundary — all offsets from the bed |
-| **Camera** | one push, 182 times | push/pull/lock/drift from the beat, one direction per run of stills, one speed ramp per act |
-| **Boundaries** | picture and sound cut together, 182 times | J-cuts 12–18 frames at act boundaries and reveals, L-cuts ≤10 at exposition, none at a landing |
-| **Captions** | burnt in, text on screen 99.4% of runtime | sidecar SRT uploaded with `captions.insert`; burn-in available, off, and layout-aware when on |
-| **Film look** | CSS grain/vignette/chromatic layers | **shader pass is the default**, full stack on every slot; CSS is a fallback flag. Both paths run one grade chain, matched to within 2% |
-| **Word timings** | transcription matched back to the script; 60 words under 40ms | forced alignment against the script; 0 under 40ms |
-| **Components** | — | `title_sequence` (default after the cold open) and `before_after` |
-| **Grade** | one look for four acts | per-act temperature, saturation and lift on photographic material; authored graphics keep the base palette |
-| **Maps** | flat dark silhouette | Natural Earth II terrain with shaded relief, palette ocean, 1–2% drift, plus a `globe_descent` that hands off to the same map |
-| **Outro** | right third reserved | right 40% reserved; headline column to the reserve boundary at 62px |
-| **Transitions** | — | five vendored from `GTKottman/remotion-transitions` @ `58df899`, MIT, copied not depended on |
+| | what run #1 did | what run #2 does | measured by |
+|---|---|---|---|
+| **Rhythm** | 181 of 182 shots 5–8s; 8–10 cuts every minute | the beat sets the band — reveal 12–25s, exposition 6–10s, landing 4–8s, transition 1.5–3.5s. `lib/verify_rhythm.py` fails a flat curve | `lib/verify_rhythm.py`, and `reports/critic_act2_demo.md` |
+| **Air** | 13s of silence in 20 minutes; longest gap 2.8s | `[air 1.5s/2.5s/4.0s]` written into the script, synthesised as real gaps, 8–15% of runtime. Word band 2,500–2,700 | `lib/script_beats.py`; realised air in the critic pass |
+| **Sound** | music bed only | ambience per act, room tone under every silence, riser into each landing, impact on reveal cuts, sting per boundary — all offsets from the bed | `lib/sound_design.py`; floor measured per bed in `renders/demo/demo_audio_report.json` |
+| **Camera** | one push, 182 times | push/pull/lock/drift from the beat, one direction per run of stills, one speed ramp per act | `lib/camera_intent.py` |
+| **Boundaries** | picture and sound cut together, 182 times | J-cuts 12–18 frames at act boundaries and reveals, L-cuts ≤10 at exposition, none at a landing | `lib/edit_leads.py` |
+| **Captions** | burnt in, text on screen 99.4% of runtime | sidecar SRT uploaded with `captions.insert`; burn-in available, off, and layout-aware when on | `lib/captions_srt.py`; 34 cues over 20cps recorded below |
+| **Film look** | CSS grain/vignette/chromatic layers | **shader pass is the default**, full stack on every slot; CSS is a fallback flag. Both paths run one grade chain, matched to within 2% | `reports/film_look_cost.md` — +79% floor, +100% full, both measured |
+| **Word timings** | transcription matched back to the script; 60 words under 40ms | forced alignment against the script; 0 under 40ms | `scripts/align_narration.py --check`: 60 under 40ms before, 0 after |
+| **Components** | — | `title_sequence` (default after the cold open) and `before_after` | component docs; no delivered-file claim |
+| **Grade** | one look for four acts | per-act temperature, saturation and lift on photographic material; authored graphics keep the base palette | `reports/film_look_cost.md`; per-act spans exercised in `reports/film_delivery_film_slice.md` |
+| **Maps** | flat dark silhouette | Natural Earth II terrain with shaded relief, palette ocean, 1–2% drift, plus a `globe_descent` that hands off to the same map | stills only — **no gate output yet** |
+| **Outro** | right third reserved | right 40% reserved; headline column to the reserve boundary at 62px | frames in `remotion-composer/out/step7/` — judged by eye, not gated |
+| **Transitions** | — | five vendored from `GTKottman/remotion-transitions` @ `58df899`, MIT, copied not depended on | `reports/vendor_vetting_transitions.md` |
 
 ### In progress
 
@@ -807,12 +814,19 @@ After a render, the critic pass — fails on structure, reports the rest:
 python3 scripts/critic_pass.py --project <id> --film <mp4>
 ```
 
-The demo is built end to end by one script, so the mux cannot be forgotten
-again and the gates run on the file that is about to be delivered:
+There is **one render path**, and both the demo and the film go down it. The
+stages live in `lib/film_render.py` — plate, frames, look, type, deliver,
+gates — and the two scripts differ only in which props, which mix and how
+long. A film rendered by a different path from the demo is a film whose gates
+have never run on it.
 
 ```bash
 python3 scripts/render_demo.py --project <id> --bed 30
+python3 scripts/render_film.py --project <id>          # refuses to overwrite a delivery
 ```
+
+Both take `--gates-only`, which re-runs every check and rewrites the report
+without rendering anything.
 
 Terrain tiles for a map shot are cut once, before the render:
 
@@ -825,25 +839,57 @@ All are declared in `pipeline_defs/narrated-documentary.yaml` as blocking
 delivery checks fail on the demo as it was first shipped, which is the
 evidence that they measure the right thing.
 
+### Decided
+
+- **Music bed level: −30 LUFS under speech**, by ear on the act 2 demo with
+  the sound design present, from an A/B of −36 (run #1's level), −30 and −28.
+  The references run their beds 4–15.5 dB under the voice and run #1 ran 20,
+  so this closes most of that gap. It is in the playbook at
+  `audio.music_under_speech_lufs`, and `lib/mix_audio.py` reads it from there
+  — it used to be a command-line argument, so the level that shipped was
+  whatever was typed that day. Run #1's EDL states −36 and still gets it.
+  Floor measured at −40.4 dB at this level, against −46.4 at −36
+  (`renders/demo/demo_audio_report.json`).
+- **The demo cut.** Approved 2026-10-21.
+
 ### Still needs the owner's decision
 
-- **Music bed level.** The references run 4–15.5 dB under the voice; we run 20.
-  −36 / −30 / −28 LUFS to be auditioned on act 2 **with the sound design
-  present**, by ear, as agreed. Nothing moves until then.
 - **Outro headline column.** Shipped at the reserve boundary (952px) at 62px
   Display, because 900px orphaned "us". Frames for both readings are in
   `remotion-composer/out/step7/`.
 - **Manim as the diagram route** (step 9) — side-by-sides pending.
 - **The two treatment tests** (step 10) — sketched reconstruction and halftone
   collage, one slot each, pending.
-- **The bed level — still open.** Three mixes of the demo window are in
-  `projects/they-said-it-couldnt-be-built/renders/demo/` — `act2_demo_bed36.wav`,
-  `bed30`, `bed28` — each with the sound design present. Judge by ear; nothing
-  moves until you do. The demo now carries −30 so there is something to listen
-  to; that is a placeholder for the audition, not a decision.
-- **The demo cut itself**: `renders/demo/act2_demo.mp4`, 89.8s, full look,
-  captions off, carrying the −30 mix. Report:
-  `reports/demo_delivery_bed30.md`, with the luma map.
+
+### Delivered, and what the gates said
+
+Nothing is listed here without the run that measured it.
+
+**The act 2 demo** — `renders/demo/act2_demo.mp4`, 89.8s, 2,694 frames, full
+look, captions off, carrying the −30 mix. `reports/demo_delivery_bed30.md`:
+
+| check | measured |
+|---|---|
+| frame motion | 0.0% duplicate pairs, longest freeze 0.0s, timestamps constant |
+| frame order | 0 frames out of place, 0 isolated black, correlation with the plate 0.9977 |
+| plate purity | 0 words legible in the plate pass |
+| type lock | 10 text-bearing scenes, 0 with a word in a different place, worst 0.598px |
+| delivery audio | −18.4 dBFS mean, −15.81 LUFS against the mix's −15.80 |
+
+**The film render path** — exercised on a 26.5s slice spanning the act 2/3
+boundary, so the shader's per-act grade is in it.
+`reports/film_delivery_film_slice.md`: all five gates pass, frame order
+correlation 0.999, type lock worst 0.529px, delivery audio −13.7 LUFS against
+the mix's −14.0.
+
+**Anchor tracking** — `reports/anchor_tracking.md`, on run #1's own annotated
+stills: the anchor lands 0.46–1.57px from its feature at the end of a hold,
+where staying locked would have put it 5.4–49.0px away, and no label moved.
+
+**Not delivered: run #2's film.** There is no run #2 edit yet — no script, no
+narration, no EDL — so nothing has been rendered through `render_film.py` end
+to end. The path is checked on a slice and on the demo, and that is all the
+evidence there is for it.
 
 ### Known, recorded, not yet fixed
 
