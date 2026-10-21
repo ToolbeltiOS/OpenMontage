@@ -1,0 +1,653 @@
+{
+ "generated": "2026-10-21T19:12:44.607195+00:00",
+ "ledger_size": 500,
+ "clusters_considered": 67,
+ "min_assets_per_entity": 8,
+ "entities_checked": 6,
+ "briefs": [
+  {
+   "entity": "Easter Island",
+   "shorts": 2,
+   "median_views": 627,
+   "best_views": 1213,
+   "mean_engagement": 0.86,
+   "titles": [
+    "The Walking Statues of Easter Island #Shorts",
+    "Easter Island statues have BODIES? \ud83e\udd2f #Shorts"
+   ],
+   "urls": [
+    "https://youtube.com/shorts/NMpqzQZnHgo",
+    "https://youtube.com/shorts/5RqimZIyXMw"
+   ],
+   "wikidata": {
+    "phrase": "Easter Island",
+    "item": "Q14452",
+    "description": "Polynesian island and special territory of Chile",
+    "sitelinks": 164,
+    "subject": true,
+    "why": "it is somewhere",
+    "article": "Easter Island"
+   },
+   "entities": [
+    {
+     "entity": "Rano Kau",
+     "categories": [
+      "Rano Kau",
+      "Historical photographs of Rano Kau"
+     ],
+     "category_files": 27,
+     "search_files": 0,
+     "counted": 27.0,
+     "clears": true,
+     "examples": [
+      "Al borde del volc\u00e1n Rano Kao - panoramio.jpg",
+      "Atardecer en Rano Kau.JPG",
+      "Chile-03347 - Rano Kau (49073350807).jpg",
+      "Chile-03382 - Rano Kau (49073130726).jpg"
+     ]
+    },
+    {
+     "entity": "Hanga Roa",
+     "categories": [
+      "Hanga Roa",
+      "Hanga Roa O Tai",
+      "Hanga Piko"
+     ],
+     "category_files": 25,
+     "search_files": 0,
+     "counted": 25.0,
+     "clears": true,
+     "examples": [
+      "Localizaci\u00f3n de Hanga Roa en la Isla de Pascua.png",
+      "Boutique de cycle \u00e0 Hanga Roa.jpg",
+      "Buste de Riro K\u0101inga (Hanga Roa).jpg",
+      "Caba\u00f1a \"Tautira\" en Hanga Roa - panoramio.jpg"
+     ]
+    },
+    {
+     "entity": "Chile",
+     "categories": [
+      "Chile",
+      "Chile Chico",
+      "Chile Vamos"
+     ],
+     "category_files": 6,
+     "search_files": 35,
+     "counted": 23.5,
+     "clears": true,
+     "examples": [
+      "Aerial view of the Andes seen from the vicinity of Calama, Chile.png",
+      "AFROCHILE24.png",
+      "ALMA, Cerro El Chascon, Cerro Agua Amarga, Chile.jpg",
+      "Araucaria en Paso Mamuil Malal, lado chileno.jpg"
+     ]
+    },
+    {
+     "entity": "Motu Nui",
+     "categories": [
+      "Motu Nui",
+      "Motu Kao Kao",
+      "Motu Iti (Easter Island)"
+     ],
+     "category_files": 22,
+     "search_files": 0,
+     "counted": 22.0,
+     "clears": true,
+     "examples": [
+      "Motu Nui (2).jpg",
+      "Motu Nui (3).jpg",
+      "16 Velikono\u010dni otok (65) Motu Nui.jpg",
+      "Chile-03321 - Swim to Motu Nui (49073158911).jpg"
+     ]
+    },
+    {
+     "entity": "Oceania",
+     "categories": [
+      "Oceania",
+      "Oceania (1984)",
+      "Oceania (genus)"
+     ],
+     "category_files": 2,
+     "search_files": 26,
+     "counted": 15.0,
+     "clears": true,
+     "examples": [
+      "Oceania - Orwell.PNG",
+      "Oceania Flag Map (1984).png"
+     ]
+    },
+    {
+     "entity": "Rano Raraku",
+     "categories": [
+      "Rano Raraku",
+      "Rano Raraku (quarry)",
+      "Rano Raraku (volcano)"
+     ],
+     "category_files": 13,
+     "search_files": 0,
+     "counted": 13.0,
+     "clears": true,
+     "examples": [
+      "Easter Island, Rano Raraku, moais (6686043521).jpg",
+      "Gigantes dormidos en la cantera de Rano Raraku.jpg",
+      "Moais enterrado en ladera de Rano Raraku.JPG",
+      "Rano Raraku - zde se vyr\u00e1b\u011bly Moai - panoramio.jpg"
+     ]
+    },
+    {
+     "entity": "Easter Island",
+     "categories": [
+      "Easter Island",
+      "Easter Island Moai (Dublin)",
+      "Ahu in Easter Island"
+     ],
+     "category_files": 8,
+     "search_files": 0,
+     "counted": 8.0,
+     "clears": true,
+     "examples": [
+      "Aronie at Capuna Kau, mural painting in stone houses, Easter Island.jpg",
+      "At Angaroa on Cook's Bay - Easter Island, 1868.jpg",
+      "Biking Easter Island.jpg",
+      "Birdman Islands 2.jpg"
+     ]
+    },
+    {
+     "entity": "Polynesia",
+     "categories": [
+      "Polynesia",
+      "Polynesia (moth)",
+      "Synegia polynesia"
+     ],
+     "category_files": 8,
+     "search_files": 0,
+     "counted": 8.0,
+     "clears": true,
+     "examples": [
+      "FMIB 37018 Recif Corallien - Aspect de la surface d'un recif-barriere, a maree basse (Polynesia).jpeg",
+      "Hammock - Polynesia.jpg",
+      "Polynesia banner 4.jpg",
+      "Polynesian navigation device showing directions of winds, waves and islands.jpg"
+     ]
+    },
+    {
+     "entity": "Rapa Nui National Park",
+     "categories": [
+      "Rapa Nui National Park"
+     ],
+     "category_files": 8,
+     "search_files": 0,
+     "counted": 8.0,
+     "clears": true,
+     "examples": [
+      "Aldea Rapa Nui.jpg",
+      "LocMap of WH Rapa Nui NP.png",
+      "Piedra en rapa nui.jpg",
+      "Rapa Nui, Chile..jpg"
+     ]
+    },
+    {
+     "entity": "Mataveri International Airport",
+     "categories": [
+      "Mataveri International Airport"
+     ],
+     "category_files": 0,
+     "search_files": 14,
+     "counted": 7.0,
+     "clears": false,
+     "examples": [
+      "Mataveri Airport Easter Island Chile.jpg",
+      "Chile-03723 - Mataveri International Airport (49073024011).jpg",
+      "Chile-03721 - Mataveri International Airport (49073235787).jpg",
+      "Mataveri control tower.jpg"
+     ]
+    },
+    {
+     "entity": "Isla de Pascua Province",
+     "categories": [
+      "Isla de Pascua Province",
+      "Communes in Isla de Pascua Province"
+     ],
+     "category_files": 1,
+     "search_files": 11,
+     "counted": 6.0,
+     "clears": false,
+     "examples": [
+      "Logo de la Gobernaci\u00f3n de Isla de Pascua.png"
+     ]
+    },
+    {
+     "entity": "Ahu (Easter Island)",
+     "categories": [
+      "Ahu (Easter Island)"
+     ],
+     "category_files": 0,
+     "search_files": 1,
+     "counted": 0.5,
+     "clears": false,
+     "examples": [
+      "Ahu Tongariki - Rapa Nui (Easter Island).JPG"
+     ]
+    }
+   ],
+   "deepest_six": "6/6",
+   "eligible": true,
+   "min_assets": 8,
+   "thin": [],
+   "angle": {
+    "recurring_words": [
+     "statues",
+     "easter",
+     "island",
+     "walking",
+     "bodies"
+    ],
+    "source_titles": [
+     "The Walking Statues of Easter Island",
+     "Easter Island statues have BODIES? \ud83e\udd2f"
+    ],
+    "claim": "The Shorts that performed on Easter Island keep returning to: statues, easter, island, walking. The film has to answer that, not introduce the subject."
+   },
+   "title_candidates": [
+    "Easter Island: The Part Nobody Can Explain",
+    "What Easter Island Was Really Built For",
+    "The Easter Island Problem",
+    "Easter Island Should Not Exist"
+   ]
+  },
+  {
+   "entity": "Japan",
+   "shorts": 3,
+   "median_views": 428,
+   "best_views": 527,
+   "mean_engagement": 6.54,
+   "titles": [
+    "Why Japan's Underwater Pyramid Terrifies Scientists #Shorts",
+    "Is Japan hiding a 10,000-year-old pyramid? #Shorts",
+    "The Face Carved in Japan's Sunken City #Shorts"
+   ],
+   "urls": [
+    "https://youtube.com/shorts/oDW4G09kD94",
+    "https://youtube.com/shorts/RIZxmJTIZBc",
+    "https://youtube.com/shorts/-iXpsL8sFFU"
+   ],
+   "wikidata": {
+    "phrase": "Japan",
+    "item": "Q17",
+    "description": "island country in East Asia",
+    "sitelinks": 419,
+    "subject": true,
+    "why": "it is somewhere",
+    "article": "Japan"
+   },
+   "entities": [
+    {
+     "entity": "East Asia",
+     "categories": [
+      "East Asia",
+      "East Asia Summit",
+      "East Asian studies"
+     ],
+     "category_files": 25,
+     "search_files": 0,
+     "counted": 25.0,
+     "clears": true,
+     "examples": [
+      "Asia Pacific Newslog.png",
+      "East Asian age vs International age chart ko.jpg",
+      "East Asian age vs International age chart.jpg",
+      "Eastern Asia (MODIS 2015-09-21).jpg"
+     ]
+    },
+    {
+     "entity": "East China Sea",
+     "categories": [
+      "East China Sea",
+      "East China Sea Basin",
+      "Views of the East China Sea"
+     ],
+     "category_files": 23,
+     "search_files": 0,
+     "counted": 23.0,
+     "clears": true,
+     "examples": [
+      "A U.S. Navy Landing Craft Air Cushion, more commonly known as an LCAC, approaches the well deck of the amphibious assault ship USS Bonhomme Richard (LHD 6) as the ship operates in the East China Sea on Feb 130202-N-VA915-096.jpg",
+      "A U.S. Navy landing craft, air cushion enters the well deck of the amphibious dock landing ship USS Ashland (LSD 48) in the East China Sea March 11, 2014 140311-N-LM312-312.jpg",
+      "An FA-18E flies over the East China Sea..jpg",
+      "China.A2002102.0225.1km.jpg"
+     ]
+    },
+    {
+     "entity": "Empire of Japan",
+     "categories": [
+      "Empire of Japan",
+      "Coins in Empire of Japan",
+      "Gakushuin (Empire of Japan)"
+     ],
+     "category_files": 1,
+     "search_files": 40,
+     "counted": 20.5,
+     "clears": true,
+     "examples": [
+      "Flag map of Empire of Japan.png"
+     ]
+    },
+    {
+     "entity": "Japan",
+     "categories": [
+      "Japan",
+      "Japan Expo",
+      "Japan Air System"
+     ],
+     "category_files": 3,
+     "search_files": 28,
+     "counted": 17.0,
+     "clears": true,
+     "examples": [
+      "Japan expo 2017 stands 12.jpg",
+      "Japan Air Commuter Logo.png",
+      "Japan Air CommuterHQ.jpg"
+     ]
+    },
+    {
+     "entity": "Chiyoda, Tokyo",
+     "categories": [
+      "Chiyoda, Tokyo",
+      "Fujimi, Chiyoda, Tokyo",
+      "Chiyoda, Chiyoda, Tokyo"
+     ],
+     "category_files": 13,
+     "search_files": 0,
+     "counted": 13.0,
+     "clears": true,
+     "examples": [
+      "Chiyoda, Tokyo, 102-0000, Japan (2024-05-30-11-22-18 UMBRA-05).tiff",
+      "Chiyoda, Tokyo, 102-0000, Japan (CAPELLA C09 SP GEO HH 20241123070733 20241123070740).png",
+      "Chiyoda, Tokyo, 102-0000, Japan (CAPELLA C09 SP GEO HH 20241123070733 20241123070740).tiff",
+      "Chiyoda, Tokyo, 102-0000, Japan (CAPELLA C10 SP GEO HH 20241129051822 20241129051846).png"
+     ]
+    },
+    {
+     "entity": "Atomic bombings of Hiroshima and Nagasaki",
+     "categories": [
+      "Atomic bombings of Hiroshima and Nagasaki",
+      "Casualties of atomic bombings of Hiroshima and Nagasaki",
+      "Films about the atomic bombings of Hiroshima and Nagasaki"
+     ],
+     "category_files": 11,
+     "search_files": 0,
+     "counted": 11.0,
+     "clears": true,
+     "examples": [
+      "Amid the wreckage of a prison in Nagasaki, three Manhattan Project specialists use Geiger counters to measure residual radioactivity.jpg",
+      "Atomic Bomb.webm",
+      "Building in Hiroshima left standing after atomic bomb.jpg",
+      "First leaflet which was dropped on Japanese cities in conjunction with the Atomic Bomb.jpg"
+     ]
+    },
+    {
+     "entity": "Bakumatsu",
+     "categories": [
+      "Bakumatsu",
+      "Japanese Old Photographs In Bakumatsu-Meiji Period, Nagasaki University Library Collection"
+     ],
+     "category_files": 0,
+     "search_files": 12,
+     "counted": 6.0,
+     "clears": false,
+     "examples": [
+      "Allegory of inflation during the Bakumatsu era.jpg",
+      "Front of Bakumatsu Meiji Restoration Memorial Museum.jpg",
+      "Bakumatsu Hoheitai 1864.jpg",
+      "Tanetatsu Akizuki in Bakumatsu period.jpg"
+     ]
+    }
+   ],
+   "deepest_six": "6/6",
+   "eligible": true,
+   "min_assets": 8,
+   "thin": [],
+   "angle": {
+    "recurring_words": [
+     "japan's",
+     "pyramid",
+     "underwater",
+     "terrifies",
+     "scientists",
+     "japan",
+     "hiding",
+     "year"
+    ],
+    "source_titles": [
+     "Why Japan's Underwater Pyramid Terrifies Scientists",
+     "Is Japan hiding a 10,000-year-old pyramid?",
+     "The Face Carved in Japan's Sunken City"
+    ],
+    "claim": "The Shorts that performed on Japan keep returning to: japan's, pyramid, underwater, terrifies. The film has to answer that, not introduce the subject."
+   },
+   "title_candidates": [
+    "Japan: The Part Nobody Can Explain",
+    "What Japan Was Really Built For",
+    "The Japan Problem",
+    "Japan Should Not Exist"
+   ]
+  },
+  {
+   "entity": "King Tut",
+   "shorts": 2,
+   "median_views": 342,
+   "best_views": 627,
+   "mean_engagement": 1.92,
+   "titles": [
+    "The Curse of King Tut: Unexplained Deaths After the Tomb Opening #Shorts",
+    "They Hid This Meteorite Dagger in King Tut #Shorts"
+   ],
+   "urls": [
+    "https://youtube.com/shorts/TJpQyJoQSfw",
+    "https://youtube.com/shorts/av9BowfzU3U"
+   ],
+   "wikidata": {
+    "phrase": "King Tut",
+    "item": "Q12154",
+    "description": "14th century BCE (18th dynasty) Egyptian pharaoh",
+    "sitelinks": 114,
+    "subject": true,
+    "why": "it is someone",
+    "article": "Tutankhamun"
+   },
+   "entities": [
+    {
+     "entity": "Amarna Period",
+     "categories": [
+      "Amarna Period",
+      "Egyptian antiquities from the Amarna Period in the \u00c4gyptisches Museum Berlin"
+     ],
+     "category_files": 54,
+     "search_files": 0,
+     "counted": 54.0,
+     "clears": true,
+     "examples": [
+      "Akhenaten with one of his girls, detail of an altarpiece of a shrine. God Aten and his cartouches appear. C. 1345 BCE. From Amarna, Egypt. Neues Museum.jpg",
+      "Amarna Period Carved Limestone Relief of (probably) Pharaoh Akhnaton & Wife Nefertiti, New Kingdom, 18th Dynasty, c. 1340 BC (28465728740) (cropped).jpg",
+      "Amarna Period Carved Limestone Relief of (probably) Pharaoh Akhnaton & Wife Nefertiti, New Kingdom, 18th Dynasty, c. 1340 BC (28465728740).jpg",
+      "Amarna Period Royal Family Limestone Portrait of a Princess, 18th Dynasty, c. 1340 BC (28466293010).jpg"
+     ]
+    },
+    {
+     "entity": "Akhenaten",
+     "categories": [
+      "Akhenaten",
+      "Akhenaten N 831",
+      "Akhenaten and Nefertiti E15593"
+     ],
+     "category_files": 39,
+     "search_files": 0,
+     "counted": 39.0,
+     "clears": true,
+     "examples": [
+      "Akhenaten names&goddess Amarna tomb I.png",
+      "Akhenaten Throwing Stick EA34213.jpg",
+      "Akhenaten with one of his girls, detail of an altarpiece of a shrine. God Aten and his cartouches appear. C. 1345 BCE. From Amarna, Egypt. Neues Museum.jpg",
+      "Akhenaten's beneficient solar divinity (...) LOC matpc.07418.jpg"
+     ]
+    },
+    {
+     "entity": "King Tut",
+     "categories": [
+      "King Tut (dog)",
+      "King Tut's Wah Wah Hut",
+      "King Tut I (ship, 2003)"
+     ],
+     "category_files": 35,
+     "search_files": 0,
+     "counted": 35.0,
+     "clears": true,
+     "examples": [
+      "Herbert Hoover and King Tut.jpg",
+      "Hoover with King Tut LCCN2016822914.jpg",
+      "King Tut Presidential Police Dog Sentry Box 1929.jpg",
+      "King Tut, the President's Belgian Police dog has taken up his duties at the White House and makes regular rounds to see that the guards are in their places LCCN2002712169.jpg"
+     ]
+    },
+    {
+     "entity": "Howard Carter",
+     "categories": [
+      "Howard Carter",
+      "Grave of Howard Carter"
+     ],
+     "category_files": 31,
+     "search_files": 0,
+     "counted": 31.0,
+     "clears": true,
+     "examples": [
+      "Carter tuttumb.jpg",
+      "Fouilles de Tout\u00e2nkhamon - M. Howard Carter - btv1b9023109v (cropped).jpg",
+      "Fouilles de Tout\u00e2nkhamon - M. Howard Carter - btv1b9023109v.jpg",
+      "Howard Carter 1924.jpg"
+     ]
+    },
+    {
+     "entity": "Horemheb",
+     "categories": [
+      "Horemheb",
+      "Tomb of Horemheb TT78",
+      "Stele of Horemheb-E 11101"
+     ],
+     "category_files": 20,
+     "search_files": 0,
+     "counted": 20.0,
+     "clears": true,
+     "examples": [
+      "Horemheb canopic head.jpg",
+      "Horemheb damaged canopic head.jpg",
+      "Horemheb wall painting.jpg",
+      "La tombe de Horemheb (KV.57) (Vall\u00e9e des Rois Th\u00e8bes ouest) (2079674973).jpg"
+     ]
+    },
+    {
+     "entity": "George Herbert, 5th Earl of Carnarvon",
+     "categories": [
+      "George Herbert, 5th Earl of Carnarvon"
+     ],
+     "category_files": 10,
+     "search_files": 0,
+     "counted": 10.0,
+     "clears": true,
+     "examples": [
+      "Carter, Tomb of Tut-Ankh-Amen, The Late Earl of Carnarvon (cropped).jpg",
+      "Carter, Tomb of Tut-Ankh-Amen, The Late Earl of Carnarvon.jpg",
+      "George Edward Stanhope Molyneux Herbert00.jpg",
+      "George Herbert, 5th Earl of Carnarvon (-1923).jpg"
+     ]
+    },
+    {
+     "entity": "Grand Egyptian Museum",
+     "categories": [
+      "Grand Egyptian Museum",
+      "Collections of the Grand Egyptian Museum",
+      "Ramses II colossal statue in the Grand Egyptian Museum"
+     ],
+     "category_files": 10,
+     "search_files": 0,
+     "counted": 10.0,
+     "clears": true,
+     "examples": [
+      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 01.jpg",
+      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 02.jpg",
+      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 03.jpg",
+      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 04.jpg"
+     ]
+    },
+    {
+     "entity": "Ankhesenamun",
+     "categories": [
+      "Ankhesenamun",
+      "Ankhesenamun in popular culture",
+      "Statue of Amunet with features of Ankhesenamun (Karnak temple of Amun-Ra)"
+     ],
+     "category_files": 9,
+     "search_files": 0,
+     "counted": 9.0,
+     "clears": true,
+     "examples": [
+      "Ankhesenamun handing arrow to seated Tutankhamun.jpg",
+      "Ankhesenamun holding Tutankhamen's arm.jpg",
+      "Ankhesenamun offering flowers to Tutankhamun.jpg",
+      "Ankhesenamun offering lotus to seated King.jpg"
+     ]
+    },
+    {
+     "entity": "Neferneferuaten",
+     "categories": [
+      "Neferneferuaten"
+     ],
+     "category_files": 1,
+     "search_files": 2,
+     "counted": 1.5,
+     "clears": false,
+     "examples": [
+      "KnownNeferneferuatenNames.jpg"
+     ]
+    },
+    {
+     "entity": "Ay (pharaoh)",
+     "categories": [
+      "Ay (pharaoh)"
+     ],
+     "category_files": 0,
+     "search_files": 0,
+     "counted": 0.0,
+     "clears": false,
+     "examples": []
+    }
+   ],
+   "deepest_six": "6/6",
+   "eligible": true,
+   "min_assets": 8,
+   "thin": [],
+   "angle": {
+    "recurring_words": [
+     "king",
+     "curse",
+     "unexplained",
+     "deaths",
+     "tomb",
+     "opening",
+     "meteorite",
+     "dagger"
+    ],
+    "source_titles": [
+     "The Curse of King Tut: Unexplained Deaths After the Tomb Opening",
+     "They Hid This Meteorite Dagger in King Tut"
+    ],
+    "claim": "The Shorts that performed on King Tut keep returning to: king, curse, unexplained, deaths. The film has to answer that, not introduce the subject."
+   },
+   "title_candidates": [
+    "King Tut: The Part Nobody Can Explain",
+    "What King Tut Was Really Built For",
+    "The King Tut Problem",
+    "King Tut Should Not Exist"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,3 @@
+# Topics the channel will not make a documentary about.
+# One per line, case-insensitive, matched against the cluster's entity.
+# Lines starting with # are comments.

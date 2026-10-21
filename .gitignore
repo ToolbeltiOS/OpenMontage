@@ -136,3 +136,8 @@ assets/basemaps/
 
 # Critic contact sheets (regenerable)
 reports/critic/
+
+# Phase 2B — weekly run working files
+logs/
+artifacts/metrics/
+*.lock
