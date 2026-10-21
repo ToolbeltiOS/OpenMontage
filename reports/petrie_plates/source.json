@@ -1,0 +1,32 @@
+{
+ "book": "W. M. Flinders Petrie, The Pyramids and Temples of Gizeh, 1883",
+ "extracted_by": "tools/video/stock_sources/archive_texts.py",
+ "scans": [
+  {
+   "identifier": "pyramidsandtemp00petrgoog",
+   "rights": "NOT_IN_COPYRIGHT",
+   "licence_code": "PD",
+   "permitted": true,
+   "title": "The pyramids and temples of Gizeh",
+   "plates_found": [
+    290
+   ],
+   "plates_saved": [
+    "pyramidsandtemp00petrgoog_n290.jpg"
+   ]
+  },
+  {
+   "identifier": "cu31924012038927",
+   "rights": "(none stated)",
+   "licence_code": "UNKNOWN",
+   "permitted": false,
+   "plates_found": [
+    294,
+    300,
+    304,
+    306
+   ],
+   "plates_saved": []
+  }
+ ]
+}

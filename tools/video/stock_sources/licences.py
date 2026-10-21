@@ -94,12 +94,30 @@ _UNKNOWN = ("UNKNOWN", False, False, False, False)
 # Order matters: the NC and ND patterns are tested BEFORE the plain
 # attribution ones, because every NC string also contains "BY".
 _PATTERNS: list[tuple[re.Pattern[str], tuple[str, bool, bool, bool, bool]]] = [
-    # ── refusals first ────────────────────────────────────────────────────
+    # ── before the refusals, the one permission that CONTAINS a refusal ───
+    # The Internet Archive states a public-domain determination as
+    # "NOT_IN_COPYRIGHT", which contains "IN_COPYRIGHT". Tested first, and
+    # the refusal below is widened to catch the underscored form, so the pair
+    # cannot be confused in either direction.
+    (re.compile(r"\bnot[\s_-]*in[\s_-]*copyright\b", re.I),
+     ("PD", True, True, False, False)),
+    # rightsstatements.org is a CLOSED vocabulary and Europeana states most of
+    # its rights with it. Its twelve codes split cleanly: NoC- (No Copyright)
+    # and NKC (No Known Copyright) are determinations that a thing is free;
+    # InC- (In Copyright), UND (Undetermined) and CNE (Copyright Not
+    # Evaluated) are not. Read rather than left as UNKNOWN, because a
+    # rejection log that says "unknown" invites someone to add a pattern that
+    # should have been there.
+    (re.compile(r"rightsstatements\.org/(vocab|page)/(NoC|NKC)", re.I),
+     ("PD", True, True, False, False)),
+    (re.compile(r"rightsstatements\.org/(vocab|page)/(InC|UND|CNE)", re.I),
+     ("RESTRICTED", False, False, False, False)),
+    # ── refusals ──────────────────────────────────────────────────────────
     (re.compile(r"\bnc\b|non[\s_-]*commercial", re.I),
      ("CC-BY-NC", False, True, True, False)),
     (re.compile(r"\bnd\b|no[\s_-]*deriv", re.I),
      ("CC-BY-ND", True, False, True, False)),
-    (re.compile(r"in\s*copyright|all\s+rights\s+reserved|rights[\s_-]*reserved"
+    (re.compile(r"in[\s_-]*copyright|all\s+rights\s+reserved|rights[\s_-]*reserved"
                 r"|educational\s+use|personal\s+use|editorial\s+use", re.I),
      ("RESTRICTED", False, False, False, False)),
     # ── named, permissive, and not one of the four families ───────────────

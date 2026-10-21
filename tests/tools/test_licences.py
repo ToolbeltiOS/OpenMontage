@@ -167,3 +167,56 @@ class TestPixabay:
 
         assert classify(self.RAW).code != "CC0"
         assert classify("CC0 1.0 Universal").code == "CC0"
+
+
+class TestRightsStatementsVocabulary:
+    """A closed vocabulary Europeana states most of its rights with.
+
+    Twelve codes that split cleanly, and one pair that contains the other as a
+    substring — which is how a public-domain determination gets refused.
+    """
+
+    @pytest.mark.parametrize("code", ["NoC-US", "NoC-OKLR", "NoC-NC", "NKC"])
+    def test_no_copyright_codes_are_permitted(self, code):
+        from tools.video.stock_sources.licences import classify
+
+        licence = classify(f"http://rightsstatements.org/vocab/{code}/1.0/")
+        assert licence.code == "PD" and licence.permitted
+
+    @pytest.mark.parametrize("code", ["InC", "InC-EDU", "InC-NC", "UND", "CNE"])
+    def test_in_copyright_and_undetermined_are_refused(self, code):
+        from tools.video.stock_sources.licences import classify
+
+        licence = classify(f"http://rightsstatements.org/vocab/{code}/1.0/")
+        assert licence.code == "RESTRICTED" and not licence.permitted
+
+    def test_they_are_read_rather_than_left_unknown(self):
+        """A rejection log that says "unknown" invites someone to add a
+        pattern that should have been there."""
+        from tools.video.stock_sources.licences import classify
+
+        assert classify("http://rightsstatements.org/vocab/InC/1.0/").code != "UNKNOWN"
+
+
+class TestNotInCopyright:
+    """The Internet Archive's public-domain determination contains a refusal."""
+
+    def test_not_in_copyright_is_permitted(self):
+        from tools.video.stock_sources.licences import classify
+
+        assert classify("NOT_IN_COPYRIGHT").code == "PD"
+        assert classify("Not in copyright").permitted
+
+    @pytest.mark.parametrize("raw", ["IN_COPYRIGHT", "In Copyright",
+                                     "in copyright", "In-Copyright"])
+    def test_in_copyright_still_is_not(self, raw):
+        from tools.video.stock_sources.licences import classify
+
+        assert not classify(raw).permitted
+
+    def test_the_underscored_form_is_caught_too(self):
+        """Widening the permission without widening the refusal would have
+        let IN_COPYRIGHT through as UNKNOWN-adjacent prose."""
+        from tools.video.stock_sources.licences import classify
+
+        assert classify("IN_COPYRIGHT").code == "RESTRICTED"
