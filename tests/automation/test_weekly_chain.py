@@ -399,10 +399,80 @@ class TestDeafnessIsNotSilence:
         assert "its own bot" in why
 
     def test_the_probe_cannot_prove_exclusivity_on_its_own(self):
-        """The poller that broke the rehearsal runs every five minutes, so an
-        eight-second probe usually misses it. That is why await_reply counts
-        failures too, and why this is documented rather than trusted."""
+        """Measured: 995 polls over five minutes against a bot the Shorts
+        handler polls every five minutes produced zero conflicts. A probe
+        that passes means a webhook is not set and nothing more, and the
+        function says so rather than being trusted."""
         import inspect
 
         source = inspect.getsource(telegram.exclusive)
-        assert "usually misses it" in source
+        assert "zero conflicts" in source
+        assert "a webhook is not set and nothing more" in source
+
+
+class TestTheSharedBotCannotBeMadeSafe:
+    """What the rehearsal actually measured, as opposed to what it looked
+    like the first time.
+
+    995 polls over five minutes against a bot the Shorts handler polls every
+    five minutes produced ZERO conflicts — both pollers return in
+    milliseconds, so they rarely overlap. The handler was caught running in
+    the same window by watching for the process, and its last-update file
+    showed it confirming updates. The theft is silent; the conflict is only
+    what made the first one visible.
+    """
+
+    def test_a_conflict_backs_off_briefly_and_a_real_error_does_not(self, monkeypatch):
+        """Five seconds of backoff is long enough for the other poller to
+        read the reply and confirm it."""
+        slept = []
+        monkeypatch.setattr(telegram.time, "sleep", lambda s: slept.append(s))
+
+        errors = iter([RuntimeError("Conflict: terminated by other getUpdates"),
+                       RuntimeError("Connection reset")])
+
+        def failing(*args, **kwargs):
+            raise next(errors)
+
+        monkeypatch.setattr(telegram, "updates", failing)
+        telegram.await_reply(0, hours=0.0008, poll_seconds=1)
+        assert slept[0] < 1, "a conflict must retry almost immediately"
+        assert slept[1] == 5, "an ordinary error should still back off"
+
+    def test_the_dedicated_bot_is_declared_not_detected(self, monkeypatch):
+        """A competing consumer is invisible: it confirms the update and the
+        update is not there, which looks exactly like silence."""
+        monkeypatch.delenv(telegram.DOCS_TOKEN_VAR, raising=False)
+        monkeypatch.setattr(telegram, "ENV_PATH",
+                            __import__("pathlib").Path("/nonexistent"))
+        own, why = telegram.dedicated()
+        assert not own and "cannot be detected, only avoided" in why
+
+        monkeypatch.setenv(telegram.DOCS_TOKEN_VAR, "123:abc")
+        own, why = telegram.dedicated()
+        assert own
+
+    def test_the_dedicated_token_wins_over_the_shared_one(self, monkeypatch):
+        monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "shared")
+        monkeypatch.setenv(telegram.DOCS_TOKEN_VAR, "dedicated")
+        monkeypatch.setenv("TELEGRAM_CHAT_ID", "c")
+        assert telegram.credentials()[0] == "dedicated"
+
+    def test_a_shared_bot_warns_but_does_not_block(self, monkeypatch):
+        """The gate still runs on it — refusing outright would have stopped
+        a rehearsal that worked."""
+        class _Response:
+            @staticmethod
+            def json():
+                return {"result": {}}
+
+        import requests
+
+        monkeypatch.setattr(requests, "get", lambda *a, **k: _Response())
+        monkeypatch.setattr(telegram, "credentials", lambda *a, **k: ("t", "c"))
+        monkeypatch.setattr(telegram, "updates", lambda *a, **k: [])
+        monkeypatch.delenv(telegram.DOCS_TOKEN_VAR, raising=False)
+        monkeypatch.setattr(telegram, "ENV_PATH",
+                            __import__("pathlib").Path("/nonexistent"))
+        ok, why = telegram.exclusive()
+        assert ok and "WARNING" in why

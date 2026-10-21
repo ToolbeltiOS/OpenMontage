@@ -45,8 +45,13 @@ class TelegramNotConfigured(RuntimeError):
 
 
 def credentials(env_path: Path = ENV_PATH) -> tuple[str, str]:
-    """(token, chat id), from the environment or the out-of-repo .env."""
-    token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    """(token, chat id), from the environment or the out-of-repo .env.
+
+    The documentary's own token wins if there is one: see `dedicated()` for
+    why a shared bot cannot be made reliable.
+    """
+    token = (os.environ.get(DOCS_TOKEN_VAR, "")
+             or os.environ.get("TELEGRAM_BOT_TOKEN", ""))
     chat = os.environ.get("TELEGRAM_CHAT_ID", "")
     if (not token or not chat) and env_path.exists():
         for line in env_path.read_text().splitlines():
@@ -55,7 +60,9 @@ def credentials(env_path: Path = ENV_PATH) -> tuple[str, str]:
                 continue
             key, _, value = line.partition("=")
             value = value.strip().strip('"').strip("'")
-            if key.strip() == "TELEGRAM_BOT_TOKEN" and not token:
+            if key.strip() == DOCS_TOKEN_VAR and value:
+                token = value               # the dedicated one always wins
+            elif key.strip() == "TELEGRAM_BOT_TOKEN" and not token:
                 token = value
             elif key.strip() == "TELEGRAM_CHAT_ID" and not chat:
                 chat = value
@@ -135,17 +142,51 @@ def updates(offset: int | None = None, timeout: int = 50) -> list[dict]:
     return _call("getUpdates", data, timeout=timeout + 20)
 
 
+#: The documentary's own bot. Set this and the gate knows nothing else is
+#: polling; set only TELEGRAM_BOT_TOKEN and it warns, every time.
+DOCS_TOKEN_VAR = "TELEGRAM_DOCS_BOT_TOKEN"
+
+
+def dedicated() -> tuple[bool, str]:
+    """Is this a bot nothing else polls?
+
+    It cannot be measured, so it is DECLARED. A competing consumer is
+    invisible through this API: it confirms the update and the update simply
+    is not there any more, which looks exactly like nobody having written
+    one. No probe distinguishes those, so the configuration has to.
+
+    Setting TELEGRAM_DOCS_BOT_TOKEN is the declaration. Using the Shorts bot
+    then becomes a thing somebody chose rather than a thing that happened.
+    """
+    if os.environ.get(DOCS_TOKEN_VAR):
+        return True, f"{DOCS_TOKEN_VAR} is set"
+    env = {}
+    if ENV_PATH.exists():
+        for line in ENV_PATH.read_text().splitlines():
+            key, _, value = line.strip().partition("=")
+            if value.strip().strip('"').strip("'"):
+                env[key.strip()] = True
+    if env.get(DOCS_TOKEN_VAR):
+        return True, f"{DOCS_TOKEN_VAR} is set"
+    return False, (
+        f"no {DOCS_TOKEN_VAR}: the gate is using a bot that may be shared. "
+        f"A second poller confirms the update and it vanishes, which through "
+        f"this API is indistinguishable from nobody having replied — so it "
+        f"cannot be detected, only avoided.")
+
+
 def exclusive(probe_seconds: int = 8) -> tuple[bool, str]:
     """Can this process read the chat, and does anything else want to?
 
     Checked BEFORE the gate posts, because a gate that posts and then cannot
     read has wasted twelve hours and blamed a person who answered.
 
-    A webhook is detected with certainty. A competing LONG POLLER is not: the
-    one that broke the first rehearsal runs every five minutes, so a short
-    probe usually misses it. What the probe does catch is a poller that is
-    running right now — and `await_reply` catches the rest, by noticing that
-    every single poll failed.
+    A webhook is detected with certainty. A competing poller is NOT, and the
+    measurement says so: 995 polls over five minutes against a bot the Shorts
+    handler polls every five minutes produced zero conflicts, because both
+    pollers return in milliseconds and rarely overlap. The handler was caught
+    running in the same window by watching for the process. A probe that
+    passes here means a webhook is not set and nothing more.
     """
     import requests
 
@@ -168,10 +209,16 @@ def exclusive(probe_seconds: int = 8) -> tuple[bool, str]:
         if "Conflict" in str(error):
             return False, (
                 f"another process is polling this bot: {error}. The gate "
-                f"would post and never see the reply, because the other "
-                f"poller consumes it. Give the documentary its own bot.")
+                f"would post and the other poller would consume the reply. "
+                f"Give the documentary its own bot.")
         return False, f"getUpdates failed: {error}"
-    return True, "no webhook, and nothing else answered the probe"
+
+    own, why = dedicated()
+    if not own:
+        # not fatal: the gate still runs, and it says what it cannot promise
+        print(f"telegram: {why}", file=sys.stderr)
+        return True, f"no webhook; WARNING — {why}"
+    return True, f"no webhook, and {why}"
 
 
 def drain(env_path: Path = ENV_PATH) -> int:
@@ -195,14 +242,23 @@ def await_reply(offset: int, hours: float,
     morning means the person is asleep, and a film that publishes because
     nobody said no is the thing this gate exists to prevent.
 
-    AND "UNREADABLE" IS NOT A TIMEOUT. The first live rehearsal of this gate
-    returned "timeout" while the owner was looking at their reply on screen:
-    another process was polling the same bot token — the Shorts command
-    handler, every five minutes from cron — and Telegram answers a second
-    poller with `Conflict: terminated by other getUpdates request` while the
-    first one CONSUMES the message. Every poll failed, the gate called it
-    silence, and silence blames the human. A gate that cannot read has to say
-    that it cannot read.
+    AND "UNREADABLE" IS NOT A TIMEOUT. The first live rehearsal returned
+    "timeout" while the owner was looking at their reply on screen.
+
+    THE MECHANISM, measured rather than assumed, because the first account of
+    it was wrong. The Shorts command handler polls the same bot token every
+    five minutes from cron and CONFIRMS every update it reads, which removes
+    it from the queue for everyone. Conflicts are rare — both pollers return
+    in milliseconds when there is anything to return, so they rarely overlap
+    — and the conflict is not the theft. It is the ENABLER of the theft: a
+    poll terminated by Conflict used to back off five seconds, and five
+    seconds is long enough for the handler to take the reply.
+
+    So the backoff after a Conflict is short now, and the "unreadable"
+    verdict below catches only the loud version of this. The quiet version —
+    one stolen message, every poll succeeding, nothing in the logs — is
+    indistinguishable from silence through this API, and the only real fix is
+    a bot nothing else polls.
     """
     deadline = time.monotonic() + hours * 3600
     polls = failures = 0
@@ -216,7 +272,12 @@ def await_reply(offset: int, hours: float,
             failures += 1
             last_error = str(error)
             print(f"telegram poll: {error}", file=sys.stderr)
-            time.sleep(5)
+            # A Conflict means another poller just opened a short poll. Retry
+            # almost immediately: the five-second backoff this used to take
+            # is how the first rehearsal's reply was lost — the other poller
+            # finished, read the message and confirmed it while this one
+            # slept.
+            time.sleep(0.5 if "Conflict" in str(error) else 5)
             continue
         for update in batch:
             offset = update["update_id"] + 1

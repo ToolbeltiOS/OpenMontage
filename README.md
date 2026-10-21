@@ -841,25 +841,38 @@ Three things have to be true, and each says so plainly when it is not:
   `~/Developer/wak3up-docs/.env` — outside this repository, because the
   repository is pushed and the token is not.
 
-  **Not the Shorts bot.** `~/wak3up/telegram_commands.py` polls `getUpdates`
-  on that token every five minutes from cron. Telegram allows one poller per
-  bot: the second gets `Conflict: terminated by other getUpdates request`
-  while the first CONSUMES the message. The first live rehearsal of the gate
-  timed out while the owner was looking at their reply on screen, and the
-  Shorts handler had eaten it. Sending works on a shared bot; reading does
-  not, and the gate exists to read.
+  Set **`TELEGRAM_DOCS_BOT_TOKEN`** — a bot of the documentary's own.
+
+  **Not the Shorts bot.** `~/wak3up/telegram_commands.py` polls that token
+  every five minutes from cron and *confirms* every update it reads, which
+  removes it from the queue for everybody. A reply it takes first is simply
+  not there when the gate looks.
+
+  That cost the first live rehearsal: the gate reported "no reply in 12h"
+  while the owner was looking at their reply on screen. The second rehearsal,
+  on the same bot, worked — it is a race, not a wall.
+
+  **It cannot be detected, only avoided.** A competing consumer leaves
+  nothing behind: the update is gone, and through this API that is
+  indistinguishable from nobody having written one. Measured, to be sure of
+  it: 995 polls over five minutes against that bot produced **zero
+  conflicts**, while the handler was caught running in the same window by
+  watching for its process. The visible `Conflict` error is not the theft —
+  it is the enabler, because a poll it terminates used to back off five
+  seconds, which is long enough for the other poller to take the reply. That
+  backoff is half a second now.
 
   ```bash
   .venv/bin/python lib/telegram.py --check        # token and chat id work
-  .venv/bin/python lib/telegram.py --exclusive    # nothing else is polling
+  .venv/bin/python lib/telegram.py --exclusive    # webhook, and a warning
   ```
 
-  `--exclusive` catches a webhook with certainty and a competing poller only
-  if it happens to be mid-poll, so a pass is not a proof. The gate itself
-  catches the rest: if every poll in the window fails it reports
-  **unreadable**, which is a different outcome from a timeout, because
-  silence and deafness are different failures and only one of them is the
-  person's fault.
+  `--exclusive` proves only that no webhook is set; it warns if
+  `TELEGRAM_DOCS_BOT_TOKEN` is unset and does not block, because the shared
+  bot does usually work. The gate also reports **unreadable** rather than
+  **timeout** when every poll in the window failed — silence and deafness
+  are different failures and only one of them is the person's fault — but
+  that catches only the loud version. The quiet one needs the separate bot.
 - **The YouTube refresh token has to survive a week.** A Google OAuth client
   in **testing** mode expires refresh tokens after seven days, so every Friday
   at 22:00 would fail at the last step. The check refuses to pass a token
