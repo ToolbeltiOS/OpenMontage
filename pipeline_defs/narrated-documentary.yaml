@@ -417,6 +417,18 @@ stages:
           rate, every timestamp exactly 1/30 apart, rhythm gate green — while
           its picture was frozen for 51% of its running time, because nothing
           in the pipeline compared one frame to the next.
+      - name: music_rise
+        run: "python3 lib/music_arousal.py {renders}/bed_eq.wav --cuts {artifacts}/render_props.json"
+        blocking: true
+        why: >
+          A rise lands only where the bed is already rising. The mood table
+          decides whether the EDIT may lift the music; whether the music
+          supports it is a separate fact, and a bed that is flat or falling
+          does not become a rise because an edit asked for one — it becomes a
+          fader move, which is what an audience hears as manipulation. On run
+          #1's bed only 37% of the film is rising at any moment, so this
+          refuses most of what a table full of `rise: true` rows would ask
+          for.
       - name: source_cuts
         run: "python3 lib/verify_source_cuts.py {artifacts}/render_props.json --project {project}"
         blocking: true
