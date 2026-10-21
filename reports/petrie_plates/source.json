@@ -1,32 +1,49 @@
 {
  "book": "W. M. Flinders Petrie, The Pyramids and Temples of Gizeh, 1883",
+ "author_died": 1942,
  "extracted_by": "tools/video/stock_sources/archive_texts.py",
  "scans": [
   {
    "identifier": "pyramidsandtemp00petrgoog",
-   "rights": "NOT_IN_COPYRIGHT",
+   "title": "The pyramids and temples of Gizeh",
+   "rights_field": "NOT_IN_COPYRIGHT",
+   "published": 1883,
    "licence_code": "PD",
    "permitted": true,
-   "title": "The pyramids and temples of Gizeh",
-   "plates_found": [
-    290
-   ],
-   "plates_saved": [
-    "pyramidsandtemp00petrgoog_n290.jpg"
+   "reason": "(read from the rights field)",
+   "plates": [
+    {
+     "page": 290,
+     "file": "pyramidsandtemp00petrgoog_n290.jpg"
+    }
    ]
   },
   {
    "identifier": "cu31924012038927",
-   "rights": "(none stated)",
-   "licence_code": "UNKNOWN",
-   "permitted": false,
-   "plates_found": [
-    294,
-    300,
-    304,
-    306
-   ],
-   "plates_saved": []
+   "title": "The pyramids and temples of Gizeh",
+   "rights_field": "(none stated)",
+   "published": 1883,
+   "licence_code": "PD",
+   "permitted": true,
+   "reason": "published 1883, before 1929: out of copyright in the United States",
+   "plates": [
+    {
+     "page": 294,
+     "file": "cu31924012038927_n294.jpg"
+    },
+    {
+     "page": 300,
+     "file": "cu31924012038927_n300.jpg"
+    },
+    {
+     "page": 304,
+     "file": "cu31924012038927_n304.jpg"
+    },
+    {
+     "page": 306,
+     "file": "cu31924012038927_n306.jpg"
+    }
+   ]
   }
  ]
 }

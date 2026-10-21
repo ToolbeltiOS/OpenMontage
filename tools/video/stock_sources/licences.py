@@ -75,6 +75,16 @@ def use_scope(code: str) -> dict[str, object]:
     }))
 
 
+#: Copyright expires. A work published before this year is in the public
+#: domain in the United States, where the channel publishes, whatever a
+#: database does or does not say about it.
+PD_BY_PUBLICATION_BEFORE = 1929
+
+#: And a work whose author has been dead this long is in the public domain
+#: across the life-plus-70 jurisdictions.
+PD_BY_AUTHOR_DEAD_YEARS = 70
+
+
 @dataclass(frozen=True)
 class Licence:
     code: str
@@ -83,6 +93,11 @@ class Licence:
     attribution: bool
     share_alike: bool
     raw: str
+    #: Why this is the answer, when the answer did not come from the string.
+    #: Empty for everything read out of a licence statement; filled by the
+    #: age rule, so a PD that nobody wrote down can be told from one that
+    #: somebody did.
+    reason: str = ""
 
     @property
     def permitted(self) -> bool:
@@ -90,6 +105,18 @@ class Licence:
 
 
 _UNKNOWN = ("UNKNOWN", False, False, False, False)
+
+#: The codes the age rule may overrule.
+#:
+#: UNKNOWN is an absent or unreadable statement, and UND and CNE are a
+#: database saying in so many words that it has not looked. An age fact
+#: answers a question those leave open.
+#:
+#: It does NOT overrule an explicit claim of copyright. A 1883 publication
+#: and an "In Copyright" statement contradict each other, and the right
+#: outcome is that a person reads the contradiction, not that an adapter
+#: picks a side. Those stay refused and the conflict is recorded.
+RESOLVABLE_BY_AGE = ("UNKNOWN",)
 
 # Order matters: the NC and ND patterns are tested BEFORE the plain
 # attribution ones, because every NC string also contains "BY".
@@ -142,24 +169,77 @@ _PATTERNS: list[tuple[re.Pattern[str], tuple[str, bool, bool, bool, bool]]] = [
 ]
 
 
-def classify(text: str | None) -> Licence:
+def pd_by_age(published: int | None, author_died: int | None,
+              today: int | None = None) -> str:
+    """Is this old enough to be out of copyright, and which fact says so?
+
+    Returns the reason, or "" if neither fact establishes it. Both are
+    checked because they fail in different places: a 1912 photograph by an
+    unknown photographer has a publication date and no death date, and a 1935
+    drawing by someone who died in 1940 has the reverse.
+    """
+    import datetime
+
+    year = today or datetime.date.today().year
+    if published is not None and published < PD_BY_PUBLICATION_BEFORE:
+        return (f"published {published}, before {PD_BY_PUBLICATION_BEFORE}: "
+                f"out of copyright in the United States")
+    if author_died is not None and year - author_died > PD_BY_AUTHOR_DEAD_YEARS:
+        return (f"author died {author_died}, more than "
+                f"{PD_BY_AUTHOR_DEAD_YEARS} years ago: out of copyright "
+                f"under life plus {PD_BY_AUTHOR_DEAD_YEARS}")
+    return ""
+
+
+def classify(text: str | None, published: int | None = None,
+             author_died: int | None = None) -> Licence:
     """Read a licence out of whatever the API gave us.
 
-    Unrecognised and empty both come back UNKNOWN, which is not permitted.
+    Unrecognised and empty both come back UNKNOWN, which is not permitted —
+    unless the work is old enough that copyright has expired, in which case
+    the age is the answer and the REASON is recorded, so a PD that nobody
+    wrote down can be told from one that somebody did.
     """
     raw = (text or "").strip()
-    if not raw:
-        return Licence(*_UNKNOWN, raw="")
-    for pattern, (code, commercial, derivatives, attribution, share_alike) in _PATTERNS:
-        if pattern.search(raw):
-            return Licence(code, commercial, derivatives, attribution,
-                           share_alike, raw)
-    return Licence(*_UNKNOWN, raw=raw)
+    found = None
+    if raw:
+        for pattern, (code, commercial, derivatives, attribution, share_alike) in _PATTERNS:
+            if pattern.search(raw):
+                found = Licence(code, commercial, derivatives, attribution,
+                                share_alike, raw)
+                break
+    if found is None:
+        found = Licence(*_UNKNOWN, raw=raw)
+
+    if found.permitted or found.code not in RESOLVABLE_BY_AGE:
+        reason = pd_by_age(published, author_died)
+        if reason and not found.permitted:
+            # an explicit claim that the facts contradict: still refused,
+            # and the contradiction is the thing worth seeing
+            return Licence(found.code, found.commercial, found.derivatives,
+                           found.attribution, found.share_alike, raw,
+                           reason=f"states {found.code!r} but {reason} — "
+                                  f"refused; a person should read this")
+        return found
+
+    reason = pd_by_age(published, author_died)
+    if reason:
+        return Licence("PD", True, True, False, False, raw, reason=reason)
+    return found
 
 
 def is_permitted(text: str | None) -> bool:
     """True only for CC0, public domain, CC BY and CC BY-SA."""
     return classify(text).permitted
+
+
+def _as_year(value) -> int | None:
+    """A year out of whatever a catalogue put in the field."""
+    if value is None:
+        return None
+    text = str(value)
+    match = re.search(r"\b(1[0-9]{3}|20[0-9]{2})\b", text)
+    return int(match.group(1)) if match else None
 
 
 def filter_candidates(candidates, on_reject=None):
@@ -171,11 +251,17 @@ def filter_candidates(candidates, on_reject=None):
     """
     kept = []
     for candidate in candidates:
-        licence = classify(getattr(candidate, "license", ""))
+        extra = getattr(candidate, "extra", None) or {}
+        licence = classify(
+            getattr(candidate, "license", ""),
+            published=_as_year(extra.get("published") or extra.get("year")),
+            author_died=_as_year(extra.get("author_died")))
         if licence.permitted:
             # Normalise, so the bank records a family rather than a spelling.
             candidate.extra.setdefault("licence_raw", licence.raw)
             candidate.extra["licence_code"] = licence.code
+            if licence.reason:
+                candidate.extra["licence_reason"] = licence.reason
             candidate.extra["share_alike"] = licence.share_alike
             candidate.extra["attribution_required"] = licence.attribution
             scope = use_scope(licence.code)

@@ -143,6 +143,24 @@ def rights_of(meta: dict) -> str:
     return ""
 
 
+def published_year(meta: dict) -> int | None:
+    """When the BOOK was published, not when it was scanned.
+
+    A scan of an 1883 volume may carry no rights field at all — one of the two
+    scans of Petrie's Gizeh does — and the age of the work is the answer the
+    rights field does not give. `date` is the Archive's field for the original
+    publication; `year` is usually the same and sometimes the scan's.
+    """
+    from .licences import _as_year
+
+    fields = meta.get("metadata") or {}
+    for key in ("date", "year", "publicdate"):
+        year = _as_year(fields.get(key))
+        if year is not None:
+            return year
+    return None
+
+
 def page_url(identifier: str, page: int, width: int = PROBE_WIDTH) -> str:
     return _PAGE.format(identifier=identifier, page=page, width=width)
 
@@ -276,7 +294,11 @@ class ArchiveTexts:
                 thumbnail_url=f"https://archive.org/services/img/{identifier}",
                 extra={
                     "identifier": identifier,
+                    # the year goes in extra because the filter reads it: a
+                    # scan with no rights field is answered by the age of the
+                    # book it is a scan of
                     "year": doc.get("year"),
+                    "published": published_year(meta) or doc.get("year"),
                     "pages": (meta.get("metadata") or {}).get("imagecount"),
                     "is_a_book": True,
                     "plates_found_by": "tools/video/stock_sources/archive_texts.py",

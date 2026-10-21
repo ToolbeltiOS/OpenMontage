@@ -58,6 +58,8 @@ def proxy_image(path: str) -> str:
     os.makedirs(out_dir, exist_ok=True)
     dest = os.path.join(out_dir, os.path.basename(path))
     if os.path.exists(dest) and os.path.getmtime(dest) >= os.path.getmtime(path):
+        _record_derivation(path, dest,
+                           f"downscaled to {PROXY_MAX}px for the render")
         return dest
     probe = subprocess.check_output([
         "ffprobe", "-v", "error", "-select_streams", "v:0",
@@ -69,6 +71,7 @@ def proxy_image(path: str) -> str:
     scale = f"scale={PROXY_MAX}:-2" if w >= h else f"scale=-2:{PROXY_MAX}"
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", path, "-vf", scale,
                     "-q:v", "2", dest], check=True)
+    _record_derivation(path, dest, f"downscaled to {PROXY_MAX}px for the render")
     return dest
 
 
@@ -90,6 +93,9 @@ def proxy_video(path: str) -> str:
     os.makedirs(out_dir, exist_ok=True)
     dest = os.path.join(out_dir, os.path.splitext(os.path.basename(path))[0] + "_1080.mp4")
     if os.path.exists(dest) and os.path.getmtime(dest) >= os.path.getmtime(path):
+        # a cache hit still records: the ledger is about the ASSET, not about
+        # whether this run happened to do the work
+        _record_derivation(path, dest, "transcoded to a 1080p h264 proxy")
         return dest
     try:
         w, h = subprocess.check_output([
@@ -113,6 +119,7 @@ def proxy_video(path: str) -> str:
         "-g", "12", "-keyint_min", "12", "-sc_threshold", "0",
         "-pix_fmt", "yuv420p", "-an", dest,
     ], check=True)
+    _record_derivation(path, dest, "transcoded to a 1080p h264 proxy")
     return dest
 
 

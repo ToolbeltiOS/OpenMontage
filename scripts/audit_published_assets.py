@@ -35,29 +35,21 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from lib.derivation import load_ledger  # noqa: E402
 from tools.video.stock_sources.licences import classify, use_scope  # noqa: E402
 
 MEDIA = {".jpg", ".jpeg", ".png", ".webp", ".mp4", ".mov", ".webm"}
 KEYS = ("source", "image", "backgroundImage", "before", "after")
 
-#: Suffixes the pipeline adds when it makes a file out of another file.
+#: A derived asset's rights come from THE LEDGER, not from its file name.
 #:
-#: A third of the published film's assets are derived — a 1080p proxy of a
-#: 4K clip, a detail crop of a plate — and a derived file carries no licence
-#: of its own. Its rights are its source's, and that is a FACT ABOUT THE
-#: PIPELINE rather than about the asset: the derivation step does not copy
-#: the licence forward. Resolving the name is how the audit reads through it.
-DERIVED_SUFFIX = re.compile(r"(_1080)+$|_detail$|_extreme$|_crop$|_wide$")
-
-
-def original_of(name: str) -> str:
-    """The stem this file was derived from, after every suffix is peeled."""
-    stem = Path(name).stem
-    previous = None
-    while stem != previous:
-        previous = stem
-        stem = DERIVED_SUFFIX.sub("", stem)
-    return stem
+#: This used to peel `_1080` and `_detail` off a stem and hope the result
+#: matched something, which worked for all 33 of run #1's derived assets and
+#: is the wrong shape of answer: a credit block generated from a guess can be
+#: wrong without anyone knowing. `lib/derivation.py` writes the record at the
+#: moment the file is made, and run #1's were backfilled once.
+#:
+#: A derived asset with no ledger entry is now a finding, not a puzzle.
 
 
 def used_by_the_film(props: dict) -> dict[str, list[str]]:
@@ -109,7 +101,7 @@ def main() -> int:
     used = used_by_the_film(props)
     index = licence_index(project)
 
-    by_stem = {Path(k).stem: v for k, v in index.items()}
+    ledger = load_ledger(project)
 
     refused, unrecorded, kept, derived = [], [], [], []
     for source, cuts in sorted(used.items()):
@@ -117,12 +109,12 @@ def main() -> int:
         record = index.get(name)
         inherited_from = ""
         if record is None:
-            stem = original_of(name)
-            match = by_stem.get(stem) or next(
-                (v for k, v in by_stem.items() if k.startswith(stem)), None)
-            if match is not None:
-                record = match
-                inherited_from = stem
+            entry = ledger.get(name)
+            if entry is not None and entry.get("licence"):
+                record = {"licence": entry["licence"],
+                          "where": "derived_assets.json",
+                          "provider": entry.get("provider", "")}
+                inherited_from = entry["derived_from"]
                 derived.append(name)
         if record is None:
             unrecorded.append({"source": source, "cuts": cuts})
@@ -146,10 +138,12 @@ def main() -> int:
         f"{len(unrecorded)} have no licence recorded anywhere.**",
         "",
         f"{len(derived)} of the passes are DERIVED files — a 1080p proxy of a "
-        f"4K clip, a detail crop of a plate — which carry no licence of their "
-        f"own and inherit their source's. That is a gap in the pipeline, not "
-        f"in the rights: the derivation step does not copy the licence "
-        f"forward, so the audit has to read through the file name to find it.",
+        f"4K clip, a detail crop of a plate. Each one's rights come from "
+        f"`artifacts/derived_assets.json`, written by the derivation step at "
+        f"the moment the file is made. Before that ledger existed the audit "
+        f"read through the FILE NAME to find them, which worked for all 33 "
+        f"and is a guess, and a credit block generated from a guess can be "
+        f"wrong without anyone knowing.",
         "",
         "| licence family | assets |", "|---|---|",
     ]
@@ -167,8 +161,8 @@ def main() -> int:
 
     if derived:
         lines += ["", "## Passing by inheritance", "",
-                  "These carry no licence of their own. Each resolves to a "
-                  "source that does.", "",
+                  "These carry no licence of their own. Each names the asset "
+                  "it was made from, in the ledger.", "",
                   "| derived file | inherits from | licence |", "|---|---|---|"]
         for r in kept:
             if r["inherited_from"]:

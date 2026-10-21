@@ -220,3 +220,81 @@ class TestNotInCopyright:
         from tools.video.stock_sources.licences import classify
 
         assert classify("IN_COPYRIGHT").code == "RESTRICTED"
+
+
+class TestPublicDomainByAge:
+    """Copyright expires, and a database that says nothing has not said no.
+
+    Petrie's 1883 Gizeh volume is the live case: one scan of it on the
+    Internet Archive states NOT_IN_COPYRIGHT and the other states nothing at
+    all, and they are scans of the same book.
+    """
+
+    def test_published_before_1929_is_public_domain(self):
+        from tools.video.stock_sources.licences import classify
+
+        licence = classify("", published=1883)
+        assert licence.code == "PD" and licence.permitted
+        assert "1883" in licence.reason and "1929" in licence.reason
+
+    def test_an_author_dead_more_than_seventy_years_is_too(self):
+        from tools.video.stock_sources.licences import classify
+
+        licence = classify("", author_died=1942)
+        assert licence.code == "PD" and licence.permitted
+        assert "1942" in licence.reason
+
+    def test_the_reason_is_always_recorded(self):
+        """A public domain that nobody wrote down must be tellable from one
+        that somebody did."""
+        from tools.video.stock_sources.licences import classify
+
+        by_age = classify("", published=1883)
+        by_statement = classify("Public Domain Mark 1.0")
+        assert by_age.reason and not by_statement.reason
+
+    @pytest.mark.parametrize("published,died", [(1950, None), (None, 2000),
+                                                (2001, 2019), (None, None)])
+    def test_a_work_that_is_not_old_enough_is_still_refused(self, published, died):
+        from tools.video.stock_sources.licences import classify
+
+        assert not classify("", published=published, author_died=died).permitted
+
+    def test_an_explicit_claim_of_copyright_is_not_overruled(self):
+        """An 1883 publication and an "In Copyright" statement contradict each
+        other, and the right outcome is that a person reads the
+        contradiction, not that an adapter picks a side."""
+        from tools.video.stock_sources.licences import classify
+
+        licence = classify("In Copyright", published=1883)
+        assert not licence.permitted
+        assert "refused" in licence.reason and "1883" in licence.reason
+
+    def test_nor_is_a_noncommercial_one(self):
+        from tools.video.stock_sources.licences import classify
+
+        assert not classify("CC BY-NC 4.0", published=1883).permitted
+
+    def test_the_age_is_read_off_the_candidate(self):
+        from dataclasses import dataclass, field
+
+        from tools.video.stock_sources.licences import filter_candidates
+
+        @dataclass
+        class _C:
+            license: str
+            extra: dict = field(default_factory=dict)
+
+        old = _C("", {"published": "1883"})
+        recent = _C("", {"published": "1994"})
+        kept = filter_candidates([old, recent])
+        assert kept == [old]
+        assert "1883" in old.extra["licence_reason"]
+
+    def test_a_year_is_found_inside_a_catalogue_s_prose(self):
+        from tools.video.stock_sources.licences import _as_year
+
+        assert _as_year("London : Field & Tuer, 1883") == 1883
+        assert _as_year(1883) == 1883
+        assert _as_year("n.d.") is None
+        assert _as_year(None) is None
