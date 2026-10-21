@@ -321,3 +321,88 @@ class TestTheOwnerCanOverrideTheAngle:
         angle = angle_of({"entity": "Petra", "titles": ["The Petra Problem"]})
         assert "constraint" not in angle
         assert "keep returning to" in angle["claim"]
+
+
+class TestDeafnessIsNotSilence:
+    """The first live rehearsal returned "no reply in 12h" while the owner
+    was looking at their reply on screen.
+
+    Another process — the Shorts command handler, every five minutes from
+    cron — was polling the same bot token. Telegram answers the second poller
+    with `Conflict: terminated by other getUpdates request` and lets the
+    first one CONSUME the message. Every poll failed, the gate called it
+    silence, and silence blames the human.
+    """
+
+    def test_every_poll_failing_is_not_a_timeout(self, monkeypatch):
+        def conflict(*args, **kwargs):
+            raise RuntimeError("telegram getUpdates failed: Conflict: "
+                               "terminated by other getUpdates request")
+
+        monkeypatch.setattr(telegram, "updates", conflict)
+        monkeypatch.setattr(telegram.time, "sleep", lambda s: None)
+        verdict, detail = telegram.await_reply(0, hours=0.002, poll_seconds=1)
+        assert verdict == "unreadable"
+        assert "Conflict" in detail
+
+    def test_real_silence_is_still_a_timeout(self, monkeypatch):
+        """A reachable chat that nobody answered is the person's call, and
+        aborting is still the right outcome."""
+        monkeypatch.setattr(telegram, "updates", lambda *a, **k: [])
+        verdict, _ = telegram.await_reply(0, hours=0.002, poll_seconds=1)
+        assert verdict == "timeout"
+
+    def test_a_reply_after_a_failed_poll_still_counts(self, monkeypatch):
+        """One bad poll must not condemn the whole window."""
+        calls = {"n": 0}
+
+        def flaky(*args, **kwargs):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise RuntimeError("Conflict: terminated by other getUpdates")
+            return [{"update_id": 7, "message": {"text": "ok"}}]
+
+        monkeypatch.setattr(telegram, "updates", flaky)
+        monkeypatch.setattr(telegram.time, "sleep", lambda s: None)
+        verdict, _ = telegram.await_reply(0, hours=0.05, poll_seconds=1)
+        assert verdict == "ok"
+
+    def test_a_webhook_is_caught_before_the_gate_posts(self, monkeypatch):
+        """getUpdates cannot be used while a webhook is set, so the gate
+        would post and never read."""
+        class _Response:
+            @staticmethod
+            def json():
+                return {"result": {"url": "https://example.invalid/hook"}}
+
+        import requests
+
+        monkeypatch.setattr(requests, "get", lambda *a, **k: _Response())
+        monkeypatch.setattr(telegram, "credentials", lambda *a, **k: ("t", "c"))
+        ok, why = telegram.exclusive()
+        assert not ok and "webhook" in why
+
+    def test_a_competing_poller_is_named_when_the_probe_catches_it(self, monkeypatch):
+        class _Response:
+            @staticmethod
+            def json():
+                return {"result": {}}
+
+        import requests
+
+        monkeypatch.setattr(requests, "get", lambda *a, **k: _Response())
+        monkeypatch.setattr(telegram, "credentials", lambda *a, **k: ("t", "c"))
+        monkeypatch.setattr(telegram, "updates", lambda *a, **k: (_ for _ in ()).throw(
+            RuntimeError("Conflict: terminated by other getUpdates request")))
+        ok, why = telegram.exclusive()
+        assert not ok
+        assert "its own bot" in why
+
+    def test_the_probe_cannot_prove_exclusivity_on_its_own(self):
+        """The poller that broke the rehearsal runs every five minutes, so an
+        eight-second probe usually misses it. That is why await_reply counts
+        failures too, and why this is documented rather than trusted."""
+        import inspect
+
+        source = inspect.getsource(telegram.exclusive)
+        assert "usually misses it" in source

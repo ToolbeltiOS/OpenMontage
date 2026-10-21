@@ -135,6 +135,45 @@ def updates(offset: int | None = None, timeout: int = 50) -> list[dict]:
     return _call("getUpdates", data, timeout=timeout + 20)
 
 
+def exclusive(probe_seconds: int = 8) -> tuple[bool, str]:
+    """Can this process read the chat, and does anything else want to?
+
+    Checked BEFORE the gate posts, because a gate that posts and then cannot
+    read has wasted twelve hours and blamed a person who answered.
+
+    A webhook is detected with certainty. A competing LONG POLLER is not: the
+    one that broke the first rehearsal runs every five minutes, so a short
+    probe usually misses it. What the probe does catch is a poller that is
+    running right now — and `await_reply` catches the rest, by noticing that
+    every single poll failed.
+    """
+    import requests
+
+    token, chat = credentials()
+    if not token or not chat:
+        return False, "no TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID"
+    try:
+        hook = requests.get(
+            f"https://api.telegram.org/bot{token}/getWebhookInfo",
+            timeout=30).json()
+    except Exception as error:
+        return False, f"could not reach Telegram: {error}"
+    url = ((hook.get("result") or {}).get("url") or "")
+    if url:
+        return False, (f"a webhook is set ({url}) — getUpdates cannot be used "
+                       f"while one is, so the gate could post and never read")
+    try:
+        updates(timeout=probe_seconds)
+    except Exception as error:
+        if "Conflict" in str(error):
+            return False, (
+                f"another process is polling this bot: {error}. The gate "
+                f"would post and never see the reply, because the other "
+                f"poller consumes it. Give the documentary its own bot.")
+        return False, f"getUpdates failed: {error}"
+    return True, "no webhook, and nothing else answered the probe"
+
+
 def drain(env_path: Path = ENV_PATH) -> int:
     """Mark everything already waiting as read, and return the next offset.
 
@@ -150,19 +189,32 @@ def await_reply(offset: int, hours: float,
                 poll_seconds: int = 50) -> tuple[str, str]:
     """Wait for a human. Returns (verdict, the text they sent).
 
-    The verdict is "ok", "no", "notes" or "timeout". A timeout is NOT an
-    approval: the caller aborts. Silence at two in the morning means the
-    person is asleep, and a film that publishes because nobody said no is the
-    thing this gate exists to prevent.
-    """
-    import datetime
+    The verdict is "ok", "no", "notes", "timeout" or "unreadable".
 
+    A TIMEOUT IS NOT AN APPROVAL: the caller aborts. Silence at two in the
+    morning means the person is asleep, and a film that publishes because
+    nobody said no is the thing this gate exists to prevent.
+
+    AND "UNREADABLE" IS NOT A TIMEOUT. The first live rehearsal of this gate
+    returned "timeout" while the owner was looking at their reply on screen:
+    another process was polling the same bot token — the Shorts command
+    handler, every five minutes from cron — and Telegram answers a second
+    poller with `Conflict: terminated by other getUpdates request` while the
+    first one CONSUMES the message. Every poll failed, the gate called it
+    silence, and silence blames the human. A gate that cannot read has to say
+    that it cannot read.
+    """
     deadline = time.monotonic() + hours * 3600
+    polls = failures = 0
+    last_error = ""
     while time.monotonic() < deadline:
         remaining = max(1, min(poll_seconds, int(deadline - time.monotonic())))
+        polls += 1
         try:
             batch = updates(offset, timeout=remaining)
         except Exception as error:
+            failures += 1
+            last_error = str(error)
             print(f"telegram poll: {error}", file=sys.stderr)
             time.sleep(5)
             continue
@@ -178,12 +230,17 @@ def await_reply(offset: int, hours: float,
             if lowered in ("no", "n", "stop", "abort", "cancel"):
                 return "no", text
             return "notes", text
+    if polls and failures == polls:
+        # never once read the chat: this is not silence
+        return "unreadable", last_error
     return "timeout", ""
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--exclusive", action="store_true",
+                    help="can this bot's replies actually be read")
     ap.add_argument("--send", default=None)
     args = ap.parse_args()
 
@@ -203,6 +260,11 @@ def main() -> int:
             return 1
         print("reachable: yes")
         return 0
+
+    if args.exclusive:
+        ok, why = exclusive()
+        print(("exclusive: " if ok else "NOT EXCLUSIVE: ") + why)
+        return 0 if ok else 1
 
     if args.send:
         print("sent" if send(args.send) else "not sent")

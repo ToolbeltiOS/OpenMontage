@@ -836,10 +836,30 @@ Three things have to be true, and each says so plainly when it is not:
 .venv/bin/python scripts/pull_metrics.py --check  # analytics scope present
 ```
 
-- **Telegram.** `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` in
+- **Telegram, and it must be the documentary's OWN bot.**
+  `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` in
   `~/Developer/wak3up-docs/.env` — outside this repository, because the
-  repository is pushed and the token is not. The file is there with the
-  instructions in it.
+  repository is pushed and the token is not.
+
+  **Not the Shorts bot.** `~/wak3up/telegram_commands.py` polls `getUpdates`
+  on that token every five minutes from cron. Telegram allows one poller per
+  bot: the second gets `Conflict: terminated by other getUpdates request`
+  while the first CONSUMES the message. The first live rehearsal of the gate
+  timed out while the owner was looking at their reply on screen, and the
+  Shorts handler had eaten it. Sending works on a shared bot; reading does
+  not, and the gate exists to read.
+
+  ```bash
+  .venv/bin/python lib/telegram.py --check        # token and chat id work
+  .venv/bin/python lib/telegram.py --exclusive    # nothing else is polling
+  ```
+
+  `--exclusive` catches a webhook with certainty and a competing poller only
+  if it happens to be mid-poll, so a pass is not a proof. The gate itself
+  catches the rest: if every poll in the window fails it reports
+  **unreadable**, which is a different outcome from a timeout, because
+  silence and deafness are different failures and only one of them is the
+  person's fault.
 - **The YouTube refresh token has to survive a week.** A Google OAuth client
   in **testing** mode expires refresh tokens after seven days, so every Friday
   at 22:00 would fail at the last step. The check refuses to pass a token

@@ -27,6 +27,11 @@ THE REPLY
     silence         ABORT, never continue. A film that publishes because
                     nobody said no is what this exists to prevent.
 
+AND IF THE GATE CANNOT READ, IT SAYS SO. The first live rehearsal returned
+"no reply in 12h" while the owner was looking at their reply: another process
+was polling the same bot token and consuming the messages. Silence and
+deafness are different failures and only one of them is the person's fault.
+
     python scripts/telegram_gate.py --project <id> --script <path> --hours 12
 """
 from __future__ import annotations
@@ -124,6 +129,14 @@ def main() -> int:
         frames = sorted(Path(args.frames).glob("*.png")) + \
                  sorted(Path(args.frames).glob("*.jpg"))
 
+    # Before posting, not after: a gate that posts and then cannot read has
+    # wasted the whole window and blamed someone who answered.
+    readable, why = telegram.exclusive()
+    if not readable:
+        print(f"cannot read replies: {why}", file=sys.stderr)
+        telegram.send(f"<b>Script gate cannot run</b>\n{why}")
+        return 6
+
     offset = telegram.drain()
     post(args.project, text_path, frames, title, outline, args.attempt)
 
@@ -136,6 +149,14 @@ def main() -> int:
     if verdict == "no":
         telegram.send("Aborted, as asked.")
         return 2
+    if verdict == "unreadable":
+        telegram.send(
+            f"<b>The gate could not read this chat</b>\n"
+            f"Every poll failed: {text[:300]}\n\n"
+            f"Your reply may have arrived and been consumed by another "
+            f"process polling the same bot. Aborting — this is not a "
+            f"timeout and it is not your fault.")
+        return 6
     if verdict == "timeout":
         telegram.send(
             f"No reply in {args.hours:g}h — aborting. Silence is not approval.")

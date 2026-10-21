@@ -159,6 +159,9 @@ to projects/$SLUG/artifacts/script.json. Change nothing else." \
         fi
         ;;
     5)  fail "script gate" "the script stage produced no script.json" ;;
+    6)  fail "script gate" "the gate cannot read this chat — another process is
+polling the same bot token, or a webhook is set. The documentary needs its own
+bot; see the README." ;;
     *)  fail "script gate" "unexpected exit $GATE" ;;
   esac
 done
