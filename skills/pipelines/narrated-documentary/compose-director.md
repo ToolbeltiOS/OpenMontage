@@ -114,3 +114,14 @@ recorded, never hidden.
 - Checking the mix only where the music is loud.
 - Reporting planned numbers as if measured.
 - Re-rendering repeatedly to fix a pacing problem that belongs in the scene plan.
+
+## Text On Screen Is Rationed
+
+Captions ship as a **sidecar SRT**, uploaded with `captions.insert`. Burn-in is
+off by default and must never be switched on without a reason that names the
+context — a short-form cut-down, a silent-autoplay placement. When it is on it
+is layout-aware: it sits in the largest free band and renders nothing at all
+while a text-bearing scene is up.
+
+Run #1 burnt word-level captions into the picture and paid the bottom of every
+frame for **99.4% of its runtime**, at one size, in one place.

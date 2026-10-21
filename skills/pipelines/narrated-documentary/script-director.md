@@ -233,3 +233,17 @@ This stage gates on human approval (`human_approval_default: true`). Checkpoint
 - Act 4 restating act 2 with new adjectives.
 - A summary ending, which reliably reads as a shrug.
 - Estimating the word count from the character count.
+
+## Air Is Written, Not Found
+
+Silence is a thing you write. Mark it in the script with `[air 1.5s]`,
+`[air 2.5s]` or `[air 4.0s]` and the narration synthesiser leaves a real gap
+there; `lib/script_beats.py` is the gate and the film's total air must land
+between 8% and 15% of its runtime.
+
+Because the air is part of the runtime, the word budget shrinks to account for
+it: 2,500–2,700 words for a twenty-minute film, not the 3,000 a wall of speech
+would need. Duration is speech **plus planned air**, never speech alone.
+
+Run #1 had 13 seconds of silence in 20 minutes and its longest gap was 2.8
+seconds, because every pause was whatever the synthesiser happened to leave.

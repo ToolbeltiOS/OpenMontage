@@ -214,3 +214,15 @@ measured narration runtime, and **END YOUR TURN**.
 - Synthesizing all acts before the user has heard the voice.
 - A clip reused in adjacent slots, which reads as a mistake rather than a motif.
 - Recording a provider but not a licence.
+
+## What May Be Used At All
+
+The channel is monetised and the films are re-cut and re-graded, so only four
+licence families may be fetched: **CC0, public domain, CC BY and CC BY-SA**.
+NonCommercial and NoDerivatives are refused, and so is anything unreadable —
+**an unknown licence is not permission**. A substring check for "CC BY" accepts
+every NC and ND variant, which is why `tools/video/stock_sources/licences.py`
+exists and why the refusal happens at fetch time, inside the corpus builder,
+for every source rather than for the ones that remember to ask.
+
+An asset that was never downloaded cannot end up in a film by accident.

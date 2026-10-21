@@ -50,6 +50,19 @@ narration. Rules that hold across the piece:
 - **Cut on the sentence, not through it.** Land cuts at clause or sentence
   boundaries. A cut mid-phrase reads as a mistake unless it is deliberately
   jarring.
+- **Shape the cutting rate across the film, not just within a shot.** The
+  playbook names an envelope for cuts per minute and a minimum spread, and a
+  flat curve fails the `rhythm` gate however defensible each individual hold
+  is. Run #1 passed every per-shot rule and ran 8-10 cuts a minute from the
+  first frame to the last: every minute was reasonable and the film had no
+  shape. Decide where the film is fast and where it is slow before placing
+  cuts, and let the per-minute count follow that decision.
+- **Never land a boundary on a cut the source already had.** A clip is rarely
+  one take. Cutting away twelve frames or less from the source's own cut gives
+  the viewer two cuts a quarter of a second apart, and they read the second as
+  a mistake. `lib/verify_source_cuts.py` finds the source's cuts and the
+  `source_cuts` gate refuses a boundary inside that window; a step in a
+  timelapse is not a cut and is exempt.
 
 ### 3. Vary Adjacency
 
@@ -165,3 +178,15 @@ python3 lib/edit_leads.py     {artifacts}/edit_decisions.json
 - Rescuing a thin scene plan with more overlays — it reads as clutter, not depth.
 - Ducking at act boundaries only, so the bed fights every sentence.
 - A cut whose only reason is that the clip was already downloaded.
+
+## The Bed Level Comes From The Playbook
+
+Never write a music level into the EDL by hand. `audio.music_under_speech_lufs`
+in the playbook is the decision — **−30 LUFS under speech**, chosen by ear on
+the act 2 demo with the sound design present — and `lib/mix_audio.py` reads it
+from there. An EDL may state its own level only when a specific film has a
+reason, and then the reason belongs in the decision log.
+
+The references run their beds 4–15.5 dB under the voice. Run #1 ran 20 and
+every loudness check still passed, because the FILM was −14 LUFS integrated
+and nothing measured the music on its own.

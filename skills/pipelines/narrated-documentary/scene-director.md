@@ -217,3 +217,20 @@ has not been run.
 - Treating the buildability check as advisory. It is the only thing between a
   described slot and a silent text-card fallback at compose.
 - Planning cuts on a metronome, which reads as mechanical however good the footage.
+
+## Every Still Names Its Move, And The Asset May Refuse It
+
+The move comes from the beat and the register, not from habit. The playbook's
+mood table gives a move, a speed, a transition family, a hold multiplier and
+whether the music may rise for each `beat × register`, and `lib/camera_intent.py`
+is the gate. Two rules are about consecutive shots rather than single ones: a
+run of drifting stills must keep one direction, or the eye is thrown back where
+it came from; and there is at most one speed ramp per act, into a hard cut.
+
+The asset has exactly one veto. A push into a **dense** frame becomes a lock,
+because a frame that is already full reads as a zoom on a photograph rather
+than an approach to a subject. Asset classes are assigned by
+`lib/asset_classifier.py` and must be on the cut before the move is chosen.
+
+Run #1 gave every still the same push, 182 times, and nothing recorded a
+choice because nothing asked for one.
