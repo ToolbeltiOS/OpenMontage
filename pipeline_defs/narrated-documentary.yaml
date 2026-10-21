@@ -417,6 +417,18 @@ stages:
           rate, every timestamp exactly 1/30 apart, rhythm gate green — while
           its picture was frozen for 51% of its running time, because nothing
           in the pipeline compared one frame to the next.
+      - name: source_cuts
+        run: "python3 lib/verify_source_cuts.py {artifacts}/render_props.json --project {project}"
+        blocking: true
+        why: >
+          No edit boundary within 12 frames of a cut the source already had. A
+          third of the film's shots are clips and a clip is rarely one take;
+          cutting away eight frames before the source's own cut gives the
+          viewer two cuts a quarter of a second apart, and they read the
+          second one as a mistake. The EDL cannot see it — it knows the clip
+          starts at 31.98s and runs 6.6 seconds. A step in a timelapse is not
+          a cut and is exempt, decided by whether the frames either side of it
+          still correlate.
       - name: frame_order
         run: "python3 lib/verify_frame_order.py {renders}/final.mp4 --cuts {artifacts}/render_props.json --reference {renders}/picture.mp4"
         blocking: true
