@@ -80,34 +80,77 @@ class TestScheduling:
 
 
 class TestTheTokenRule:
-    def test_seven_days_is_the_testing_mode_limit(self):
+    """What actually expires one, established 2026-10-21.
+
+    The first version of this pinned a seven-day testing-mode proof. That
+    was the wrong rule: the Mac's client_secrets.json and the droplet's
+    carry the SAME client_id in the same project, and the droplet's uploader
+    refreshes it daily — which testing mode would kill after a week. The
+    consent screen is published, nothing expires on a schedule, and the
+    March invalid_grant was six months of disuse.
+    """
+
+    def test_the_live_rule_is_inactivity_not_a_schedule(self):
         from scripts import publish_doc
 
-        assert publish_doc.TESTING_MODE_DAYS == 7
+        assert publish_doc.INACTIVITY_MONTHS == 6
+        assert publish_doc.WARN_AFTER_MONTHS < publish_doc.INACTIVITY_MONTHS
 
-    def test_a_young_token_is_not_proof(self, monkeypatch, tmp_path):
-        """It works today and that does not mean it works next Friday."""
+    def test_a_weekly_run_is_far_inside_it(self):
         from scripts import publish_doc
 
-        monkeypatch.setattr(publish_doc, "token_age_days", lambda: 2.0)
+        assert 7 < publish_doc.INACTIVITY_MONTHS * 30 / 10
+
+    def test_a_working_token_is_ready_rather_than_unproven(self, monkeypatch, tmp_path):
+        """It used to refuse a token under seven days old. Nothing about
+        this client's token needs proving."""
+        from scripts import publish_doc
+
         monkeypatch.setattr(publish_doc, "TOKEN", tmp_path / "t.pkl")
         monkeypatch.setattr(publish_doc, "TOKEN_SEEN", tmp_path / "s.json")
         (tmp_path / "t.pkl").write_bytes(b"x")
         monkeypatch.setattr(publish_doc, "pickle", _Pickle())
         ok, message = publish_doc.check_token()
-        assert not ok and "does not yet PROVE" in message
+        assert ok and "nothing expires on a schedule" in message
 
-    def test_an_old_token_is(self, monkeypatch, tmp_path):
+    def test_a_long_idle_gap_warns_before_the_cliff(self, monkeypatch, tmp_path):
+        from datetime import datetime, timedelta, timezone
+
         from scripts import publish_doc
 
-        monkeypatch.setattr(publish_doc, "token_age_days", lambda: 30.0)
         monkeypatch.setattr(publish_doc, "TOKEN", tmp_path / "t.pkl")
         monkeypatch.setattr(publish_doc, "TOKEN_SEEN", tmp_path / "s.json")
         (tmp_path / "t.pkl").write_bytes(b"x")
-        (tmp_path / "s.json").write_text(json.dumps({"first_seen": "2026-01-01T00:00:00+00:00"}))
+        stale = (datetime.now(timezone.utc) - timedelta(days=150)).isoformat()
+        (tmp_path / "s.json").write_text(
+            '{"first_seen": "%s", "last_used": "%s"}' % (stale, stale))
         monkeypatch.setattr(publish_doc, "pickle", _Pickle())
         ok, message = publish_doc.check_token()
-        assert ok and "consent screen is published" in message
+        assert ok and "unused" in message and "5.0 months" in message
+
+    def test_a_dead_token_blames_inactivity_when_the_gap_fits(self, monkeypatch, tmp_path):
+        from datetime import datetime, timedelta, timezone
+
+        from scripts import publish_doc
+
+        monkeypatch.setattr(publish_doc, "TOKEN", tmp_path / "t.pkl")
+        monkeypatch.setattr(publish_doc, "TOKEN_SEEN", tmp_path / "s.json")
+        (tmp_path / "t.pkl").write_bytes(b"x")
+        stale = (datetime.now(timezone.utc) - timedelta(days=200)).isoformat()
+        (tmp_path / "s.json").write_text(
+            '{"first_seen": "%s", "last_used": "%s"}' % (stale, stale))
+
+        class _Dead(_Pickle):
+            @staticmethod
+            def loads(data):
+                class _C(_Credentials):
+                    def refresh(self, request):
+                        raise RuntimeError("invalid_grant")
+                return _C()
+
+        monkeypatch.setattr(publish_doc, "pickle", _Dead())
+        ok, message = publish_doc.check_token()
+        assert not ok and "inactivity limit" in message
 
 
 class _Credentials:

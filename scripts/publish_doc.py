@@ -16,11 +16,23 @@ the project as an argument and three things added that a weekly run needs:
                     artifacts/published.json, which the topic picker reads to
                     know what has already been made.
 
-BEFORE THE FIRST RUN the OAuth refresh token has to survive longer than a
-week, or every Friday at 22:00 will fail at the last step. See
-`--check-token`: a Google OAuth client in TESTING mode issues refresh tokens
-that expire after SEVEN DAYS, and the only cure is publishing the consent
-screen.
+BEFORE THE FIRST RUN the OAuth refresh token has to keep working, or every
+Friday at 22:00 will fail at the last step. See `--check-token`.
+
+WHAT ACTUALLY EXPIRES ONE, established 2026-10-21. This client's consent
+screen is PUBLISHED: `publish/client_secrets.json` and the droplet's
+`~/wak3up/client_secrets.json` carry the same client_id in the same project,
+and the Shorts poster refreshes it daily without dying — which a client in
+testing could not do, since testing expires refresh tokens after seven days.
+
+So the March `invalid_grant` was not testing status. On a published client a
+refresh token dies from SIX MONTHS OF DISUSE, from the user revoking access,
+or from passing the hundred-tokens-per-account-per-client limit. Disuse is
+the one that fits a token minted once for a single film and left alone.
+
+A weekly run is twenty-six times more often than the inactivity rule needs,
+so it will not fire — but the check still watches the gap, because the rule
+that bit once is the rule worth watching.
 
     python scripts/publish_doc.py --project <id> --check-token
     python scripts/publish_doc.py --project <id> --dry-run
@@ -51,7 +63,17 @@ PLAYLIST = "Documentaries"
 PUBLISH_HOUR = 9
 PUBLISH_TZ = "America/Toronto"
 
-#: A refresh token from a client in TESTING mode dies after this long.
+#: A refresh token on a PUBLISHED client dies after this long unused.
+#: Google's documented rule; the weekly run touches it every seven days.
+INACTIVITY_MONTHS = 6
+
+#: Warn once the gap gets within this of the cliff.
+WARN_AFTER_MONTHS = 4
+
+#: Kept so the old proof-by-age file and anything that imported this name
+#: still resolve. Nothing uses it for a decision any more: this client is
+#: published, which the matching client_ids and the daily Shorts refresh
+#: establish.
 TESTING_MODE_DAYS = 7
 
 
@@ -85,13 +107,52 @@ def token_age_days() -> float | None:
     return (datetime.now(timezone.utc) - first).total_seconds() / 86400
 
 
-def check_token(verbose: bool = True) -> tuple[bool, str]:
-    """Can this token still refresh, and has it proved it will keep doing so?
+def days_since_last_use() -> float | None:
+    """How long since this token was last refreshed, in days.
 
-    Proof is the only thing that works here. A token cannot be asked whether
-    its consent screen is published; what it can do is keep refreshing, and a
-    refresh token that is more than seven days old and still works is from a
-    client in production, because a testing one would be dead.
+    This is the number that matters on a published client: six months of
+    disuse kills a refresh token, and nothing else here is on a clock.
+    """
+    if not TOKEN_SEEN.exists():
+        return None
+    try:
+        seen = json.loads(TOKEN_SEEN.read_text())
+    except Exception:
+        return None
+    raw = seen.get("last_used") or seen.get("first_seen")
+    last = datetime.fromisoformat(raw)
+    if last.tzinfo is None:
+        last = last.replace(tzinfo=timezone.utc)
+    return (datetime.now(timezone.utc) - last).total_seconds() / 86400
+
+
+def _mark_used() -> None:
+    now = datetime.now(timezone.utc).isoformat()
+    record = {}
+    if TOKEN_SEEN.exists():
+        try:
+            record = json.loads(TOKEN_SEEN.read_text())
+        except Exception:
+            record = {}
+    record.setdefault("first_seen", now)
+    record["last_used"] = now
+    record["note"] = (
+        "This client's consent screen is published: the same client_id is in "
+        "publish/client_secrets.json and the droplet's, and the Shorts "
+        "poster refreshes it daily. On a published client a refresh token "
+        "dies from six months of DISUSE, so last_used is the field that "
+        "matters.")
+    TOKEN_SEEN.write_text(json.dumps(record, indent=1) + "\n")
+
+
+def check_token(verbose: bool = True) -> tuple[bool, str]:
+    """Does this token refresh, and is it being used often enough to live?
+
+    No proof-by-age any more. That test existed because a client in testing
+    mode expires refresh tokens at seven days and a token cannot be asked
+    what mode its client is in — but this one's mode is established: the
+    droplet's uploader carries the identical client_id in the same project
+    and refreshes it daily, which testing mode would not survive.
     """
     from google.auth.transport.requests import Request
 
@@ -101,34 +162,30 @@ def check_token(verbose: bool = True) -> tuple[bool, str]:
     credentials = pickle.loads(TOKEN.read_bytes())
     if not credentials.refresh_token:
         return False, "the token carries no refresh token: re-authorise"
+
+    idle = days_since_last_use()
     try:
         credentials.refresh(Request())
     except Exception as error:
-        return False, (f"the refresh token no longer works ({error}). If the "
-                       f"OAuth consent screen is in TESTING, Google expires "
-                       f"refresh tokens after {TESTING_MODE_DAYS} days — "
-                       f"publish the consent screen and re-authorise.")
+        hint = ""
+        if idle is not None and idle > INACTIVITY_MONTHS * 30:
+            hint = (f" It had not been used for {idle / 30:.1f} months, past "
+                    f"the {INACTIVITY_MONTHS}-month inactivity limit, which "
+                    f"is the likeliest cause.")
+        return False, (f"the refresh token no longer works ({error}).{hint} "
+                       f"Re-authorise with publish/yt_authorize.py.")
     TOKEN.write_bytes(pickle.dumps(credentials))
+    _mark_used()
 
-    if not TOKEN_SEEN.exists():
-        TOKEN_SEEN.write_text(json.dumps({
-            "first_seen": datetime.now(timezone.utc).isoformat(),
-            "note": "written the first time the token refreshed; its age is "
-                    "how we know the consent screen is published",
-        }, indent=1) + "\n")
-
-    age = token_age_days() or 0.0
-    if age > TESTING_MODE_DAYS:
-        return True, (f"the refresh token has worked for {age:.1f} days, "
-                      f"longer than the {TESTING_MODE_DAYS}-day testing "
-                      f"limit: the consent screen is published")
-    return False, (
-        f"the refresh token works, and it is only {age:.1f} days old — which "
-        f"does not yet PROVE it will survive a week. A client in testing "
-        f"mode expires them at {TESTING_MODE_DAYS} days. Either publish the "
-        f"OAuth consent screen (Google Cloud Console > APIs & Services > "
-        f"OAuth consent screen > Publish app) and re-run this, or wait until "
-        f"the token is {TESTING_MODE_DAYS}+ days old and let it prove itself.")
+    if idle is not None and idle > WARN_AFTER_MONTHS * 30:
+        return True, (f"refreshes, and had gone {idle / 30:.1f} months "
+                      f"unused — the limit is {INACTIVITY_MONTHS}. A weekly "
+                      f"run keeps it alive; a long pause would not.")
+    return True, (f"refreshes. Consent screen published, so nothing expires "
+                  f"on a schedule; the live rule is "
+                  f"{INACTIVITY_MONTHS} months unused"
+                  + (f" and it has been {idle:.1f} days" if idle is not None
+                     else ""))
 
 
 def client():

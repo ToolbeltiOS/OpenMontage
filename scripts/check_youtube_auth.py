@@ -9,14 +9,14 @@ Three questions, and the third is the one that matters:
 
     REFRESH  does it refresh right now.
 
-    AGE      has it been refreshing for more than seven days. A Google OAuth
-             client in TESTING mode expires refresh tokens at seven days, and
-             a token cannot be asked what mode its client is in — it can only
-             be watched. A refresh token older than seven days that still
-             works is from a published consent screen, because a testing one
-             would already be dead.
+    USE      how long since it was last refreshed. This client's consent
+             screen is PUBLISHED — the droplet's uploader carries the same
+             client_id in the same project and refreshes it daily — so
+             nothing here expires on a schedule. What does kill a refresh
+             token on a published client is SIX MONTHS of disuse, which is
+             what the March `invalid_grant` was.
 
-Run it after re-authorising, and again a week later.
+Run it after re-authorising.
 
     python scripts/check_youtube_auth.py
 """
@@ -41,7 +41,8 @@ REQUIRED = {
 
 
 def main() -> int:
-    from publish_doc import TESTING_MODE_DAYS, TOKEN, check_token, token_age_days
+    from publish_doc import (INACTIVITY_MONTHS, TOKEN, check_token,
+                             days_since_last_use)
 
     if not TOKEN.exists():
         print(f"no token at {TOKEN}")
@@ -66,13 +67,15 @@ def main() -> int:
     refreshed, message = check_token()
     print(f"  {message}")
 
-    age = token_age_days()
-    print("\nAGE")
-    if age is None:
-        print("  not yet marked — this run marks it; the seven-day proof "
-              "starts now")
+    idle = days_since_last_use()
+    print("\nUSE")
+    if idle is None:
+        print("  not yet marked — this run marks it")
     else:
-        print(f"  {age:.1f} days of continuous refreshing")
+        print(f"  last used {idle:.1f} days ago; the limit is "
+              f"{INACTIVITY_MONTHS} months of disuse")
+    print("  (consent screen published: same client_id as the droplet's "
+          "uploader, which refreshes daily)")
 
     print("\nVERDICT")
     if missing:
@@ -82,16 +85,12 @@ def main() -> int:
             print(f"      missing: {scope}")
         return 1
     if not refreshed:
-        print("  SCOPES OK, consent screen UNPROVEN.")
-        print(f"  The token works today. It has to keep working for "
-              f"{TESTING_MODE_DAYS} days to prove the consent screen is "
-              f"published; until then an unattended Friday could fail at the "
-              f"upload.")
-        print("  Publish it at: Google Cloud Console > APIs & Services >")
-        print("                 OAuth consent screen > Publish app")
-        print(f"  (project: wak3upsociety-pipeline)")
+        print(f"  NOT READY — {message}")
         return 2
-    print("  READY — every scope granted, and the consent screen is published.")
+    print("  READY — every scope granted, the token refreshes, and nothing "
+          "expires on a schedule.")
+    print(f"  A weekly run touches it every 7 days against a "
+          f"{INACTIVITY_MONTHS}-month limit.")
     return 0
 
 

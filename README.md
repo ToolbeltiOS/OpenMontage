@@ -873,13 +873,23 @@ Three things have to be true, and each says so plainly when it is not:
   **timeout** when every poll in the window failed — silence and deafness
   are different failures and only one of them is the person's fault — but
   that catches only the loud version. The quiet one needs the separate bot.
-- **The YouTube refresh token has to survive a week.** A Google OAuth client
-  in **testing** mode expires refresh tokens after seven days, so every Friday
-  at 22:00 would fail at the last step. The check refuses to pass a token
-  younger than that — working today is not the same as working next Friday —
-  so either publish the consent screen (Cloud Console → APIs & Services →
-  OAuth consent screen → Publish app) or let the token prove itself by being
-  more than seven days old.
+- **The YouTube token.** The consent screen for `wak3upsociety-pipeline` is
+  **published**, established by comparison rather than assumed:
+  `publish/client_secrets.json` and the droplet's
+  `~/wak3up/client_secrets.json` carry the *same* client_id
+  (`1063331440126-5u3espe5…v956`) in the same project, and the Shorts poster
+  refreshes it daily — which a client in testing mode could not do, since
+  testing expires refresh tokens after seven days.
+
+  So **nothing expires on a schedule**. On a published client a refresh token
+  dies from **six months of disuse**, from the user revoking access, or from
+  passing the hundred-tokens-per-account-per-client limit. The March
+  `invalid_grant` recorded in `publish/yt_authorize.py` was the inactivity
+  rule — a token minted for one film and left alone — not testing status.
+
+  A weekly run touches it every seven days against a six-month limit, so it
+  will not fire. `check_youtube_auth.py` watches the gap anyway and warns at
+  four months, because the rule that bit once is the rule worth watching.
 - **The analytics scope.** The upload token carries `youtube.upload`,
   `youtube` and `force-ssl`, and metrics need `yt-analytics.readonly`, which
   it does not have. Add it to `publish/yt_authorize.py` and re-authorise.
