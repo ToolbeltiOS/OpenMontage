@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, TRACK, EXPO_OUT, LAYOUT, SHADOW, stagger } from "./system";
-import { FrameLayer, FrameLayerProps, Plate } from "./Frame";
+import { FrameLayer, FrameLayerProps, Plate, PlateSweep } from "./Frame";
 import { T } from "./Type";
 
 /**
@@ -159,6 +159,30 @@ export const SourceCaption: React.FC<{
 const AUTHORED_DRIFT = 0.030;
 const AUTHORED_SCALE = 1.045;
 
+/**
+ * ...AND WHAT CARRIES IT (2026-10-21)
+ *
+ * The move was on the scene's content layer, which is where its type lives.
+ * Moving type by a fraction of a pixel per frame does not move it — it
+ * re-rasterises it, redistributing the same stems across different subpixels
+ * every frame, and every edge in the frame shimmers.
+ *
+ * The obvious repair, locking the type and letting the graphic drift under
+ * it, is wrong here and the measurement says so: at this amplitude a feature
+ * at the frame edge travels about 72px over a 15.5s hold, so a label would
+ * part company with the thing it labels. In an authored scene the labels ARE
+ * the diagram — an evidence card is type on a rule, a timeline is dates on an
+ * axis — and nothing in them can move independently of anything else.
+ *
+ * So in an authored scene the whole card is locked and the PLATE behind it
+ * carries the move. Nobody reads the plate, which is exactly why it can take
+ * a move; and the scene above it holds still, which is what type needs.
+ *
+ * A photographic scene is the other way round: the image moves, because it is
+ * a photograph and not a page, and its annotations lock with their leaders
+ * re-anchoring. That lives in AnnotatedStill, not here.
+ */
+
 export interface SceneShellProps extends Partial<FrameLayerProps> {
   children?: React.ReactNode;
   /** blurred backdrop image for the third plane; omit for the gradient plate */
@@ -211,17 +235,21 @@ export const SceneShell: React.FC<SceneShellProps> = ({
   // Linear, not eased: an eased drift spends its last seconds almost
   // stationary, which is the state being fixed.
   const progress = durationInFrames > 1 ? frame / (durationInFrames - 1) : 0;
-  const sustainStyle: React.CSSProperties = sustain
+  const plateStyle: React.CSSProperties = sustain
     ? {
         transform: `translateZ(0) scale(${1 + (AUTHORED_SCALE - 1) * progress}) `
           + `translateX(${AUTHORED_DRIFT * (progress - 0.5) * 100}%)`,
         // translateZ(0) and will-change force this onto its own composited
         // layer. Without them a slow transform is rasterised with pixel
-        // snapping: the scene sits still for several frames and then jumps,
+        // snapping: the plate sits still for several frames and then jumps,
         // which is the stutter rather than a cure for it.
         willChange: "transform",
       }
     : {};
+  // Everything above the plate is nailed down, on whole pixels, on its own
+  // composited layer so it is rasterised once rather than resampled against
+  // whatever is moving underneath it.
+  const lockedStyle: React.CSSProperties = { transform: "translateZ(0)" };
   const ink = paperInk
     ? {
         rule: "rgba(36,31,24,0.30)",
@@ -233,16 +261,23 @@ export const SceneShell: React.FC<SceneShellProps> = ({
     : undefined;
   return (
   <AbsoluteFill style={{ backgroundColor: background ?? SYS.bg, overflow: "hidden" }}>
-    {background ? null : <Plate image={plate} />}
-    {/* The scene drifts; the chrome does not. Moving the furniture would make
-        the frame edge and the data strips crawl. */}
-    <AbsoluteFill style={sustainStyle}>{children}</AbsoluteFill>
+    {/* The plate drifts. Everything above it — the scene, the chrome, every
+        word in the frame — is locked. A flat-background scene has no plate to
+        drift, so it takes the light sweep on its own: without it the frame
+        would be motionless the moment its reveals finished, which is the
+        defect the sustaining move exists to prevent. */}
+    <AbsoluteFill style={plateStyle}>
+      {background
+        ? (sustain ? <PlateSweep /> : null)
+        : <Plate image={plate} sweep={sustain} />}
+    </AbsoluteFill>
+    <AbsoluteFill style={lockedStyle}>{children}</AbsoluteFill>
     {chrome ? (
-      <>
+      <AbsoluteFill style={lockedStyle}>
         <FrameLayer {...frameProps} ink={ink} vignette={!paperInk && frameProps.vignette !== false} />
         <SceneTitle title={title} kicker={kicker} at={title_at} ink={ink} />
         <SourceCaption caption={caption} source={source} at={caption_at} ink={ink} />
-      </>
+      </AbsoluteFill>
     ) : null}
   </AbsoluteFill>
   );

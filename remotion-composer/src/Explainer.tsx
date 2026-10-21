@@ -51,6 +51,7 @@ import { ProviderChip } from "./components/ProviderChip";
 import { resolveAsset } from "./lib/resolveAsset";
 import type { ParticleType } from "./components/ParticleOverlay";
 import { resolveTheme, type ThemeConfig, DEFAULT_THEME } from "./Root";
+import { LayerMode, LayerScope } from "./design/layers";
 
 // Load Space Grotesk font for cinematic typography
 const { fontFamily } = loadSpaceGrotesk(["400", "700"]);
@@ -429,6 +430,14 @@ export interface ExplainerProps {
    * Switch it on for a short-form cut-down or a silent-autoplay context.
    */
   burn_in_captions?: boolean;
+  /**
+   * Which layer of the film to render. "all" is the single flat render and
+   * the default. The documentary renders twice — "plate" for the shader pass
+   * to run over, "type" over transparency to lay on top of it afterwards — so
+   * that grain and chromatic offset land under the type rather than on its
+   * edges. See src/design/layers.tsx.
+   */
+  layer_mode?: LayerMode;
 }
 
 // ---------------------------------------------------------------------------
@@ -1093,6 +1102,7 @@ const OverlayRenderer: React.FC<{ overlay: Overlay; theme: ThemeConfig }> = ({
 
 export const Explainer: React.FC<ExplainerProps> = (props) => {
   const { cuts, overlays, captions, audio } = props;
+  const layerMode: LayerMode = props.layer_mode ?? "all";
   const captionStyle = props.caption_style ?? "karaoke";
   // Long-form ships a sidecar track; the burn is opt-in. See the caption
   // layer below and `captions.burn_in` in the playbook.
@@ -1103,7 +1113,15 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
   const theme = resolveTheme(props as Record<string, unknown>);
 
   return (
-    <AbsoluteFill style={{ background: theme.backgroundColor, fontFamily: theme.headingFont || fontFamily }}>
+    <AbsoluteFill
+      style={{
+        // The type pass is composited over the graded plate and must carry
+        // nothing behind the glyphs.
+        background: layerMode === "type" ? "transparent" : theme.backgroundColor,
+        fontFamily: theme.headingFont || fontFamily,
+      }}
+    >
+     <LayerScope mode={layerMode}>
       {/* Layer 0: Animated gradient background — driven by theme */}
       <AnimatedBackground theme={theme} />
 
@@ -1215,6 +1233,7 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
           }}
         />
       )}
+     </LayerScope>
     </AbsoluteFill>
   );
 };

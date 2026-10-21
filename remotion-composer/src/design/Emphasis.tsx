@@ -1,6 +1,7 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, EXPO_OUT, EXPO_IN_OUT, LAYOUT, SHADOW } from "./system";
+import { TYPE_CLASS } from "./layers";
 
 export interface EmphasisLineProps {
   text: string;
@@ -59,7 +60,7 @@ export const EmphasisLine: React.FC<EmphasisLineProps> = ({ text, at = 0.4, hold
           position: "absolute",
           left: LAYOUT.left + 40,
           top: "50%",
-          transform: `translateY(calc(-50% + ${(1 - o) * SYS.rise}px))`,
+          transform: `translateY(calc(-50% + ${Math.round((1 - o) * SYS.rise)}px))`,
           maxWidth: 1020,
           opacity: o,
           filter: o < 1 ? `blur(${(1 - o) * SYS.blurFrom}px)` : undefined,
@@ -76,6 +77,7 @@ export const EmphasisLine: React.FC<EmphasisLineProps> = ({ text, at = 0.4, hold
           }}
         />
         <div
+          className={TYPE_CLASS}
           style={
             level === "data"
               ? {

@@ -1,6 +1,7 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig, random, Easing } from "remotion";
 import { SYS, TYPE, TRACK, GRADE, EXPO_OUT, LAYOUT, SHADOW, gradeForAct } from "./system";
+import { TYPE_CLASS } from "./layers";
 
 export interface DataStripProps {
   /** top-left: act number + act title */
@@ -211,6 +212,7 @@ export const FrameLayer: React.FC<FrameLayerProps> = ({
         >
           {actNumber ? (
             <span
+              className={TYPE_CLASS}
               style={{
                 fontFamily: SYS.data,
                 fontSize: TYPE.dataSm,
@@ -225,6 +227,7 @@ export const FrameLayer: React.FC<FrameLayerProps> = ({
           ) : null}
           {actTitle ? (
             <span
+              className={TYPE_CLASS}
               style={{
                 fontFamily: SYS.data,
                 fontSize: TYPE.dataSm,
@@ -242,6 +245,7 @@ export const FrameLayer: React.FC<FrameLayerProps> = ({
 
       {topRight ? (
         <div
+          className={TYPE_CLASS}
           style={{
             position: "absolute",
             right: LAYOUT.left,
@@ -272,6 +276,7 @@ export const FrameLayer: React.FC<FrameLayerProps> = ({
         >
           {sceneIndex ? (
             <div
+              className={TYPE_CLASS}
               style={{
                 fontFamily: SYS.data,
                 fontSize: TYPE.dataSm,
@@ -287,6 +292,7 @@ export const FrameLayer: React.FC<FrameLayerProps> = ({
           ) : null}
           {coords ? (
             <div
+              className={TYPE_CLASS}
               style={{
                 fontFamily: SYS.data,
                 fontSize: TYPE.dataSm - 3,
@@ -379,7 +385,25 @@ export const Graded: React.FC<{
 };
 
 /** Three-plane background: treated plate behind the subject. */
-export const Plate: React.FC<{ image?: string; children?: React.ReactNode }> = ({ image, children }) => (
+/**
+ * The backdrop, and in an authored scene the only thing in the frame that
+ * moves.
+ *
+ * The plate carries a slow light sweep as well as the drift. The drift alone
+ * is a transform on two very soft radial gradients, and a transform on
+ * something with almost no contrast in it changes almost no pixels — measured
+ * at a mean frame difference of about a hundredth of a grey level, under the
+ * floor the freeze check uses and well under what an eye reads as a live
+ * frame. The sweep is a wide, soft highlight travelling across the plate over
+ * the length of the shot: lighting, not content, and the one kind of movement
+ * a page can have without anything on the page moving.
+ */
+export const Plate: React.FC<{
+  image?: string;
+  children?: React.ReactNode;
+  /** the slow light sweep; on wherever the scene's sustaining move is on */
+  sweep?: boolean;
+}> = ({ image, children, sweep }) => (
   <AbsoluteFill style={{ backgroundColor: SYS.bg }}>
     {image ? (
       <AbsoluteFill
@@ -400,6 +424,29 @@ export const Plate: React.FC<{ image?: string; children?: React.ReactNode }> = (
         }}
       />
     )}
+    {sweep ? <PlateSweep /> : null}
     {children}
   </AbsoluteFill>
 );
+
+export const PlateSweep: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const p = durationInFrames > 1 ? frame / (durationInFrames - 1) : 0;
+  // One pass, left to right, over the whole shot. Starting and ending off the
+  // frame means the highlight is always partly outside it, so there is no
+  // moment where it arrives or leaves.
+  const x = -20 + 140 * p;
+  const y = 38 + 10 * p;
+  return (
+    <AbsoluteFill
+      style={{
+        background:
+          `radial-gradient(ellipse 62% 86% at ${x.toFixed(3)}% ${y.toFixed(3)}%,` +
+          ` rgba(236,229,214,0.075) 0%, rgba(236,229,214,0.028) 42%, transparent 72%)`,
+        transform: "translateZ(0)",
+        willChange: "background",
+      }}
+    />
+  );
+};

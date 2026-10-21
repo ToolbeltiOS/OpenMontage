@@ -10,6 +10,7 @@ import { SceneShell } from "./design/Scene";
 import { Graded } from "./design/Frame";
 import { SYS, TYPE, TRACK, SHADOW, LAYOUT, GRADE, EXPO_OUT, EXPO_IN_OUT } from "./design/system";
 import type { WordCaption } from "./components/CaptionOverlay";
+import { TYPE_CLASS } from "./design/layers";
 
 /* ─────────────────────── the three new scene types ──────────────────────── */
 
@@ -89,7 +90,7 @@ export const DemoActGrades: React.FC = () => (
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         </Graded>
-        <div
+        <div className={TYPE_CLASS}
           style={{
             position: "absolute", left: 24, bottom: 24,
             fontFamily: SYS.label, fontSize: TYPE.labelSm, letterSpacing: TRACK,
@@ -194,7 +195,7 @@ const Swatch: React.FC<{ name: string; hex: string }> = ({ name, hex }) => (
   <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
     <div style={{ width: 54, height: 54, background: hex, border: `1px solid ${SYS.rule}` }} />
     <div>
-      <div
+      <div className={TYPE_CLASS}
         style={{
           fontFamily: SYS.label,
           fontSize: TYPE.labelSm - 4,
@@ -205,7 +206,7 @@ const Swatch: React.FC<{ name: string; hex: string }> = ({ name, hex }) => (
       >
         {name}
       </div>
-      <div style={{ fontFamily: SYS.data, fontSize: TYPE.dataSm - 4, color: SYS.faint }}>{hex}</div>
+      <div className={TYPE_CLASS} style={{ fontFamily: SYS.data, fontSize: TYPE.dataSm - 4, color: SYS.faint }}>{hex}</div>
     </div>
   </div>
 );
@@ -220,7 +221,7 @@ const Row: React.FC<{ k: string; v: string }> = ({ k, v }) => (
       alignItems: "baseline",
     }}
   >
-    <span
+    <span className={TYPE_CLASS}
       style={{
         width: 240,
         flexShrink: 0,
@@ -233,7 +234,7 @@ const Row: React.FC<{ k: string; v: string }> = ({ k, v }) => (
     >
       {k}
     </span>
-    <span style={{ fontFamily: SYS.data, fontSize: TYPE.dataSm - 2, color: SYS.text }}>{v}</span>
+    <span className={TYPE_CLASS} style={{ fontFamily: SYS.data, fontSize: TYPE.dataSm - 2, color: SYS.text }}>{v}</span>
   </div>
 );
 
@@ -262,7 +263,7 @@ export const DocStyleSheet: React.FC = () => (
     >
       {/* left: the four type levels, at their real sizes */}
       <div style={{ flex: 1.15 }}>
-        <div
+        <div className={TYPE_CLASS}
           style={{
             fontFamily: SYS.label,
             fontSize: TYPE.labelSm - 5,
@@ -275,14 +276,14 @@ export const DocStyleSheet: React.FC = () => (
           Four levels, and nothing else
         </div>
 
-        <div style={{ fontFamily: SYS.display, fontSize: TYPE.displaySm, color: SYS.text, lineHeight: 1.1 }}>
+        <div className={TYPE_CLASS} style={{ fontFamily: SYS.display, fontSize: TYPE.displaySm, color: SYS.text, lineHeight: 1.1 }}>
           Display — Source Serif
         </div>
-        <div style={{ fontFamily: SYS.data, fontSize: TYPE.dataSm - 4, color: SYS.faint, marginTop: 6 }}>
+        <div className={TYPE_CLASS} style={{ fontFamily: SYS.data, fontSize: TYPE.dataSm - 4, color: SYS.faint, marginTop: 6 }}>
           {`serif 600 · ${TYPE.displayXL}/${TYPE.display}/${TYPE.displaySm} px · titles and claims only`}
         </div>
 
-        <div
+        <div className={TYPE_CLASS}
           style={{
             fontFamily: SYS.label,
             fontSize: TYPE.label,
@@ -295,11 +296,11 @@ export const DocStyleSheet: React.FC = () => (
         >
           Label — Inter caps
         </div>
-        <div style={{ fontFamily: SYS.data, fontSize: TYPE.dataSm - 4, color: SYS.faint, marginTop: 6 }}>
+        <div className={TYPE_CLASS} style={{ fontFamily: SYS.data, fontSize: TYPE.dataSm - 4, color: SYS.faint, marginTop: 6 }}>
           {`sans 500 · ${TYPE.label}/${TYPE.labelSm} px · ${TRACK} tracking · annotations, kickers`}
         </div>
 
-        <div
+        <div className={TYPE_CLASS}
           style={{
             fontFamily: SYS.data,
             fontSize: TYPE.data,
@@ -310,11 +311,11 @@ export const DocStyleSheet: React.FC = () => (
         >
           Data — 131 t · 29.9792° N
         </div>
-        <div style={{ fontFamily: SYS.data, fontSize: TYPE.dataSm - 4, color: SYS.faint, marginTop: 6 }}>
+        <div className={TYPE_CLASS} style={{ fontFamily: SYS.data, fontSize: TYPE.dataSm - 4, color: SYS.faint, marginTop: 6 }}>
           {`mono 400 · ${TYPE.data}/${TYPE.dataSm} px · tabular · every figure, every citation`}
         </div>
 
-        <div
+        <div className={TYPE_CLASS}
           style={{
             fontFamily: SYS.body,
             fontSize: TYPE.body,
@@ -326,14 +327,14 @@ export const DocStyleSheet: React.FC = () => (
         >
           Body — the running line. Captions, epigraphs and subtitles sit here, never in Display.
         </div>
-        <div style={{ fontFamily: SYS.data, fontSize: TYPE.dataSm - 4, color: SYS.faint, marginTop: 6 }}>
+        <div className={TYPE_CLASS} style={{ fontFamily: SYS.data, fontSize: TYPE.dataSm - 4, color: SYS.faint, marginTop: 6 }}>
           {`sans 400 · ${TYPE.body}/${TYPE.bodySm} px`}
         </div>
       </div>
 
       {/* right: palette, motion, grade */}
       <div style={{ flex: 1 }}>
-        <div
+        <div className={TYPE_CLASS}
           style={{
             fontFamily: SYS.label,
             fontSize: TYPE.labelSm - 5,
@@ -353,7 +354,7 @@ export const DocStyleSheet: React.FC = () => (
           <Swatch name="paper" hex={SYS.paper} />
         </div>
 
-        <div
+        <div className={TYPE_CLASS}
           style={{
             fontFamily: SYS.label,
             fontSize: TYPE.labelSm - 5,

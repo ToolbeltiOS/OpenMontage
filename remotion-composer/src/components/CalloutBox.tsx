@@ -5,6 +5,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { TYPE_CLASS } from "../design/layers";
 
 type CalloutType = "info" | "warning" | "tip" | "quote";
 
@@ -153,7 +154,7 @@ export const CalloutBox: React.FC<CalloutBoxProps> = ({
           />
 
           {/* Icon */}
-          <div
+          <div className={TYPE_CLASS}
             style={{
               fontSize: isQuote ? 72 : 48,
               lineHeight: 1,
@@ -181,7 +182,7 @@ export const CalloutBox: React.FC<CalloutBoxProps> = ({
             }}
           >
             {title && (
-              <div
+              <div className={TYPE_CLASS}
                 style={{
                   fontFamily,
                   fontWeight: 700,
@@ -193,7 +194,7 @@ export const CalloutBox: React.FC<CalloutBoxProps> = ({
                 {title}
               </div>
             )}
-            <div
+            <div className={TYPE_CLASS}
               style={{
                 fontFamily: isQuote ? "Georgia, serif" : fontFamily,
                 fontWeight: isQuote ? 400 : 400,

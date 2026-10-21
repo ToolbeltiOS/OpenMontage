@@ -3,6 +3,7 @@ import { AbsoluteFill, Img, interpolate, useCurrentFrame, useVideoConfig, Easing
 import { SYS, TYPE, EXPO_OUT, EXPO_IN_OUT, LAYOUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
 import { resolveAsset } from "../lib/resolveAsset";
+import { TYPE_CLASS } from "../design/layers";
 
 export interface DocumentLine {
   text: string;
@@ -133,10 +134,10 @@ export const DocumentReveal: React.FC<DocumentRevealProps> = ({
           }}
         >
           {headline ? (
-            <div
+            <div className={TYPE_CLASS}
               style={{
                 opacity: appear(0.15),
-                transform: `translateY(${(1 - appear(0.15)) * SYS.rise}px)`,
+                transform: `translateZ(0) translateY(${Math.round((1 - appear(0.15)) * SYS.rise)}px)`,
                 color: ink,
                 fontFamily: SYS.display,
                 fontWeight: 600,
@@ -152,12 +153,12 @@ export const DocumentReveal: React.FC<DocumentRevealProps> = ({
           {lines.map((l, i) => {
             const o = appear(l.at);
             return (
-              <div
+              <div className={TYPE_CLASS}
                 key={i}
                 style={{
                   opacity: o,
                   filter: o < 1 ? `blur(${(1 - o) * SYS.blurFrom}px)` : undefined,
-                  transform: `translateY(${(1 - o) * SYS.rise}px)`,
+                  transform: `translateZ(0) translateY(${Math.round((1 - o) * SYS.rise)}px)`,
                   color: l.emphasis ? emphasis : ink,
                   fontFamily: SYS.display,
                   fontWeight: l.emphasis ? 600 : 400,
@@ -173,7 +174,7 @@ export const DocumentReveal: React.FC<DocumentRevealProps> = ({
           })}
 
           {source ? (
-            <div
+            <div className={TYPE_CLASS}
               style={{
                 opacity: appear(lastAt + 0.7),
                 color: light ? "rgba(36,31,24,0.62)" : SYS.muted,

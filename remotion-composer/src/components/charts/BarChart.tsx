@@ -5,6 +5,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { TYPE_CLASS } from "../../design/layers";
 
 interface BarDatum {
   label: string;
@@ -85,7 +86,7 @@ export const BarChart: React.FC<BarChartProps> = ({
       >
         {/* Title */}
         {title && (
-          <text
+          <text className={TYPE_CLASS}
             x={960}
             y={80}
             textAnchor="middle"
@@ -119,7 +120,7 @@ export const BarChart: React.FC<BarChartProps> = ({
                   strokeWidth={1}
                   opacity={gridOpacity}
                 />
-                <text
+                <text className={TYPE_CLASS}
                   x={chartLeft - 12}
                   y={line.y + 5}
                   textAnchor="end"
@@ -236,7 +237,7 @@ export const BarChart: React.FC<BarChartProps> = ({
 
               {/* Value label */}
               {showValues && (
-                <text
+                <text className={TYPE_CLASS}
                   x={barX + barWidth / 2}
                   y={barY - 12}
                   textAnchor="middle"
@@ -256,7 +257,7 @@ export const BarChart: React.FC<BarChartProps> = ({
               )}
 
               {/* Label */}
-              <text
+              <text className={TYPE_CLASS}
                 x={barX + barWidth / 2}
                 y={chartBottom + 40}
                 textAnchor="middle"

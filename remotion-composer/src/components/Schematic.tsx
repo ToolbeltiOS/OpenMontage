@@ -2,6 +2,7 @@ import React from "react";
 import { interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, TRACK, EXPO_OUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
+import { TYPE_CLASS } from "../design/layers";
 
 export type SchematicEffect = "draw" | "fade" | "slide-in";
 
@@ -158,7 +159,7 @@ export const Schematic: React.FC<SchematicProps> = ({
               return <polyline key={l.id} points={l.points} {...common} />;
             case "text":
               return (
-                <text
+                <text className={TYPE_CLASS}
                   key={l.id}
                   x={l.x}
                   y={l.y}
@@ -182,10 +183,10 @@ export const Schematic: React.FC<SchematicProps> = ({
           if (p <= 0) return null;
           const isData = lb.level === "data";
           return (
-            <text
+            <text className={TYPE_CLASS}
               key={i}
               x={lb.x}
-              y={lb.y + (1 - p) * SYS.rise}
+              y={lb.y + Math.round((1 - p) * SYS.rise)}
               fill={lb.accent ? SYS.accent : SYS.text}
               fontFamily={isData ? SYS.data : SYS.label}
               fontSize={isData ? TYPE.dataSm : TYPE.labelSm}

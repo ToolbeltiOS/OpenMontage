@@ -5,6 +5,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { TYPE_CLASS } from "../../design/layers";
 
 interface DataPoint {
   x: number;
@@ -113,7 +114,7 @@ export const LineChart: React.FC<LineChartProps> = ({
       >
         {/* Title */}
         {title && (
-          <text
+          <text className={TYPE_CLASS}
             x={960}
             y={80}
             textAnchor="middle"
@@ -145,7 +146,7 @@ export const LineChart: React.FC<LineChartProps> = ({
                   stroke={gridColor}
                   strokeWidth={1}
                 />
-                <text
+                <text className={TYPE_CLASS}
                   x={chartLeft - 14}
                   y={line.y + 6}
                   textAnchor="end"
@@ -169,7 +170,7 @@ export const LineChart: React.FC<LineChartProps> = ({
                   stroke={gridColor}
                   strokeWidth={1}
                 />
-                <text
+                <text className={TYPE_CLASS}
                   x={line.x}
                   y={chartBottom + 36}
                   textAnchor="middle"
@@ -211,7 +212,7 @@ export const LineChart: React.FC<LineChartProps> = ({
 
         {/* Axis labels */}
         {xLabel && (
-          <text
+          <text className={TYPE_CLASS}
             x={chartLeft + chartWidth / 2}
             y={chartBottom + 70}
             textAnchor="middle"
@@ -228,7 +229,7 @@ export const LineChart: React.FC<LineChartProps> = ({
           </text>
         )}
         {yLabel && (
-          <text
+          <text className={TYPE_CLASS}
             x={40}
             y={chartTop + chartHeight / 2}
             textAnchor="middle"
@@ -359,7 +360,7 @@ export const LineChart: React.FC<LineChartProps> = ({
                     rx={2}
                     fill={color}
                   />
-                  <text
+                  <text className={TYPE_CLASS}
                     x={legendX + 32}
                     y={966}
                     fill={textColor}

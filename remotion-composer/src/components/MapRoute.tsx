@@ -5,6 +5,7 @@ import { feature } from "topojson-client";
 import { SYS, TYPE, TRACK, EXPO_OUT, LAYOUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
 import { TerrainBase, TerrainTile } from "./TerrainBase";
+import { TYPE_CLASS } from "../design/layers";
 
 export interface MapMarker {
   lon: number;
@@ -228,9 +229,9 @@ export const MapRoute: React.FC<MapRouteProps> = ({
                 strokeDasharray={1}
                 strokeDashoffset={1 - o}
               />
-              <text
+              <text className={TYPE_CLASS}
                 x={xy[0] + (m.dx ?? 24)}
-                y={xy[1] + (m.dy ?? 7) + (1 - o) * SYS.rise}
+                y={xy[1] + (m.dy ?? 7) + Math.round((1 - o) * SYS.rise)}
                 fill={SYS.text}
                 fontFamily={SYS.label}
                 fontSize={TYPE.labelSm}
@@ -252,14 +253,14 @@ export const MapRoute: React.FC<MapRouteProps> = ({
       </svg>
 
       {distance_callout ? (
-        <div
+        <div className={TYPE_CLASS}
           style={{
             position: "absolute",
             right: LAYOUT.left,
             bottom: LAYOUT.bottom + 96,
             opacity: calloutP,
             filter: calloutP < 1 ? `blur(${(1 - calloutP) * SYS.blurFrom}px)` : undefined,
-            transform: `translateY(${(1 - calloutP) * SYS.rise}px)`,
+            transform: `translateZ(0) translateY(${Math.round((1 - calloutP) * SYS.rise)}px)`,
             background: "rgba(12,12,14,0.82)",
             borderLeft: `2px solid ${SYS.accent}`,
             padding: "14px 22px",

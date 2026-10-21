@@ -1,6 +1,7 @@
 import React from "react";
 import { interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, TRACK, EXPO_OUT, stagger } from "./system";
+import { TYPE_CLASS } from "./layers";
 
 export type TypeLevel = "display" | "label" | "data" | "body";
 
@@ -44,6 +45,14 @@ const WEIGHT: Record<TypeLevel, number> = {
 /**
  * Every text element in the film enters the same way: 6-10 frame blur-to-sharp
  * plus an 8px rise, expo-out, staggered 3 frames per element. Nothing pops.
+ *
+ * The rise lands on WHOLE PIXELS. An 8px rise eased over nine frames puts a
+ * glyph on a fractional baseline for most of them, and a glyph on a
+ * fractional baseline is re-rasterised every frame: the stems get redrawn
+ * across different subpixels and the line crawls. Rounded, the text steps up
+ * eight times and is still for the rest, and the entrance is carried by the
+ * blur and the opacity, which cost nothing in sharpness because they do not
+ * move anything.
  */
 export const T: React.FC<AnimatedTextProps> = ({
   children,
@@ -70,12 +79,20 @@ export const T: React.FC<AnimatedTextProps> = ({
 
   const isCaps = caps ?? level === "label";
 
+  const rise = Math.round((1 - p) * SYS.rise);
+
   return (
     <div
+      className={TYPE_CLASS}
       style={{
         opacity: p,
         filter: p < 1 ? `blur(${(1 - p) * SYS.blurFrom}px)` : undefined,
-        transform: noRise ? undefined : `translateY(${(1 - p) * SYS.rise}px)`,
+        // translateZ(0) gives the glyphs their own composited layer, so they
+        // are rasterised once at an integer offset instead of being resampled
+        // against whatever is behind them.
+        transform: noRise || rise === 0
+          ? "translateZ(0)"
+          : `translateZ(0) translateY(${rise}px)`,
         fontFamily: FAMILY[level],
         fontSize: size ?? DEFAULT_SIZE[level],
         fontWeight: WEIGHT[level],
@@ -116,6 +133,7 @@ export const CountUp: React.FC<{
   const v = (to * p).toFixed(decimals);
   return (
     <span
+      className={TYPE_CLASS}
       style={{
         fontFamily: SYS.data,
         fontVariantNumeric: "tabular-nums",

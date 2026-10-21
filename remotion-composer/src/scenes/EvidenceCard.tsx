@@ -3,6 +3,7 @@ import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig, Easing } fr
 import { SYS, TYPE, TRACK, EXPO_OUT, LAYOUT, stagger } from "../design/system";
 import { SceneShell } from "../design/Scene";
 import { T } from "../design/Type";
+import { TYPE_CLASS } from "../design/layers";
 
 export type EvidenceStatus = "peer_reviewed" | "contested" | "unpublished" | "measured" | "claim";
 
@@ -151,7 +152,7 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
             style={{
               marginTop: 30,
               opacity: chipP,
-              transform: `translateY(${(1 - chipP) * SYS.rise}px)`,
+              transform: `translateZ(0) translateY(${Math.round((1 - chipP) * SYS.rise)}px)`,
               display: "inline-flex",
               alignItems: "center",
               gap: 12,
@@ -169,7 +170,7 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
                 display: "inline-block",
               }}
             />
-            <span
+            <span className={TYPE_CLASS}
               style={{
                 fontFamily: SYS.label,
                 fontSize: TYPE.labelSm - 3,

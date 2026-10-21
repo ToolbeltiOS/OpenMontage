@@ -5,6 +5,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { TYPE_CLASS } from "../../design/layers";
 
 interface PieDatum {
   label: string;
@@ -103,7 +104,7 @@ export const PieChart: React.FC<PieChartProps> = ({
       >
         {/* Title */}
         {title && (
-          <text
+          <text className={TYPE_CLASS}
             x={960}
             y={80}
             textAnchor="middle"
@@ -215,7 +216,7 @@ export const PieChart: React.FC<PieChartProps> = ({
               )}
             >
               {centerValue && (
-                <text
+                <text className={TYPE_CLASS}
                   x={cx}
                   y={centerLabel ? cy - 10 : cy + 10}
                   textAnchor="middle"
@@ -229,7 +230,7 @@ export const PieChart: React.FC<PieChartProps> = ({
                 </text>
               )}
               {centerLabel && (
-                <text
+                <text className={TYPE_CLASS}
                   x={cx}
                   y={centerValue ? cy + 36 : cy + 10}
                   textAnchor="middle"
@@ -268,7 +269,7 @@ export const PieChart: React.FC<PieChartProps> = ({
                     rx={4}
                     fill={slice.color}
                   />
-                  <text
+                  <text className={TYPE_CLASS}
                     x={legendX + 32}
                     y={legendY + 6}
                     fill={textColor}
@@ -278,7 +279,7 @@ export const PieChart: React.FC<PieChartProps> = ({
                   >
                     {slice.datum.label}
                   </text>
-                  <text
+                  <text className={TYPE_CLASS}
                     x={legendX + 32}
                     y={legendY + 6}
                     fill={textColor}

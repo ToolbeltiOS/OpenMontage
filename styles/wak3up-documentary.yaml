@@ -37,6 +37,10 @@ taste_profile:
        look pass delivered 118 of every 120 frames carrying the wrong source
        frame. A frame rate, a frame count and a motion check cannot see that:
        scrambled frames differ from each other perfectly well."
+    - "Type does not move, and nothing is composited on top of it. The film
+       renders twice from one tree — plate, then grade and vignette and grain,
+       then type — because a single flat render puts per-frame grain on the
+       glyph edges, and because a composite order cannot exist inside one."
 
 # ── Content stance ──────────────────────────────────────────────────
 # The channel's identity is mystery and conspiracy. This playbook imposes NO
@@ -371,6 +375,19 @@ visual_cadence:
     # (design/Scene.tsx, SceneShell), and `internal_motion` means SUSTAINED
     # motion, not "animates at some point".
     authored_graphics_need_a_move: true
+    # ...AND THE PLATE IS WHAT CARRIES IT (2026-10-21). The move was on the
+    # scene's content layer, which is where its type lives. Type moved by a
+    # fraction of a pixel is not moved, it is re-rasterised: the same stems
+    # land on different subpixels every frame and every edge crawls. Locking
+    # the type and letting the graphic drift under it is also wrong here —
+    # measured, a feature at the frame edge travels about 72px over a 15.5s
+    # hold, and in an authored scene the labels ARE the diagram. So the card
+    # is locked and the PLATE behind it drifts, with a slow light sweep over
+    # it, because the drift alone moves almost no pixels on something that
+    # low in contrast. A photographic scene is the other way round: the image
+    # moves and its annotations lock, their leaders re-anchoring.
+    type_never_drifts: true
+    plate_carries_the_move: true
     rule: "At 40-45% of slots, stills carry nearly half the film. Every one takes a parallax or 2.5D move, none is held past 6 seconds, and no two in a row come from the same source. A static hold at this share reads as a slideshow immediately."
   # ── cinematic maps (ADDED 2026-10-20) ─────────────────────────────────
   # Run #1's maps were a dark silhouette on a flat plate: nothing on screen

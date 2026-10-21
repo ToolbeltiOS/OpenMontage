@@ -4,6 +4,7 @@ import { SYS, TYPE, TRACK, EXPO_OUT, EXPO_IN_OUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
 import { resolveAsset } from "../lib/resolveAsset";
 import { Graded } from "../design/Frame";
+import { TYPE_CLASS } from "../design/layers";
 
 export interface StillAnnotation {
   /** Short label, e.g. "corbelled course" */
@@ -172,7 +173,7 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
             />
           </svg>
           {cutaway.label ? (
-            <div
+            <div className={TYPE_CLASS}
               style={{
                 position: "absolute",
                 left: cutaway.x * width,
@@ -191,6 +192,26 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
         </AbsoluteFill>
       ) : null}
 
+      {/*
+        ANNOTATIONS ARE IN FRAME COORDINATES, NOT IMAGE COORDINATES.
+
+        The image above moves — that is its camera move — and everything from
+        here down does not: the anchor, the leader and the label are all
+        positioned against the frame, outside that transform. So no annotation
+        shook when the authored scenes did, and none of them needed the fix
+        that SceneShell got.
+
+        The cost is real and worth stating: over a long push the photograph
+        slides under a stationary anchor, so a dot that starts on a feature
+        ends up beside it — about 67px at the frame edge over a seven-second
+        push at the playbook's 2.4%/s. The alternative is to let the anchor and
+        the leader travel with the image and re-anchor the line to a locked
+        label, which is the better behaviour and is NOT implemented here,
+        because nothing in the act 2 demo carries an annotation and an
+        unverified geometry change is worse than a documented limit. The
+        measurement would stay locked either way: its number cannot leave its
+        line, and a number that moves is the defect this all began with.
+      */}
       <svg width={width} height={height} style={{ position: "absolute", inset: 0 }}>
         {annotations.map((a, i) => {
           const o = appear(a.reveal_at);
@@ -252,7 +273,7 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
                   />
                   <line x1={x1} y1={y1 - 10} x2={x1} y2={y1 + 10} stroke={SYS.text} strokeWidth={1.5} opacity={o} />
                   <line x1={x2} y1={y2 - 10} x2={x2} y2={y2 + 10} stroke={SYS.text} strokeWidth={1.5} opacity={o} />
-                  <text
+                  <text className={TYPE_CLASS}
                     x={mx}
                     y={my - 22}
                     fill={SYS.text}
@@ -275,7 +296,7 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
         if (o <= 0) return null;
         const side = a.side ?? (a.x > 0.55 ? "left" : "right");
         return (
-          <div
+          <div className={TYPE_CLASS}
             key={i}
             style={{
               position: "absolute",
@@ -284,7 +305,7 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
               top: a.y * height - 46 - 22,
               opacity: o,
               filter: o < 1 ? `blur(${(1 - o) * SYS.blurFrom}px)` : undefined,
-              transform: `translateY(${(1 - o) * SYS.rise}px)`,
+              transform: `translateZ(0) translateY(${Math.round((1 - o) * SYS.rise)}px)`,
               background: "rgba(12,12,14,0.78)",
               borderLeft: `2px solid ${SYS.accent}`,
               padding: "9px 16px",

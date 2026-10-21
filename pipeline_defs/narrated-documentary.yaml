@@ -429,6 +429,26 @@ stages:
           which on screen is a cliff flashing inside a diagram. The frame
           motion check cannot see it, because scrambled frames differ from
           each other perfectly well.
+      - name: type_lock
+        run: "python3 lib/verify_type_lock.py {renders}/final.mp4 --cuts {artifacts}/render_props.json"
+        blocking: true
+        why: >
+          Type does not move. The sustaining move that keeps an authored
+          graphic from freezing used to carry the type with it, a fraction of
+          a pixel per frame — which does not move a glyph, it re-rasterises
+          it, and every edge in the frame crawls. OCR finds the words and the
+          shift is measured inside each box by phase correlation, because
+          tesseract's own boxes are not stable to a pixel. A scene that means
+          to move its text says so with `text_move`.
+      - name: plate_purity
+        run: "python3 lib/verify_type_lock.py {renders}/picture.mp4 --cuts {artifacts}/render_props.json --plate"
+        blocking: true
+        why: >
+          Nothing readable survives into the plate pass. The film is rendered
+          twice from one tree — plate, then grade and vignette and grain, then
+          type — and the split is a class on every text element. An element
+          nobody marked is still in the plate: grained on its edges and
+          drifting with it, under locked type saying the same words.
       - name: delivery_audio
         run: "python3 lib/verify_delivery_audio.py {renders}/final.mp4 --expected-lufs {mix_lufs}"
         blocking: true

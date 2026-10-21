@@ -14,11 +14,17 @@ A stage that exists only as a habit is a stage that can be skipped. So the
 whole path is here, the mux is not optional, and the gates run on the file
 that is about to be delivered rather than on the plans behind it:
 
-    1. picture      Explainer over the demo props, treatment off
-    2. frames       the picture as a JPEG sequence, for the shader to sample
+    1. plate        Explainer with the type hidden, treatment off
+    2. frames       the plate as a JPEG sequence, for the shader to sample
     3. look         FilmLookPass over that sequence
-    4. deliver      trim the composition's trailing padding, mux the mix
-    5. gates        frame motion, frame order, delivery audio — all blocking
+    4. type         Explainer with ONLY the type, over transparency
+    5. deliver      type over the graded plate, and the mix with it
+    6. gates        frame motion, frame order, type lock, delivery audio
+
+Stages 1 and 4 are the same film rendered twice from the same tree, so that
+the composite order can be plate -> grade and vignette and grain -> type. A
+single flat render puts the grain on the glyph edges, which is half of why
+the type shook; see src/design/layers.tsx for the other half.
 
     python scripts/render_demo.py --project they-said-it-couldnt-be-built --bed 30
 """
@@ -45,11 +51,35 @@ def run(cmd: list[str], cwd: Path | None = None) -> None:
     subprocess.run(cmd, cwd=cwd, check=True)
 
 
-def render_picture(props: Path, dest: Path) -> None:
-    """The film itself, with the CSS treatment off: the look is a second pass."""
+def props_for_layer(props: Path, mode: str, work: Path) -> Path:
+    """The same props with one field added, written where the renderer can see it."""
+    blob = json.loads(props.read_text())
+    blob["layer_mode"] = mode
+    dest = work / f"props_{mode}.json"
+    dest.write_text(json.dumps(blob))
+    return dest
+
+
+def render_plate(props: Path, dest: Path, count: int) -> None:
+    """The film with the type laid out but not inked. The shader runs over this."""
     dest.parent.mkdir(parents=True, exist_ok=True)
     run(["npx", "remotion", "render", ENTRY, "Explainer", str(dest),
-         f"--props={props}", "--gl=angle"], cwd=COMPOSER)
+         f"--props={props}", f"--frames=0-{count - 1}", "--gl=angle"], cwd=COMPOSER)
+
+
+def render_type(props: Path, dest: Path, count: int) -> None:
+    """Only the type, over transparency.
+
+    ProRes 4444 because it is the one format in the renderer that carries an
+    alpha channel losslessly. It is a working file — 726MB for ninety seconds
+    — and it stays in remotion-composer/out, which is gitignored, so that
+    --skip-picture and --gates-only can reuse it.
+    """
+    run(["npx", "remotion", "render", ENTRY, "Explainer", str(dest),
+         f"--props={props}", f"--frames=0-{count - 1}",
+         "--codec=prores", "--prores-profile=4444",
+         "--pixel-format=yuva444p10le", "--image-format=png", "--gl=angle"],
+        cwd=COMPOSER)
 
 
 def extract_frames(picture: Path, frames_dir: Path, count: int) -> None:
@@ -76,11 +106,20 @@ def render_look(frames_dir: Path, dest: Path, count: int, act: str = "act2") -> 
          f"--props={props}", f"--frames=0-{count - 1}", "--gl=angle"], cwd=COMPOSER)
 
 
-def mux(picture: Path, mix: Path, dest: Path) -> None:
-    """The step that was missing. The picture is copied, never re-encoded."""
-    run(["ffmpeg", "-v", "error", "-y", "-i", str(picture), "-i", str(mix),
-         "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy",
-         "-c:a", "aac", "-b:a", "320k", "-shortest", str(dest)])
+def deliver(look: Path, type_layer: Path, mix: Path, dest: Path) -> None:
+    """Type over the graded plate, and the mix with it.
+
+    One ffmpeg call, so the picture is encoded once rather than once for the
+    composite and again for the mux. The mux half of this is the step that was
+    missing entirely when the demo first shipped silent.
+    """
+    run(["ffmpeg", "-v", "error", "-y",
+         "-i", str(look), "-i", str(type_layer), "-i", str(mix),
+         "-filter_complex", "[0:v][1:v]overlay=format=auto:eof_action=pass[v]",
+         "-map", "[v]", "-map", "2:a:0",
+         "-c:v", "libx264", "-crf", "16", "-preset", "medium",
+         "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "320k",
+         "-shortest", str(dest)])
 
 
 def main() -> int:
@@ -90,6 +129,8 @@ def main() -> int:
                     help="which bed level's mix to deliver: 36, 30 or 28")
     ap.add_argument("--skip-picture", action="store_true",
                     help="reuse the existing picture render and frame sequence")
+    ap.add_argument("--gates-only", action="store_true",
+                    help="re-run the gates and rewrite the report, rendering nothing")
     args = ap.parse_args()
 
     project = ROOT / "projects" / args.project
@@ -101,8 +142,10 @@ def main() -> int:
 
     out_dir = project / "renders" / "demo"
     work = COMPOSER / "out" / "demo"
+    work.mkdir(parents=True, exist_ok=True)
     picture = work / "act2_base.mp4"
     look = work / "act2_look.mp4"
+    type_layer = work / "act2_type.mov"
     frames_dir = COMPOSER / "public" / "demoframes"
     mix = out_dir / f"act2_demo_bed{args.bed}.wav"
     dest = out_dir / "act2_demo.mp4"
@@ -111,20 +154,27 @@ def main() -> int:
         raise SystemExit(f"no mix at {mix} — run scripts/build_demo_audio.py first")
 
     print(f"demo: {len(cuts)} cuts, {end:.1f}s, {count} frames, bed -{args.bed}")
-    if not args.skip_picture:
-        print("1. picture")
-        render_picture(props_path, picture)
+    if args.gates_only and not dest.exists():
+        raise SystemExit(f"nothing delivered at {dest} to check")
+    if not args.gates_only and not args.skip_picture:
+        print("1. plate")
+        render_plate(props_for_layer(props_path, "plate", work), picture, count)
         print("2. frames")
         extract_frames(picture, frames_dir, count)
-    print("3. look pass")
-    render_look(frames_dir, look, count)
-    print("4. deliver")
-    mux(look, mix, dest)
+    if not args.gates_only:
+        print("3. look pass")
+        render_look(frames_dir, look, count)
+        if not args.skip_picture:
+            print("4. type")
+            render_type(props_for_layer(props_path, "type", work), type_layer, count)
+        print("5. deliver")
+        deliver(look, type_layer, mix, dest)
 
-    print("5. gates")
+    print("6. gates")
     from verify_delivery_audio import check as check_audio
     from verify_frame_motion import check as check_motion
     from verify_frame_order import check as check_order
+    from verify_type_lock import check as check_type, plate_is_clean
 
     audio_report = json.loads((out_dir / "demo_audio_report.json").read_text())
     expected = next((m["mix_measured_lufs"] for m in audio_report["mixes"]
@@ -134,8 +184,15 @@ def main() -> int:
     motion_problems, motion = check_motion(str(dest), FPS)
     order_problems, order = check_order(str(dest), cuts, str(picture), FPS)
     audio_problems, audio = check_audio(str(dest), expected)
+    type_problems, type_lock = check_type(str(dest), cuts, FPS)
+    # ...and that the split was complete in the first place. A text element
+    # nobody marked is baked into the plate, grained on its edges and drifting
+    # with it — which is the defect, wearing the fix as a disguise.
+    plate_problems, plate_purity = plate_is_clean(str(picture), cuts)
     problems += [f"frame motion: {p}" for p in motion_problems]
     problems += [f"frame order: {p}" for p in order_problems]
+    problems += [f"type lock: {p}" for p in type_problems]
+    problems += [f"plate purity: {p}" for p in plate_problems]
     problems += [f"delivery audio: {p}" for p in audio_problems]
 
     lines = [
@@ -155,6 +212,12 @@ def main() -> int:
         f"{order['isolated_black_runs']} isolated black, correlation with the "
         f"picture render {order['reference_correlation']} | "
         f"{'PASS' if not order_problems else 'FAIL'} |",
+        f"| plate purity | {plate_purity['words_in_plate']} words legible in "
+        f"the plate pass | {'PASS' if not plate_problems else 'FAIL'} |",
+        f"| type lock | {type_lock['scenes_sampled']} text-bearing scenes "
+        f"sampled a second apart, {type_lock['scenes_with_movement']} with any "
+        f"word in a different place, worst {type_lock['worst_shift_px']}px | "
+        f"{'PASS' if not type_problems else 'FAIL'} |",
         f"| delivery audio | {audio.get('mean_dbfs')} dBFS mean, "
         f"{audio.get('integrated_lufs')} LUFS against the mix's {expected} "
         f"({audio.get('loudness_delta_db')} dB) | "

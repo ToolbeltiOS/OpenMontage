@@ -138,6 +138,7 @@ def main() -> int:
     from verify_frame_motion import check as check_motion
     from verify_frame_order import check as check_order
     from verify_rhythm import check as check_rhythm
+    from verify_type_lock import check as check_type
 
     problems, measured = check_rhythm(cuts)
 
@@ -153,6 +154,11 @@ def main() -> int:
     # from different scenes differ from each other more than neighbours do.
     order_problems, order = check_order(str(film), cuts)
     problems.extend(order_problems)
+
+    # ...and does the type hold still? A glyph moved by a fraction of a pixel
+    # is re-rasterised rather than moved, and every edge in the frame crawls.
+    type_problems, type_lock = check_type(str(film), cuts)
+    problems.extend(type_problems)
     acts = act_histograms(cuts)
     energy = energy_curve(film)
     duration = ffprobe_duration(film)
@@ -249,6 +255,15 @@ def main() -> int:
         "",
         "```",
     ] + order["luma_map"] + ["```", ""]
+
+    lines += [
+        "## Type",
+        "",
+        f"{type_lock['scenes_sampled']} text-bearing scenes read a second "
+        f"apart; {type_lock['scenes_with_movement']} have a word in a "
+        f"different place. Worst movement {type_lock['worst_shift_px']}px.",
+        "",
+    ]
     lines += [
         "## Energy",
         "",

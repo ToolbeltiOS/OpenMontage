@@ -26,6 +26,7 @@ import { z } from "zod";
 // ---- adjust these two imports to your tree -----------------------------------------
 import { tokens } from "../design/system"; // { color: {bg, ink, accent, accentInk}, font: {display,label,data} }
 import { FrameLayer } from "../design/FrameLayer"; // hairline frame + corner ticks + grain + vignette + data strip
+import { TYPE_CLASS } from "../design/layers";
 // ------------------------------------------------------------------------------------
 
 export const outroCtaSchema = z.object({
@@ -68,7 +69,7 @@ const seg = (t: number, a: number, b: number, e = expoOut) => e(clamp((t - a) / 
 
 const textIn = (t: number, at: number): React.CSSProperties => {
   const p = seg(t, at, at + 0.33);
-  return { opacity: p, filter: `blur(${(1 - p) * 6}px)`, transform: `translateY(${(1 - p) * 8}px)` };
+  return { opacity: p, filter: `blur(${(1 - p) * 6}px)`, transform: `translateZ(0) translateY(${Math.round((1 - p) * 8)}px)` };
 };
 
 const press = (t: number, at: number) => {
@@ -129,11 +130,11 @@ export const OutroCta: React.FC<OutroCtaProps> = (props) => {
           width: contentLimit - CONTENT_LEFT,
         }}
       >
-        <div style={{ ...textIn(t, 0.6), fontFamily: F.label, fontWeight: 500, fontSize: 26, letterSpacing: 7, color: C.ink, opacity: 0.62 * (textIn(t, 0.6).opacity as number) }}>
+        <div className={TYPE_CLASS} style={{ ...textIn(t, 0.6), fontFamily: F.label, fontWeight: 500, fontSize: 26, letterSpacing: 7, color: C.ink, opacity: 0.62 * (textIn(t, 0.6).opacity as number) }}>
           {p.eyebrow}
         </div>
-        <div style={{ ...textIn(t, 0.7), fontFamily: F.display, fontWeight: 400, fontSize: 62, lineHeight: 1.15, color: C.ink, marginTop: 22 }}>{p.line1}</div>
-        <div style={{ ...textIn(t, 0.8), fontFamily: F.display, fontWeight: 400, fontSize: 62, lineHeight: 1.15, color: C.ink }}>{p.line2}</div>
+        <div className={TYPE_CLASS} style={{ ...textIn(t, 0.7), fontFamily: F.display, fontWeight: 400, fontSize: 62, lineHeight: 1.15, color: C.ink, marginTop: 22 }}>{p.line1}</div>
+        <div className={TYPE_CLASS} style={{ ...textIn(t, 0.8), fontFamily: F.display, fontWeight: 400, fontSize: 62, lineHeight: 1.15, color: C.ink }}>{p.line2}</div>
       </div>
 
       {/* LIKE */}
@@ -153,7 +154,7 @@ export const OutroCta: React.FC<OutroCtaProps> = (props) => {
             strokeDashoffset={1 - likeDraw}
           />
         </g>
-        <text x={52} y={150} textAnchor="middle" fontFamily={F.label} fontWeight={500} fontSize={22} letterSpacing={6} fill={C.ink} fillOpacity={0.7 * (textIn(t, p.likeAt - 0.4).opacity as number)}>
+        <text className={TYPE_CLASS} x={52} y={150} textAnchor="middle" fontFamily={F.label} fontWeight={500} fontSize={22} letterSpacing={6} fill={C.ink} fillOpacity={0.7 * (textIn(t, p.likeAt - 0.4).opacity as number)}>
           LIKE
         </text>
       </svg>
@@ -171,7 +172,7 @@ export const OutroCta: React.FC<OutroCtaProps> = (props) => {
         <g transform={`translate(180 52) scale(${S.scale}) translate(-180 -52)`}>
           <rect x={-6 - 28 * S.ring} y={-6 - 28 * S.ring} width={372 + 56 * S.ring} height={116 + 56 * S.ring} rx={58 + 28 * S.ring} fill="none" stroke={C.accent} strokeWidth={2} opacity={S.ring > 0 ? (1 - S.ring) * 0.9 : 0} />
           <rect x={0} y={0} width={360} height={104} rx={52} fill={C.accent} fillOpacity={S.fill} stroke={C.ink} strokeWidth={3} pathLength={1} strokeDasharray={1} strokeDashoffset={1 - subDraw} />
-          <text x={180} y={62} textAnchor="middle" fontFamily={F.label} fontWeight={600} fontSize={30} letterSpacing={8} fill={S.fill > 0.5 ? C.accentInk : C.ink} opacity={subTextIn}>
+          <text className={TYPE_CLASS} x={180} y={62} textAnchor="middle" fontFamily={F.label} fontWeight={600} fontSize={30} letterSpacing={8} fill={S.fill > 0.5 ? C.accentInk : C.ink} opacity={subTextIn}>
             SUBSCRIBE
           </text>
           <g clipPath="url(#outroPillClip)">
@@ -202,7 +203,7 @@ export const OutroCta: React.FC<OutroCtaProps> = (props) => {
       {/* schedule line — unchanged; already above the bottom 20% End Screen zone */}
       <div style={{ position: "absolute", left: CONTENT_LEFT, top: 820, display: "flex", alignItems: "center", gap: 20, ...textIn(t, nextAt) }}>
         <span style={{ width: 52, height: 2, background: C.accent }} />
-        <span style={{ fontFamily: F.label, fontWeight: 500, fontSize: 24, letterSpacing: 6, color: C.ink, opacity: 0.8 }}>{p.scheduleLine}</span>
+        <span className={TYPE_CLASS} style={{ fontFamily: F.label, fontWeight: 500, fontSize: 24, letterSpacing: 6, color: C.ink, opacity: 0.8 }}>{p.scheduleLine}</span>
       </div>
 
       {/* frame layer: hairline, ticks, grain, vignette, data strip */}

@@ -4,6 +4,7 @@ import { SYS, TYPE, TRACK, EXPO_IN_OUT, LAYOUT, SHADOW } from "../design/system"
 import { Graded } from "../design/Frame";
 import { SceneShell } from "../design/Scene";
 import { T } from "../design/Type";
+import { TYPE_CLASS } from "../design/layers";
 
 export interface BeforeAfterProps {
   /** the earlier framing — the state the scene starts in */
@@ -163,6 +164,7 @@ export const BeforeAfter: React.FC<BeforeAfterProps> = ({
 
         {after_label ? (
           <div
+            className={TYPE_CLASS}
             style={{
               ...labelStyle,
               right: `calc(${(1 - p) * 100}% + 26px)`,
@@ -173,7 +175,7 @@ export const BeforeAfter: React.FC<BeforeAfterProps> = ({
           </div>
         ) : null}
         {before_label ? (
-          <div style={{ ...labelStyle, left: `calc(${p * 100}% + 26px)` }}>
+          <div className={TYPE_CLASS} style={{ ...labelStyle, left: `calc(${p * 100}% + 26px)` }}>
             {before_label.toUpperCase()}
           </div>
         ) : null}

@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, EXPO_OUT, LAYOUT } from "./system";
 import type { WordCaption } from "../components/CaptionOverlay";
+import { TYPE_CLASS } from "./layers";
 
 export interface DocCaptionProps {
   words: WordCaption[];
@@ -107,7 +108,7 @@ export const DocCaption: React.FC<DocCaptionProps> = ({
           justifyContent: "center",
         }}
       >
-        <div
+        <div className={TYPE_CLASS}
           style={{
             maxWidth,
             textAlign: "center",
@@ -118,7 +119,7 @@ export const DocCaption: React.FC<DocCaptionProps> = ({
             color: SYS.text,
             letterSpacing: "0.005em",
             opacity: o,
-            transform: `translateY(${(1 - o) * (SYS.rise / 2)}px)`,
+            transform: `translateZ(0) translateY(${Math.round((1 - o) * (SYS.rise / 2))}px)`,
             textShadow: "0 1px 14px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.9)",
             textWrap: "balance" as React.CSSProperties["textWrap"],
           }}

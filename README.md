@@ -790,8 +790,16 @@ plan, not a file:
 ```bash
 python3 lib/verify_frame_motion.py   <mp4>
 python3 lib/verify_frame_order.py    <mp4> --cuts <props.json> --reference <picture.mp4>
+python3 lib/verify_type_lock.py      <mp4> --cuts <props.json>
+python3 lib/verify_type_lock.py      <plate.mp4> --cuts <props.json> --plate
 python3 lib/verify_delivery_audio.py <mp4> --expected-lufs <mix LUFS>
 ```
+
+The film renders **twice from one tree** — once with the type laid out but
+not inked, which the shader runs over, and once with only the type over
+transparency, laid on top afterwards. Plate, then grade and vignette and
+grain, then type. A single flat render puts per-frame grain on the glyph
+edges; see `remotion-composer/src/design/layers.tsx`.
 
 After a render, the critic pass — fails on structure, reports the rest:
 

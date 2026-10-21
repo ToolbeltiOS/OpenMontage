@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, TRACK, EXPO_OUT, LAYOUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
+import { TYPE_CLASS } from "../design/layers";
 
 export interface TimelineEvent {
   /** Negative = BC. 1922 = AD 1922, -1400 = 1400 BC. */
@@ -243,7 +244,7 @@ export const Timeline: React.FC<TimelineProps> = ({
           const o = appear(e.at);
           if (o <= 0) return null;
           const col = e.accent ? SYS.accent : SYS.text;
-          const lift = (1 - o) * SYS.rise;
+          const lift = Math.round((1 - o) * SYS.rise);
           const LANE = 62;
 
           if (horizontal) {
@@ -264,7 +265,7 @@ export const Timeline: React.FC<TimelineProps> = ({
                   strokeWidth={1.5}
                 />
                 <circle cx={p} cy={axisY} r={5} fill={col} opacity={o} />
-                <text
+                <text className={TYPE_CLASS}
                   x={p}
                   y={yearY + lift}
                   fill={col}
@@ -276,7 +277,7 @@ export const Timeline: React.FC<TimelineProps> = ({
                 >
                   {fmtYear(e.year)}
                 </text>
-                <text
+                <text className={TYPE_CLASS}
                   x={p}
                   y={labelY + lift}
                   fill={SYS.text}
@@ -306,7 +307,7 @@ export const Timeline: React.FC<TimelineProps> = ({
                 strokeWidth={1.5}
               />
               <circle cx={axisX} cy={p} r={5} fill={col} opacity={o} />
-              <text
+              <text className={TYPE_CLASS}
                 x={tickEnd + 16}
                 y={p - 6 + lift}
                 fill={col}
@@ -317,7 +318,7 @@ export const Timeline: React.FC<TimelineProps> = ({
               >
                 {fmtYear(e.year)}
               </text>
-              <text
+              <text className={TYPE_CLASS}
                 x={tickEnd + 16}
                 y={p + 26 + lift}
                 fill={SYS.text}

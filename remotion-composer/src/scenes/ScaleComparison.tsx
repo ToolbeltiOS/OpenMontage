@@ -3,6 +3,7 @@ import { interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, TRACK, EXPO_OUT, LAYOUT, stagger } from "../design/system";
 import { SceneShell } from "../design/Scene";
 import { T, CountUp } from "../design/Type";
+import { TYPE_CLASS } from "../design/layers";
 
 export interface ScaleItem {
   label: string;
@@ -199,7 +200,7 @@ export const ScaleComparison: React.FC<ScaleComparisonProps> = ({
             opacity: footP,
           }}
         >
-          <span
+          <span className={TYPE_CLASS}
             style={{
               fontFamily: SYS.body,
               fontSize: TYPE.bodySm,
@@ -209,7 +210,7 @@ export const ScaleComparison: React.FC<ScaleComparisonProps> = ({
           >
             {footnote ?? " "}
           </span>
-          <span
+          <span className={TYPE_CLASS}
             style={{
               fontFamily: SYS.data,
               fontSize: TYPE.dataSm - 2,
