@@ -417,6 +417,27 @@ stages:
           rate, every timestamp exactly 1/30 apart, rhythm gate green — while
           its picture was frozen for 51% of its running time, because nothing
           in the pipeline compared one frame to the next.
+      - name: frame_order
+        run: "python3 lib/verify_frame_order.py {renders}/final.mp4 --cuts {artifacts}/render_props.json --reference {renders}/picture.mp4"
+        blocking: true
+        why: >
+          Every frame is the frame it should be, and is where it should be. The
+          film look runs as a pass over a rendered frame sequence, and the
+          canvas draws once per frame — before the image for that frame has
+          decoded. The act 2 demo delivered 118 of every 120 frames carrying
+          the wrong source frame: lagging three to five and locally shuffled,
+          which on screen is a cliff flashing inside a diagram. The frame
+          motion check cannot see it, because scrambled frames differ from
+          each other perfectly well.
+      - name: delivery_audio
+        run: "python3 lib/verify_delivery_audio.py {renders}/final.mp4 --expected-lufs {mix_lufs}"
+        blocking: true
+        why: >
+          The mix is in the delivered file, and it is the right mix. The act 2
+          demo shipped an AAC stream of digital silence — every sample exactly
+          zero — beside three correctly built mixes on disk, because no stage
+          owned the mux and the file looked healthy from the outside: right
+          duration, stream present, plausible bitrate.
       - name: captions
         run: "python3 lib/captions_srt.py {artifacts}/render_props.json {artifacts}/captions.en.srt"
         blocking: true

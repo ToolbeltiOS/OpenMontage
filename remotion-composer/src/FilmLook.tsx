@@ -5,6 +5,7 @@ import {
   Video,
   staticFile,
   useCurrentFrame,
+  useDelayRender,
   useVideoConfig,
 } from "remotion";
 import { ThreeCanvas } from "@remotion/three";
@@ -152,39 +153,110 @@ const useVideoTexture = (src: string, enabled: boolean) => {
   return { texture, video };
 };
 
+/**
+ * The source texture for the frame the renderer is actually asking for.
+ *
+ * WHY THIS IS A BARRIER AND NOT A LOADER
+ * --------------------------------------
+ * `<ThreeCanvas>` draws exactly once per frame: in rendering mode its
+ * frameloop is "never", and an internal `ManualFrameRenderer` calls
+ * `advance()` from an effect keyed on `useCurrentFrame()`. So the canvas is
+ * drawn in the same commit in which the frame number changed — which is
+ * BEFORE the image for that frame has decoded, because decoding is
+ * asynchronous and the element arrives afterwards through React state.
+ *
+ * Nothing then redraws. The frame number does not change again until the next
+ * frame, so the capture keeps whatever the last draw left in the backing
+ * store: the texture of an EARLIER frame. Over a sequence that is not a
+ * uniform delay but a permutation, because how many images happen to have
+ * decoded between two draws varies. Measured on a sequence with its own index
+ * burned into every frame as ten high-contrast bits: 118 of 120 output frames
+ * carried the wrong source frame, lagging three to five and locally shuffled,
+ * and one carried a torn upload belonging to no source frame at all.
+ *
+ * Marking the texture `needsUpdate` every frame — the previous fix, for the
+ * different bug where the GPU kept the first upload forever — cannot help: a
+ * texture marked for upload with no draw after it is never uploaded.
+ *
+ * So the frame is held until the texture for THIS src exists and the canvas
+ * has been drawn with it. `<DrawWhenReady>` sits inside the canvas and draws
+ * on texture identity rather than on frame number; the handle is released
+ * from here, a parent, whose effects React runs after its children's. That
+ * ordering is the guarantee — not a timer and not a pair of
+ * requestAnimationFrames, both of which were tried here and both of which
+ * lost under load.
+ *
+ * If the image never arrives the handle times out and the render fails, which
+ * is the intended behaviour: a loud failure beats a silently wrong frame.
+ */
+const DrawWhenReady: React.FC<{
+  texture: THREE.Texture | null;
+  onDrawn: () => void;
+}> = ({ texture, onDrawn }) => {
+  const advance = useThree((state) => state.advance);
+  React.useEffect(() => {
+    if (!texture) return;
+    texture.needsUpdate = true;
+    advance(performance.now());
+    onDrawn();
+  }, [texture, advance, onDrawn]);
+  return null;
+};
+
 const useImgTexture = (src: string, enabled: boolean) => {
-  const frame = useCurrentFrame();
-  const [el, setEl] = React.useState<HTMLImageElement | null>(null);
+  const { delayRender, continueRender } = useDelayRender();
+  // The element is carried together with the src it belongs to, so a texture
+  // is never built from the previous frame's image. `loaded.src !== src` is
+  // the whole check, and it is the reason this cannot lag.
+  const [loaded, setLoaded] = React.useState<
+    { src: string; el: HTMLImageElement } | null
+  >(null);
+
   const texture = React.useMemo(() => {
-    if (!el) return null;
-    const t = new THREE.Texture(el);
+    if (!loaded || loaded.src !== src) return null;
+    const t = new THREE.Texture(loaded.el);
     t.colorSpace = THREE.SRGBColorSpace;
     t.needsUpdate = true;
     return t;
-  }, [el]);
+  }, [loaded, src]);
+
+  const handle = React.useRef<number | null>(null);
+  React.useLayoutEffect(() => {
+    if (!enabled) return;
+    const h = delayRender(`film look: the frame for ${src}`);
+    handle.current = h;
+    return () => {
+      // Only if this frame never drew — a stalled render is a failure we want
+      // to see, but a handle left open on unmount would hang the whole job.
+      if (handle.current === h) {
+        handle.current = null;
+        continueRender(h);
+      }
+    };
+  }, [src, enabled, delayRender, continueRender]);
+
+  const onDrawn = React.useCallback(() => {
+    if (handle.current === null) return;
+    const h = handle.current;
+    handle.current = null;
+    continueRender(h);
+  }, [continueRender]);
 
   // onLoad, not a ref: a ref fires on mount, before the image has decoded,
   // and a THREE.Texture built from an incomplete element uploads nothing and
-  // never updates. That rendered a black plane every time — which at least
-  // had the courtesy to be deterministic.
-  // Re-uploaded every frame. Over a frame SEQUENCE the src changes each
-  // frame while React keeps the same <img> node, so onLoad fires with the
-  // same element reference, the state does not change, and the GPU keeps the
-  // first upload — which rendered ten seconds of picture and eighty of black.
-  React.useEffect(() => {
-    if (texture && el?.complete) texture.needsUpdate = true;
-  }, [texture, el, frame]);
-
+  // never updates. `key` remounts the element per src, so onLoad fires again
+  // on a sequence, where React would otherwise keep one <img> node and never
+  // re-notify.
   const img = enabled ? (
     <Img
       key={src}
       src={src.startsWith("http") ? src : staticFile(src)}
-      onLoad={(e) => setEl(e.currentTarget)}
+      onLoad={(e) => setLoaded({ src, el: e.currentTarget })}
       style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0 }}
     />
   ) : null;
 
-  return { texture, img };
+  return { texture, img, onDrawn };
 };
 
 export const FilmLook: React.FC<FilmLookProps> = ({
@@ -209,7 +281,7 @@ export const FilmLook: React.FC<FilmLookProps> = ({
   const activeAct =
     acts?.find((a) => t >= a.from_seconds && t < a.to_seconds)?.act ?? act;
   const g = gradeOps(activeAct);
-  const { texture: stillTexture, img } = useImgTexture(src, isStill);
+  const { texture: stillTexture, img, onDrawn } = useImgTexture(src, isStill);
   const { texture: videoTexture, video } = useVideoTexture(src, !isStill);
   const texture = isStill ? stillTexture : videoTexture;
   const tint = React.useMemo(
@@ -236,6 +308,8 @@ export const FilmLook: React.FC<FilmLookProps> = ({
         style={{ backgroundColor: SYS.bg }}
       >
         {texture ? <SourcePlane texture={texture} tint={tint} /> : null}
+        {/* draws on texture identity, then releases the frame */}
+        {isStill ? <DrawWhenReady texture={texture} onDrawn={onDrawn} /> : null}
 
         <EffectComposer>
           {/* the act's grade. The multiply and brightness are already on the

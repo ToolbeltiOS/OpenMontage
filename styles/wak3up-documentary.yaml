@@ -27,6 +27,16 @@ taste_profile:
     - "Every frame should look sourced, not generated."
     - "If a claim is on screen, its support is in the research brief."
     - "A viewer scrubbing any 30 seconds should see at least four distinct images."
+    # ADDED 2026-10-20. The act 2 demo was delivered twice before either of
+    # these was true of it, and both failures were invisible to every check
+    # that reads a plan rather than the file.
+    - "The delivered file carries the mix. It shipped once as an AAC stream of
+       digital silence beside three correct mixes on disk, because no stage
+       owned the mux and the file looked healthy from outside."
+    - "Every frame is the frame it should be, and is where it should be. The
+       look pass delivered 118 of every 120 frames carrying the wrong source
+       frame. A frame rate, a frame count and a motion check cannot see that:
+       scrambled frames differ from each other perfectly well."
 
 # ── Content stance ──────────────────────────────────────────────────
 # The channel's identity is mystery and conspiracy. This playbook imposes NO

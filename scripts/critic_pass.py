@@ -136,6 +136,7 @@ def main() -> int:
     cuts = edit["cuts"] if isinstance(edit, dict) else edit
 
     from verify_frame_motion import check as check_motion
+    from verify_frame_order import check as check_order
     from verify_rhythm import check as check_rhythm
 
     problems, measured = check_rhythm(cuts)
@@ -145,6 +146,13 @@ def main() -> int:
     # other check in this file while frozen for 51% of its running time.
     motion_problems, motion = check_motion(str(film))
     problems.extend(motion_problems)
+
+    # ...and is every frame the frame it should be? A scrambled sequence
+    # moves beautifully: the demo that shipped with 118 of every 120 frames
+    # out of place passed the motion check by a wide margin, because frames
+    # from different scenes differ from each other more than neighbours do.
+    order_problems, order = check_order(str(film), cuts)
+    problems.extend(order_problems)
     acts = act_histograms(cuts)
     energy = energy_curve(film)
     duration = ffprobe_duration(film)
@@ -226,6 +234,21 @@ def main() -> int:
         lines += [f"| {f['start_seconds']}s | {f['frames']} | {f['seconds']}s |"
                   for f in motion["freezes"][:20]]
         lines.append("")
+
+    lines += [
+        "## Frame order",
+        "",
+        f"{order['out_of_order_count']} frames sit between two neighbours "
+        f"that belong to each other; {order['isolated_black_runs']} runs of "
+        f"black are too short to be a planned hold.",
+        "",
+        "One character per frame, 30 per row. `#` is black, `+` under 12, "
+        "then `.` `:` `-` `=` `*` `o` `O` `@` brightening — a cut is a step in "
+        "the row, a frame from elsewhere is a single character belonging to "
+        "neither side.",
+        "",
+        "```",
+    ] + order["luma_map"] + ["```", ""]
     lines += [
         "## Energy",
         "",

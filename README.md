@@ -783,10 +783,27 @@ python3 lib/alignment_qa.py   --project <id> --fix
 python3 scripts/align_narration.py --project <id> --check
 ```
 
+And on the delivered file itself, because the two defects that shipped in the
+act 2 demo were both invisible to everything above — all of which reads a
+plan, not a file:
+
+```bash
+python3 lib/verify_frame_motion.py   <mp4>
+python3 lib/verify_frame_order.py    <mp4> --cuts <props.json> --reference <picture.mp4>
+python3 lib/verify_delivery_audio.py <mp4> --expected-lufs <mix LUFS>
+```
+
 After a render, the critic pass — fails on structure, reports the rest:
 
 ```bash
 python3 scripts/critic_pass.py --project <id> --film <mp4>
+```
+
+The demo is built end to end by one script, so the mux cannot be forgotten
+again and the gates run on the file that is about to be delivered:
+
+```bash
+python3 scripts/render_demo.py --project <id> --bed 30
 ```
 
 Terrain tiles for a map shot are cut once, before the render:
@@ -796,7 +813,8 @@ python3 scripts/build_basemap_tile.py --name <slug> --bounds W S E N
 ```
 
 All are declared in `pipeline_defs/narrated-documentary.yaml` as blocking
-`gate_commands`. Three of them fail on run #1's own artifacts, which is the
+`gate_commands`. Three of them fail on run #1's own artifacts, and the two
+delivery checks fail on the demo as it was first shipped, which is the
 evidence that they measure the right thing.
 
 ### Still needs the owner's decision
@@ -811,11 +829,13 @@ evidence that they measure the right thing.
 - **The two treatment tests** (step 10) — sketched reconstruction and halftone
   collage, one slot each, pending.
 - **The bed level — still open.** Three mixes of the demo window are in
-  `projects/they-said-it-couldnt-be-built/renders/demo/` — `act2_demo_bed36.wav`
-  (approved), `bed30`, `bed28` — each with the sound design present. Judge by
-  ear; nothing moves until you do.
-- **The demo cut itself**: `renders/demo/act2_demo.mp4`, 90.8s, full look,
-  captions off, carrying the −36 mix.
+  `projects/they-said-it-couldnt-be-built/renders/demo/` — `act2_demo_bed36.wav`,
+  `bed30`, `bed28` — each with the sound design present. Judge by ear; nothing
+  moves until you do. The demo now carries −30 so there is something to listen
+  to; that is a placeholder for the audition, not a decision.
+- **The demo cut itself**: `renders/demo/act2_demo.mp4`, 89.8s, full look,
+  captions off, carrying the −30 mix. Report:
+  `reports/demo_delivery_bed30.md`, with the luma map.
 
 ### Known, recorded, not yet fixed
 
