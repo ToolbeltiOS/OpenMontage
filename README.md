@@ -758,23 +758,70 @@ the last, and nothing in the repository disagreed.
 | **Outro** | right third reserved | right 40% reserved; headline column to the reserve boundary at 62px | frames in `remotion-composer/out/step7/` — judged by eye, not gated |
 | **Transitions** | — | five vendored from `GTKottman/remotion-transitions` @ `58df899`, MIT, copied not depended on | `reports/vendor_vetting_transitions.md` |
 
-### In progress
+### Steps 16 and 17 — done, with what credentials allowed
 
-**Step 16 — source expansion.** The licence filter is done and is the part
-that matters: CC0 / public domain / CC BY / CC BY-SA only, refused at fetch
-time, unknown treated as refusal, 43 tests both ways. Three keyless adapters
-live-tested — the Met, the Art Institute, Cleveland. **Still to do:**
-Smithsonian, Walters, Getty IIIF, Europeana, NYPL, the Library of Congress
-fix, the Internet Archive TEXTS plate extractor, Sketchfab + `model_orbit`,
-Sentinel-2 / Worldview stills, Copernicus DEM, and the bank re-run with
-per-subject yield before and after.
+**Step 16 — source expansion and licence filtering.** The filter accepts CC0 /
+public domain / CC BY / CC BY-SA, refuses NC and ND, and treats unknown as
+refusal. The thing that mattered was not another adapter: the filter was
+wired into three museum adapters and **sixteen others never called it**. It
+now runs at the fan-out in the corpus builder, for every source, and the
+refusal count is reported beside the candidate count
+(`tests/tools/test_licence_enforced_centrally.py`).
 
-**Step 17 — mood.** The table is done: five registers × four beats, each row
-naming a move, speed, transition family, hold multiplier and whether the music
-may rise; a push into a dense asset becomes a lock. **Still to do:** the CLIP
-pass that classifies the bank, Essentia arousal so a rise only lands where the
-music is already rising, and PySceneDetect so no cut falls within 12 frames of
-a source scene change.
+The Library of Congress adapter was the worst of them — it turned its own
+"rights status varies, verify per item" into a licence string and passed it
+on. It no longer invents a licence.
+
+New source: **NASA Worldview**, satellite stills of a named place, keyless,
+geocoded through Nominatim. Live-tested on Rano Raraku and Aswan: 2 candidates
+each, both PD.
+
+Audited the bank against its own filter
+(`reports/bank_licence_audit_they-said-it-couldnt-be-built.md`): **146 assets,
+118 usable, 28 refused** — the whole `elemental_texture` subject, all carrying
+the Pixabay Content License. That licence is permissive and is not one of the
+four families, so it is refused but now *recognised*; admitting it is a switch
+with the measurement beside it, and **the owner's call**.
+
+Not written, and why: Smithsonian (403), Europeana (401), Walters (403) and
+NYPL (401) need credentials this repository does not have; Getty publishes no
+JSON search for open content; Internet Archive timed out on both its search
+endpoints. Sketchfab's search is keyless but its downloads need OAuth.
+
+**Step 17 — mood.** The table is done, and so are the three things that make
+it act:
+
+- **CLIP classifies the assets.** Asked as three contests (vast/intimate,
+  dense/empty, and brightness measured rather than asked), because a frame can
+  be dark *and* vast. 98 of 182 film cuts now carry a class; the 84 without
+  are authored components. The veto fires on 14 of them.
+- **No cut lands on a cut the source already had** (`source_cuts`). 12 frames.
+  Timelapse steps are exempt, separated from real cuts by whether the frames
+  either side still correlate — measured at 0.95+ for steps against ≤0.71 for
+  cuts.
+- **A rise lands only where the music is already rising** (`music_rise`).
+  Essentia does not install here, so this is librosa and three signals —
+  loudness, brightness, onset density. On run #1's bed only **37% of the film
+  is rising** at any moment.
+
+### Steps 9, 10 and 15
+
+- **Step 9 — Manim.** `reports/step9_manim.md`, with the side-by-side.
+  Recommendation: **keep the component.** Manim is four times faster at
+  rendering a quarter of the frame, and a Manim diagram arrives as a video, so
+  its labels are pixels — they cannot join the type pass, cannot be locked
+  while the plate moves, and cannot be read by the type-lock gate. Keep Manim
+  for a mathematical animation the component cannot express; nothing in run #1
+  needed one.
+- **Step 10 — two treatments.** `reports/step10.md`. **Halftone collage:
+  adopt**, for citation and record beats — it reads as a plate from a book.
+  **Sketched reconstruction: not yet** — it keeps the real geometry but reads
+  as an edge-detect, because it draws the grass as carefully as the statue.
+- **Step 15 — taste audit.** `reports/step15_taste_audit.md`. All ten
+  judgements run #1 got wrong are measured by a gate; **only five were stated
+  as rules anyone could read first.** The other five have been written into
+  the skills. The audit's own instrument was wrong three times on the way and
+  each correction is recorded in it.
 
 ### Gates a run #2 must pass
 
@@ -857,9 +904,15 @@ evidence that they measure the right thing.
 - **Outro headline column.** Shipped at the reserve boundary (952px) at 62px
   Display, because 900px orphaned "us". Frames for both readings are in
   `remotion-composer/out/step7/`.
-- **Manim as the diagram route** (step 9) — side-by-sides pending.
-- **The two treatment tests** (step 10) — sketched reconstruction and halftone
-  collage, one slot each, pending.
+- **The Pixabay Content License.** 28 assets already in the bank carry it —
+  the whole `elemental_texture` subject. It is permissive and it is not one of
+  the four families the brief named, so it is refused. Admitting it is one
+  constant (`PERMITTED_EXTRA`) and a decision about what the channel stands
+  behind.
+- **Halftone collage** (step 10) — recommended for adoption on citation beats;
+  frames in `reports/step10/`.
+- **Sketched reconstruction** (step 10) — recommended *against* as it stands;
+  frames in `reports/step10/`.
 
 ### Delivered, and what the gates said
 
