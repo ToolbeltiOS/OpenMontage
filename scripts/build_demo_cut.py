@@ -93,10 +93,15 @@ def main() -> int:
         cut["out_seconds"] = seconds
         cuts.append(cut)
 
+    from asset_classifier import annotate_cuts
     from camera_intent import assign as assign_camera, check as check_camera, to_props
     from edit_leads import apply_leads, assign as assign_leads, check as check_leads
     from verify_rhythm import check as check_rhythm
 
+    # The asset's own opinion, before the camera move is chosen: a push into a
+    # dense frame becomes a lock. Without this the veto in the mood table is a
+    # rule about a field nobody fills in.
+    classified = annotate_cuts(cuts, args.project)
     assign_camera(cuts)
     assign_leads(cuts, fps=FPS)
 
@@ -158,6 +163,7 @@ def main() -> int:
 
     print(f"{len(cuts)} cuts over {t:.2f}s -> {dest}")
     print(f"  staged {copied} assets into remotion-composer/public/demo/")
+    print(f"  asset class on {classified} of {len(cuts)} cuts")
     print(f"  leads: {lead_report['applied']} applied, {lead_report['skipped']} skipped")
     print(f"  shot length p10 {measured['shot_length']['p10']}s  "
           f"median {measured['shot_length']['median']}s  "
