@@ -728,6 +728,129 @@ For bugs, feature requests, and workflow discussions, use [GitHub Issues](https:
 
 ---
 
+## Weekly run
+
+A documentary a week, end to end on this Mac, with one approval from a human.
+$0: every source is keyless or free, the render is local, and the only paid
+thing in the chain is the electricity.
+
+### The chain
+
+| when | what | where |
+|---|---|---|
+| Fri 22:00 | pick a topic, write the script | `scripts/run_weekly.sh` |
+| then | **the script gate** — Telegram, waits up to 12h | `scripts/telegram_gate.py` |
+| overnight | render, gate, deliver | `scripts/render_film.py` |
+| then | upload private, scheduled Mon 09:00 | `scripts/publish_doc.py` |
+| Sun 12:00 | tripwire: no film? page Telegram | `scripts/weekly_tripwire.sh` |
+| Tue 09:00 | pull metrics, post a summary | `scripts/pull_metrics.py` |
+
+The script is the only thing that waits for a person. Everything downstream of
+it is gated by a measurement — rhythm, leads, frame order, type lock, delivery
+audio — and the script is the one artifact where being wrong is invisible to
+every gate in this repository and obvious to a viewer.
+
+**Silence is not approval.** No reply in 12 hours aborts the run.
+
+### Installing the agents
+
+```bash
+cd ~/Developer/wak3up-docs/OpenMontage
+
+# the three agents, from this repository into launchd
+for a in weekly metrics tripwire; do
+  cp launchd/com.wak3up.docs.$a.plist ~/Library/LaunchAgents/
+  launchctl bootout  gui/$UID/com.wak3up.docs.$a 2>/dev/null
+  launchctl bootstrap gui/$UID ~/Library/LaunchAgents/com.wak3up.docs.$a.plist
+done
+
+launchctl list | grep com.wak3up.docs        # all three loaded
+launchctl print gui/$UID/com.wak3up.docs.weekly | head -20
+```
+
+To run one now rather than waiting for its day:
+
+```bash
+launchctl kickstart -p gui/$UID/com.wak3up.docs.weekly
+```
+
+To stop them:
+
+```bash
+for a in weekly metrics tripwire; do
+  launchctl bootout gui/$UID/com.wak3up.docs.$a
+done
+```
+
+### Before the first run
+
+Three things have to be true, and each says so plainly when it is not:
+
+```bash
+.venv/bin/python lib/telegram.py --check          # bot reachable, chat known
+.venv/bin/python scripts/publish_doc.py --project <id> --check-token
+.venv/bin/python scripts/pull_metrics.py --check  # analytics scope present
+```
+
+- **Telegram.** `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` in
+  `~/Developer/wak3up-docs/.env` — outside this repository, because the
+  repository is pushed and the token is not. The file is there with the
+  instructions in it.
+- **The YouTube refresh token has to survive a week.** A Google OAuth client
+  in **testing** mode expires refresh tokens after seven days, so every Friday
+  at 22:00 would fail at the last step. The check refuses to pass a token
+  younger than that — working today is not the same as working next Friday —
+  so either publish the consent screen (Cloud Console → APIs & Services →
+  OAuth consent screen → Publish app) or let the token prove itself by being
+  more than seven days old.
+- **The analytics scope.** The upload token carries `youtube.upload`,
+  `youtube` and `force-ssl`, and metrics need `yt-analytics.readonly`, which
+  it does not have. Add it to `publish/yt_authorize.py` and re-authorise.
+
+### Dry run
+
+Proves the joins without making a film: the picker's brief is one the runner
+can read, the script is one the gate can post, the reply reaches the runner,
+the project reaches the publisher, the ledger reaches next week's picker.
+Telegram is faked and nothing is uploaded.
+
+```bash
+.venv/bin/python scripts/dry_run.py                 # the human says ok
+.venv/bin/python scripts/dry_run.py --reply no      # and when they say no
+.venv/bin/python scripts/dry_run.py --reply "cut act 2"
+```
+
+### Picking a topic by hand
+
+```bash
+.venv/bin/python scripts/pick_topic.py --top 3 --candidates 14
+```
+
+Writes `artifacts/topic_briefs.json` and a readable brief per candidate into
+`reports/briefs/`. The runner takes the first unless `--brief` says otherwise.
+
+Three questions, in order, each slower than the last: **what performs** (the
+Shorts ledger, read-only over SSH), **is it a thing** (Wikidata — a class is
+not a subject, and "Mountain" is a class), and **can it be built** (Wikimedia
+category depth, eight usable assets across six entities).
+
+### What it will not do
+
+- **Retry a render.** A render that failed failed for a reason, and a second
+  twenty-minute attempt at 4am buries it under another log.
+- **Run twice.** A lock file holds the whole run; a second invocation exits.
+- **Continue past a stage error.** Every exit code is checked and a failure
+  goes to Telegram with the last lines of the log.
+- **Publish because nobody answered.**
+
+### Logs
+
+`logs/<date>/` per run — the prompt, each stage's output, the render log.
+Kept eight weeks (`KEEP_WEEKS`), rotated at the start of every run. The
+agents' own stdout is truncated at 5MB.
+
+---
+
 ## Run #2 checklist — *They Said It Couldn't Be Built*
 
 Fork-specific. Tracks the editor pass on branch `editor-pass`; the measurements

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.wak3up.docs.tripwire</string>
+
+    <!-- Sunday 12 local time -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key><integer>00</integer>
+        <key>Hour</key><integer>0</integer>
+        <key>Minute</key><integer>0</integer>
+    </dict>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/mac/Developer/wak3up-docs/OpenMontage/12:scripts/weekly_tripwire.sh</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/mac/Developer/wak3up-docs/OpenMontage</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>REPO</key><string>/Users/mac/Developer/wak3up-docs/OpenMontage</string>
+        <key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/mac/.local/bin</string>
+        <key>HOME</key><string>/Users/mac</string>
+    </dict>
+
+    <!-- If the Mac was asleep at the scheduled minute, run on wake. A
+         missed Friday is a missed week. -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/mac/Developer/wak3up-docs/OpenMontage/logs/com.wak3up.docs.tripwire.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/mac/Developer/wak3up-docs/OpenMontage/logs/com.wak3up.docs.tripwire.err.log</string>
+
+    <!-- A render is the whole machine for an hour; nice it so the Mac stays
+         usable if anyone is awake. -->
+    <key>Nice</key>
+    <integer>5</integer>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+</dict>
+</plist>
