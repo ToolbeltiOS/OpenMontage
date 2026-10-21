@@ -108,7 +108,11 @@ _PATTERNS: list[tuple[re.Pattern[str], tuple[str, bool, bool, bool, bool]]] = [
     (re.compile(r"pixabay\s*(content\s*)?licen[cs]e", re.I),
      ("PIXABAY", True, True, False, False)),
     # ── permitted ─────────────────────────────────────────────────────────
-    (re.compile(r"cc0|creative\s*commons\s*zero|public\s*domain\s*dedication", re.I),
+    # `publicdomain/zero` is the CC0 deed's own URL, and Europeana states
+    # rights as URIs. Without it the deed classified as plain PD — permitted
+    # either way, and still a misreading of a licence we can name exactly.
+    (re.compile(r"cc0|creative\s*commons\s*zero|public\s*domain\s*dedication"
+                r"|publicdomain/zero", re.I),
      ("CC0", True, True, False, False)),
     (re.compile(r"public\s*domain|\bpdm\b|no\s+known\s+copyright"
                 r"|no\s+copyright\s*-?\s*united\s+states", re.I),

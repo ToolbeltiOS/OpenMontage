@@ -96,11 +96,14 @@ def test_unsplash_helpers_preserve_query_params():
 # assert nothing.
 _SOURCE_CREDENTIALS = {
     "COVERR_API_KEY": "test-coverr",
+    "EUROPEANA_API_KEY": "test-europeana",
     "NARA_API_KEY": "test-nara",
     "NASA_API_KEY": "test-nasa",
+    "NYPL_API_TOKEN": "test-nypl",
     "PEXELS_API_KEY": "test-pexels",
     "PIXABAY_API_KEY": "test-pixabay",
     "POND5_API_KEY": "test-pond5",
+    "SMITHSONIAN_API_KEY": "test-smithsonian",
     "UNSPLASH_ACCESS_KEY": "test-unsplash",
     "VIDEVO_API_KEY": "test-videvo",
 }
