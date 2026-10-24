@@ -31,6 +31,7 @@ half.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
@@ -66,13 +67,29 @@ def act_spans(cuts: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
     The grade is per act and the look pass is one composition, so without this
     a twenty-minute film is graded as whichever act was named first.
+
+    Act names are section ids, and a film has sections that are not numbered:
+    this crashed on `cold_open` with `invalid literal for int()`, because it
+    coerced every label to `act<N>` and the demo's cuts were numbered "01".
+    `gradeForAct` in design/system.ts has always normalised the same two
+    forms — a section id as it stands, a bare number to `act<N>` — so this
+    mirrors it rather than inventing a third rule, and `cold_open` and
+    `outro` keep the grades the playbook writes for them.
     """
     spans: list[dict[str, Any]] = []
     for cut in cuts:
-        raw = cut.get("actNumber") or cut.get("act")
+        # The SECTION ID first, the chrome's display number only as a
+        # fallback. They agree on a numbered act and disagree on every other
+        # section: the cold open carries actNumber "00", which normalises to
+        # `act0` — a key no grade table has — so 35 seconds of it was being
+        # graded with the fallback while `act: cold_open` sat right beside it
+        # naming the grade the playbook writes. It also split the cold open
+        # into two spans with a third in between.
+        raw = cut.get("act") or cut.get("actNumber")
         if raw is None:
             continue
-        name = f"act{int(str(raw).strip().lstrip('0') or 0)}"
+        key = str(raw).strip().lower()
+        name = f"act{int(key)}" if key.isdigit() else key
         start, end = float(cut["in_seconds"]), float(cut["out_seconds"])
         if spans and spans[-1]["act"] == name:
             spans[-1]["to_seconds"] = end
@@ -81,10 +98,100 @@ def act_spans(cuts: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return spans
 
 
-def props_for_layer(props_path: Path, mode: str, work: Path) -> Path:
-    """The same props with one field added, written where the renderer sees it."""
+#: File extensions a props value has to end in to be treated as an asset.
+ASSET_SUFFIXES = (".png", ".jpg", ".jpeg", ".webp", ".gif",
+                  ".mp4", ".mov", ".webm")
+
+
+def _asset_values(blob: Any):
+    """Every (container, key, value) in the props that names a local asset."""
+    stack: list[Any] = [blob]
+    while stack:
+        node = stack.pop()
+        items = (node.items() if isinstance(node, dict)
+                 else enumerate(node) if isinstance(node, list) else ())
+        for key, value in items:
+            if isinstance(value, str):
+                plain = value.split("?")[0].lower()
+                if (plain.endswith(ASSET_SUFFIXES)
+                        and not value.startswith(("http://", "https://", "data:"))):
+                    yield node, key, value
+            elif isinstance(value, (dict, list)):
+                stack.append(value)
+
+
+def stage_assets(blob: Any, project: str) -> dict[str, Any]:
+    """Put every asset the props name where the renderer can actually read it.
+
+    WHY THIS STAGE EXISTS
+    ---------------------
+    The first real film render died at frame 0 with
+
+        Not allowed to load local resource:
+        file:///Users/.../renders/proxies/wm_20150500.jpg
+
+    87 of the 104 asset paths in the props were absolute filesystem paths.
+    `resolveAsset` in the composer turns an absolute path into a `file://`
+    URL, and a page served from http://localhost is not allowed to load one —
+    so that branch of the resolver cannot work in a render or in the Studio.
+    It looks accommodating and is a dead end.
+
+    Remotion reads assets from `remotion-composer/public/`, which is why the
+    demo path worked: `build_demo_cut.py` copied its assets in. The film path
+    had no such step, because run #1 was finished by hand and the gates were
+    written against the demo. So the one documented full-film path had never
+    once resolved a real project's assets.
+
+    Hard links, not copies: the proxies are hundreds of megabytes and the
+    staging directory is gitignored working space. A cross-device link falls
+    back to a copy.
+    """
+    stage = COMPOSER / "public" / f"assets_{project}"
+    stage.mkdir(parents=True, exist_ok=True)
+
+    missing: list[str] = []
+    for node, key, value in list(_asset_values(blob)):
+        source = Path(value) if value.startswith("/") else ROOT / value
+        if not source.exists():
+            missing.append(value)
+            continue
+        # The basename alone collides: two acts can both carry a detail.jpg.
+        digest = hashlib.sha1(str(source.resolve()).encode()).hexdigest()[:8]
+        dest = stage / f"{digest}_{source.name}"
+        if not dest.exists():
+            try:
+                os.link(source, dest)
+            except OSError:
+                shutil.copy2(source, dest)
+        node[key] = f"{stage.name}/{dest.name}"
+
+    if missing:
+        raise SystemExit(
+            f"{len(missing)} asset(s) in the props do not exist, and a render "
+            f"finds that out at the frame that needs them:\n  "
+            + "\n  ".join(missing[:10]))
+    return blob
+
+
+def props_for_layer(props_path: Path, mode: str, work: Path,
+                    project: str | None = None) -> Path:
+    """The same props with one field added, written where the renderer sees it.
+
+    `project` names the staging directory under `public/`. Without it the
+    props go through unstaged, which is only right for props that already
+    point into `public/` — the demo's do, because its own builder copied them
+    there.
+    """
     blob = json.loads(props_path.read_text())
     blob["layer_mode"] = mode
+    if project:
+        # The renderer has no business with the mix. `deliver()` is the one
+        # place the audio enters, by ffmpeg, onto the finished picture — and
+        # the plate, look and type passes would otherwise each carry a
+        # 232MB wav through Remotion's asset downloader, which refuses a
+        # file:// URL anyway. Picture-only layers, mix at the mux.
+        blob.pop("audio", None)
+        blob = stage_assets(blob, project)
     work.mkdir(parents=True, exist_ok=True)
     dest = work / f"props_{mode}.json"
     dest.write_text(json.dumps(blob))

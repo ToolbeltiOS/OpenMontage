@@ -113,11 +113,19 @@ BOX_PAD_PX = 2
 MIN_PATCH_PX = 12
 
 
-def frame_at(film: str, seconds: float, dest: Path) -> Path:
+def frame_at(film: str, seconds: float, dest: Path) -> Path | None:
+    """One frame, or None if the film has no frame there.
+
+    ffmpeg exits 0 when a seek lands past the end: it simply writes nothing.
+    The caller then opened a file that does not exist and died inside PIL with
+    `FileNotFoundError` on a temp path — after the render, which is the worst
+    possible moment to lose the gates. A sample past the end is now a skip
+    with a name, not a traceback.
+    """
     subprocess.run(
         ["ffmpeg", "-v", "error", "-y", "-ss", f"{seconds:.3f}", "-i", film,
          "-frames:v", "1", str(dest)], check=True)
-    return dest
+    return dest if dest.exists() and dest.stat().st_size else None
 
 
 def words(path: Path, min_confidence: float = MIN_CONFIDENCE) -> list[dict[str, Any]]:
@@ -194,6 +202,23 @@ def shift_in_box(first, second, box: dict[str, Any]) -> tuple[float, float] | No
     return float(dx), float(dy)
 
 
+#: How much of the cut list may fall past the end of the file before the
+#: check is reporting on a different film from the one it was handed. One
+#: frame at the very end is rounding; a tenth of the film is a truncated
+#: render, and a check that skips it quietly PASSES, which is worse than
+#: failing.
+MAX_SKIPPED_FRACTION = 0.05
+
+
+def _too_much_skipped(skipped: list[str], cuts: list[dict[str, Any]],
+                      name: str) -> list[str]:
+    if not cuts or len(skipped) <= max(1, int(len(cuts) * MAX_SKIPPED_FRACTION)):
+        return []
+    return [f"{len(skipped)} of {len(cuts)} cuts fall past the end of the "
+            f"file, so {name} did not look at them — the film is shorter "
+            f"than its own cut list (first: {skipped[0]})"]
+
+
 def check(film: str, cuts: list[dict[str, Any]] | None = None,
           fps: float = 30.0) -> tuple[list[str], dict[str, Any]]:
     import cv2
@@ -201,6 +226,7 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
     cuts = cuts or []
     problems: list[str] = []
     samples = []
+    skipped: list[str] = []
 
     with tempfile.TemporaryDirectory() as tmp:
         tmpdir = Path(tmp)
@@ -213,10 +239,16 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
                 continue                   # too short to hold still in
             t0 = start + settle
             first_png = frame_at(film, t0, tmpdir / f"a{n}.png")
+            if first_png is None:
+                skipped.append(cut.get("id"))
+                continue                   # the film ends before this cut does
             boxes = words(first_png)
             if len(boxes) < MIN_WORDS:
                 continue                   # not a text-bearing scene
             second_png = frame_at(film, t0 + SAMPLE_GAP_S, tmpdir / f"b{n}.png")
+            if second_png is None:
+                skipped.append(cut.get("id"))
+                continue
             first = cv2.imread(str(first_png), cv2.IMREAD_GRAYSCALE)
             second = cv2.imread(str(second_png), cv2.IMREAD_GRAYSCALE)
 
@@ -257,11 +289,13 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
                     f"{measured_boxes} words move within a second, worst "
                     f"{worst:.2f}px — {shown}")
 
+    problems += _too_much_skipped(skipped, cuts, "type lock")
     measured = {
         "scenes_sampled": len(samples),
         "scenes_with_movement": sum(1 for s in samples if s["moved"]),
         "worst_shift_px": round(max((s["worst_shift_px"] for s in samples),
                                     default=0.0), 3),
+        "cuts_past_the_end": len(skipped),
         "samples": samples,
     }
     return problems, measured
@@ -282,6 +316,7 @@ def plate_is_clean(plate: str, cuts: list[dict[str, Any]] | None = None
     cuts = cuts or []
     problems: list[str] = []
     found: list[dict[str, Any]] = []
+    skipped: list[str] = []
     with tempfile.TemporaryDirectory() as tmp:
         tmpdir = Path(tmp)
         for n, cut in enumerate(cuts):
@@ -290,7 +325,11 @@ def plate_is_clean(plate: str, cuts: list[dict[str, Any]] | None = None
             if end - start < 2.0:
                 continue
             at = start + (end - start) / 2
-            for w in words(frame_at(plate, at, tmpdir / f"p{n}.png")):
+            png = frame_at(plate, at, tmpdir / f"p{n}.png")
+            if png is None:
+                skipped.append(cut.get("id"))
+                continue                   # the plate ends before this cut does
+            for w in words(png):
                 if len(w["text"]) < MIN_PLATE_WORD_CHARS:
                     continue
                 if not any(ch.isalnum() for ch in w["text"]):
@@ -302,7 +341,10 @@ def plate_is_clean(plate: str, cuts: list[dict[str, Any]] | None = None
             f"{len(found)} words are legible in the plate pass — they carry no "
             f"type class, so they will be graded and grained as picture and "
             f"will drift with the plate: {shown}")
-    return problems, {"words_in_plate": len(found), "found": found[:40]}
+    problems += _too_much_skipped(skipped, cuts, "plate purity")
+    return problems, {"words_in_plate": len(found),
+                      "cuts_past_the_end": len(skipped),
+                      "found": found[:40]}
 
 
 def main() -> int:

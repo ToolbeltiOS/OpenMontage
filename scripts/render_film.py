@@ -82,7 +82,8 @@ def main() -> int:
     if not args.gates_only:
         if not args.skip_picture:
             print("1. plate")
-            render_plate(props_for_layer(props_path, "plate", work), picture, count)
+            render_plate(props_for_layer(props_path, "plate", work, args.project),
+                         picture, count)
             print("2. frames")
             extract_frames(picture, frames_dir, count)
         print("3. look pass")
@@ -90,7 +91,8 @@ def main() -> int:
                     act=spans[0]["act"] if spans else "act1", acts=spans)
         if not args.skip_picture:
             print("4. type")
-            render_type(props_for_layer(props_path, "type", work), type_layer, count)
+            render_type(props_for_layer(props_path, "type", work, args.project),
+                        type_layer, count)
         print("5. deliver")
         deliver(look, type_layer, mix, dest)
 
