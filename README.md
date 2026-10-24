@@ -840,6 +840,33 @@ repository and are now fixed, each with a test:
 | `telegram_gate.outline_of()` read `script["acts"]` | `script.schema.json` is `additionalProperties: false` and carries `sections`. Every schema-valid script would have posted an **empty outline** and a .txt that was a raw JSON dump. The dry run passed because its fixture was written in the shape the code read, not the shape the schema allows — it is schema-valid now, and a test validates it. |
 | two binding numbers for one bed | `audio.music_under_speech_lufs: -30` against `music_authority.bed_under_speech_lufs: -36`, with a blocking ±1.5 LU check. 6 dB apart; the compose gate fails on whichever the mixer did not use. Both are −30 now, the level decided by ear on 2026-10-21. |
 
+#### The second attempt, 2026-10-23 into 10-24 — the film exists
+
+`logs/2026-10-23/run.log` and `logs/2026-10-24/`. Research through script ran
+in 46m, the gate posted (`script=attached, frames 8/8`), the script was
+approved at 21:59, and the render **failed at 23:30** — not on anything the
+pipeline did. `claude -p` had hit *"You've hit your session limit · resets
+12am"*, the same class of outage as the marketing pipeline's expired auth.
+Everything upstream of the picture was already on disk and was re-checked
+rather than trusted: script beats, rhythm, camera intent, edit leads and
+source cuts all still PASS.
+
+The render was resumed the next day and is on disk:
+`projects/easter-island/renders/final.mp4`, 169 cuts, 1210.6s, 36,317 frames,
+1.65 GB.
+
+A 60-frame slice was rendered through all four stages first, and it was worth
+the ten minutes — it found four defects in the film path that had never run
+on a real project, because the demo copied its own assets into `public/` and
+the film path had no staging step at all:
+
+| | |
+|---|---|
+| 87 of 104 asset paths were absolute | `resolveAsset` turns those into `file://`, which a page served from `localhost` refuses: frame 0 died on *Not allowed to load local resource*. `stage_assets()` hard-links every asset into `public/assets_<project>/` (649 MB, no copy) and rewrites the props. |
+| a 232 MB narration wav rode through all three picture passes | `deliver()` is the one place audio belongs. The layer props are picture-only now. |
+| `act_spans()` crashed on `cold_open` | It coerced every label to `act<N>`, and preferred the chrome's display number over the section id — so `actNumber: "00"` gave `act0`, a key no grade table has, and **45 seconds was graded with the fallback** while `act: cold_open` sat beside it naming the right grade. 9 ragged spans became 7 clean ones. |
+| `frame_at()` handed PIL a file ffmpeg never wrote | `FileNotFoundError` *after* the render. It returns `None` now, and a film missing more than 5% of its own cut list fails rather than passing vacuously on zero samples. |
+
 **When it has finished end to end, enable the agent:**
 
 ```bash
@@ -1227,7 +1254,16 @@ evidence that they measure the right thing.
 - **Outro headline column.** Shipped at the reserve boundary (952px) at 62px
   Display, because 900px orphaned "us". Frames for both readings are in
   `remotion-composer/out/step7/`.
-- **Nothing outstanding.** Phase 2A is closed; Phase 2B (automation) is next.
+- **MUSIC RISE, blocking: 21 rises asked for, 8 the music supports.** The
+  edit's `music_rise_allowed` flags outran the bed. `lib/mix_audio.py` never
+  implemented per-cut rises — it lifts the bed in gaps and at act boundaries
+  only — so **no fader move was ever applied**: the gate is flagging an
+  unfulfilled intention in the props, not something audible in the delivered
+  file. Two ways to settle it, and the second is the owner's by the
+  by-ear rule: clear the flags the bed does not support (honours the
+  measurement, changes nothing you can hear), or choose beds that rise where
+  the edit wants them to. It is independent of picture, so neither needs a
+  re-render.
 
 ### Delivered, and what the gates said
 
@@ -1254,10 +1290,78 @@ the mix's −14.0.
 stills: the anchor lands 0.46–1.57px from its feature at the end of a hold,
 where staying locked would have put it 5.4–49.0px away, and no label moved.
 
-**Not delivered: run #2's film.** There is no run #2 edit yet — no script, no
-narration, no EDL — so nothing has been rendered through `render_film.py` end
-to end. The path is checked on a slice and on the demo, and that is all the
-evidence there is for it.
+**The first film the weekly chain made end to end** —
+`projects/easter-island/renders/final.mp4`, *Easter Island: The Part Nobody
+Can Explain*, 1210.6s, 169 cuts, 36,317 frames, 1920×1080, carrying
+`mix_final.wav`. `reports/film_delivery_final.md`:
+
+| check | measured |
+|---|---|
+| frame motion | 0.1% duplicate pairs, longest freeze 0.0s, timestamps constant |
+| frame order | 0 frames out of place, 0 isolated black, correlation with the plate 0.9963 |
+| plate purity | 0 words legible in the plate pass, 32 read in the pictures |
+| type lock | 143 text-bearing scenes, 3,113 words, 0 with a word in a different place, worst 0.58px |
+| delivery audio | −16.3 dBFS mean, −14.03 LUFS against the mix's −14.0 |
+
+It passed on the second render. The first one failed three of the five, and
+two of those were the film's fault:
+
+- **49 of the 169 cuts — 20% of the running time — rendered a camera nobody
+  authored.** Sourced stills with no annotations go through `ImageScene`, not
+  `AnnotatedStill`. The edit stage writes the move as `camera.move` and as
+  `parallaxFrom`/`parallaxTo`/`driftFrom`/`driftTo`; `ImageScene` looked for
+  `cut.animation`, which no cut carries, and fell through to its own default
+  `"zoom-in"`. So all 49 got the same 18% push in: **16 cuts authored `lock`
+  drifted and 10 authored `pull` ran backwards.** CAMERA INTENT passed
+  throughout, because it reads the props — and the props were right. Measured
+  on the delivered file: c085, an 1886 map authored `lock`, moved its
+  engraved title 14.1px in a second against 16.2px predicted by the unwanted
+  zoom; after the fix, 0.005px.
+- **`DocumentReveal` scaled its type with its paper.** "A slow push so the
+  plate is never a dead hold", `1.0 → 1.045`, wrapped around both. Nine cuts,
+  0.76–3.85px a second, each predicted to within a few tenths by 1.045 over
+  the cut's own length. The paper still pushes; the type is a sibling outside
+  it and measures 0.000px.
+
+The third was not the film's, and neither were the two that survived the
+re-render. Those are under *What the gates were reading* below.
+
+### What the gates were reading
+
+Three of the five gates were reading the pictures as if they were ours. This
+film is built from nineteenth-century maps and documents, so the *picture* is
+covered in print — which none of them had met before.
+
+- **Plate purity** assumes anything legible in the plate is type that lost
+  its class. All 32 readings were picture: `'Cooks Bay'`, `'ANCIENT ROADS'`,
+  `'RANO RARAKU'`, `'PHYSICAL'`. **28 were on bare stills — cuts with no
+  authored text at all, which therefore cannot have untagged type.** Not one
+  was a missed element. It asks the cut now: a word the cut put on screen,
+  found in the plate, still fails. A word the cut never mentions is counted
+  as `words_in_picture` and reported, not failed.
+- **Type lock** failed five scenes on a single `'/'` out of 20–32 words, at
+  0.66–0.77px against a 0.65 tolerance — while the scene-index chrome that
+  `'/'` belongs to moved **0.004px** over the same second, correlating at
+  0.95. A box around one glyph is mostly background, which the module header
+  already gives as the reason the tolerance is not zero. A reading now needs
+  two alphanumeric characters before its shift is believed. The other three
+  were `'TUPAHOTU'` at 26px and `'-'`/`'e'` at 12px, on cuts authored to push
+  and to pull: the print travelled because the camera asked it to. Type lock
+  measures the words the cut put on screen. **Chrome counts** — the frame
+  paints words, they are ours, they must hold still — while plate purity
+  still excludes them, because the frame paints them properly. Cost no
+  coverage: 143 scenes before and after, 3,113 words measured.
+- **Frame order** called three act boundaries *"a frame from somewhere
+  else"*. The luma says otherwise. Every boundary cuts to near-black and
+  fades up into the act card, the same gesture each time; act 2's card is
+  graded a shade brighter than act 3's, so its fade crossed `BLACK_LUMA`
+  after 2 frames where act 3's took 9. The frames either side read 3.84 and
+  4.45 — a threshold, not a blink. Isolated black is a **mid-shot** rule now;
+  `check()` already knew where the boundaries were and did not consult them.
+
+Each change was verified by injecting the weakening it could become — a
+filter that measures nothing, a forgiveness that covers every isolated black,
+a call site that drops the camera props — and each is caught.
 
 ### Known, recorded, not yet fixed
 
