@@ -46,6 +46,11 @@ projects/**
 !projects/*/artifacts/run1_assignment.json
 !projects/*/artifacts/metadata.json
 !projects/*/artifacts/publish.json
+# listing.json is the PUBLISHED RECORD: the title, description, chapters and
+# the credit for every asset the film used. It is what the film claims about
+# itself and about whose work is in it, so it is tracked. render_props.json
+# is not — that is rebuilt from edit_decisions every render.
+!projects/*/artifacts/listing.json
 !projects/*/renders/
 !projects/*/renders/mix_report.json
 

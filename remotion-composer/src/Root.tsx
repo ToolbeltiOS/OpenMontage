@@ -25,6 +25,7 @@ import {
   DemoEvidenceCard, DemoScaleComparison, DemoDocCaption, DocStyleSheet,
 } from "./DocStyle";
 import { SlotPreview, SlotPreviewProps } from "./SlotPreview";
+import { Thumbnail, ThumbnailProps } from "./scenes/Thumbnail";
 import { CssLook, FilmLook, FilmLookFrames } from "./FilmLook";
 import { OutroCta } from "./components/OutroCta";
 
@@ -346,6 +347,18 @@ export const Root: React.FC = () => {
           subscribeAt: 8.29,
           fadeOutSeconds: 0.5,
         }}
+      />
+      <Composition
+        id="DocThumbnail"
+        component={Thumbnail}
+        durationInFrames={1}
+        fps={30}
+        width={1280}
+        height={720}
+        defaultProps={{
+          image: "",
+          title: "Easter Island: The Part Nobody Can Explain",
+        } as ThumbnailProps}
       />
       <Composition
         id="SlotPreview"

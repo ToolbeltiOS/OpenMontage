@@ -6,18 +6,24 @@
     <key>Label</key>
     <string>com.wak3up.docs.weekly</string>
 
-    <!-- Friday 22 local time -->
+    <!-- Friday 19:00 local time. Weekday 5 is Friday; 0 is Sunday.
+
+         This file said "Friday 22" in a comment and SUNDAY 06:00 in the
+         keys, which is not the same day, let alone the same hour.
+
+         19:00 so the heavy claude -p stages start at the top of a fresh
+         usage window and are finished before Saturday's work wants one. -->
     <key>StartCalendarInterval</key>
     <dict>
-        <key>Weekday</key><integer>00</integer>
-        <key>Hour</key><integer>6</integer>
+        <key>Weekday</key><integer>5</integer>
+        <key>Hour</key><integer>19</integer>
         <key>Minute</key><integer>0</integer>
     </dict>
 
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/mac/Developer/wak3up-docs/OpenMontage/22:scripts/run_weekly.sh</string>
+        <string>/Users/mac/Developer/wak3up-docs/OpenMontage/scripts/run_weekly.sh</string>
     </array>
 
     <key>WorkingDirectory</key>

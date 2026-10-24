@@ -61,6 +61,53 @@ log: $LOGDIR/run.log"
   exit 1
 }
 
+# ── a claude -p stage, resumable ────────────────────────────────────
+#
+# Output is JSON so the turns and the cost can be recorded; the agent's own
+# closing report is pulled back out into <stage>.log, because that report was
+# the most useful artifact of the first attended run and switching formats
+# must not cost it.
+#
+# $1 stage name   $2 log basename   $3 prompt
+claude_stage() {
+  local name="$1" base="$2" prompt="$3"
+  local attempt=1 resumes=0 rc t0 t1 limit secs resets back
+  while true; do
+    t0=$(date +%s)
+    claude -p "$prompt" --permission-mode acceptEdits --output-format json \
+      > "$base.json" 2> "$base.err"
+    rc=$?
+    t1=$(date +%s)
+
+    "$PY" "$REPO/scripts/stage_usage.py" "$base.json" \
+      --stage "$name" --seconds $((t1 - t0)) --attempt "$attempt" \
+      --ledger "$LOGDIR/usage.jsonl" --report "$base.log" || true
+
+    [[ $rc -eq 0 ]] && return 0
+
+    # A usage limit, or a real failure? Only the first is slept on.
+    if limit="$("$PY" "$REPO/scripts/usage_limit.py" "$base.json" "$base.err")"; then
+      resumes=$((resumes + 1))
+      if (( resumes > MAX_RESUMES )); then
+        say "$name: usage limit again after $MAX_RESUMES resumes — giving up"
+        return "$rc"
+      fi
+      secs="$(printf '%s' "$limit" | sed -n 's/^SECONDS=//p')"
+      resets="$(printf '%s' "$limit" | sed -n 's/^RESETS=//p')"
+      back="$(date -v +"${secs}"S +%H:%M 2>/dev/null || date -d "+${secs} seconds" +%H:%M)"
+      say "$name: usage limit ($resets) — sleeping ${secs}s, back at $back (resume $resumes/$MAX_RESUMES)"
+      notify "<b>paused: usage limit, resuming at $back</b>
+stage: $name
+$resets
+resume $resumes of $MAX_RESUMES"
+      sleep "$secs"
+      attempt=$((attempt + 1))
+      continue
+    fi
+    return "$rc"
+  done
+}
+
 # ── one run at a time ────────────────────────────────────────────────────
 if ! mkdir "$LOCK" 2>/dev/null; then
   owner="$(cat "$LOCK/pid" 2>/dev/null || echo unknown)"
@@ -111,6 +158,15 @@ Playbook:  styles/wak3up-documentary.yaml
 Project:   $SLUG
 Brief:     $BRIEF  (take the first brief)
 
+FIRST, before anything else, run this and obey what it says:
+
+    .venv/bin/python scripts/resume_state.py --project $SLUG
+
+This stage can be RE-ENTERED after a usage limit, and when it is, the work
+already on disk is finished work. Do not rebuild a stage it marks [x]: read
+that stage's artifact and carry on from the first one it does not mark.
+Rebuilding spends the run twice and overwrites a result that was fine.
+
 Run the pipeline from research through to the script artifact and stop there.
 Every gate in the pipeline is auto-approved EXCEPT the script gate, which is a
 human one and is handled outside this process — do not wait for it and do not
@@ -124,9 +180,9 @@ if [[ "$DRY_RUN" == "1" ]]; then
   say "dry run: skipping claude -p"
 else
   say "writing the script (claude -p)"
-  claude -p "$(cat "$PROMPT")" --permission-mode acceptEdits \
-    > "$LOGDIR/script_stage.log" 2>&1 \
-    || fail "script stage" "$(tail -20 "$LOGDIR/script_stage.log")"
+  claude_stage "script" "$LOGDIR/script_stage" "$(cat "$PROMPT")" \
+    || fail "script stage" "$(tail -20 "$LOGDIR/script_stage.log" 2>/dev/null \
+                             || tail -20 "$LOGDIR/script_stage.err")"
 fi
 
 # ── 3. the human ─────────────────────────────────────────────────────────
@@ -151,11 +207,11 @@ while true; do
     10) say "notes received — applying"
         ATTEMPT=2
         if [[ "$DRY_RUN" != "1" ]]; then
-          claude -p "Apply the notes in projects/$SLUG/artifacts/script_notes.txt
+          claude_stage "notes" "$LOGDIR/notes_stage" \
+            "Apply the notes in projects/$SLUG/artifacts/script_notes.txt
 to projects/$SLUG/artifacts/script.json. Change nothing else." \
-            --permission-mode acceptEdits \
-            >> "$LOGDIR/script_stage.log" 2>&1 \
-            || fail "applying notes" "$(tail -20 "$LOGDIR/script_stage.log")"
+            || fail "applying notes" "$(tail -20 "$LOGDIR/notes_stage.log" 2>/dev/null \
+                                       || tail -20 "$LOGDIR/notes_stage.err")"
         fi
         ;;
     5)  fail "script gate" "the script stage produced no script.json" ;;
@@ -171,13 +227,24 @@ fi
 if [[ "$DRY_RUN" == "1" ]]; then
   say "dry run: skipping the render"
 else
-  say "rendering (no retries)"
-  claude -p "Continue the pipeline for project $SLUG from the approved script
-through to a delivered film. Auto-approve every gate. Render with
-scripts/render_film.py, which is the only full-film render path." \
-    --permission-mode acceptEdits \
-    > "$LOGDIR/render_stage.log" 2>&1 \
-    || fail "render" "$(tail -20 "$LOGDIR/render_stage.log")"
+  say "rendering (no render retries; usage limits are resumed)"
+  claude_stage "render" "$LOGDIR/render_stage" \
+    "FIRST, before anything else, run this and obey what it says:
+
+    .venv/bin/python scripts/resume_state.py --project $SLUG
+
+This stage can be RE-ENTERED after a usage limit. Everything it marks [x] is
+finished — read the artifact and carry on from the first stage it does not
+mark. Do not rebuild the script; it is approved.
+
+Continue the pipeline for project $SLUG from the approved script through to a
+delivered film. Auto-approve every gate. Render with scripts/render_film.py,
+which is the only full-film render path.
+
+If the picture is already rendered and only a gate or the audio needs
+rebuilding, say so and do that rather than rendering 36,000 frames again." \
+    || fail "render" "$(tail -20 "$LOGDIR/render_stage.log" 2>/dev/null \
+                       || tail -20 "$LOGDIR/render_stage.err")"
 fi
 
 # ── 5. publish ───────────────────────────────────────────────────────────
@@ -194,7 +261,34 @@ PUBLISH_ARGS=(--project "$SLUG")
   > "$LOGDIR/publish.log" 2>&1 \
   || fail "publish" "$(tail -10 "$LOGDIR/publish.log")"
 
+# ── what the film cost ───────────────────────────────────────
+# Against the plan, on Saturday morning, rather than at the next usage limit.
+COST=""
+if [[ -s "$LOGDIR/usage.jsonl" ]]; then
+  say "what this film cost"
+  COST="$("$PY" - "$LOGDIR/usage.jsonl" <<'"'"'COSTEOF'"'"'
+import json, sys
+rows = [json.loads(l) for l in open(sys.argv[1]) if l.strip()]
+wall = sum(r.get("wall_seconds") or 0 for r in rows)
+cost = sum(r.get("cost_usd") or 0 for r in rows)
+turns = sum(r.get("turns") or 0 for r in rows)
+resumes = sum(1 for r in rows if (r.get("attempt") or 1) > 1)
+for r in rows:
+    print(f"  {r['stage']:<8} attempt {r.get('attempt',1)}  "
+          f"{r.get('wall','?'):>7}  {r.get('turns','?')} turns  "
+          f"${r.get('cost_usd') or 0:.2f}")
+print(f"  {'TOTAL':<8}            {int(wall)//3600}h{(int(wall)%3600)//60:02d}m  "
+      f"{turns} turns  ${cost:.2f}"
+      + (f"  ({resumes} resumed after a usage limit)" if resumes else ""))
+COSTEOF
+)"
+  printf '%s\n' "$COST"
+fi
+
 say "done"
 notify "<b>Weekly run finished</b>
 topic: $TOPIC
-$(tail -3 "$LOGDIR/publish.log")"
+$(tail -3 "$LOGDIR/publish.log")
+
+<b>cost</b>
+<pre>$COST</pre>"

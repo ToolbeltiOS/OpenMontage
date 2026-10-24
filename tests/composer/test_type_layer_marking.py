@@ -28,6 +28,16 @@ SRC = Path(__file__).resolve().parents[2] / "remotion-composer" / "src"
 #: Vendored code, which is not ours to mark.
 SKIP_DIRS = {"transitions"}
 
+#: Files in the film's own tree that are never rendered through the two-pass
+#: split, so the class would mean nothing on them.
+#:
+#: The rule is about elements inside a `<LayerScope>`. A thumbnail is its own
+#: composition, rendered once as a still: there is no plate pass to keep its
+#: title out of, and marking it `om-type` would claim a split that does not
+#: happen. Listed by name with the reason rather than skipped by a pattern,
+#: so the next file that wants out has to argue for it.
+NOT_IN_THE_LAYERED_RENDER = {"Thumbnail.tsx"}
+
 #: Containers that set a font family for their descendants without painting
 #: any text themselves.
 ALLOWED: set[tuple[str, str]] = {
@@ -101,6 +111,7 @@ def in_documentary_tree(path: Path) -> bool:
 def tsx_files() -> list[Path]:
     return sorted(p for p in SRC.rglob("*.tsx")
                   if not SKIP_DIRS & set(p.relative_to(SRC).parts)
+                  and p.name not in NOT_IN_THE_LAYERED_RENDER
                   and in_documentary_tree(p))
 
 

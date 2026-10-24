@@ -235,6 +235,25 @@ class TestThePlateReadsThePictureToo:
                 f"{authored!r} is a word this cut puts on screen — finding it "
                 f"in the plate means it never got the type class")
 
+    def test_a_diagnostic_field_is_never_a_word(self):
+        """A field that explains a decision is not text on screen.
+
+        `music_rise_reason` was added to cleared cuts and reads "bed not
+        rising here (-0.162 sd/s against a floor of 0.02)". That put 'of'
+        into the cut's authored words; OCR read 'of' off an 1886 map in the
+        same cut; and plate purity failed a film that had not changed a
+        frame. The rule is on the NAME, so the next `*_reason` added to a
+        cut cannot do it again.
+        """
+        cut = {"id": "c083",
+               "music_rise_reason": "bed not rising here (-0.162 sd/s "
+                                    "against a floor of 0.02)",
+               "reason": "meaning_change | act2_s037",
+               "lead_reason": "landing: the picture holds through the air"}
+        assert vtl.authored_words(cut) == set()
+        for word in ("of", "bed", "rising", "landing", "picture", "holds"):
+            assert not vtl.plate_word_is_authored(word, cut), word
+
     def test_a_filename_is_never_a_word(self):
         """`source` is a credit line on a document and a path on a still."""
         cut = {"id": "c085", "source": "/proxies/wm_580033251.jpg"}

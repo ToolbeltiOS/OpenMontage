@@ -317,9 +317,19 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
 NON_TEXT_KEYS = {
     "id", "src", "image", "backgroundImage", "backgroundVideo", "asset",
     "path", "act", "type", "transition_in", "transition_family", "beat",
-    "register", "treatment", "asset_class", "reason", "lead_reason",
-    "camera", "status", "index",
+    "register", "treatment", "asset_class", "camera", "status", "index",
 }
+
+#: Anything named `*_reason` explains a decision and is never painted.
+#:
+#: Not a tidy-up. `music_rise_reason` was added to cleared cuts and reads
+#: "bed not rising here (-0.162 sd/s against a floor of 0.02)" — so 'of'
+#: became a word the cut supposedly puts on screen, OCR read 'of' off an
+#: 1886 map in that same cut, and plate purity failed a film that had not
+#: changed a frame. A diagnostic that can fail a gate is worse than no
+#: diagnostic, so the rule is on the NAME rather than a list that has to be
+#: remembered every time one is added.
+DIAGNOSTIC_SUFFIX = "_reason"
 
 #: Chrome: the persistent frame's own words. They are NOT authored content —
 #: plate purity must not count 'S 039' as an element someone forgot to tag,
@@ -346,7 +356,8 @@ def authored_words(cut: dict[str, Any], chrome: bool = False) -> set[str]:
     def walk(node: Any) -> None:
         if isinstance(node, dict):
             for key, value in node.items():
-                if key in NON_TEXT_KEYS:
+                if key in NON_TEXT_KEYS or key == "reason" \
+                        or key.endswith(DIAGNOSTIC_SUFFIX):
                     continue
                 if key in CHROME_KEYS and not chrome:
                     continue

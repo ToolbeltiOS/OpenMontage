@@ -8,7 +8,7 @@
 |---|---|---|
 | frame motion | 0.1% duplicate pairs, longest freeze 0.0s, timestamps constant | PASS |
 | frame order | 0 frames out of place, 0 isolated black, correlation with the plate 0.9963 | PASS |
-| plate purity | 0 words legible in the plate pass | PASS |
+| plate purity | 1 words legible in the plate pass | FAIL |
 | type lock | 143 text-bearing scenes sampled a second apart, 0 with a word in a different place, worst 0.58px | PASS |
 | delivery audio | -16.3 dBFS mean, -14.03 LUFS against the mix's -14.0 (-0.03 dB) | PASS |
 
@@ -1229,3 +1229,7 @@ One character per frame, 30 per row — a second a row. `#` is black, `+` under 
  1209.0s |+++++++++++++++++++++++++#####
  1210.0s |##
 ```
+
+## Failures
+
+- plate purity: 1 words are legible in the plate pass — they carry no type class, so they will be graded and grained as picture and will drift with the plate: 'of' in c083

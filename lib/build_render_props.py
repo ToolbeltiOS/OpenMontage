@@ -242,17 +242,64 @@ def music_spans(music_dir: str, ed: dict, offsets: list[float],
 
 
 
+def mix_inputs_hash(ed: dict) -> str:
+    """What the mix is a function of: the music block and the narration.
+
+    Hashing the whole EDL would churn on a changed caption. Hashing only the
+    music block would miss re-synthesised narration, which is the other half
+    of the mix. Both, so the recorded hash answers exactly one question —
+    would building the mix again produce the same mix?
+    """
+    import hashlib
+
+    h = hashlib.sha256()
+    h.update(json.dumps(ed.get("music") or {}, sort_keys=True).encode())
+    for name in SECTIONS:
+        path = os.path.join(AUD, name + ".wav")
+        try:
+            st = os.stat(path)
+            h.update(f"{name}:{st.st_size}:{int(st.st_mtime)}".encode())
+        except OSError:
+            h.update(f"{name}:missing".encode())
+    return h.hexdigest()[:16]
+
+
 def build_audio(music_dir: str, ed: dict, reuse: bool = False) -> tuple[str, list[float]]:
     """Narration concat + crossfaded music bed, ducked, then loudness-normalised."""
     os.makedirs(OUT, exist_ok=True)
     final_path = os.path.join(OUT, "mix_final.wav")
+    stamp_path = os.path.join(OUT, ".mix_inputs")
+    want = mix_inputs_hash(ed)
+
+    # REUSE ONLY WHAT THIS EDL WOULD BUILD.
+    #
+    # `reuse` used to mean "mix_final.wav exists", which let an intermediate
+    # and the mix it feeds drift apart. Found on easter-island: `bed_eq.wav`
+    # is deterministic — two rebuilds give one md5 — but the bed on disk was
+    # not the bed the EDL reproduces, and `lib/music_arousal.py` reads
+    # bed_eq.wav. So the music gate was grading a bed that was not in the
+    # film: 8 supported rises against the stale one, 6 and a different set
+    # against the real one.
+    #
+    # A reused mix now has to be a mix THIS edit would have produced, and the
+    # hash beside it is what says so.
     if reuse and os.path.exists(final_path):
-        offsets, t = [], 0.0
-        for s in SECTIONS:
-            offsets.append(t)
-            t += dur(os.path.join(AUD, s + ".wav"))
-        print("audio: reusing existing mix_final.wav")
-        return final_path, offsets
+        have = ""
+        if os.path.exists(stamp_path):
+            with open(stamp_path, encoding="utf-8") as fh:
+                have = fh.read().strip()
+        if have == want:
+            offsets, t = [], 0.0
+            for s in SECTIONS:
+                offsets.append(t)
+                t += dur(os.path.join(AUD, s + ".wav"))
+            print(f"audio: reusing existing mix_final.wav (inputs {want})")
+            return final_path, offsets
+        print(f"audio: NOT reusing — the mix on disk was built from "
+              f"{have or 'inputs that were never recorded'}, this edit is "
+              f"{want}. Rebuilding, because a bed that does not match its "
+              f"EDL is a bed the music gate would grade instead of the one "
+              f"in the film.")
     narration = os.path.join(OUT, "narration.wav")
     offsets, t = [], 0.0
     for s in SECTIONS:
@@ -288,6 +335,10 @@ def build_audio(music_dir: str, ed: dict, reuse: bool = False) -> tuple[str, lis
     subprocess.run([sys.executable, os.path.join(ROOT, "lib", "mix_audio.py"),
                     "--project", PROJECT,
                     json.dumps(spans), final_path, str(under_speech)], check=True)
+    # Written only after the mixer returns, so a crashed mix leaves no stamp
+    # and the next run rebuilds rather than trusting a half-written file.
+    with open(stamp_path, "w", encoding="utf-8") as fh:
+        fh.write(want + "\n")
     return final_path, offsets
 
 
