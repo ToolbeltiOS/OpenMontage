@@ -16,6 +16,30 @@ category: documentary
 stability: beta
 default_checkpoint_policy: guided
 
+# HOW THE GATE COMMANDS BELOW ARE RUN
+#
+#   .venv/bin/python, from the repository root, never `python3`, never after
+#   a `cd`.
+#
+# `python3` was what every gate command here said, and the system interpreter
+# on the build machine has no yaml, jsonschema, librosa, cv2 or pytesseract.
+# So `python3 lib/script_beats.py` — the BLOCKING gate on the script stage —
+# would have died on `import yaml` the moment the permission wall came down,
+# and the unattended run would have failed a second time for a new reason.
+# Measured, not guessed: 6 of the 8 libraries the gates import are missing
+# from `python3` and present in `.venv/bin/python`.
+#
+# And no `cd X && <relative command>`: the unattended permission set cannot
+# resolve a relative target after a cd, so the command is denied rather than
+# run. Every command here is issued from the repository root.
+#
+# The Remotion CLI is not called by hand at all. `scripts/render_film.py` is
+# the only full-film render path and it sets the composer directory itself;
+# `npx remotion` from the root fails with "could not determine executable to
+# run", and `npx --prefix .../remotion-composer remotion` runs the CLI but
+# still resolves packages from the caller's directory, so it reports "No
+# Remotion packages found". Neither is a form to teach.
+
 metadata:
   render_profile: youtube_landscape
   target_duration_seconds: 1200
@@ -157,7 +181,7 @@ stages:
       - Speaker directions and delivery cues present for TTS
     gate_commands:
       - name: script_beats
-        run: "python3 lib/script_beats.py {artifacts}/script.json --plan {artifacts}/narration_plan.json"
+        run: ".venv/bin/python lib/script_beats.py {artifacts}/script.json --plan {artifacts}/narration_plan.json"
         blocking: true
         why: >
           Every paragraph carries a beat type and the air is written into the
@@ -206,10 +230,10 @@ stages:
       # BLOCKING. Run #1 reached compose with 79 of 183 slots naming graphics
       # that had no component behind them, because nothing checked. See
       # lib/buildability.py.
-      - "BUILDABILITY: python3 lib/buildability.py <scene_plan.json> exits 0"
+      - "BUILDABILITY: .venv/bin/python lib/buildability.py <scene_plan.json> exits 0"
     gate_commands:
       - name: buildability
-        run: "python3 lib/buildability.py {artifacts}/scene_plan.json"
+        run: ".venv/bin/python lib/buildability.py {artifacts}/scene_plan.json"
         blocking: true
         why: >
           Every authored slot must name a component that exists in
@@ -272,7 +296,7 @@ stages:
       - Gaps are flagged to the user, never silently filled with an unrelated clip
     gate_commands:
       - name: word_timings
-        run: "python3 scripts/align_narration.py --project {project_id} --check"
+        run: ".venv/bin/python scripts/align_narration.py --project {project_id} --check"
         blocking: true
         why: >
           Run #1's word timings came from transcribing the narration and
@@ -283,7 +307,7 @@ stages:
           to decide when they were said. Any word under 40ms after that is a
           failure, not a rounding error.
       - name: alignment_confidence
-        run: "python3 lib/alignment_qa.py --project {project_id} --fix"
+        run: ".venv/bin/python lib/alignment_qa.py --project {project_id} --fix"
         blocking: true
         why: >
           A paragraph the aligner was barely able to follow is re-synthesised
@@ -292,7 +316,7 @@ stages:
           one finds a synthesis the aligner could not follow, which is the
           same defect one stage earlier.
       - name: sound_design
-        run: "python3 lib/sound_design.py {artifacts}/sound_design.json"
+        run: ".venv/bin/python lib/sound_design.py {artifacts}/sound_design.json"
         blocking: true
         why: >
           The sound-design layer names real files with real licences. A spec
@@ -331,14 +355,14 @@ stages:
       - Every cut has a reason
     gate_commands:
       - name: camera_intent
-        run: "python3 lib/camera_intent.py {artifacts}/edit_decisions.json"
+        run: ".venv/bin/python lib/camera_intent.py {artifacts}/edit_decisions.json"
         blocking: true
         why: >
           Run #1 gave every still the same push, because nothing recorded a
           choice. A move now comes from the beat and carries its reason; a
           move with no reason is the default under another name.
       - name: edit_leads
-        run: "python3 lib/edit_leads.py {artifacts}/edit_decisions.json"
+        run: ".venv/bin/python lib/edit_leads.py {artifacts}/edit_decisions.json"
         blocking: true
         why: >
           Every one of run #1's 182 boundaries cut picture and sound at the
@@ -346,7 +370,7 @@ stages:
           boundaries and reveals, at most 10 the other way at exposition cuts,
           and none at a landing, whose picture holds through written air.
       - name: rhythm
-        run: "python3 lib/verify_rhythm.py {artifacts}/edit_decisions.json"
+        run: ".venv/bin/python lib/verify_rhythm.py {artifacts}/edit_decisions.json"
         blocking: true
         why: >
           Run #1 passed every pacing check the repo had and was still
@@ -408,7 +432,7 @@ stages:
       - No silent fallback from the approved visual promise
     gate_commands:
       - name: frame_motion
-        run: "python3 lib/verify_frame_motion.py {renders}/final.mp4"
+        run: ".venv/bin/python lib/verify_frame_motion.py {renders}/final.mp4"
         blocking: true
         why: >
           No run of more than two identical consecutive frames outside a
@@ -418,7 +442,7 @@ stages:
           its picture was frozen for 51% of its running time, because nothing
           in the pipeline compared one frame to the next.
       - name: music_rise
-        run: "python3 lib/music_arousal.py {renders}/bed_eq.wav --cuts {artifacts}/render_props.json"
+        run: ".venv/bin/python lib/music_arousal.py {renders}/bed_eq.wav --cuts {artifacts}/render_props.json"
         blocking: true
         why: >
           A rise lands only where the bed is already rising. The mood table
@@ -430,7 +454,7 @@ stages:
           refuses most of what a table full of `rise: true` rows would ask
           for.
       - name: source_cuts
-        run: "python3 lib/verify_source_cuts.py {artifacts}/render_props.json --project {project}"
+        run: ".venv/bin/python lib/verify_source_cuts.py {artifacts}/render_props.json --project {project}"
         blocking: true
         why: >
           No edit boundary within 12 frames of a cut the source already had. A
@@ -442,7 +466,7 @@ stages:
           a cut and is exempt, decided by whether the frames either side of it
           still correlate.
       - name: frame_order
-        run: "python3 lib/verify_frame_order.py {renders}/final.mp4 --cuts {artifacts}/render_props.json --reference {renders}/picture.mp4"
+        run: ".venv/bin/python lib/verify_frame_order.py {renders}/final.mp4 --cuts {artifacts}/render_props.json --reference {renders}/picture.mp4"
         blocking: true
         why: >
           Every frame is the frame it should be, and is where it should be. The
@@ -454,7 +478,7 @@ stages:
           motion check cannot see it, because scrambled frames differ from
           each other perfectly well.
       - name: type_lock
-        run: "python3 lib/verify_type_lock.py {renders}/final.mp4 --cuts {artifacts}/render_props.json"
+        run: ".venv/bin/python lib/verify_type_lock.py {renders}/final.mp4 --cuts {artifacts}/render_props.json"
         blocking: true
         why: >
           Type does not move. The sustaining move that keeps an authored
@@ -465,7 +489,7 @@ stages:
           tesseract's own boxes are not stable to a pixel. A scene that means
           to move its text says so with `text_move`.
       - name: plate_purity
-        run: "python3 lib/verify_type_lock.py {renders}/picture.mp4 --cuts {artifacts}/render_props.json --plate"
+        run: ".venv/bin/python lib/verify_type_lock.py {renders}/picture.mp4 --cuts {artifacts}/render_props.json --plate"
         blocking: true
         why: >
           Nothing readable survives into the plate pass. The film is rendered
@@ -474,7 +498,7 @@ stages:
           nobody marked is still in the plate: grained on its edges and
           drifting with it, under locked type saying the same words.
       - name: delivery_audio
-        run: "python3 lib/verify_delivery_audio.py {renders}/final.mp4 --expected-lufs {mix_lufs}"
+        run: ".venv/bin/python lib/verify_delivery_audio.py {renders}/final.mp4 --expected-lufs {mix_lufs}"
         blocking: true
         why: >
           The mix is in the delivered file, and it is the right mix. The act 2
@@ -483,7 +507,7 @@ stages:
           owned the mux and the file looked healthy from the outside: right
           duration, stream present, plausible bitrate.
       - name: captions
-        run: "python3 lib/captions_srt.py {artifacts}/render_props.json {artifacts}/captions.en.srt"
+        run: ".venv/bin/python lib/captions_srt.py {artifacts}/render_props.json {artifacts}/captions.en.srt"
         blocking: true
         why: >
           Long-form ships a sidecar track rather than a burn, so the track is

@@ -177,7 +177,7 @@ and the most search effort.
 ### 10. Run The Buildability Check (Blocking)
 
 ```
-python3 lib/buildability.py projects/<slug>/artifacts/scene_plan.json
+.venv/bin/python lib/buildability.py projects/<slug>/artifacts/scene_plan.json
 ```
 
 It must exit 0 before you checkpoint. The check enforces two things:

@@ -205,7 +205,7 @@ Run the gate; it does the arithmetic and writes the narration plan the
 synthesis and mix stages read:
 
 ```bash
-python3 lib/script_beats.py projects/<id>/artifacts/script.json \
+.venv/bin/python lib/script_beats.py projects/<id>/artifacts/script.json \
     --plan projects/<id>/artifacts/narration_plan.json
 ```
 

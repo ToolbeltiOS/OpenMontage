@@ -752,3 +752,113 @@ class TestTheMarkerTheDirectorTeaches:
         for marker in markers:
             assert script_beats.BEAT_RE.match(marker), \
                 f"the director teaches {marker!r}, which the parser drops as prose"
+
+
+class TestEveryCommandTheUnattendedRunIssues:
+    """The permission wall came down and two traps were waiting behind it.
+
+    The probe that opened it also measured the limits: a relative target
+    after a `cd` cannot be resolved under the unattended permission set and
+    is denied rather than run, and `npx remotion` from the repository root
+    fails outright because the packages live in `remotion-composer/`.
+
+    And `python3` — what every gate command in the pipeline said — has no
+    yaml, jsonschema, librosa, cv2 or pytesseract on this machine, so the
+    BLOCKING script gate would have died on `import yaml` the moment it was
+    allowed to run at all.
+    """
+
+    CHAIN = ("pipeline_defs/narrated-documentary.yaml",
+             "skills/pipelines/narrated-documentary/executive-producer.md",
+             "skills/pipelines/narrated-documentary/research-director.md",
+             "skills/pipelines/narrated-documentary/proposal-director.md",
+             "skills/pipelines/narrated-documentary/script-director.md",
+             "skills/pipelines/narrated-documentary/scene-director.md",
+             "skills/pipelines/narrated-documentary/asset-director.md",
+             "skills/pipelines/narrated-documentary/edit-director.md",
+             "skills/pipelines/narrated-documentary/compose-director.md",
+             "skills/pipelines/narrated-documentary/publish-director.md",
+             "skills/core/remotion.md")
+
+    @staticmethod
+    def _command_lines():
+        """Lines that TEACH a command, with inline code spans removed.
+
+        Two earlier versions of this got the discrimination wrong. Scanning
+        only ```bash fences missed scene-director.md, whose blocking gate
+        command sits in an unlabelled one. Treating every unlabelled fence as
+        shell then flagged a markdown table in the prose that exists to warn
+        about the broken form.
+
+        Backticks are the discriminator that actually holds: a command being
+        taught is bare inside a fence, and a form being WARNED about is
+        wrapped in backticks mid-sentence. So the spans come out and whatever
+        is left is read as an instruction.
+        """
+        import re
+        from pathlib import Path
+
+        out = []
+        for path in TestEveryCommandTheUnattendedRunIssues.CHAIN:
+            if not path.endswith(".md"):
+                continue
+            for line in Path(path).read_text().splitlines():
+                bare = re.sub(r"`[^`]*`", "", line)
+                if bare.strip() and not bare.lstrip().startswith(("|", ">")):
+                    out.append((path, bare))
+        return out
+
+    def test_no_gate_command_uses_the_system_interpreter(self):
+        import re
+
+        import yaml
+
+        pipeline = yaml.safe_load(
+            open("pipeline_defs/narrated-documentary.yaml", encoding="utf-8"))
+        runs = [c["run"] for s in pipeline["stages"]
+                for c in (s.get("gate_commands") or [])]
+        assert runs, "the pipeline declares no gate commands"
+        for run in runs:
+            assert run.startswith(".venv/bin/python "), run
+            assert not re.search(r"(?<![\w./-])python3 ", run), run
+
+    def test_no_taught_command_uses_the_system_interpreter(self):
+        import re
+
+        for path, line in self._command_lines():
+            assert not re.search(r"(?<![\w./-])python3 ", line), \
+                f"{path}: {line}"
+
+    def test_the_venv_has_what_the_gates_import(self):
+        """The reason, not the rule. If `python3` ever grows these too, the
+        rule still holds: one interpreter, the one with the lockfile.
+        """
+        import subprocess
+        import sys
+
+        probe = "import yaml, jsonschema"
+        venv = subprocess.run([sys.executable, "-c", probe], capture_output=True)
+        assert venv.returncode == 0, venv.stderr.decode()[:300]
+
+    def test_nothing_in_the_chain_teaches_a_cd(self):
+        import re
+
+        for path, line in self._command_lines():
+            assert not re.match(r"\s*cd\s+\S", line), f"{path}: {line}"
+            assert not re.search(r"&&\s*cd\s+\S", line), f"{path}: {line}"
+
+    def test_nothing_in_the_chain_teaches_a_bare_remotion_cli_call(self):
+        """It fails from the root, and --prefix only moves the failure."""
+        import re
+
+        for path, line in self._command_lines():
+            assert not re.search(r"\bnpx\s+remotion\b", line), \
+                f"{path}: {line}"
+
+    def test_the_only_full_film_render_path_sets_its_own_directory(self):
+        """Which is why no one has to write the incantation."""
+        from pathlib import Path
+
+        source = Path("lib/film_render.py").read_text()
+        assert "cwd=COMPOSER" in source
+        assert source.count("npx") >= 1

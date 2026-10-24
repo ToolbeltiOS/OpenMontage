@@ -180,21 +180,36 @@ remotion-composer/
 
 ### Render Invocation
 
-The orchestrator calls Remotion renders via CLI:
+**The CLI is not called by hand.** `scripts/render_film.py` is the only
+full-film render path, and `lib/film_render.py` runs the CLI with the composer
+directory as its working directory — which is the part that cannot be written
+as a one-liner:
 
 ```bash
-# Standard render (composition name is "Explainer", no entry point needed)
-npx remotion render Explainer \
-  --props="public/demo-props/my-video.json" \
-  --output=output/final.mp4 \
-  --codec=h264 --crf=18
-
-# With specific media profile
-npx remotion render Explainer \
-  --width=1080 --height=1920 --fps=30 \
-  --props="public/demo-props/my-video.json" \
-  --output=output.mp4
+.venv/bin/python scripts/render_film.py --project <id>
 ```
+
+The Remotion CLI resolves both its executable and its packages from the
+working directory, and none of the obvious ways round that work. Measured on
+this machine, from the repository root:
+
+| | |
+|---|---|
+| `npx remotion versions` | `npm error could not determine executable to run` — the packages are in `remotion-composer/`, not here |
+| `npx --prefix <abs>/remotion-composer remotion versions` | the CLI runs, then prints **`No Remotion packages found`** — `--prefix` says where the binary is, not where to resolve the project |
+| `<abs>/remotion-composer/node_modules/.bin/remotion versions` | same: `No Remotion packages found` |
+| the same CLI with the composer as its working directory | `On version: 4.0.484` |
+
+`cd remotion-composer && npx remotion …` does work in a terminal and must not
+be written into a skill: the unattended weekly run cannot resolve a relative
+target after a `cd`, so the command is denied rather than run. A Python
+`subprocess.run(..., cwd=COMPOSER)` is the form that is both correct and
+permitted, and `lib/film_render.py` already is one.
+
+If you genuinely need a bare composition render — a still, the studio — add it
+to `remotion-composer/package.json` scripts and call
+`npm --prefix remotion-composer run <script>`, because npm runs a script with
+the package directory as its working directory.
 
 **Note:** Do NOT specify `src/index.ts` as entry point — Remotion auto-discovers compositions. The composition name is `Explainer` (not `ExplainerVideo`).
 

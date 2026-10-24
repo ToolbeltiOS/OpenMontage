@@ -95,7 +95,7 @@ The film is no longer rendered with its narration burnt into the picture, so
 the caption track is a separate deliverable and it ships at publish.
 
 ```bash
-python3 lib/captions_srt.py projects/<id>/artifacts/render_props.json \
+.venv/bin/python lib/captions_srt.py projects/<id>/artifacts/render_props.json \
     projects/<id>/artifacts/captions.en.srt \
     output/<id>/<id>.mp4
 ```

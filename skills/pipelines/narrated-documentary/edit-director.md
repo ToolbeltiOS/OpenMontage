@@ -165,9 +165,9 @@ Nothing essential in the last 20 seconds. The outro CTA is 10 seconds maximum.
 ## Gate Commands (Blocking)
 
 ```bash
-python3 lib/verify_rhythm.py  {artifacts}/edit_decisions.json
-python3 lib/camera_intent.py  {artifacts}/edit_decisions.json
-python3 lib/edit_leads.py     {artifacts}/edit_decisions.json
+.venv/bin/python lib/verify_rhythm.py  {artifacts}/edit_decisions.json
+.venv/bin/python lib/camera_intent.py  {artifacts}/edit_decisions.json
+.venv/bin/python lib/edit_leads.py     {artifacts}/edit_decisions.json
 ```
 
 ## Common Pitfalls

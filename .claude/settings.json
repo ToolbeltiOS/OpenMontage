@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(cd:*)",
+      "Bash(python3:*)", "Bash(.venv/bin/python:*)", "Bash(./.venv/bin/python:*)",
+      "Bash(npx:*)", "Bash(node:*)", "Bash(ffmpeg:*)", "Bash(ffprobe:*)",
+      "Bash(ls:*)", "Bash(cat:*)", "Bash(head:*)", "Bash(tail:*)", "Bash(grep:*)",
+      "Bash(find:*)", "Bash(sed:*)", "Bash(awk:*)", "Bash(wc:*)", "Bash(jq:*)",
+      "Bash(mkdir:*)", "Bash(cp:*)", "Bash(mv:*)",
+      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git add:*)", "Bash(git commit:*)",
+      "Bash(scripts/:*)", "Bash(./scripts/:*)",
+      "WebSearch", "WebFetch"
+    ],
+    "deny": [
+      "Edit(//Users/mac/wak3up/**)",
+      "Edit(//Users/mac/Desktop/wak3up/**)",
+      "Edit(./projects/they-said-it-couldnt-be-built/**)",
+      "Read(//Users/mac/Developer/wak3up-docs/.env)",
+      "Bash(rm -rf:*)", "Bash(git push:*)", "Bash(git reset:*)", "Bash(git checkout:*)",
+      "Bash(sudo:*)", "Bash(launchctl:*)", "Bash(pip install:*)", "Bash(npm install:*)"
+    ]
+  }
+}

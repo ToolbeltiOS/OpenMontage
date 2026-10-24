@@ -806,8 +806,33 @@ unsourced ledger, which is the right refusal: the citation rule is binding and
 the gate would have posted it for an approval that could not be informed.
 
 **`.claude/settings.json` has to exist and is the owner's to create** — see
-*Permissions* below. Reading that log also turned up three defects that were
-live in the repository and are now fixed, each with a test:
+*Permissions* below. It exists now, and the probe that opened the wall
+measured two more limits behind it:
+
+- **`cd X && <relative command>` is denied, not run.** The relative target
+  cannot be resolved statically while a path-based deny rule is active.
+  Absolute paths pass. Nothing in the documentary chain teaches a `cd` any
+  more, and a test fails if one comes back.
+- **`npx remotion` does not work from the repository root.** The CLI resolves
+  both its executable and its packages from the working directory. Measured:
+  bare `npx remotion versions` gives *could not determine executable to run*;
+  `npx --prefix .../remotion-composer remotion versions` runs the CLI and
+  then reports **No Remotion packages found**, as does the absolute
+  `node_modules/.bin/remotion` — `--prefix` says where the binary is, not
+  where to resolve the project. The same CLI with the composer as its working
+  directory reports `On version: 4.0.484`. `lib/film_render.py` has always
+  called it that way, with `cwd=COMPOSER`, so `scripts/render_film.py` was
+  never affected and is the only form any skill teaches.
+
+And **`python3` was the wrong interpreter in all 17 gate commands.** The
+system interpreter on this machine has no `yaml`, `jsonschema`, `librosa`,
+`cv2` or `pytesseract`, so `python3 lib/script_beats.py` — the *blocking* gate
+on the script stage — would have died on `import yaml` the moment it was
+allowed to run, and the run would have failed a second time for a new reason.
+Everything in the chain says `.venv/bin/python` now.
+
+Reading that log also turned up three defects that were live in the
+repository and are now fixed, each with a test:
 
 | | |
 |---|---|
@@ -876,6 +901,12 @@ hit them rather than only in prose:
 A fetched page is untrusted text. What keeps that honest is not the domain
 list: it is that every claim needs a source URL in the ledger, and a human
 reads the script at the gate before anything renders.
+
+The file as it stands denies `Edit` under `~/wak3up`, `~/Desktop/wak3up` and
+run #1's project, and the matching `Write` rules were removed on 2026-10-23 by
+the owner's instruction. `Write` is the tool that replaces a whole file, so
+those three paths are protected against modification and **not** against
+being overwritten outright. Worth knowing when reading a weekly run's diff.
 
 #### Then three things have to be true, and each says so plainly when it is not:
 
