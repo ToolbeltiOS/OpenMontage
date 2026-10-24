@@ -1,0 +1,274 @@
+{
+ "output": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/renders/mix_final.wav",
+ "spans": [
+  {
+   "name": "open_act1",
+   "acts": [
+    "cold_open",
+    "title_sequence",
+    "act1"
+   ],
+   "track": "TORSION - Density & Time.mp3",
+   "start": 0.0,
+   "end": 317.45
+  },
+  {
+   "name": "act2_act3",
+   "acts": [
+    "act2",
+    "act3"
+   ],
+   "track": "EBB - Density & Time.mp3",
+   "start": 317.45,
+   "end": 937.26
+  },
+  {
+   "name": "act4_outro",
+   "acts": [
+    "act4",
+    "outro"
+   ],
+   "track": "Spooked - Mini Vandals.mp3",
+   "start": 937.26,
+   "end": 1210.08
+  }
+ ],
+ "under_speech_lufs": -30.0,
+ "gap_target_lufs": -26.0,
+ "boundary_target_lufs": -22.0,
+ "duck": {
+  "attack_ms": 150,
+  "release_ms": 900,
+  "gap_seconds": 1.5
+ },
+ "eq": "highpass 120 Hz x2, lowpass 7 kHz x2, -4 dB at 3 kHz (Q~1.4)",
+ "narration": {
+  "lufs": -16.0,
+  "lra": 2.9,
+  "peak_dbfs": -1.5
+ },
+ "air": {
+  "source": "narration_plan",
+  "air_planned": true,
+  "planned_air_seconds": 112.5,
+  "segments": 74,
+  "realised_air_seconds": 61.3,
+  "realised_gaps": 22,
+  "air_threshold_s": 1.5,
+  "pauses_over_0_6s": 58,
+  "pause_seconds_total": 108.25,
+  "longest_realised_gap_s": 6.75,
+  "air_pct_of_total": 5.1
+ },
+ "sound_design": {
+  "elements": [
+   {
+    "element": "room_tone",
+    "path": "room_tone.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -41.9
+   },
+   {
+    "element": "ambience",
+    "act": "cold_open",
+    "palette": "sea",
+    "path": "ambience_sea.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -35.9
+   },
+   {
+    "element": "ambience",
+    "act": "act1",
+    "palette": "stone",
+    "path": "ambience_stone.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -35.9
+   },
+   {
+    "element": "ambience",
+    "act": "act2",
+    "palette": "wind",
+    "path": "ambience_wind.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -35.9
+   },
+   {
+    "element": "ambience",
+    "act": "act3",
+    "palette": "stone",
+    "path": "ambience_stone.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -35.9
+   },
+   {
+    "element": "ambience",
+    "act": "act4",
+    "palette": "sea",
+    "path": "ambience_sea.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -35.9
+   },
+   {
+    "element": "riser",
+    "at_seconds": 39.06,
+    "path": "riser.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -23.9
+   },
+   {
+    "element": "riser",
+    "at_seconds": 202.39,
+    "path": "riser.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -23.9
+   },
+   {
+    "element": "riser",
+    "at_seconds": 529.91,
+    "path": "riser.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -23.9
+   },
+   {
+    "element": "impact",
+    "at_seconds": 23.79,
+    "path": "impact.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -17.9
+   },
+   {
+    "element": "impact",
+    "at_seconds": 183.84,
+    "path": "impact.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -17.9
+   },
+   {
+    "element": "impact",
+    "at_seconds": 511.0,
+    "path": "impact.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -17.9
+   },
+   {
+    "element": "impact",
+    "at_seconds": 843.79,
+    "path": "impact.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -17.9
+   },
+   {
+    "element": "impact",
+    "at_seconds": 1082.36,
+    "path": "impact.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -17.9
+   },
+   {
+    "element": "sting",
+    "at_seconds": 45.0,
+    "path": "sting.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -15.9
+   },
+   {
+    "element": "sting",
+    "at_seconds": 52.0,
+    "path": "sting.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -15.9
+   },
+   {
+    "element": "sting",
+    "at_seconds": 317.45,
+    "path": "sting.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -15.9
+   },
+   {
+    "element": "sting",
+    "at_seconds": 628.61,
+    "path": "sting.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -15.9
+   },
+   {
+    "element": "sting",
+    "at_seconds": 937.26,
+    "path": "sting.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -15.9
+   },
+   {
+    "element": "sting",
+    "at_seconds": 1197.79,
+    "path": "sting.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "level_db": -15.9
+   }
+  ],
+  "music_bed_db": -29.9,
+  "offsets_db": {
+   "ambience": -6,
+   "room_tone": -12,
+   "riser_peak": 6,
+   "impact_peak": 12,
+   "sting_peak": 14
+  },
+  "measured_db": -31.1,
+  "peak_dbfs": 0.2,
+  "seconds": 1210.1,
+  "present": true
+ },
+ "bed_under_speech": {
+  "lufs": -30.0,
+  "lra": 6.6,
+  "peak_dbfs": -15.5
+ },
+ "final": {
+  "lufs": -14.0,
+  "lra": 2.9,
+  "peak_dbfs": -1.5
+ },
+ "note": "LRA is recorded, not targeted: narration-led material has little range."
+}

@@ -1,0 +1,590 @@
+{
+ "version": "1.0",
+ "wpm": 150,
+ "segments": [
+  {
+   "id": "cold_open_b00",
+   "section_id": "cold_open",
+   "beat": "exposition",
+   "register": "awe",
+   "text": "The heads on Easter Island are not heads. Dig beside one and the shoulders come out of the hill, then the arms, then the hands. There is a whole statue under there.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "cold_open_b01",
+   "section_id": "cold_open",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "That is the famous part. Here is the part that is not. Three hundred and ninety-four of them are still in the hillside they were cut from, and the largest was never finished.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "cold_open_b02",
+   "section_id": "cold_open",
+   "beat": "reveal",
+   "register": "tension",
+   "text": "And in 1864 a friar counted hundreds of inscribed wooden tablets in the houses here. Two dozen survive. None of them is on Easter Island.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "cold_open_b03",
+   "section_id": "cold_open",
+   "beat": "landing",
+   "register": "quiet",
+   "text": "Four questions. One of them has an answer.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "act1_b00",
+   "section_id": "act1",
+   "beat": "exposition",
+   "register": "awe",
+   "text": "Almost every statue on the island came out of one hillside: Rano Raraku, a crater of compressed volcanic ash, worked for something like five hundred years, and the source of about ninety-five per cent of the moai anyone has ever counted.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act1_b01",
+   "section_id": "act1",
+   "beat": "exposition",
+   "register": "awe",
+   "text": "More than nine hundred of them are known. Nearly half never left. Three hundred and ninety-four are still visible in the quarry, in every state of completion, from a shape blocked out in the rock face to a finished figure lying on its back.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act1_b02",
+   "section_id": "act1",
+   "beat": "transition",
+   "register": "doubt",
+   "text": "Before any of that, there is the question everyone arrives with \u2014 and it is worth setting down properly, because it is the one question about this island that now has a good answer.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "act1_b03",
+   "section_id": "act1",
+   "beat": "exposition",
+   "register": "resolution",
+   "text": "In October of 2025 two archaeologists published a study of nine hundred and sixty-two statues. Sixty-two of them stand along the island's old roads, and those sixty-two share two features the others do not: a wide, D-shaped base, and a forward lean.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act1_b04",
+   "section_id": "act1",
+   "beat": "exposition",
+   "register": "resolution",
+   "text": "They built a replica to that design, about four and a third tonnes of it, and eighteen people walked it a hundred metres in forty minutes, rocking it from side to side on ropes. The roads it would have travelled are four and a half metres wide and dished in section, which is what holds a walking statue upright.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act1_b05",
+   "section_id": "act1",
+   "beat": "transition",
+   "register": "doubt",
+   "text": "So the question is not how the statues moved. It is why they stopped.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "act1_b06",
+   "section_id": "act1",
+   "beat": "exposition",
+   "register": "quiet",
+   "text": "The ones in the quarry stand to the neck in the slope, which is why they are photographed as heads. The soil that buried them also protected them. On a statue that has stood out in the weather, the surface is gone; on these, the carving on the back is still there.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act1_b07",
+   "section_id": "act1",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "In March of 2010 a team began the first authorised excavation inside the quarry since a Norwegian expedition in the mid-nineteen-fifties. Fifty-five years had passed between one dig and the next.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act1_b08",
+   "section_id": "act1",
+   "beat": "reveal",
+   "register": "awe",
+   "text": "They excavated two statues. Both were whole. Both were upright. One stood on a prepared pedestal; the other had been set into a deep hole in the ground. Neither had fallen over and been covered up. They had been put there, and left standing.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act1_b09",
+   "section_id": "act1",
+   "beat": "landing",
+   "register": "quiet",
+   "text": "They were meant to stay where they were.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act1_b10",
+   "section_id": "act1",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "Which raises the question of what the quarry actually was. There is an obvious answer that nobody had tested: a place where statues are made, and the unfinished ones are the ones that never got out of it.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "act1_b11",
+   "section_id": "act1",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "So they tested the dirt. The soil around the two statues carried traces of banana, taro and sweet potato, and unusually high levels of calcium and phosphorus. That is not the signature of a workshop floor. It is the signature of ground that was being farmed.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act1_b12",
+   "section_id": "act1",
+   "beat": "exposition",
+   "register": "resolution",
+   "text": "The team's reading is that it was both at once \u2014 the place the statues were cut, and the most productive growing ground on the island \u2014 and that cutting the rock is what fed the soil.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act1_b13",
+   "section_id": "act1",
+   "beat": "exposition",
+   "register": "awe",
+   "text": "For scale. The tallest statue ever raised stood almost ten metres and weighed eighty-two tonnes. The heaviest ever raised is one of fifteen standing together on a coastal platform, and it weighs eighty-six.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act1_b14",
+   "section_id": "act1",
+   "beat": "exposition",
+   "register": "awe",
+   "text": "The largest of all is still lying in that hillside, on its back, still joined to the rock it was cut from. It would have stood about twenty-one metres. Published estimates of its weight run from a hundred and forty-five tonnes to two hundred and seventy, which tells you how much anyone knows about it.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act1_b15",
+   "section_id": "act1",
+   "beat": "landing",
+   "register": "doubt",
+   "text": "Carving mostly stopped in the early seventeen hundreds. Whatever that hillside was \u2014 a workshop, a garden, a place held sacred by the statues standing in it \u2014 the work in it ended with the biggest figure still unfinished in the rock.",
+   "air_after_s": 4.0
+  },
+  {
+   "id": "act2_b00",
+   "section_id": "act2",
+   "beat": "exposition",
+   "register": "quiet",
+   "text": "In 1877 somebody counted the people on Easter Island. There were a hundred and eleven of them. A century and a half earlier, the first European ships to arrive had estimated two to four thousand.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act2_b01",
+   "section_id": "act2",
+   "beat": "transition",
+   "register": "doubt",
+   "text": "There is a famous explanation for that, and it is worth hearing at full strength before anything is said against it.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "act2_b02",
+   "section_id": "act2",
+   "beat": "exposition",
+   "register": "tension",
+   "text": "The forest went for canoes, for firewood, and for moving and raising the statues. By the time Europeans arrived, twenty-one tree species and every land bird on the island were gone \u2014 among them a palm that may have been the largest in the world, fifteen metres and more.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "act2_b03",
+   "section_id": "act2",
+   "beat": "exposition",
+   "register": "tension",
+   "text": "Jared Diamond's account, in his own words, calls the island as close as we can get to a pure ecological collapse: a society that cut down its own forest and ended in an epidemic of cannibalism that left ninety per cent of the islanders dead.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act2_b04",
+   "section_id": "act2",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "It is a story that travelled further than almost any other piece of archaeology, because of what it was for. Easter Island is Earth writ small, he wrote. What did they say as they were cutting down the last palm tree?",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act2_b05",
+   "section_id": "act2",
+   "beat": "transition",
+   "register": "doubt",
+   "text": "It is also a claim about the past, which means it can be tested. It has been tested four times.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "act2_b06",
+   "section_id": "act2",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "The bones first. A study in 1994 found little archaeological evidence of any collapse before Europeans arrived, and few violent deaths. A survey in 2010 found no conclusive evidence either. Work published in 2021 found steady population growth right up to 1722, never exceeding a few thousand people.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act2_b07",
+   "section_id": "act2",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "Then the weapons. The island is scattered with obsidian points called mata'a, long read as the arsenal of its wars. More than four hundred of them were photographed and measured for shape. They have no standardised form and rarely carry anything like a spear tip. You would cut somebody with a mata'a. You would not kill them with it.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act2_b08",
+   "section_id": "act2",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "Then the clock. Settlement was pushed forward from around eight hundred to around twelve hundred, which leaves far less time for a slow self-destruction \u2014 and an argument published in 2006 put the deforestation substantially on the rats that came ashore with the first canoes, eating the palm nuts and stopping the forest regrowing. That argument drew a published objection of its own, and it has never gone away.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act2_b09",
+   "section_id": "act2",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "Then the food. Satellite imagery in shortwave infrared was used to map the island's rock gardens, the stone-mulched plots its crops were grown in. They come to about a hundred and eighty acres. Earlier estimates, from imagery that cannot tell a garden from any other rocky ground, had run from five to twenty-one square kilometres. The implied ceiling is around three thousand people.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act2_b10",
+   "section_id": "act2",
+   "beat": "reveal",
+   "register": "tension",
+   "text": "And then the genomes. Fifteen ancient islanders were radiocarbon dated and their whole genomes sequenced. There is no severe bottleneck in the sixteen hundreds. The authors do not hedge it; they reject that scenario outright.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act2_b11",
+   "section_id": "act2",
+   "beat": "landing",
+   "register": "quiet",
+   "text": "There was never a large population here to crash.",
+   "air_after_s": 4.0
+  },
+  {
+   "id": "act2_b12",
+   "section_id": "act2",
+   "beat": "transition",
+   "register": "resolution",
+   "text": "What did happen to the people of this island has a date on it.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "act2_b13",
+   "section_id": "act2",
+   "beat": "exposition",
+   "register": "tension",
+   "text": "In December of 1862, Peruvian slave raiders began taking them. About fifteen hundred people were seized over the following months \u2014 roughly half the island. Fourteen hundred and eight of them were shipped to Peru as indentured labour. About a dozen ever came back, and they brought smallpox with them.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act2_b14",
+   "section_id": "act2",
+   "beat": "landing",
+   "register": "quiet",
+   "text": "A hundred and eleven people, in 1877. That is not a parable about resources. It is a record of what was done to them.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act2_b15",
+   "section_id": "act2",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "And the revision has its own open questions, which the retelling leaves out. A study of ancient DNA in 2017 found no Native American ancestry in its samples at all, and concluded the mixing must have happened after European contact. The 2024 genomes date it to between twelve fifty and fourteen thirty. Two papers, seven years apart, opposite answers.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act2_b16",
+   "section_id": "act2",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "And in the leaf waxes of two crater cores there is a long drought beginning around fifteen fifty, running through the decline of the island's platform building \u2014 which is neither the parable nor the correction, and nobody has finished arguing about it.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act3_b00",
+   "section_id": "act3",
+   "beat": "exposition",
+   "register": "awe",
+   "text": "Twenty-six lettered texts of rongorongo survive. Between them they carry more than fifteen thousand glyphs, and only about half are in good enough condition to be certain of at all.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act3_b01",
+   "section_id": "act3",
+   "beat": "exposition",
+   "register": "awe",
+   "text": "You read them by starting at the bottom left corner and working to the right. At the end of the line you turn the tablet a hundred and eighty degrees and read back. Every other line is upside down. It is called reverse boustrophedon.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act3_b02",
+   "section_id": "act3",
+   "beat": "exposition",
+   "register": "awe",
+   "text": "The longest is a chief's staff: a hundred and twenty-six centimetres of wood carrying two thousand nine hundred and twenty glyphs. It is also the only one of the texts that appears to use punctuation.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act3_b03",
+   "section_id": "act3",
+   "beat": "transition",
+   "register": "doubt",
+   "text": "The record of people trying to read it begins in the same year the outside world noticed it existed.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "act3_b04",
+   "section_id": "act3",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "A lay friar called Eug\u00e8ne Eyraud landed on the second of January, 1864, saw inscribed tablets in the houses, and left in October. He was dead of tuberculosis within four years. He had seen hundreds of them, and at the time nobody took any notice.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act3_b05",
+   "section_id": "act3",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "Four years after that a bishop in Tahiti, Florentin Jaussen, was given a tablet with human hair wound around it, and sent a priest back to collect the rest. The priest recovered a few. The islanders he asked could not agree on how to read them.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act3_b06",
+   "section_id": "act3",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "Then five years, four tablets, and one man, Metoro Tau'a Ure, said to know the inscriptions by heart. The glyph list the two of them produced has never led anybody to an understanding of the script \u2014 and a scholar going back over it later found that he had read some of the lines in the wrong direction.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act3_b07",
+   "section_id": "act3",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "In 1957 two Soviet scholars proposed that a short repeating sequence on one tablet has the shape of a genealogy: one sign functioning as a title, another as a patronymic marker. It is widely thought plausible. It has never been confirmed.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act3_b08",
+   "section_id": "act3",
+   "beat": "transition",
+   "register": "tension",
+   "text": "Then, in 1995, somebody announced that they had cracked it.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "act3_b09",
+   "section_id": "act3",
+   "beat": "exposition",
+   "register": "tension",
+   "text": "Steven Fischer's claim, at its strongest: the chief's staff is a creation chant. X copulated with Y, and there issued forth Z, over and over, with one particular glyph standing for a phallus. And about eighty-five per cent of everything that survives, on this reading, is the same formula.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act3_b10",
+   "section_id": "act3",
+   "beat": "transition",
+   "register": "doubt",
+   "text": "A decipherment is a claim you can take apart, and four people did.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "act3_b11",
+   "section_id": "act3",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "On the most generous possible count, sixty-three of the staff's hundred and thirteen sequences fit the pattern. The triads turn up almost nowhere else in the corpus \u2014 one damaged text and a single line of another. Statistically, the staff stands apart from every other text even when you remove the glyph the reading is built on. And the plural marker the grammar depends on does not exist in the Rapa Nui language.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act3_b12",
+   "section_id": "act3",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "What is actually agreed about the whole corpus amounts to three lines on one side of the tablet called Mamari. They are a lunar calendar. The argument is about where the extra nights go in a twenty-eight night month.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act3_b13",
+   "section_id": "act3",
+   "beat": "reveal",
+   "register": "doubt",
+   "text": "We know what that passage does. We cannot read it.",
+   "air_after_s": 4.0
+  },
+  {
+   "id": "act3_b14",
+   "section_id": "act3",
+   "beat": "exposition",
+   "register": "resolution",
+   "text": "The best structural argument that this is writing at all is an inventory: fifty-two signs account for ninety-nine point seven per cent of the intact texts. That is syllabary-sized \u2014 the right order of magnitude for a script that records a language. The analysis behind that number was never published.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act3_b15",
+   "section_id": "act3",
+   "beat": "exposition",
+   "register": "tension",
+   "text": "And in February of 2024, four tablets held in a convent in Rome were radiocarbon dated. Three came back eighteenth or nineteenth century. The fourth came back fourteen ninety-three to fifteen oh nine \u2014 more than two centuries before any European set foot on the island. The wood appears to be driftwood, from a species that does not grow there.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act3_b16",
+   "section_id": "act3",
+   "beat": "landing",
+   "register": "doubt",
+   "text": "Which is the authors' argument: that writing was invented here, from nothing. Or it is not. Radiocarbon dates the death of a tree and not the cutting of a glyph, one tablet is one tablet, and nobody reported writing on this island before 1864 \u2014 which is why a Spanish treaty signed here in 1770, in front of the island's chiefs, is still a live hypothesis for where the idea came from.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act4_b00",
+   "section_id": "act4",
+   "beat": "exposition",
+   "register": "quiet",
+   "text": "The carving stopped. The island did not. Something else was happening on it, and it had its own buildings.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "act4_b01",
+   "section_id": "act4",
+   "beat": "exposition",
+   "register": "awe",
+   "text": "Fifty-three low stone houses at a village called Orongo, sod-covered and windowless, with doors you would have to crawl through, sitting on the rim of a crater two hundred and fifty metres above the sea. Below them the cliff drops three hundred metres into the water.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act4_b02",
+   "section_id": "act4",
+   "beat": "exposition",
+   "register": "awe",
+   "text": "The crater behind them is almost a mile across and holds one of only three natural bodies of fresh water anywhere on the island.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act4_b03",
+   "section_id": "act4",
+   "beat": "transition",
+   "register": "doubt",
+   "text": "Every spring, the following happened there.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "act4_b04",
+   "section_id": "act4",
+   "beat": "exposition",
+   "register": "tension",
+   "text": "Each man competing appointed someone else to do the swimming \u2014 a man of lesser status, who went out on a float of bundled reeds and waited on an offshore rock for the first egg of the season to be laid by a returning sooty tern.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act4_b05",
+   "section_id": "act4",
+   "beat": "exposition",
+   "register": "tension",
+   "text": "That rock, Motu Nui, is three point nine hectares of land. It is the summit of a mountain rising more than two kilometres from the seafloor, and the westernmost point of Chile.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act4_b06",
+   "section_id": "act4",
+   "beat": "exposition",
+   "register": "tension",
+   "text": "Sharks, drowning, falls from the cliff on the way back up. The record notes, without comment, that replacements were apparently easy to find.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act4_b07",
+   "section_id": "act4",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "And the title did not go to the swimmer. It went to the man who sent him. His clan took the exclusive right to every egg and every fledgling on those islets for a year, and he himself went into seclusion for a year, under a restriction lasting five months.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act4_b08",
+   "section_id": "act4",
+   "beat": "landing",
+   "register": "quiet",
+   "text": "Makemake's representative on earth, decided by somebody else's swim.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act4_b09",
+   "section_id": "act4",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "The entire surviving register of the institution is eighty-six names, written down by Katherine Routledge between 1913 and 1915.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act4_b10",
+   "section_id": "act4",
+   "beat": "exposition",
+   "register": "awe",
+   "text": "One object carries the whole change: Hoa Hakananai'a. Two and a half metres, four point two tonnes, cut from dark flow lava rather than the compressed ash everything else came from. It was found standing part-buried inside one of those houses, facing the crater.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act4_b11",
+   "section_id": "act4",
+   "beat": "reveal",
+   "register": "awe",
+   "text": "Its back is covered in carving that was added after the statue was finished: two birdmen facing each other, a sooty tern above them, ceremonial paddles. The statue religion on the front of the stone, and the thing that replaced it cut into the back.",
+   "air_after_s": 4.0
+  },
+  {
+   "id": "act4_b12",
+   "section_id": "act4",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "One reading has the statue itself becoming the god. Critics dispute several of the identifications, including the shape of the beaks.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act4_b13",
+   "section_id": "act4",
+   "beat": "exposition",
+   "register": "quiet",
+   "text": "In November of 1868 a Royal Navy crew dug it out, dragged it down on a sledge and rafted it to their ship. It reached Plymouth the following August and went to the British Museum, where it is still. In 2018 the island's governor asked for it back. The museum offered to discuss a loan.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act4_b14",
+   "section_id": "act4",
+   "beat": "exposition",
+   "register": "doubt",
+   "text": "As for when the swimming stopped: three reference works give three answers. Eighteen eighty-eight. Eighteen sixty-seven. Or simply the eighteen sixties. This is an event inside the living memory of the people Routledge was recording, and we cannot date it.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "act4_b15",
+   "section_id": "act4",
+   "beat": "landing",
+   "register": "quiet",
+   "text": "She reached the islet herself in 1914 and found two caves. One was where the swimmers had sheltered. The other had held a small statue called the Boundary of the Land \u2014 which was already in Oxford before she got there.",
+   "air_after_s": 2.5
+  },
+  {
+   "id": "act4_b16",
+   "section_id": "act4",
+   "beat": "landing",
+   "register": "quiet",
+   "text": "Nobody can say when the last man swam out for an egg. Nobody can read the only writing this island ever produced. If the answers to either of those are anywhere, they are somewhere else.",
+   "air_after_s": 0.0
+  },
+  {
+   "id": "outro_b00",
+   "section_id": "outro",
+   "beat": "landing",
+   "register": "resolution",
+   "text": "Four open files, and we closed one of them tonight.",
+   "air_after_s": 1.5
+  },
+  {
+   "id": "outro_b01",
+   "section_id": "outro",
+   "beat": "exposition",
+   "register": "resolution",
+   "text": "If you want the other three followed properly, a like and a subscribe is how that happens.",
+   "air_after_s": 0.0
+  }
+ ]
+}

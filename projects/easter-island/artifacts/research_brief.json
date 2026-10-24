@@ -1,0 +1,1484 @@
+{
+ "version": "1.0",
+ "topic": "Easter Island (Rapa Nui) — the open files: the undeciphered rongorongo script, the collapse debate, the buried statue bodies, and the birdman cult at Orongo",
+ "research_date": "2026-10-23",
+ "landscape": {
+  "existing_content": [
+   {
+    "title": "Fall of Civilizations, Episode 6 — \"Easter Island: Where Giants Walked\"",
+    "url": "https://fallofcivilizationspodcast.com/2019/07/26/",
+    "source": "youtube/podcast",
+    "angle": "Cradle-to-grave narrative history of one island society, ending on its decline",
+    "what_it_covers": "Settlement, the statue culture, the social order, European contact, and the decline. Runs about 103 minutes and already casts doubt on the popular ecocide theory.",
+    "what_it_misses": "Rongorongo is a passing detail rather than a case; the birdman cult is treated as a phase of decline rather than as a surviving institution with its own unresolved questions; the 2024 genomic and satellite-agriculture results postdate it entirely.",
+    "engagement_signal": "The flagship long-form treatment of the subject; 103 min 12 s runtime per DCMP listing."
+   },
+   {
+    "title": "Jared Diamond, \"Easter's End\" (Discover, August 1995) and the Easter Island chapter of Collapse (2005)",
+    "url": "https://www.discovermagazine.com/environment/the-demise-of-easter-islands-eco-collapse-parable",
+    "source": "magazine/book",
+    "angle": "Ecocide parable — a society that destroyed itself and stands as a warning",
+    "what_it_covers": "Deforestation, statue-building competition, warfare, and a pre-European collapse. The source of almost every popular retelling since.",
+    "what_it_misses": "Everything published against it since 2006: the late settlement date, the rat evidence, the mata'a shape analysis, the 2024 satellite agriculture mapping, and the 2024 ancient genomes.",
+    "engagement_signal": "The single most-cited framing of the island; the version most viewers arrive with."
+   },
+   {
+    "title": "Keith Kloor, \"The Demise of Easter Island's Eco-Collapse Parable\" (Discover, 2014)",
+    "url": "https://www.discovermagazine.com/environment/the-demise-of-easter-islands-eco-collapse-parable",
+    "source": "magazine",
+    "angle": "Science journalism on a narrative coming apart",
+    "what_it_covers": "The archaeological case against Diamond's account, from Hunt 2006 through Questioning Collapse (2009) and Hunt and Lipo's 2011 book.",
+    "what_it_misses": "Ten years of subsequent evidence, and any treatment of rongorongo or the birdman cult.",
+    "engagement_signal": "Widely cited as the mainstream moment the revision reached general readers."
+   },
+   {
+    "title": "Wak3upSociety — \"The Walking Statues of Easter Island #Shorts\" and \"Easter Island statues have BODIES? #Shorts\"",
+    "url": "https://youtube.com/shorts/NMpqzQZnHgo",
+    "source": "youtube",
+    "angle": "Single-fact hook, vertical, under a minute",
+    "what_it_covers": "Two facts: that the moai were probably walked upright, and that the quarry heads have bodies under the soil.",
+    "what_it_misses": "Any case, any evidence, any attribution. Both are hooks with nothing behind them — which is exactly why they are the audience's entry point and not the film.",
+    "engagement_signal": "Median 627 views, best 1,213 views, mean engagement 0.86 (channel's own metrics ledger, 2026-10-21)."
+   }
+  ],
+  "saturated_angles": [
+   "The ecocide parable told straight: islanders cut down the last tree and destroyed themselves. It is the version every viewer already has, and it is the version the last twenty years of archaeology has been dismantling.",
+   "\"How did they move the statues?\" — answered on this channel already, answered again by Lipo and Hunt in 2025, and the one question about the island that now has a good answer.",
+   "Ancient-aliens framing. The island has four genuinely unresolved questions; none of them needs an invented one.",
+   "Mystery-as-tease: a film that raises the questions and withholds that the answers are contested."
+  ],
+  "underserved_gaps": [
+   "Rongorongo as a case rather than a curiosity: a writing system that appears on two dozen pieces of wood, has never been read, and whose single most important fact — whether it was invented before Europeans arrived — turns on one radiocarbon date from one piece of possible driftwood.",
+   "The collapse debate narrated in BOTH directions at full strength, with Diamond's own words and his critics' measurements, instead of as a correction.",
+   "The buried bodies as an archaeological result rather than a visual gimmick: the statues in the quarry are standing where they were put, in soil that carried banana, taro and sweet potato.",
+   "The birdman cult as what replaced the statues — a sixty-year institution with a disputed end date, whose best surviving document was carried off a clifftop by the Royal Navy in 1868 and is in London.",
+   "The questions that remain open AFTER the revision. The popular story was wrong; the replacement story has holes of its own, and nobody tells that part."
+  ]
+ },
+ "trending": {
+  "recent_developments": [
+   {
+    "headline": "Ancient Rapanui genomes reject the 17th-century population bottleneck and date Native American contact to 1250–1430 CE",
+    "url": "https://doi.org/10.1038/s41586-024-07881-4",
+    "date": "2024-09-11",
+    "relevance": "The strongest single piece of evidence against the ecocide collapse, and it arrived after every major documentary on the subject. Moreno-Mayar et al., Nature 633, 389–397."
+   },
+   {
+    "headline": "Satellite mapping of the island's rock gardens puts the maximum population near 3,000 — the number the first Europeans counted",
+    "url": "https://doi.org/10.1126/sciadv.ado1459",
+    "date": "2024-06-21",
+    "relevance": "Removes the premise of the collapse story: there was no large population to crash. Davis, DiNapoli, Pakarati, Hunt and Lipo, Science Advances 10, eado1459."
+   },
+   {
+    "headline": "One of four rongorongo tablets in Rome radiocarbon dates to 1493–1509, before any European landing",
+    "url": "https://doi.org/10.1038/s41598-024-53063-7",
+    "date": "2024-02-02",
+    "relevance": "If the date holds, the script is an independent invention — one of a handful in human history. The wood may be driftwood, and radiocarbon dates the tree, not the carving. Ferrara et al., Scientific Reports 14, 2794."
+   },
+   {
+    "headline": "Lipo and Hunt publish the full walking-moai case: 962 statues analysed, a 4.35-tonne replica walked 100 m in 40 minutes by 18 people",
+    "url": "https://doi.org/10.1016/j.jas.2025.106383",
+    "date": "2025-10-07",
+    "relevance": "The one closed case, and the reason the walking statues are a 60-second recap in act 1 rather than the spine. Journal of Archaeological Science 183, 106383."
+   },
+   {
+    "headline": "Lake sediment cores record a prolonged drought on Rapa Nui from about 1550, coinciding with the decline of ahu construction",
+    "url": "https://doi.org/10.5061/dryad.41ns1rnt2",
+    "date": "2025-01-01",
+    "relevance": "A third explanation for the change in the island's monument building that is neither ecocide nor contact. Stein, Curtin, Balascio et al."
+   }
+  ],
+  "timeliness_window": "evergreen with a fresh spine — the subject is permanent, but four of the five results above are from 2024-2025 and no popular treatment has absorbed them"
+ },
+ "data_points": [
+  {
+   "claim": "One of four rongorongo tablets held by a convent in Rome radiocarbon dates to 1493–1509 — more than two centuries before the first European landing. The other three date to the 18th or 19th centuries.",
+   "source_url": "https://doi.org/10.1038/s41598-024-53063-7",
+   "source_name": "Ferrara et al., \"The invention of writing on Rapa Nui (Easter Island). New radiocarbon dates on the Rongorongo script\", Scientific Reports 14, 2794 (2 February 2024)",
+   "credibility": "primary_source",
+   "surprise_factor": "counterintuitive",
+   "usable_as": "hook, script_anchor"
+  },
+  {
+   "claim": "No rongorongo text has ever been read. The only part of the corpus whose function is agreed is three lines on one side of the Mamari tablet, identified as a lunar calendar — and even there the text itself cannot be read.",
+   "source_url": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+   "source_name": "Wikipedia, Decipherment of rongorongo",
+   "credibility": "secondary_source",
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor, closing_punch"
+  },
+  {
+   "claim": "The Santiago Staff — tablet I — is a chief's staff 126 cm long carrying 2,920 glyphs. It is the longest rongorongo text and the only one that appears to use punctuation.",
+   "source_url": "https://en.wikipedia.org/wiki/Rongorongo",
+   "source_name": "Wikipedia, Rongorongo",
+   "credibility": "secondary_source",
+   "surprise_factor": "notable",
+   "usable_as": "stat_card"
+  },
+  {
+   "claim": "In 1995 Steven Roger Fischer announced he had deciphered rongorongo, reading the Santiago Staff as a creation chant of the form \"X copulated with Y, there issued forth Z\" and claiming about 85% of the corpus was such chants. Andrew Robinson found that on the most generous count only 63 of the staff's 113 sequences fully fit the pattern.",
+   "source_url": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+   "source_name": "Wikipedia, Decipherment of rongorongo",
+   "credibility": "secondary_source",
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor"
+  },
+  {
+   "claim": "Jared Diamond describes Rapa Nui as \"as close as we can get to a 'pure' ecological collapse\" and writes that the society ended \"in an epidemic of cannibalism that left 90 percent of the islanders dead\".",
+   "source_url": "https://www.discovermagazine.com/environment/the-demise-of-easter-islands-eco-collapse-parable",
+   "source_name": "Keith Kloor, Discover (2014), quoting Diamond, Collapse (2005)",
+   "credibility": "secondary_source",
+   "surprise_factor": "notable",
+   "usable_as": "script_anchor"
+  },
+  {
+   "claim": "Satellite mapping of the island's rock gardens in shortwave infrared put their total area at about 180 acres — roughly 0.73 km² of an island of 163.6 km² — against earlier estimates of 4.9 to 21.1 km². The implied maximum population is about 3,000, which is approximately what the first Europeans counted.",
+   "source_url": "https://doi.org/10.1126/sciadv.ado1459",
+   "source_name": "Davis, DiNapoli, Pakarati, Hunt and Lipo, \"Island-wide characterization of agricultural production challenges the demographic collapse hypothesis for Rapa Nui\", Science Advances 10, eado1459 (21 June 2024)",
+   "credibility": "primary_source",
+   "surprise_factor": "counterintuitive",
+   "usable_as": "hook, stat_card"
+  },
+  {
+   "claim": "Fifteen ancient Rapanui genomes, radiocarbon dated between 1670 and 1950 CE and whole-genome sequenced at 0.4–25.6× coverage, reject a severe population bottleneck in the 1600s. The same individuals carry Native American admixture in proportions similar to present-day Rapanui, dated to about 1250–1430 CE.",
+   "source_url": "https://doi.org/10.1038/s41586-024-07881-4",
+   "source_name": "Moreno-Mayar et al., \"Ancient Rapanui genomes reveal resilience and pre-European contact with the Americas\", Nature 633, 389–397 (2024)",
+   "credibility": "primary_source",
+   "surprise_factor": "counterintuitive",
+   "usable_as": "script_anchor, closing_punch"
+  },
+  {
+   "claim": "In December 1862 Peruvian slave raiders began abductions that lasted several months. About 1,500 people were taken — roughly half the population. 1,408 were shipped to Peru as indentured labour and only about a dozen returned, carrying smallpox. By 1877 there were 111 native inhabitants left.",
+   "source_url": "https://en.wikipedia.org/wiki/Easter_Island",
+   "source_name": "Wikipedia, Easter Island",
+   "credibility": "secondary_source",
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor, closing_punch"
+  },
+  {
+   "claim": "A morphometric analysis of more than 400 photographed mata'a — the obsidian points long read as weapons of the island's wars — found no standardised shape and few spearlike tips. Carl Lipo concluded they were general-purpose tools: \"You would cut somebody with a mata'a, but they certainly wouldn't be lethal in any way.\"",
+   "source_url": "https://discovere.binghamton.edu/news/easter-2-6625.html",
+   "source_name": "Binghamton University Research News, on Lipo et al., Antiquity (2016)",
+   "credibility": "secondary_source",
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor"
+  },
+  {
+   "claim": "The Easter Island Statue Project excavated two statues in the interior of the Rano Raraku quarry — the first authorised digging there since Thor Heyerdahl's 1954-55 expedition — and found them full-bodied and upright, one on a pedestal and one set in a deep hole, as if meant to stay where they were.",
+   "source_url": "https://www.universityofcalifornia.edu/news/mystery-easter-island-revealed",
+   "source_name": "University of California / UCLA, on Van Tilburg et al., Journal of Archaeological Science",
+   "credibility": "secondary_source",
+   "surprise_factor": "surprising",
+   "usable_as": "hook, script_anchor"
+  },
+  {
+   "claim": "Soil from around the excavated quarry statues carried traces of banana, taro and sweet potato, with high levels of calcium and phosphorus. The team reads the quarry as a carving site that was also the most productive garden on the island.",
+   "source_url": "https://www.universityofcalifornia.edu/news/mystery-easter-island-revealed",
+   "source_name": "University of California / UCLA, Sarah Sherwood (geoarchaeologist, University of the South)",
+   "credibility": "secondary_source",
+   "surprise_factor": "counterintuitive",
+   "usable_as": "script_anchor"
+  },
+  {
+   "claim": "Hoa Hakananai'a — 2.42 m, 4.2 tonnes, carved from dark flow lava rather than the usual tuff — stood partly buried inside a house at Orongo facing the crater. The crew of HMS Topaze dug it out in November 1868; the ship reached Plymouth on 16 August 1869. Its back carries two facing birdmen, a sooty tern, paddles and komari, carved after the statue was made.",
+   "source_url": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "source_name": "Wikipedia, Hoa Hakananai'a",
+   "credibility": "secondary_source",
+   "surprise_factor": "surprising",
+   "usable_as": "hook, closing_punch"
+  },
+  {
+   "claim": "Katherine Routledge recorded the names of 86 tangata manu — birdmen — during the 1913-15 Mana Expedition.",
+   "source_url": "https://en.wikipedia.org/wiki/Tangata_manu",
+   "source_name": "Wikipedia, Tangata manu",
+   "credibility": "secondary_source",
+   "surprise_factor": "notable",
+   "usable_as": "stat_card"
+  },
+  {
+   "claim": "The date of the last birdman competition is not settled: one encyclopedia article gives 1888, another puts the last ceremony at 1866 or 1867, and a third says only that missionaries ended the cult in the 1860s.",
+   "source_url": "https://en.wikipedia.org/wiki/Motu_Nui",
+   "source_name": "Wikipedia, Motu Nui / Hoa Hakananai'a / Tangata manu — three articles, three answers",
+   "credibility": "secondary_source",
+   "surprise_factor": "surprising",
+   "usable_as": "closing_punch"
+  },
+  {
+   "claim": "More than 900 moai are known. All but 53 were carved from Rano Raraku tuff, and 394 in varying states of completion are still visible at the quarry. The tallest ever erected, Paro, stood almost 10 m and weighed 82 tonnes; the heaviest, at Ahu Tongariki, weighs 86 tonnes.",
+   "source_url": "https://en.wikipedia.org/wiki/Moai",
+   "source_name": "Wikipedia, Moai, citing the Easter Island Statue Project",
+   "credibility": "secondary_source",
+   "surprise_factor": "notable",
+   "usable_as": "stat_card"
+  }
+ ],
+ "audience_insights": {
+  "common_questions": [
+   "How did they move the statues?",
+   "Did the islanders really destroy their own island?",
+   "Why did they stop carving?",
+   "Can anyone read the writing on those wooden tablets?",
+   "Why do some statues have bodies buried under them?",
+   "What happened to the people — where did they go?",
+   "Who were the birdmen, and why did the statue religion stop?"
+  ],
+  "misconceptions": [
+   {
+    "myth": "The islanders cut down the last tree, starved, went to war and ate each other before Europeans arrived.",
+    "reality": "Owsley's 1994 study found little archaeological evidence of pre-European collapse and few violent deaths; Mulrooney et al. (2010) found no conclusive evidence for a pre-contact collapse; DiNapoli and Lipo (2021) found steady population growth up to 1722; and the 2024 ancient genomes reject a severe 17th-century bottleneck. The documented population crash is the 1862-63 slave raids and the epidemics that followed.",
+    "source": "https://doi.org/10.1038/s41586-024-07881-4"
+   },
+   {
+    "myth": "The island once held 15,000 to 30,000 people.",
+    "reality": "The 2024 satellite mapping of the island's rock gardens puts the ceiling near 3,000 — roughly what the first Europeans counted. There was no large population to crash.",
+    "source": "https://doi.org/10.1126/sciadv.ado1459"
+   },
+   {
+    "myth": "The famous heads are just heads.",
+    "reality": "They are full statues; the quarry slope buried them to the neck. The excavated ones are standing upright, one on a prepared pedestal.",
+    "source": "https://www.universityofcalifornia.edu/news/mystery-easter-island-revealed"
+   },
+   {
+    "myth": "Rongorongo has been deciphered.",
+    "reality": "No text has been read. Fischer's 1995 claim is not accepted; Butinov and Knorozov's 1957 genealogy reading is considered plausible and has never been confirmed; only the function of a lunar calendar on the Mamari tablet is agreed.",
+    "source": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo"
+   },
+   {
+    "myth": "The mata'a scattered across the island are spearheads from the island's wars.",
+    "reality": "Shape analysis of more than 400 of them found no standardised form and few points that would work as weapons. Lipo reads them as cutting and planting tools.",
+    "source": "https://discovere.binghamton.edu/news/easter-2-6625.html"
+   },
+   {
+    "myth": "The writing was copied from the Europeans — the islanders saw the Spanish treaty signed in 1770 and imitated it.",
+    "reality": "That remains a live hypothesis, since no explorer reported the script before 1864. But one of the four Rome tablets dates to 1493-1509, and Orliac argues Tablet C's wood predates the Spanish visit by at least a century. The question is open in both directions.",
+    "source": "https://doi.org/10.1038/s41598-024-53063-7"
+   }
+  ],
+  "knowledge_level": "The audience arrives from two 60-second shorts. They know the statues walked and that the heads have bodies. They almost certainly carry Diamond's ecocide story as background fact, without knowing it is contested. They will not have heard of rongorongo, the tangata manu, Rano Raraku as a garden, or any paper published after 2011. Nothing can be assumed about dates, names or Rapa Nui vocabulary; everything needs placing on first mention.",
+  "pain_points": [
+   "The popular story is confidently told and wrong, so a viewer who has read about the island has to be un-taught without being made to feel foolish.",
+   "Rapa Nui names are unfamiliar and easy to mangle, in text and in narration.",
+   "Every number about this island has at least two published values. A film that states one flatly is either lucky or careless.",
+   "The subject is a magnet for ancient-aliens framing, which is the fastest way to lose the viewers who would otherwise trust the piece."
+  ]
+ },
+ "expert_voices": [
+  {
+   "name": "Jared Diamond",
+   "title_or_affiliation": "Geographer, UCLA; author of Collapse (2005) and \"Easter's End\" (Discover, 1995)",
+   "position": "Rapa Nui is \"as close as we can get to a 'pure' ecological collapse\" — a society that destroyed its own forest and ended in famine, war and cannibalism before Europeans arrived. \"Easter Island is Earth writ small.\"",
+   "source_url": "https://www.discovermagazine.com/environment/the-demise-of-easter-islands-eco-collapse-parable",
+   "contrarian": false
+  },
+  {
+   "name": "Terry L. Hunt",
+   "title_or_affiliation": "Archaeologist, School of Anthropology, University of Arizona",
+   "position": "The island was settled about 1200 AD, not 800; the deforestation was driven substantially by introduced rats; and the population crash is a 19th-century event caused by disease and slaving, not a prehistoric self-destruction. \"Rethinking the Fall of Easter Island\", American Scientist (2006); peer-reviewed version in the Journal of Archaeological Science (2007).",
+   "source_url": "https://www.discovermagazine.com/environment/the-demise-of-easter-islands-eco-collapse-parable",
+   "contrarian": true
+  },
+  {
+   "name": "Carl P. Lipo",
+   "title_or_affiliation": "Professor of Anthropology and Environmental Science, Binghamton University",
+   "position": "\"The soils on Rapa Nui were never particularly productive\" and \"We can't use Easter Island as an example that's convenient for stories.\" Co-author of the 2016 mata'a shape analysis, the 2024 rock-garden mapping and the 2025 walking-moai paper.",
+   "source_url": "https://www.binghamton.edu/news/story/4999/new-methods-estimate-the-size-of-easter-islands-pre-contact-population-and-debunk-a-persistent-myth",
+   "contrarian": true
+  },
+  {
+   "name": "Dylan S. Davis",
+   "title_or_affiliation": "Post-doctoral fellow, Columbia University Climate School",
+   "position": "\"This isn't an example of ecological catastrophe but of how people survived\" — the island \"couldn't sustain that many people to begin with based on ecological constraints.\"",
+   "source_url": "https://www.binghamton.edu/news/story/4999/new-methods-estimate-the-size-of-easter-islands-pre-contact-population-and-debunk-a-persistent-myth",
+   "contrarian": true
+  },
+  {
+   "name": "Jo Anne Van Tilburg",
+   "title_or_affiliation": "Director, Easter Island Statue Project, Cotsen Institute of Archaeology, UCLA",
+   "position": "The Rano Raraku quarry statues are standing where they were deliberately placed, in ground that was the island's most fertile; the quarry was a carving site and a garden at once, and the statues were kept there to hold the place sacred.",
+   "source_url": "https://www.universityofcalifornia.edu/news/mystery-easter-island-revealed",
+   "contrarian": false
+  },
+  {
+   "name": "Sarah Sherwood",
+   "title_or_affiliation": "Geoarchaeologist and soils specialist, University of the South",
+   "position": "Soils around the excavated quarry statues show high calcium and phosphorus and traces of banana, taro and sweet potato; quarrying itself appears to have fed the soil.",
+   "source_url": "https://www.universityofcalifornia.edu/news/mystery-easter-island-revealed",
+   "contrarian": false
+  },
+  {
+   "name": "Silvia Ferrara",
+   "title_or_affiliation": "Philologist, University of Bologna; lead author of the 2024 rongorongo radiocarbon study",
+   "position": "Rongorongo was probably invented independently on Rapa Nui: \"if you borrow a writing system, then you keep it as close to the original as possible\", and the glyphs resemble no European letters. She concedes the wood could have been stored before use but considers it unlikely.",
+   "source_url": "https://www.smithsonianmag.com/smart-news/research-reveals-the-natives-of-easter-island-invented-a-written-language-from-scratch-180983793/",
+   "contrarian": false
+  },
+  {
+   "name": "Rafal Wieczorek",
+   "title_or_affiliation": "Chemist, University of Warsaw; not involved in the 2024 radiocarbon study",
+   "position": "Calls the result \"a great development\" but cautions that \"belief is a different thing than hard data\", and would want every tablet tested.",
+   "source_url": "https://www.smithsonianmag.com/smart-news/research-reveals-the-natives-of-easter-island-invented-a-written-language-from-scratch-180983793/",
+   "contrarian": true
+  },
+  {
+   "name": "Steven Roger Fischer",
+   "title_or_affiliation": "Linguist; author of Rongorongo, the Easter Island Script (1997)",
+   "position": "Announced in 1995 that he had read the Santiago Staff as a creation chant and that about 85% of the corpus consists of such chants. The claim is not accepted.",
+   "source_url": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+   "contrarian": true
+  },
+  {
+   "name": "Nikolai Butinov and Yuri Knorozov",
+   "title_or_affiliation": "Soviet ethnographer and epigrapher (Knorozov deciphered Maya phonetics)",
+   "position": "Proposed in 1957 that a repeating sequence on lines Gv5-6 of the Small Santiago tablet has the structure of a genealogy. Widely considered plausible; never confirmed.",
+   "source_url": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+   "contrarian": false
+  }
+ ],
+ "angles_discovered": [
+  {
+   "name": "The four files nobody has closed",
+   "hook": "Four questions about this island are still open, and the one everybody asks is not among them.",
+   "type": "narrative",
+   "why_now": "The walking statues — the question the audience arrives with — were settled in print in October 2025 (Lipo and Hunt, J. Arch. Sci. 183:106383). That frees the film to spend its twenty minutes on the four cases that remain open: the script, the collapse, the quarry, and the birdmen. Each has a 2024-25 result behind it, and no popular treatment has absorbed any of them.",
+   "grounded_in": [
+    "c18",
+    "c43",
+    "c28",
+    "c29",
+    "c13",
+    "c54",
+    "c46"
+   ]
+  },
+  {
+   "name": "A script invented once and read by nobody",
+   "hook": "Two dozen pieces of wood carry a writing system that may have been invented from nothing — and not one line of it can be read.",
+   "type": "evergreen",
+   "why_now": "The February 2024 radiocarbon result on the Rome tablets is the first hard date that places the script before European contact, which would make it one of a handful of independent inventions of writing in human history. The ledger carries the full decipherment history — Jaussen and Metoro, Butinov and Knorozov, Fischer's rejected claim, the Mamari calendar — which is enough for a 20-minute piece on its own.",
+   "grounded_in": [
+    "c32",
+    "c33",
+    "c34",
+    "c35",
+    "c36",
+    "c37",
+    "c38",
+    "c39",
+    "c40",
+    "c41",
+    "c42",
+    "c43",
+    "c44",
+    "c45",
+    "c46"
+   ]
+  },
+  {
+   "name": "The warning story that was not true",
+   "hook": "The most famous environmental parable of the last thirty years is about an island where it did not happen.",
+   "type": "contrarian",
+   "why_now": "Two 2024 papers removed the premise: the satellite agriculture mapping says the island could never have fed the population the story requires, and the ancient genomes say no bottleneck happened. The ledger holds Diamond's own words, his critics' measurements, and the documented 19th-century catastrophe that the parable obscures. Risk: on its own this becomes a debunking piece, and the playbook forbids a debunking register.",
+   "grounded_in": [
+    "c19",
+    "c20",
+    "c21",
+    "c22",
+    "c23",
+    "c24",
+    "c25",
+    "c26",
+    "c27",
+    "c28",
+    "c29",
+    "c30",
+    "c31"
+   ]
+  },
+  {
+   "name": "What was under the heads",
+   "hook": "The famous heads are not heads, and the ground that buried them was the best soil on the island.",
+   "type": "data_driven",
+   "why_now": "The Easter Island Statue Project's excavations — the first authorised digging in the quarry interior since 1954-55 — found full-bodied statues standing upright in soil carrying banana, taro and sweet potato. It turns a visual gimmick into an argument about what the quarry was for. Honest read: this is one act of material, not a film.",
+   "grounded_in": [
+    "c07",
+    "c12",
+    "c13",
+    "c14",
+    "c15",
+    "c17"
+   ]
+  },
+  {
+   "name": "The religion that replaced the statues",
+   "hook": "They stopped carving. Then, every spring, men swam to a rock in the open Pacific to bring back one bird's egg.",
+   "type": "narrative",
+   "why_now": "The birdman cult is the least-covered part of the island's story and the best-documented: 53 houses on a crater rim, 86 recorded birdmen, a disputed end date, and a statue in the British Museum whose back carries the whole transition carved into it. Honest read: strong as an act and as a closing question, thin as a whole film — the ledger runs to about twelve entries.",
+   "grounded_in": [
+    "c47",
+    "c48",
+    "c49",
+    "c50",
+    "c51",
+    "c52",
+    "c53",
+    "c54",
+    "c55",
+    "c56",
+    "c57",
+    "c58"
+   ]
+  }
+ ],
+ "visual_references": [
+  {
+   "description": "Wikimedia Commons category \"Rongorongo\" — tablet photographs and the Jaussen list glyph plates",
+   "url": "https://commons.wikimedia.org/wiki/Category:Rongorongo",
+   "what_works": "Document-grade plates of the actual objects, which is exactly the register the playbook's document_reveal treatment wants. 13 files measured in the topic brief's depth check."
+  },
+  {
+   "description": "Wikimedia Commons category \"Rano Raraku\" — the quarry slope, the buried statues, the unfinished giant",
+   "url": "https://commons.wikimedia.org/wiki/Category:Rano_Raraku",
+   "what_works": "The only place the buried-body claim can be shown rather than asserted: statues standing to the neck in the slope, in the same frame as finished ones lying in the quarry."
+  },
+  {
+   "description": "Wikimedia Commons category \"Orongo\" and \"Petroglyphs in Orongo area\"",
+   "url": "https://commons.wikimedia.org/wiki/Category:Orongo",
+   "what_works": "The clifftop houses and the birdman petroglyphs in situ, with Motu Nui visible beyond — the geography and the ritual in one frame. 17 files measured."
+  },
+  {
+   "description": "British Museum object page for Hoa Hakananai'a (reg. 1869,1005.1)",
+   "url": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "what_works": "The front and the carved back of the same object, which is the single strongest image in the piece: the statue cult and the cult that replaced it on opposite sides of one stone."
+  },
+  {
+   "description": "Wikimedia Commons category \"Moai\" — including the 1914 Mana Expedition plate of a fallen moai with a man seated beside it for scale",
+   "url": "https://commons.wikimedia.org/wiki/Category:Moai",
+   "what_works": "Period photography with a human figure in frame. The playbook forbids clean modern drone plates standing in for archive material; this is the opposite of that."
+  }
+ ],
+ "sources": [
+  {
+   "url": "https://en.wikipedia.org/wiki/Easter_Island",
+   "title": "Easter Island — Wikipedia",
+   "used_for": "Encyclopedia pull for the island; geography, contact dates, the slave raids, the 1877 population, the collapse debate",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Moai",
+   "title": "Moai — Wikipedia",
+   "used_for": "Encyclopedia pull for the moai; counts, materials, Paro, the coral eyes, carving dates",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Rano_Raraku",
+   "title": "Rano Raraku — Wikipedia",
+   "used_for": "Encyclopedia pull for the quarry; the 95% figure, the unfinished giant, the crater lake",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Rongorongo",
+   "title": "Rongorongo — Wikipedia",
+   "used_for": "Encyclopedia pull for the script; the corpus, Eyraud, Jaussen, boustrophedon, glyph counts, the Santiago Staff, the radiocarbon dates",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+   "title": "Decipherment of rongorongo — Wikipedia",
+   "used_for": "The decipherment history: Metoro, Butinov and Knorozov, Fischer and his critics, the Mamari calendar",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Tangata_manu",
+   "title": "Tangata manu — Wikipedia",
+   "used_for": "Encyclopedia pull for the birdman cult; the hopu, Makemake, the prize, Routledge's 86 names",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Orongo",
+   "title": "Orongo — Wikipedia",
+   "used_for": "Encyclopedia pull for Orongo; 53 houses, the cliff, the cult's dates, the 1974-76 restoration",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Rano_Kau",
+   "title": "Rano Kau — Wikipedia",
+   "used_for": "Encyclopedia pull for Rano Kau; elevation, crater, freshwater lake, age",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Motu_Nui",
+   "title": "Motu Nui — Wikipedia",
+   "used_for": "Encyclopedia pull for Motu Nui; area, the submerged mountain, the ritual caves, the 1888 date",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "title": "Hoa Hakananai'a — Wikipedia",
+   "used_for": "Encyclopedia pull for the statue; dimensions, HMS Topaze, the carvings on its back, the repatriation request",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Ahu_Tongariki",
+   "title": "Ahu Tongariki — Wikipedia",
+   "used_for": "Encyclopedia pull for Ahu Tongariki; fifteen moai, the 86-tonne statue, the 1960 tsunami, the 1990s restoration",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Polynesian_rat",
+   "title": "Polynesian rat — Wikipedia",
+   "used_for": "Encyclopedia pull for Rattus exulans; the spread with Polynesian voyagers, the palm-seed predation claim",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Collapse:_How_Societies_Choose_to_Fail_or_Succeed",
+   "title": "Collapse: How Societies Choose to Fail or Succeed — Wikipedia",
+   "used_for": "Encyclopedia pull for Diamond's book and the named criticisms of its Easter Island chapter",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://doi.org/10.1038/s41598-024-53063-7",
+   "title": "Ferrara et al., The invention of writing on Rapa Nui (Easter Island). New radiocarbon dates on the Rongorongo script — Scientific Reports 14, 2794 (2024)",
+   "used_for": "The 1493-1509 tablet date and the independent-invention argument",
+   "reliability": "primary"
+  },
+  {
+   "url": "https://www.smithsonianmag.com/smart-news/research-reveals-the-natives-of-easter-island-invented-a-written-language-from-scratch-180983793/",
+   "title": "Did the People of Easter Island Invent a Writing System From Scratch? — Smithsonian Magazine",
+   "used_for": "Second source on the 1493-1509 date; Ferrara's and Wieczorek's quotes and the driftwood caveat",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://doi.org/10.1038/s41586-024-07881-4",
+   "title": "Moreno-Mayar et al., Ancient Rapanui genomes reveal resilience and pre-European contact with the Americas — Nature 633, 389-397 (2024)",
+   "used_for": "The rejected 17th-century bottleneck and the 1250-1430 CE admixture date",
+   "reliability": "primary"
+  },
+  {
+   "url": "https://archaeology.ku.dk/news/easter-island-population-collapse-never-happened/",
+   "title": "Easter Island population collapse never happened — University of Copenhagen, 11 September 2024",
+   "used_for": "Second source on the 2024 genomes; sample size and sequencing coverage",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://doi.org/10.1126/sciadv.ado1459",
+   "title": "Davis, DiNapoli, Pakarati, Hunt and Lipo, Island-wide characterization of agricultural production challenges the demographic collapse hypothesis for Rapa Nui — Science Advances 10, eado1459 (2024)",
+   "used_for": "The rock-garden area and the ~3,000 population ceiling",
+   "reliability": "primary"
+  },
+  {
+   "url": "https://www.binghamton.edu/news/story/4999/new-methods-estimate-the-size-of-easter-islands-pre-contact-population-and-debunk-a-persistent-myth",
+   "title": "New methods estimate the size of Easter Island's pre-contact population — Binghamton University",
+   "used_for": "The 180-acre figure, the earlier 4.9-21.1 km2 estimates, and the Lipo and Davis quotes",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://doi.org/10.1016/j.jas.2025.106383",
+   "title": "Lipo and Hunt, The walking moai hypothesis: archaeological evidence, experimental validation, and response to critics — Journal of Archaeological Science 183, 106383 (2025)",
+   "used_for": "The 60-second walking-statues recap: 962 moai, 62 road moai, the 4.35-tonne replica",
+   "reliability": "primary"
+  },
+  {
+   "url": "https://www.sci.news/archaeology/walking-moai-hypothesis-14269.html",
+   "title": "New Research Confirms 'Walking' Moai Hypothesis — Sci.News, 7 October 2025",
+   "used_for": "Second source on the 2025 walking paper; 18 people, 100 m, 40 minutes, 4.5 m roads, Lipo's quotes",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://discovere.binghamton.edu/news/easter-2-6625.html",
+   "title": "Easter Island civilization not destroyed by war, analysis of spear points shows — Binghamton University Research News",
+   "used_for": "The mata'a morphometric study and Lipo's quote on lethality",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://www.universityofcalifornia.edu/news/mystery-easter-island-revealed",
+   "title": "Mystery of Easter Island revealed — University of California (UCLA), on the Easter Island Statue Project",
+   "used_for": "The quarry excavations, the upright buried statues, the soil analysis, Van Tilburg and Sherwood",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://www.eisp.org/3308/",
+   "title": "Easter Island Statue Project — 2010 excavation season",
+   "used_for": "The date of the first authorised excavation in the quarry interior since Heyerdahl's 1954-55 expedition",
+   "reliability": "primary"
+  },
+  {
+   "url": "https://www.discovermagazine.com/environment/the-demise-of-easter-islands-eco-collapse-parable",
+   "title": "Keith Kloor, The Demise of Easter Island's Eco-Collapse Parable — Discover (2014)",
+   "used_for": "Diamond's own words, the chronology of the revision, and the landscape entry",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://doi.org/10.5061/dryad.41ns1rnt2",
+   "title": "Stein, Curtin, Balascio et al., Data from: Prolonged drought on Rapa Nui during the decline of megalithic monument construction (2025)",
+   "used_for": "The post-1550 drought recorded in the Rano Aroi and Rano Kao cores",
+   "reliability": "primary"
+  },
+  {
+   "url": "https://fallofcivilizationspodcast.com/2019/07/26/",
+   "title": "Fall of Civilizations Episode 6 — Easter Island: Where Giants Walked",
+   "used_for": "Landscape: the existing flagship long-form treatment",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://commons.wikimedia.org/wiki/Category:Rongorongo",
+   "title": "Category:Rongorongo — Wikimedia Commons",
+   "used_for": "Visual references and the asset-depth check for the script act",
+   "reliability": "primary"
+  }
+ ],
+ "research_summary": "The question the audience arrives with — how the statues moved — was answered in print in October 2025, and the question everyone thinks they know the answer to — whether the islanders destroyed themselves — had its premise removed in June 2024, when satellite mapping of the island's gardens put the maximum population at about three thousand people, roughly what the first Europeans counted. There was never a large population to crash. What is left after both of those are settled is more interesting than either: a writing system on two dozen pieces of wood that nobody has read and that one radiocarbon date now places before any European arrived; a quarry whose famous heads are whole statues standing upright in the most fertile soil on the island; and a religion that replaced the statues, sent men swimming to a rock in the open Pacific for one bird's egg, and whose last ceremony has three different dates in three different reference works. The film's spine is the open cases, and its discipline is that every number in it has two published values and must be stated as such.",
+ "metadata": {
+  "project_id": "easter-island",
+  "pipeline": "narrated-documentary",
+  "playbook": "wak3up-documentary",
+  "brief_source": "artifacts/topic_briefs.json -> briefs[0], entity 'Easter Island'",
+  "commissioned_spine": [
+   "rongorongo — the undeciphered script",
+   "the collapse debate — ecocide against rats and the 1862 slave raids, both sides' best case",
+   "the buried statue bodies",
+   "the birdman cult at Orongo"
+  ],
+  "commissioned_recap": {
+   "what": "the walking statues",
+   "max_seconds": 60,
+   "where": "act 1",
+   "why": "run #1 covered them; they are the hook the audience arrives with and not the film"
+  },
+  "entity_encyclopedia_pulls": {
+   "Easter Island": "https://en.wikipedia.org/wiki/Easter_Island",
+   "Moai": "https://en.wikipedia.org/wiki/Moai",
+   "Rano Raraku": "https://en.wikipedia.org/wiki/Rano_Raraku",
+   "Rongorongo": "https://en.wikipedia.org/wiki/Rongorongo",
+   "Orongo": "https://en.wikipedia.org/wiki/Orongo",
+   "Rano Kau": "https://en.wikipedia.org/wiki/Rano_Kau",
+   "Motu Nui": "https://en.wikipedia.org/wiki/Motu_Nui",
+   "Tangata manu": "https://en.wikipedia.org/wiki/Tangata_manu",
+   "Ahu Tongariki": "https://en.wikipedia.org/wiki/Ahu_Tongariki",
+   "Hoa Hakananai'a": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "Polynesian rat (Rattus exulans)": "https://en.wikipedia.org/wiki/Polynesian_rat",
+   "Mamari (text C)": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+   "Santiago Staff (text I)": "https://en.wikipedia.org/wiki/Rongorongo",
+   "Eugene Eyraud": "https://en.wikipedia.org/wiki/Rongorongo",
+   "Florentin-Etienne Jaussen": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+   "Metoro Tau'a Ure": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+   "Thomas Barthel": "https://en.wikipedia.org/wiki/Rongorongo",
+   "Yuri Knorozov and Nikolai Butinov": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+   "Steven Roger Fischer": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+   "Silvia Ferrara": "https://doi.org/10.1038/s41598-024-53063-7",
+   "Jared Diamond": "https://en.wikipedia.org/wiki/Collapse:_How_Societies_Choose_to_Fail_or_Succeed",
+   "Terry L. Hunt": "https://www.discovermagazine.com/environment/the-demise-of-easter-islands-eco-collapse-parable",
+   "Carl P. Lipo": "https://www.binghamton.edu/news/story/4999/new-methods-estimate-the-size-of-easter-islands-pre-contact-population-and-debunk-a-persistent-myth",
+   "Dylan S. Davis": "https://www.binghamton.edu/news/story/4999/new-methods-estimate-the-size-of-easter-islands-pre-contact-population-and-debunk-a-persistent-myth",
+   "Jo Anne Van Tilburg": "https://www.universityofcalifornia.edu/news/mystery-easter-island-revealed",
+   "Sarah Sherwood": "https://www.universityofcalifornia.edu/news/mystery-easter-island-revealed",
+   "Katherine Routledge": "https://en.wikipedia.org/wiki/Tangata_manu",
+   "Jacob Roggeveen": "https://en.wikipedia.org/wiki/Easter_Island",
+   "Felipe Gonzalez de Ahedo": "https://en.wikipedia.org/wiki/Easter_Island",
+   "James Cook": "https://en.wikipedia.org/wiki/Easter_Island",
+   "HMS Topaze": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "Makemake": "https://en.wikipedia.org/wiki/Tangata_manu",
+   "Sergio Rapu Haoa": "https://en.wikipedia.org/wiki/Moai",
+   "Thor Heyerdahl": "https://www.eisp.org/3308/",
+   "Paschalococos": "https://en.wikipedia.org/wiki/Easter_Island",
+   "Paro": "https://en.wikipedia.org/wiki/Moai",
+   "Rudolf Philippi": "https://en.wikipedia.org/wiki/Rongorongo",
+   "Andrew Robinson": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+   "Konstantin Pozdniakov": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+   "Jacques Guy": "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+   "Laura Rapu": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "Lissant Bolton": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "Rafal Wieczorek": "https://www.smithsonianmag.com/smart-news/research-reveals-the-natives-of-easter-island-invented-a-written-language-from-scratch-180983793/"
+  },
+  "claim_ledger": [
+   {
+    "claim_id": "c01",
+    "claim": "The nearest continental point to Easter Island is about 3,512 km away, in central Chile; the nearest inhabited land is Pitcairn Island, about 2,075 km away.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Easter_Island"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": false,
+    "notes": "The same article gives 2,075 km in the lead and 1,931 km in the Geography section and does not reconcile them. Use 'about two thousand kilometres' in narration, or state the lead figure and do not lean on it."
+   },
+   {
+    "claim_id": "c02",
+    "claim": "The island covers 163.6 square kilometres.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Easter_Island"
+    ],
+    "confidence": "established",
+    "surprise_factor": "expected",
+    "contested": false,
+    "notes": "The UNESCO World Heritage area within it is 71.3 km2."
+   },
+   {
+    "claim_id": "c03",
+    "claim": "Polynesian settlement was long dated to about 800 CE; a 2007 study pointed to about 1200 CE, and the current best estimate is the 12th century.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Easter_Island",
+     "https://www.discovermagazine.com/environment/the-demise-of-easter-islands-eco-collapse-parable"
+    ],
+    "confidence": "contested",
+    "surprise_factor": "surprising",
+    "contested": true,
+    "notes": "This is load-bearing: the later the settlement, the less time there was for a slow self-destruction. Must be narrated as revised, not as settled."
+   },
+   {
+    "claim_id": "c04",
+    "claim": "Jacob Roggeveen arrived on 5 April 1722, Easter Sunday. The population at that time was estimated at 2,000 to 3,000; another passage of the same article gives 3,000 to 4,000 at contact.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Easter_Island"
+    ],
+    "confidence": "established",
+    "surprise_factor": "expected",
+    "contested": true,
+    "notes": "The date is established; the population figure is given two ways in one source. Narrate as 'two to four thousand' or attribute the range."
+   },
+   {
+    "claim_id": "c05",
+    "claim": "Spanish ships under Felipe Gonzalez de Ahedo arrived on 15 November 1770 and named the island Isla San Carlos.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Easter_Island"
+    ],
+    "confidence": "established",
+    "surprise_factor": "expected",
+    "contested": false,
+    "notes": "The treaty signed on this visit is the event some scholars think inspired rongorongo (c45)."
+   },
+   {
+    "claim_id": "c06",
+    "claim": "James Cook visited in 1774 and reported that some statues had already been toppled.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Easter_Island"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": false,
+    "notes": ""
+   },
+   {
+    "claim_id": "c07",
+    "claim": "More than 900 moai are known, a figure from the Easter Island Statue Project. All but 53 were carved from Rano Raraku tuff, and 394 in varying states of completion are still visible at the quarry.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Moai",
+     "https://en.wikipedia.org/wiki/Rano_Raraku"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": true,
+    "notes": "The Rano Raraku article says '887 moai remain at the site', which conflicts with the Moai article's 394 visible there and reads as the island-wide catalogue number misplaced. Use 'more than nine hundred known, nearly half of them still at the quarry'."
+   },
+   {
+    "claim_id": "c08",
+    "claim": "The statues were carved mostly between 1250 and 1500 CE.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Moai"
+    ],
+    "confidence": "established",
+    "surprise_factor": "expected",
+    "contested": false,
+    "notes": "UCLA's account of the EISP work gives activity in the inner quarry beginning about 1455 and most production ceasing in the early 1700s."
+   },
+   {
+    "claim_id": "c09",
+    "claim": "The tallest moai ever erected, Paro, stood almost 10 metres and weighed 82 tonnes.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Moai"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": false,
+    "notes": ""
+   },
+   {
+    "claim_id": "c10",
+    "claim": "Fifteen moai stand at Ahu Tongariki, including one of 86 tonnes described as the heaviest ever erected on the island. A tsunami from the 1960 Chile earthquake swept the ahu inland; it was restored in a five-year project in the 1990s led by Claudio Cristino and Patricia Vargas Casanova, under an agreement between the Chilean government, the University of Chile and the crane manufacturer Tadano.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Ahu_Tongariki"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": false,
+    "notes": "Tadano was a party to the agreement; do not say it donated the crane."
+   },
+   {
+    "claim_id": "c11",
+    "claim": "The largest unfinished moai still lying in the Rano Raraku quarry would stand about 21 metres. Weight estimates range from about 145-165 tonnes to 270 tonnes.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Moai",
+     "https://en.wikipedia.org/wiki/Rano_Raraku"
+    ],
+    "confidence": "contested",
+    "surprise_factor": "surprising",
+    "contested": true,
+    "notes": "Two encyclopedia articles, two weights, 21.0 m against 21.6 m. State the range; do not pick one. Neither names it 'El Gigante'."
+   },
+   {
+    "claim_id": "c12",
+    "claim": "In March and April 2010 the Easter Island Statue Project began the first authorised excavations in the interior of the Rano Raraku quarry since Thor Heyerdahl's Norwegian Archaeological Expedition of 1954-55.",
+    "kind": "date",
+    "sources": [
+     "https://www.eisp.org/3308/",
+     "https://www.universityofcalifornia.edu/news/mystery-easter-island-revealed"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "Fifty-five years between one dig and the next is itself a usable fact."
+   },
+   {
+    "claim_id": "c13",
+    "claim": "The two statues the project excavated in the quarry interior were almost completely buried by soil and rubble, and both were found upright — one on a prepared pedestal, the other set in a deep hole — which the team reads as evidence they were meant to stay where they were.",
+    "kind": "claim",
+    "sources": [
+     "https://www.universityofcalifornia.edu/news/mystery-easter-island-revealed"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "This is the buried-bodies act's central result. The hook — 'the heads have bodies' — is the weakest form of it."
+   },
+   {
+    "claim_id": "c14",
+    "claim": "Moai that have eroded less carry designs carved on their backs and posteriors; the 1914 Routledge expedition linked these to traditional tattooing. Burial protected the designs on the quarry statues from erosion.",
+    "kind": "claim",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Moai"
+    ],
+    "confidence": "probable",
+    "surprise_factor": "notable",
+    "contested": false,
+    "notes": "The Moai article flags the specific claim about excavated quarry statues revealing protected markings as needing a citation. Attribute to the EISP work rather than stating it flatly."
+   },
+   {
+    "claim_id": "c15",
+    "claim": "Laboratory analysis of soil from around the excavated quarry statues found traces of banana, taro and sweet potato, with high levels of calcium and phosphorus. The team concludes the quarry was both a carving site and the most productive growing ground on the island, and that quarrying itself fed the soil.",
+    "kind": "claim",
+    "sources": [
+     "https://www.universityofcalifornia.edu/news/mystery-easter-island-revealed"
+    ],
+    "confidence": "established",
+    "surprise_factor": "counterintuitive",
+    "contested": false,
+    "notes": "Sarah Sherwood, geoarchaeologist, University of the South. No paper mulberry in this source — do not add it."
+   },
+   {
+    "claim_id": "c16",
+    "claim": "In 1979 Sergio Rapu Haoa and a team of archaeologists established that moai eye sockets were made to hold eyes of white coral, with pupils of black obsidian or red scoria, by reassembling broken coral fragments found at sites across the island.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Moai"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": ""
+   },
+   {
+    "claim_id": "c17",
+    "claim": "Rano Raraku supplied the stone for about 95% of the island's known moai and was worked for roughly 500 years, until the early 18th century.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Rano_Raraku",
+     "https://www.universityofcalifornia.edu/news/mystery-easter-island-revealed"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": false,
+    "notes": ""
+   },
+   {
+    "claim_id": "c18",
+    "claim": "Lipo and Hunt's 2025 paper analysed 962 moai, focusing on 62 that stand along the island's ancient roads and share a wide D-shaped base and a forward lean. A 4.35-tonne replica built to that design was moved 100 metres in 40 minutes by 18 people pulling on ropes. The roads are 4.5 metres wide with a concave cross-section that helps hold a walking statue upright.",
+    "kind": "figure",
+    "sources": [
+     "https://doi.org/10.1016/j.jas.2025.106383",
+     "https://www.sci.news/archaeology/walking-moai-hypothesis-14269.html"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": false,
+    "notes": "Journal of Archaeological Science 183, 106383. Capped at 60 seconds in act 1 by owner instruction. Lipo: 'The physics makes sense... What we saw experimentally actually works. And as it gets bigger, it still works.'"
+   },
+   {
+    "claim_id": "c19",
+    "claim": "Jared Diamond describes Rapa Nui as 'as close as we can get to a \"pure\" ecological collapse' and writes that the society ended 'in an epidemic of cannibalism that left 90 percent of the islanders dead'.",
+    "kind": "quote",
+    "sources": [
+     "https://www.discovermagazine.com/environment/the-demise-of-easter-islands-eco-collapse-parable",
+     "https://en.wikipedia.org/wiki/Collapse:_How_Societies_Choose_to_Fail_or_Succeed"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": true,
+    "notes": "The quotes are from Collapse (2005), reported by Kloor in Discover. Attribution is mandatory: this is the alternative-to-current-archaeology claim stated at full strength, in its proponent's own words."
+   },
+   {
+    "claim_id": "c20",
+    "claim": "Diamond's 1995 Discover article 'Easter's End' (pp. 62-69) framed the island as a warning: 'Easter Island is Earth writ small.' In 2003 he asked what the islanders said as they were cutting down the last palm tree.",
+    "kind": "quote",
+    "sources": [
+     "https://www.discovermagazine.com/environment/the-demise-of-easter-islands-eco-collapse-parable"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": false,
+    "notes": "Use for why the story travelled, not as evidence about the island."
+   },
+   {
+    "claim_id": "c21",
+    "claim": "The island once carried many tree species, among them a palm of the genus Paschalococos that may have been the largest palm in the world and grew to 15 metres or more. By the time Europeans arrived, 21 tree species and every land bird species were gone.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Easter_Island"
+    ],
+    "confidence": "probable",
+    "surprise_factor": "surprising",
+    "contested": true,
+    "notes": "The extinctions are agreed; the causes attributed in the source (overharvesting, hunting, rats, climate change) are one side's account and the article says so. Do not use the species epithet 'disperta' — the encyclopedia pull does not carry it."
+   },
+   {
+    "claim_id": "c22",
+    "claim": "The Polynesian rat, Rattus exulans, arrived with the first settlers, cannot swim far and is therefore a marker of Polynesian migration. It is implicated in the island's deforestation: gnawed palm seed shells are in the record, and the rats may have stopped the forest regrowing by eating the nuts.",
+    "kind": "claim",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Polynesian_rat",
+     "https://en.wikipedia.org/wiki/Easter_Island"
+    ],
+    "confidence": "probable",
+    "surprise_factor": "counterintuitive",
+    "contested": true,
+    "notes": "The encyclopedia says 'may have played a role'. Hunt's stronger form — that every palm nut found on the island carries rat tooth marks — is reported in secondary coverage of his 2006 article and should be attributed to him, not stated."
+   },
+   {
+    "claim_id": "c23",
+    "claim": "Terry Hunt's 2006 American Scientist article 'Rethinking the Fall of Easter Island' argued the island was settled around 1200 AD and that a large rat population, not the islanders, drove the deforestation. The peer-reviewed version is Hunt 2007 in the Journal of Archaeological Science. A January 2007 letter in the same magazine objected that there is no natural stratified layer below the lowest cultural one and that the archaeological and botanical data point to human overexploitation.",
+    "kind": "event",
+    "sources": [
+     "https://www.discovermagazine.com/environment/the-demise-of-easter-islands-eco-collapse-parable"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": true,
+    "notes": "The objection is in the ledger on purpose: the rat argument is contested too, and the playbook requires both directions."
+   },
+   {
+    "claim_id": "c24",
+    "claim": "In December 1862 Peruvian slave raiders began abductions that lasted several months. About 1,500 people were taken, roughly half the population; 1,408 were sent to Peru as indentured servants and only about a dozen returned. Smallpox carried back by the returnees caused devastating epidemics.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Easter_Island"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "The documented catastrophe. It is the thing the ecocide parable displaces."
+   },
+   {
+    "claim_id": "c25",
+    "claim": "In 1877 only 111 native inhabitants remained on the island.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Easter_Island"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "A landing figure. Do not decorate it."
+   },
+   {
+    "claim_id": "c26",
+    "claim": "Douglas Owsley's 1994 study found little archaeological evidence of a pre-European collapse and few violent deaths. Mulrooney et al. (2010) found no conclusive evidence for a pre-contact collapse. DiNapoli and Lipo (2021) found steady population growth up to 1722, never exceeding a few thousand people.",
+    "kind": "claim",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Easter_Island"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "Three independent lines, two decades apart. This is the weight behind the revision."
+   },
+   {
+    "claim_id": "c27",
+    "claim": "A morphometric analysis of more than 400 photographed mata'a — Science News gives the count as 423 — found they had no standardised shape and rarely carried long spearlike tips. Carl Lipo concluded they were general-purpose tools for planting and daily work: 'You would cut somebody with a mata'a, but they certainly wouldn't be lethal in any way.'",
+    "kind": "figure",
+    "sources": [
+     "https://discovere.binghamton.edu/news/easter-2-6625.html"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": true,
+    "notes": "Lipo et al., Antiquity (2016). Press coverage differs on the sample: 'more than 400' and 423. Use 'more than four hundred'. Lipo's wider claim — that the warfare story is a late European reading rather than an archaeological event — is his interpretation and must be attributed."
+   },
+   {
+    "claim_id": "c28",
+    "claim": "Shortwave-infrared satellite imagery and machine learning mapped the island's rock gardens at about 180 acres — roughly 0.73 square kilometres — where earlier visible and near-infrared estimates had put them between 4.9 and 21.1 square kilometres. The implied ceiling is about 3,000 people, approximately the number the first Europeans reported.",
+    "kind": "figure",
+    "sources": [
+     "https://doi.org/10.1126/sciadv.ado1459",
+     "https://www.binghamton.edu/news/story/4999/new-methods-estimate-the-size-of-easter-islands-pre-contact-population-and-debunk-a-persistent-myth"
+    ],
+    "confidence": "established",
+    "surprise_factor": "counterintuitive",
+    "contested": false,
+    "notes": "Davis et al., Science Advances 10, eado1459, 21 June 2024. The 3,000 figure is the population the Europeans counted and the ceiling the gardens imply; the paper's own carrying-capacity number was not recoverable from the release, so do not attribute a precise computed figure to the paper. Lipo: 'The soils on Rapa Nui were never particularly productive.' Davis: 'This isn't an example of ecological catastrophe but of how people survived.'"
+   },
+   {
+    "claim_id": "c29",
+    "claim": "Fifteen ancient Rapanui individuals, radiocarbon dated between 1670 and 1950 CE and whole-genome sequenced at 0.4 to 25.6 times coverage, show no severe population bottleneck in the 1600s; the authors explicitly reject that scenario. The same individuals carry Native American admixture in proportions similar to present-day Rapanui, which the authors date to about 1250-1430 CE.",
+    "kind": "figure",
+    "sources": [
+     "https://doi.org/10.1038/s41586-024-07881-4",
+     "https://archaeology.ku.dk/news/easter-island-population-collapse-never-happened/"
+    ],
+    "confidence": "established",
+    "surprise_factor": "counterintuitive",
+    "contested": false,
+    "notes": "Moreno-Mayar et al., Nature 633, 389-397 (2024). Two sources, as the playbook requires for a hook claim."
+   },
+   {
+    "claim_id": "c30",
+    "claim": "A 2017 Current Biology study led by Lars Fehren-Schmitz found no Native American ancestry in its ancient Rapanui samples and concluded the admixture must postdate European contact — the opposite conclusion to the 2024 genomes, which the 2024 authors attribute to the earlier study's small sample.",
+    "kind": "claim",
+    "sources": [
+     "https://bristol.ac.uk/news/2017/october/dna-easter-island-.html"
+    ],
+    "confidence": "contested",
+    "surprise_factor": "surprising",
+    "contested": true,
+    "notes": "Two genetics papers, opposite answers, seven years apart. Narrate as contested. Useful as the act's honest caveat rather than as a correction of the 2024 result."
+   },
+   {
+    "claim_id": "c31",
+    "claim": "Hydrogen isotopes in leaf waxes from sediment cores at the Rano Aroi wetland and the Rano Kao crater lake record a prolonged drought on Rapa Nui beginning around 1550, coinciding with the decline of megalithic monument construction. The authors frame it as adaptation under climate stress rather than abrupt collapse.",
+    "kind": "claim",
+    "sources": [
+     "https://doi.org/10.5061/dryad.41ns1rnt2"
+    ],
+    "confidence": "probable",
+    "surprise_factor": "surprising",
+    "contested": true,
+    "notes": "Stein, Curtin, Balascio et al. (2025). Cited from the dataset record; the journal article was not directly retrievable, so attribute to the study by title and do not name a journal."
+   },
+   {
+    "claim_id": "c32",
+    "claim": "Two dozen wooden rongorongo objects survive, carrying 26 lettered texts. Only about half are in good condition and unquestionably authentic. None remain on Easter Island.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Rongorongo"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "'None remain on Easter Island' is the line that does the work."
+   },
+   {
+    "claim_id": "c33",
+    "claim": "Eugene Eyraud, a lay friar, landed on Easter Island on 2 January 1864 and reported seeing wooden tablets in the houses that year. He left on 11 October 1864 and died of tuberculosis in August 1868. He had seen hundreds of tablets, and his account went unnoticed.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Rongorongo"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "'Hundreds' against the two dozen that survive is the act's opening gap."
+   },
+   {
+    "claim_id": "c34",
+    "claim": "In 1868 Bishop Florentin-Etienne Jaussen received a rongorongo tablet wound with human hair. He asked Father Hippolyte Roussel to collect more; Roussel recovered only a few, and the islanders could not agree on how to read them.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Rongorongo",
+     "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "Four years after Eyraud, and already nobody on the island could read them."
+   },
+   {
+    "claim_id": "c35",
+    "claim": "Between 1869 and 1874 Jaussen worked through four tablets — A, B, C and E — with Metoro Tau'a Ure, who was said to know the inscriptions by heart. The resulting glyph list, the Jaussen list, was published posthumously and has never led to an understanding of the script. Barthel later found that Metoro read some lines in the wrong direction and missed the full-moon pictogram in Mamari.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "The best witness anyone ever had, reading it backwards in places."
+   },
+   {
+    "claim_id": "c36",
+    "claim": "Rongorongo is written in reverse boustrophedon: the reader begins at the bottom left, reads left to right, then turns the tablet 180 degrees to read the next line.",
+    "kind": "claim",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Rongorongo"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "A concrete motion-graphic beat: the tablet turning."
+   },
+   {
+    "claim_id": "c37",
+    "claim": "The surviving texts carry more than 15,000 glyphs in total. Thomas Barthel's 1958 catalogue Grundlagen assigned 600 numeric codes; in 1971 he claimed to have reduced the corpus to 120 base glyphs but never published the evidence.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Rongorongo"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": true,
+    "notes": "The 120-glyph claim is unpublished and must be stated as such."
+   },
+   {
+    "claim_id": "c38",
+    "claim": "Konstantin and Igor Pozdniakov (2007) found that 52 glyphs account for 99.7% of the intact texts, excluding the idiosyncratic Santiago Staff. They have not published the underlying analysis, and they argue the texts' limited, repetitive nature rules out their recording history or mythology.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo",
+     "https://en.wikipedia.org/wiki/Rongorongo"
+    ],
+    "confidence": "probable",
+    "surprise_factor": "counterintuitive",
+    "contested": true,
+    "notes": "52 signs is syllabary-sized, which is the strongest structural argument that it is writing. The analysis behind it is unpublished — say so."
+   },
+   {
+    "claim_id": "c39",
+    "claim": "Tablet I, the Santiago Staff, is a chief's staff 126 cm long carrying 2,920 glyphs. It is the longest rongorongo text and the only one that appears to use punctuation. Rudolf Philippi published it in 1875.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Rongorongo"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": false,
+    "notes": ""
+   },
+   {
+    "claim_id": "c40",
+    "claim": "Nikolai Butinov and Yuri Knorozov proposed in 1957 that a repeating sequence on lines Gv5-6 of the Small Santiago tablet has the structure of a genealogy, with one glyph serving as a royal title and another as a patronymic marker. The hypothesis is widely considered plausible and has never been confirmed.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo"
+    ],
+    "confidence": "probable",
+    "surprise_factor": "notable",
+    "contested": true,
+    "notes": "The decipherment article dates this to 1957; other accounts give 1956. Use 1957, the sourced date. Knorozov is the man who cracked Maya phonetics, which is worth one clause and no more."
+   },
+   {
+    "claim_id": "c41",
+    "claim": "In 1995 Steven Roger Fischer announced he had cracked the rongorongo code, reading the Santiago Staff as a creation chant of the form 'X copulated with Y, there issued forth Z', with glyph 76 as a phallus, and claimed about 85% of the corpus consisted of such chants. The claim is not accepted. Andrew Robinson found that on the most generous count only 63 of the staff's 113 sequences fully fit the pattern; Pozdniakov found the triads elsewhere only in a poorly preserved text and one line of Gv; Richard Sproat found the staff stands apart from the other texts even with glyph 76 removed; and Jacques Guy notes that the plural marker Fischer relied on does not exist in Rapanui.",
+    "kind": "quote",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo"
+    ],
+    "confidence": "contested",
+    "surprise_factor": "surprising",
+    "contested": true,
+    "notes": "Present at full strength and then let the measurements answer it. This is the act's test beat: a decipherment claim is testable, and this one was tested."
+   },
+   {
+    "claim_id": "c42",
+    "claim": "Barthel first identified three lines on one side of the Mamari tablet, text C, as a lunar calendar. Jacques Guy argued it encodes the rule for inserting intercalary nights into a 28-night month. The calendar's function is the only part of the corpus whose meaning is agreed — and the text still cannot be read.",
+    "kind": "claim",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo"
+    ],
+    "confidence": "probable",
+    "surprise_factor": "surprising",
+    "contested": true,
+    "notes": "Berthin and Berthin propose a different reading of the same passage. The gap between 'we know what this does' and 'we cannot read it' is the act's landing."
+   },
+   {
+    "claim_id": "c43",
+    "claim": "Four rongorongo tablets held by a convent in Rome were radiocarbon dated. Three date to the 18th or 19th centuries. The fourth dates to 1493-1509, more than two centuries before the first European landing, and appears to be made from driftwood of a species not native to the island. The authors argue the script may be an independent invention.",
+    "kind": "date",
+    "sources": [
+     "https://doi.org/10.1038/s41598-024-53063-7",
+     "https://www.smithsonianmag.com/smart-news/research-reveals-the-natives-of-easter-island-invented-a-written-language-from-scratch-180983793/"
+    ],
+    "confidence": "probable",
+    "surprise_factor": "counterintuitive",
+    "contested": true,
+    "notes": "Ferrara et al., Scientific Reports 14, 2794, 2 February 2024. Two sources, as required for a hook claim. The caveats are part of the claim and are not optional: radiocarbon dates the tree's death and not the carving; the sample is one tablet; and Ferrara concedes stored old wood is possible though she thinks it unlikely. Wieczorek: 'belief is a different thing than hard data'. Do not name the specific tablet — neither source does."
+   },
+   {
+    "claim_id": "c44",
+    "claim": "Tablet Q, the Small St Petersburg tablet, dates to after 1680 on a two-sigma calibration.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Rongorongo"
+    ],
+    "confidence": "established",
+    "surprise_factor": "expected",
+    "contested": false,
+    "notes": "The earlier dating result, for contrast with c43."
+   },
+   {
+    "claim_id": "c45",
+    "claim": "Some scholars argue the script was inspired by the Spanish treaty signing of 1770, since no explorer reported writing on the island before Eyraud in 1864 and the chiefs' marks on the treaty do not resemble rongorongo. Others, including Orliac, argue that Tablet C predates the Spanish visit by at least a century. The question is unresolved: the script may be an independent invention or a diffusion-inspired one.",
+    "kind": "claim",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Rongorongo"
+    ],
+    "confidence": "contested",
+    "surprise_factor": "surprising",
+    "contested": true,
+    "notes": "The pivot of the whole act, and both directions have to be voiced."
+   },
+   {
+    "claim_id": "c46",
+    "claim": "No rongorongo text has been read. The prevailing view is that it is proto-writing or a mnemonic device, though one argument holds that the original statistical conclusion that it does not encode language may have rested on spurious statistics.",
+    "kind": "claim",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Rongorongo",
+     "https://en.wikipedia.org/wiki/Decipherment_of_rongorongo"
+    ],
+    "confidence": "contested",
+    "surprise_factor": "surprising",
+    "contested": true,
+    "notes": "The film's closing question lives here. Narrate as contested in both directions."
+   },
+   {
+    "claim_id": "c47",
+    "claim": "Orongo is a stone village of 53 masonry houses on the rim of the Rano Kau caldera, about 250 metres above the sea with a 300-metre cliff below it. The houses are low, round-walled, sod-covered and windowless, with very low doors. It was the centre of the birdman cult between the 18th and the mid-19th century.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Orongo"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": false,
+    "notes": ""
+   },
+   {
+    "claim_id": "c48",
+    "claim": "Rano Kau is an extinct volcano 324 metres high. Its crater is almost a mile across and holds one of only three natural freshwater bodies on the island; its youngest rocks are 150,000 to 210,000 years old.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Rano_Kau"
+    ],
+    "confidence": "established",
+    "surprise_factor": "expected",
+    "contested": false,
+    "notes": "Water is the thing worth saying: one of three freshwater bodies, and the cult sat on the rim of it."
+   },
+   {
+    "claim_id": "c49",
+    "claim": "Motu Nui covers 3.9 hectares and is the summit of a submerged volcanic mountain rising more than 2,000 metres from the seafloor. It is the westernmost point of Chile and the largest of the islets off the island's southwestern coast.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Motu_Nui"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "Four hectares of rock on top of a two-kilometre mountain is the image."
+   },
+   {
+    "claim_id": "c50",
+    "claim": "In the tangata manu competition, each contestant appointed a hopu — an adult man of lesser status — who swam to Motu Nui on a reed float called a pora and waited for the first sooty tern egg of the season. Many hopu were killed by sharks, by drowning or by falls, though replacements were apparently easy to find.",
+    "kind": "claim",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Tangata_manu",
+     "https://en.wikipedia.org/wiki/Motu_Nui"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "'Replacements were apparently easy to find' is the sentence that tells you what the title was worth."
+   },
+   {
+    "claim_id": "c51",
+    "claim": "The title of tangata manu went to the sponsor, not to the swimmer. The winning clan took sole rights to that season's wild bird eggs and fledglings on the islets, and the new birdman then secluded himself for a year and observed a five-month tapu.",
+    "kind": "claim",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Tangata_manu"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": ""
+   },
+   {
+    "claim_id": "c52",
+    "claim": "Makemake was the chief god of the birdman cult. Three other deities were associated with it: Hawa-tuu-take-take, the male Chief of the eggs, his wife Vie Hoa, and Vie Kenatea. Each also had a servant god.",
+    "kind": "name",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Tangata_manu"
+    ],
+    "confidence": "established",
+    "surprise_factor": "expected",
+    "contested": false,
+    "notes": "Pronunciation guide required for all four."
+   },
+   {
+    "claim_id": "c53",
+    "claim": "Katherine Routledge recorded the names of 86 tangata manu during the 1913-15 Mana Expedition.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Tangata_manu"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": false,
+    "notes": "86 names is the whole institution's surviving register."
+   },
+   {
+    "claim_id": "c54",
+    "claim": "The date of the last birdman competition is disputed. One encyclopedia article gives 1888; another puts the last ceremony at 1866 or 1867; a third says only that Christian missionaries ended the cult in the 1860s.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Motu_Nui",
+     "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+     "https://en.wikipedia.org/wiki/Tangata_manu"
+    ],
+    "confidence": "contested",
+    "surprise_factor": "surprising",
+    "contested": true,
+    "notes": "Three reference works, three answers, about an event within living memory of the people recorded in 1914. Must be narrated as disputed, and it is a strong candidate for the film's closing question."
+   },
+   {
+    "claim_id": "c55",
+    "claim": "Hoa Hakananai'a is a moai 2.42 metres tall, 96 cm across and 4.2 tonnes, carved from dark grey-brown flow lava rather than the usual tuff. It stood partly buried inside a ceremonial house at Orongo, facing Rano Kau. Officers and crew of HMS Topaze dug it out in November 1868, dragged it down on a sledge and rafted it to the ship, which reached Plymouth on 16 August 1869. The Admiralty offered it to Queen Victoria, who proposed it go to the British Museum, where it is registered 1869,1005.1.",
+    "kind": "figure",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "Its name has been translated as 'lost or stolen friend' and as 'hidden friend'. The material is often described as basalt without confirmed petrological analysis — say 'dark flow lava'."
+   },
+   {
+    "claim_id": "c56",
+    "claim": "The back of Hoa Hakananai'a carries carvings added at some point after the statue was made: two facing birdmen, a sooty tern above them, ceremonial paddles and komari. They resemble the petroglyphs at Orongo. Pitts et al. (2014) read them as a birdman ceremony in which the statue itself has become Makemake; critics dispute several of those readings, including the beak shapes.",
+    "kind": "claim",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a"
+    ],
+    "confidence": "probable",
+    "surprise_factor": "counterintuitive",
+    "contested": true,
+    "notes": "One stone with the statue cult on the front and the cult that replaced it on the back. The strongest single image in the film, and the reading of it is contested."
+   },
+   {
+    "claim_id": "c57",
+    "claim": "The Rapa Nui people hold that Hoa Hakananai'a was stolen. In November 2018 the island's governor, Laura Rapu, asked the British Museum to return it; the museum agreed to discuss a loan, and its Keeper, Lissant Bolton, visited the island in June 2019.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a"
+    ],
+    "confidence": "established",
+    "surprise_factor": "notable",
+    "contested": false,
+    "notes": "A loan, offered in answer to a request for a return. State both words."
+   },
+   {
+    "claim_id": "c58",
+    "claim": "The 1914 Routledge expedition surveyed Motu Nui and documented two caves used in the ritual: one sheltered the hopu, the other held a small moai called Moai Maea, 'The Boundary of the Land'. That statue had already been removed to the Pitt Rivers Museum in Oxford before the expedition arrived. Routledge made drawings of the cave images.",
+    "kind": "claim",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Motu_Nui"
+    ],
+    "confidence": "established",
+    "surprise_factor": "surprising",
+    "contested": false,
+    "notes": "A second object gone before the first survey reached it. Pairs with c55 and with c32's 'none remain on Easter Island'."
+   },
+   {
+    "claim_id": "c59",
+    "claim": "Orongo was restored under a UNESCO-sponsored project: William Mulloy, with Sonia Haoa Cardinali, investigated and restored the first half of the 53 houses in 1974, and the remainder was completed in 1976. The World Monuments Fund listed the site in 1996 and 2000 because of soil erosion from rainfall and foot traffic.",
+    "kind": "date",
+    "sources": [
+     "https://en.wikipedia.org/wiki/Orongo"
+    ],
+    "confidence": "established",
+    "surprise_factor": "expected",
+    "contested": false,
+    "notes": ""
+   },
+   {
+    "claim_id": "c60",
+    "claim": "Easter Island became a UNESCO World Heritage Site in 1995.",
+    "kind": "date",
+    "sources": [
+     "https://www.universityofcalifornia.edu/news/mystery-easter-island-revealed",
+     "https://en.wikipedia.org/wiki/Easter_Island"
+    ],
+    "confidence": "established",
+    "surprise_factor": "expected",
+    "contested": false,
+    "notes": "Low value; available if a lower-third needs it."
+   }
+  ],
+  "ledger_stats": {
+   "entries": 60,
+   "by_kind": {
+    "claim": 15,
+    "date": 17,
+    "event": 1,
+    "figure": 23,
+    "name": 1,
+    "quote": 3
+   },
+   "contested": 21,
+   "with_two_or_more_sources": 17
+  },
+  "gaps": [
+   "The exact Rome tablet that returned the 1493-1509 date is not named in either source. The claim must be written as 'one of four tablets in Rome', never as a named tablet.",
+   "The carrying-capacity figure computed inside Davis et al. (2024) was not recoverable — the PDF would not extract and the press release gives only the 3,000 population figure. No precise computed number may be attributed to the paper.",
+   "The 2025 drought study's journal could not be confirmed from a retrievable source; only the Dryad dataset record carries authors, title and year. Attribute by title and authors, not by journal.",
+   "No count exists for the birdman petroglyphs at Orongo. The encyclopedia says only 'numerous'. The script may not give a number.",
+   "The island's palm is Paschalococos in the sources retrieved; the species epithet circulating elsewhere could not be confirmed and must not be used.",
+   "Nothing was found on Rapa Nui scholars' or community positions on rongorongo decipherment in their own words. Every decipherment voice in this ledger is European, Soviet or American, and the film should not pretend otherwise.",
+   "No audio or video of a birdman ceremony exists and none was sought. The act is carried by petroglyphs, Routledge's drawings and the geography.",
+   "Wikimedia video holdings for Easter Island were measured at 3 items in a prior production audit. This film is a stills-and-graphics build; do not plan footage-led acts.",
+   "Figures for how many rongorongo tablets were burnt, buried or lost in the 1860s could not be sourced beyond Eyraud's 'hundreds' against the surviving two dozen. The arithmetic is suggestive and may not be stated as a loss count."
+  ],
+  "duration_feasibility": {
+   "target_seconds": 1200,
+   "verdict": "The ledger carries the full runtime. 60 sourced entries against a 4-5 act structure is roughly 12-15 entries an act, against the playbook's floor of one entry per 150 words. Three of the four commissioned spine subjects (rongorongo, the collapse debate, the birdman cult) each hold enough for an act on their own; the buried bodies hold about one act and must not be stretched.",
+   "thinnest_subject": "the buried statue bodies — 6 entries (c07, c12, c13, c14, c15, c17), enough for one act and no more",
+   "richest_subject": "rongorongo — 15 entries (c32-c46), which is why it is the film's spine"
+  },
+  "review": {
+   "rounds": 1,
+   "findings": [
+    {
+     "severity": "suggestion",
+     "finding": "Every decipherment voice in the ledger is European, Soviet or American. Recorded as a gap rather than filled, because nothing citable was found in this session.",
+     "action": "noted in gaps; the script must not imply a Rapa Nui silence that is really a research gap"
+    },
+    {
+     "severity": "suggestion",
+     "finding": "Several figures have two published values (c01 distance, c04 contact population, c07 quarry count, c11 unfinished weight, c27 mata'a sample, c54 last ceremony).",
+     "action": "each carries a notes field telling the script director how to state it; the script must not pick one value silently"
+    },
+    {
+     "severity": "nitpick",
+     "finding": "c60 (UNESCO 1995) is low-value filler.",
+     "action": "kept, marked low value, available only for a lower third"
+    }
+   ],
+   "verdict": "pass"
+  }
+ }
+}

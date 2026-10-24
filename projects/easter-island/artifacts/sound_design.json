@@ -1,0 +1,237 @@
+{
+ "version": "1.0",
+ "project_id": "easter-island",
+ "total_seconds": 1210.08,
+ "room_tone": {
+  "path": "room_tone.mp3",
+  "provider": "pixabay",
+  "url": "https://pixabay.com/sound-effects/",
+  "licence": "Pixabay Content License",
+  "title": "Ambience RoomTone-33",
+  "attribution": "StereogenicStudio",
+  "why": "under every silence, the whole film. Written air with nothing under it reads as a dropout."
+ },
+ "ambience": [
+  {
+   "path": "ambience_sea.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "ocean waves sea beach close stereo",
+   "attribution": "freesound_community",
+   "act": "cold_open",
+   "palette": "sea",
+   "start_seconds": 0.0,
+   "end_seconds": 52.0
+  },
+  {
+   "path": "ambience_stone.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cavewind Ambience",
+   "attribution": "Alex_Jauk",
+   "act": "act1",
+   "palette": "stone",
+   "start_seconds": 52.0,
+   "end_seconds": 317.45
+  },
+  {
+   "path": "ambience_wind.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Wind Blowing",
+   "attribution": "SoundReality",
+   "act": "act2",
+   "palette": "wind",
+   "start_seconds": 317.45,
+   "end_seconds": 628.61
+  },
+  {
+   "path": "ambience_stone.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cavewind Ambience",
+   "attribution": "Alex_Jauk",
+   "act": "act3",
+   "palette": "stone",
+   "start_seconds": 628.61,
+   "end_seconds": 937.26
+  },
+  {
+   "path": "ambience_sea.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "ocean waves sea beach close stereo",
+   "attribution": "freesound_community",
+   "act": "act4",
+   "palette": "sea",
+   "start_seconds": 937.26,
+   "end_seconds": 1210.08
+  }
+ ],
+ "stings": [
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 45.0,
+   "boundary": "cold_open->title_sequence"
+  },
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 52.0,
+   "boundary": "title_sequence->act1"
+  },
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 317.45,
+   "boundary": "act1->act2"
+  },
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 628.61,
+   "boundary": "act2->act3"
+  },
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 937.26,
+   "boundary": "act3->act4"
+  },
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 1197.79,
+   "boundary": "act4->outro"
+  }
+ ],
+ "impacts": [
+  {
+   "path": "impact.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 23.79,
+   "act": "cold_open",
+   "why": "the low hit lands with the picture on the cut into the reveal, not after it"
+  },
+  {
+   "path": "impact.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 183.84,
+   "act": "act1",
+   "why": "the low hit lands with the picture on the cut into the reveal, not after it"
+  },
+  {
+   "path": "impact.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 511.0,
+   "act": "act2",
+   "why": "the low hit lands with the picture on the cut into the reveal, not after it"
+  },
+  {
+   "path": "impact.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 843.79,
+   "act": "act3",
+   "why": "the low hit lands with the picture on the cut into the reveal, not after it"
+  },
+  {
+   "path": "impact.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 1082.36,
+   "act": "act4",
+   "why": "the low hit lands with the picture on the cut into the reveal, not after it"
+  }
+ ],
+ "risers": [
+  {
+   "path": "riser.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Soft Riser",
+   "attribution": "Universfield",
+   "at_seconds": 39.06,
+   "seconds": 2.0,
+   "act": "cold_open",
+   "into": "cold_open_b03",
+   "why": "ends on the first word of the landing line the act turns on"
+  },
+  {
+   "path": "riser.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Soft Riser",
+   "attribution": "Universfield",
+   "at_seconds": 202.39,
+   "seconds": 2.0,
+   "act": "act1",
+   "into": "act1_b09",
+   "why": "ends on the first word of the landing line the act turns on"
+  },
+  {
+   "path": "riser.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Soft Riser",
+   "attribution": "Universfield",
+   "at_seconds": 529.91,
+   "seconds": 2.0,
+   "act": "act2",
+   "into": "act2_b11",
+   "why": "ends on the first word of the landing line the act turns on"
+  }
+ ],
+ "provenance_note": "These seven files were acquired and screened for run #1 and are carried forward with their provenance intact: the Pixabay Content Licence permits commercial use inside a produced video, which is all that happens here. Pixabay has no public API for audio, so re-acquiring them programmatically is not possible; re-screening already-approved material by hand would also throw away the record of what was approved. The ambience PALETTES are chosen fresh for this film's places."
+}
