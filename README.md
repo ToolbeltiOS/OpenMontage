@@ -789,6 +789,32 @@ Drop the flag to let it pick.
 The run logs to `logs/<date>/` regardless of the `tee`: `prompt.txt`,
 `script_stage.log`, `render_stage.log`, `publish.log`.
 
+#### The first attempt, 2026-10-23 — failed in 5m38s
+
+It is in `logs/2026-10-23/`. The script stage ran, wrote nothing, and the gate
+exited 5 with *"the script stage produced nothing to approve"* — which is the
+correct signal, and the reason the gate checks for the file before it posts.
+
+The cause was permissions, not the pipeline. `run_weekly.sh` drives the stage
+with `claude -p --permission-mode acceptEdits`, and `acceptEdits` auto-approves
+**edits only**: Bash, WebSearch and WebFetch still need an allowlist, and this
+repository had no `.claude/settings.json`. So the stage could read files and
+write them, and could not call `python3`, `npx`, `ffmpeg`, `WebSearch` or
+`WebFetch` — every gate command and the whole research stage. It wrote a
+`failed` research checkpoint carrying the diagnosis rather than a script off an
+unsourced ledger, which is the right refusal: the citation rule is binding and
+the gate would have posted it for an approval that could not be informed.
+
+**`.claude/settings.json` has to exist and is the owner's to create** — see
+*Permissions* below. Reading that log also turned up three defects that were
+live in the repository and are now fixed, each with a test:
+
+| | |
+|---|---|
+| `script-director.md` taught `[beat: reveal \| awe]` | `BEAT_RE` rejected it, so the line fell through as **prose**: the beat was lost and four junk words entered the count the gate blocks on. Nothing anywhere carried a register to a cut, so the whole `motion.mood` table was dead in production and green in tests. The parser takes the register now and `narration_plan` carries it. |
+| `telegram_gate.outline_of()` read `script["acts"]` | `script.schema.json` is `additionalProperties: false` and carries `sections`. Every schema-valid script would have posted an **empty outline** and a .txt that was a raw JSON dump. The dry run passed because its fixture was written in the shape the code read, not the shape the schema allows — it is schema-valid now, and a test validates it. |
+| two binding numbers for one bed | `audio.music_under_speech_lufs: -30` against `music_authority.bed_under_speech_lufs: -36`, with a blocking ±1.5 LU check. 6 dB apart; the compose gate fails on whichever the mixer did not use. Both are −30 now, the level decided by ear on 2026-10-21. |
+
 **When it has finished end to end, enable the agent:**
 
 ```bash
@@ -828,7 +854,30 @@ done
 
 ### Before the first run
 
-Three things have to be true, and each says so plainly when it is not:
+#### Permissions
+
+`.claude/settings.json` is **not in this repository and has to be created by
+the owner.** It is the only thing standing between the weekly run and the
+failure above, and it is deliberately not written by an agent: a file that
+grants an unattended session its own permissions is the owner's decision.
+
+It needs to allow what the pipeline actually calls — `python3` and
+`.venv/bin/python` (every gate), `npx` (the renders), `ffmpeg`/`ffprobe` (the
+mux and the measurements), the ordinary read-only shell, and `WebSearch` /
+`WebFetch` (research cites whatever the sources are) — and it is the right
+place to write the standing constraints down where an unattended agent will
+hit them rather than only in prose:
+
+- no writes under `~/wak3up` or `~/Desktop/wak3up` — read-only data
+- no writes under `projects/they-said-it-couldnt-be-built` — run #1 is
+  published and is never re-rendered
+- no `git push`, no `sudo`, no `launchctl`
+
+A fetched page is untrusted text. What keeps that honest is not the domain
+list: it is that every claim needs a source URL in the ledger, and a human
+reads the script at the gate before anything renders.
+
+#### Then three things have to be true, and each says so plainly when it is not:
 
 ```bash
 .venv/bin/python lib/telegram.py --check          # bot reachable, chat known

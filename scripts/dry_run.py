@@ -46,16 +46,23 @@ MINI = {
     "title_candidates": ["Dry Run: The Part Nobody Can Explain"],
 }
 
+#: Schema-valid on purpose. This fixture used to carry `acts`, which
+#: script.schema.json forbids, so the dry run proved a join against a shape
+#: no real artifact can have — and the gate's outline, written to read the
+#: same forbidden key, posted empty for every genuine script.
 SCRIPT = {
+    "version": "1.0",
     "title": "Dry Run — Three Minutes",
-    "runtime_seconds": 180,
-    "acts": [
-        {"number": "01", "title": "The claim",
-         "beats": [{"summary": "A thing was built.",
-                    "narration": "A thing was built, and nobody wrote down how."}]},
-        {"number": "02", "title": "The objection",
-         "beats": [{"summary": "It could not have been.",
-                    "narration": "The objection is arithmetic, and it is serious."}]},
+    "total_duration_seconds": 180,
+    "sections": [
+        {"id": "act1", "label": "01 The claim",
+         "start_seconds": 0, "end_seconds": 90,
+         "text": "[beat: reveal | awe]\nA thing was built, and nobody "
+                 "wrote down how.\n[air 4.0s]\n"},
+        {"id": "act2", "label": "02 The objection",
+         "start_seconds": 90, "end_seconds": 180,
+         "text": "[beat: exposition]\nThe objection is arithmetic, and it "
+                 "is serious.\n[air 4.0s]\n"},
     ],
 }
 

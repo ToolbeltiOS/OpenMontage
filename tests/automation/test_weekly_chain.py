@@ -637,3 +637,118 @@ class TestTheReplyIsOnlyWorthWhatWasShown:
         assert len(chunks) >= 2, "a long script is split, not truncated"
         assert all(len(c) <= telegram.MAX_MESSAGE for c in sent)
         assert "as text" in sent[-1]
+
+
+class TestTheGateShowsTheScriptThatExists:
+    """The first unattended run found the gate reading a key the schema
+    forbids: `script["acts"]`, against a `script.schema.json` that is
+    `additionalProperties: false` and carries `sections`. Every
+    schema-valid script posted an EMPTY outline and a .txt that was a raw
+    JSON dump — two of the gate's four things gone, in the message whose
+    only job is to make an "ok" informed.
+
+    The dry run passed throughout, because its fixture was written in the
+    shape the code read rather than the shape the schema allows.
+    """
+
+    @staticmethod
+    def _gate():
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "telegram_gate", "scripts/telegram_gate.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    @staticmethod
+    def _schema():
+        return json.loads(
+            __import__("pathlib").Path(
+                "schemas/artifacts/script.schema.json").read_text())
+
+    def test_the_dry_run_fixture_is_a_script_the_schema_allows(self):
+        import importlib.util
+        import jsonschema
+
+        spec = importlib.util.spec_from_file_location(
+            "dry_run", "scripts/dry_run.py")
+        dry = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(dry)
+        jsonschema.validate(dry.SCRIPT, self._schema())
+
+    def test_a_schema_valid_script_gets_a_real_outline(self):
+        import jsonschema
+
+        script = {
+            "version": "1.0", "title": "T", "total_duration_seconds": 120,
+            "sections": [{"id": "act1", "label": "01 The claim",
+                          "start_seconds": 0, "end_seconds": 120,
+                          "text": "[beat: reveal | awe]\nA thing was built.\n"}],
+        }
+        jsonschema.validate(script, self._schema())
+        outline = self._gate().outline_of(script)
+        assert outline, "a valid script must not post an empty outline"
+        assert any("01 The claim" in line for line in outline)
+        assert any("reveal|awe" in line for line in outline)
+
+    def test_run_one_s_shape_still_posts(self):
+        """Its artifacts are on disk; a gate that cannot show an old script
+        is no better than one that cannot show a new one."""
+        outline = self._gate().outline_of(
+            {"acts": [{"number": "01", "title": "The claim",
+                       "beats": [{"summary": "A thing was built."}]}]})
+        assert any("The claim" in line for line in outline)
+
+
+class TestTheMarkerTheDirectorTeaches:
+    """`[beat: reveal | awe]` is what script-director.md Step 8b instructs and
+    what BEAT_RE rejected. A line it does not match is not an error, it is
+    prose — so the beat was lost AND four junk words entered the count the
+    gate blocks on. Nothing carried a register to a cut in the whole
+    repository, so the mood table was dead in production and green in tests.
+    """
+
+    def test_the_register_survives_into_the_narration_plan(self):
+        from lib import script_beats
+
+        script = {"sections": [
+            {"id": "act1",
+             "text": "[beat: reveal | awe]\nOne two three.\n[air 2.0s]\n"}]}
+        plan = script_beats.narration_plan(script)
+        assert plan["segments"][0]["beat"] == "reveal"
+        assert plan["segments"][0]["register"] == "awe"
+
+    def test_the_marker_is_not_counted_as_narration(self):
+        from lib import script_beats
+
+        beats = script_beats.parse_section("[beat: reveal | awe]\nOne two three.")
+        assert beats[0]["words"] == 3, "the marker must not enter the word count"
+        assert beats[0]["tagged"] is True
+
+    def test_a_register_outside_the_five_is_rejected(self):
+        """It would fall back to the beat-only row — the same move for every
+        paragraph, which is the defect the mood table exists for."""
+        from lib import script_beats
+
+        pb = script_beats.load_playbook()
+        script = {"sections": [
+            {"id": "act1", "text": "[beat: reveal | dread]\nOne.\n"}]}
+        problems = script_beats.check(script, pb)
+        assert any("unknown register 'dread'" in p for p in problems)
+
+    def test_the_director_teaches_a_syntax_the_parser_accepts(self):
+        """The doc and the regex are the two halves of one contract."""
+        import re
+        from pathlib import Path
+
+        from lib import script_beats
+
+        doc = Path("skills/pipelines/narrated-documentary/"
+                   "script-director.md").read_text()
+        markers = set(re.findall(r"^\[beat:[^\]]*\]$", doc, re.MULTILINE))
+        markers |= set(re.findall(r"`(\[beat:[^\]]*\])`", doc))
+        markers = {m for m in markers if "<" not in m}   # not the placeholder
+        assert markers, "the director must show the marker"
+        for marker in markers:
+            assert script_beats.BEAT_RE.match(marker), \
+                f"the director teaches {marker!r}, which the parser drops as prose"

@@ -49,7 +49,21 @@ from typing import Any
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-BEAT_RE = re.compile(r"^\s*\[beat:\s*([a-z_]+)\s*\]\s*$", re.IGNORECASE)
+#: `[beat: reveal]` or `[beat: reveal | awe]`.
+#:
+#: The register half was taught by script-director.md Step 8b and rejected
+#: here: a line that does not match is not an error, it is prose, so
+#: `[beat: reveal | awe]` lost the beat AND added four junk words to the count
+#: this file blocks on. It was found when the first unattended run was being
+#: read for a different fault, not by a test, because no test wrote the
+#: marker the way the director teaches it.
+#:
+#: The register rides the marker rather than section metadata because its
+#: grain is the paragraph — a section holds several beats and they are not
+#: all in the same register — and because the section schema is
+#: `additionalProperties: false` with nowhere to put one.
+BEAT_RE = re.compile(
+    r"^\s*\[beat:\s*([a-z_]+)\s*(?:\|\s*([a-z_]+)\s*)?\]\s*$", re.IGNORECASE)
 AIR_RE = re.compile(r"^\s*\[air\s+([0-9]*\.?[0-9]+)\s*s\s*\]\s*$", re.IGNORECASE)
 
 BEAT_TYPES = ("reveal", "exposition", "landing", "transition")
@@ -76,10 +90,11 @@ def parse_section(text: str) -> list[dict[str, Any]]:
     """
     beats: list[dict[str, Any]] = []
     pending_type: str | None = None
+    pending_register: str | None = None
     buf: list[str] = []
 
     def flush(air: float = 0.0) -> None:
-        nonlocal pending_type, buf
+        nonlocal pending_type, pending_register, buf
         body = "\n".join(buf).strip()
         if not body:
             # air before any prose attaches to the previous beat instead of
@@ -87,18 +102,19 @@ def parse_section(text: str) -> list[dict[str, Any]]:
             if air and beats:
                 beats[-1]["air_after_s"] = round(beats[-1]["air_after_s"] + air, 3)
             buf = []
-            pending_type = None
+            pending_type = pending_register = None
             return
         beats.append({
             "index": len(beats),
             "type": pending_type or DEFAULT_BEAT,
+            "register": pending_register,
             "tagged": pending_type is not None,
             "text": body,
             "words": len(body.split()),
             "air_after_s": round(air, 3),
         })
         buf = []
-        pending_type = None
+        pending_type = pending_register = None
 
     for raw in text.splitlines():
         m_beat = BEAT_RE.match(raw)
@@ -106,6 +122,7 @@ def parse_section(text: str) -> list[dict[str, Any]]:
             if buf:
                 flush()
             pending_type = m_beat.group(1).lower()
+            pending_register = (m_beat.group(2) or "").lower() or None
             continue
         m_air = AIR_RE.match(raw)
         if m_air:
@@ -151,6 +168,7 @@ def narration_plan(script: dict[str, Any]) -> dict[str, Any]:
                 "id": b["id"],
                 "section_id": b["section_id"],
                 "beat": b["type"],
+                "register": b["register"],
                 "text": b["text"],
                 "air_after_s": b["air_after_s"],
             }
@@ -208,9 +226,20 @@ def check(script: dict[str, Any], playbook: dict[str, Any] | None = None) -> lis
     if not beats:
         return ["script has no beats — no section text parsed"]
 
+    registers = set(
+        ((pb.get("motion") or {}).get("mood") or {}).get("registers") or [])
+
     for b in beats:
         if b["type"] not in BEAT_TYPES:
             problems.append(f"{b['id']}: unknown beat type {b['type']!r}")
+        if b["register"] and registers and b["register"] not in registers:
+            # A register the mood table does not have is not a near miss: it
+            # falls back to the beat-only row, so the paragraph gets the
+            # same move as every other one of its beat and the table that
+            # exists to stop that is silently not consulted.
+            problems.append(
+                f"{b['id']}: unknown register {b['register']!r} — "
+                f"the mood table has {sorted(registers)}")
         if b["air_after_s"] and b["air_after_s"] not in allowed:
             problems.append(
                 f"{b['id']}: air {b['air_after_s']}s is not one of "

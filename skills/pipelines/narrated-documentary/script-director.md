@@ -144,10 +144,17 @@ seconds long.
 ### Step 8b — Tag The Register Beside The Beat
 
 `[beat: reveal | awe]` — the beat says what the paragraph is *doing*, the
-register says how it *sounds*. Five registers: `awe`, `tension`, `doubt`,
-`quiet`, `resolution`.
+register says how it *sounds*. Five registers, and only these five: `awe`,
+`tension`, `doubt`, `quiet`, `resolution`. The register is optional; the beat
+is not.
 
-Two reveals in one film can be awe and dread. Tagged only by beat they get the
+`lib/script_beats.py` is the authority on the syntax and it is strict. A line
+it does not match is not an error — it is prose, so a mistyped marker loses
+the beat and adds its own words to the count the gate blocks on. A register
+outside the five is rejected there, because the mood table would quietly fall
+back to the beat-only row and give the paragraph the same move as every other.
+
+Two reveals in one film can be awe and tension. Tagged only by beat they get the
 same push at the same speed, which is how run #1 ended up with one gesture for
 182 shots. The playbook's `motion.mood.table` maps (beat × register) onto the
 move, its speed, the transition family, a hold multiplier and whether the

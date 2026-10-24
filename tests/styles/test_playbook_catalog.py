@@ -78,3 +78,45 @@ def test_schema_allows_every_renderer_overlay_type(overlay_type: str) -> None:
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
     allowed = schema["properties"]["overlays"]["properties"]
     assert overlay_type in allowed
+
+
+class TestOneLevelOneNumber:
+    """The bed level is stated twice in wak3up-documentary.yaml — once where
+    the mixer reads it, once in the `music_authority` block that states the
+    blocking check. They were -30 and -36: 6 dB apart, against a +/-1.5 LU
+    gate, so the compose gate would fail on whichever one the mixer did not
+    use. The playbook schema already refuses a bed stated as both a ratio and
+    a LUFS figure, for exactly this reason; this is the same mistake in the
+    prose half.
+    """
+
+    def test_the_mixer_s_number_and_the_blocking_check_agree(self):
+        import re
+
+        import yaml
+
+        pb = yaml.safe_load(
+            open("styles/wak3up-documentary.yaml", encoding="utf-8"))
+        mixed = pb["audio"]["music_under_speech_lufs"]
+        authority = pb["music_authority"]["bed_under_speech_lufs"]
+        assert mixed == authority, (
+            f"the mixer mixes to {mixed} and music_authority binds "
+            f"{authority} — the compose gate fails on one of them")
+
+        stated = re.search(r"(-?\d+(?:\.\d+)?)\s*LUFS",
+                           pb["music_authority"]["blocking_check"])
+        assert stated and float(stated.group(1)) == float(mixed), (
+            f"blocking_check says {stated and stated.group(1)}, "
+            f"the mixer mixes to {mixed}")
+
+    def test_the_mixer_named_by_the_playbook_is_the_one_that_reads_it(self):
+        """A number nothing reads is a number that drifts."""
+        from pathlib import Path
+
+        import yaml
+
+        pb = yaml.safe_load(
+            open("styles/wak3up-documentary.yaml", encoding="utf-8"))
+        mixer = Path(pb["music_authority"]["mixer"])
+        assert mixer.exists(), f"{mixer} does not exist"
+        assert "music_under_speech_lufs" in mixer.read_text()

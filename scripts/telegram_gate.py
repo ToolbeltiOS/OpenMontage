@@ -51,6 +51,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "lib"))
 
+import script_beats  # noqa: E402
 import telegram  # noqa: E402
 
 #: How many style frames go with the script. Eight is what the playbook calls
@@ -59,17 +60,40 @@ HERO_FRAMES = 8
 
 
 def outline_of(script: dict) -> list[str]:
-    """The act outline, from the script artifact."""
-    lines = []
-    for act in (script.get("acts") or []):
+    """The act outline, from the script artifact.
+
+    This read `script["acts"]`, and `script.schema.json` is
+    `additionalProperties: false` with no `acts` key — the artifact carries
+    `sections`. So for every schema-valid script the outline posted EMPTY and
+    the generated .txt fell back to a raw JSON dump: one of the gate's four
+    things silently missing, in the message whose whole job is to make an
+    "ok" an informed one. The dry run did not catch it because its fixture
+    was written in the shape the code read rather than the shape the schema
+    allows, so the join it proved was one no real artifact can make.
+
+    `acts` is still read, because run #1's artifacts are on disk in that
+    shape and a gate that cannot show an old script is no better.
+    """
+    lines: list[str] = []
+
+    for section in (script.get("sections") or []):
+        label = section.get("label") or section.get("id") or "section"
+        lines.append(f"<b>{label}</b>")
+        for beat in script_beats.parse_section(section.get("text", ""))[:6]:
+            opener = beat["text"].split(". ")[0][:110]
+            tag = beat["type"] + (f"|{beat['register']}" if beat["register"] else "")
+            lines.append(f"  · <i>{tag}</i> {opener}")
+
+    for act in (script.get("acts") or []):            # run #1's shape
         title = act.get("title") or act.get("name") or f"Act {act.get('number', '?')}"
-        beats = act.get("beats") or act.get("sections") or []
+        beats = act.get("beats") or []
         lines.append(f"<b>{act.get('number', '')} {title}</b>")
         for beat in beats[:6]:
             text = (beat if isinstance(beat, str)
                     else beat.get("summary") or beat.get("title") or "")
             if text:
                 lines.append(f"  · {text[:110]}")
+
     return lines
 
 
@@ -178,10 +202,14 @@ def main() -> int:
     if not text_path.exists():
         # the attachment is the point; build it from the artifact
         body = []
-        for act in (script.get("acts") or []):
+        for section in (script.get("sections") or []):
+            body.append(f"\n\n=== {section.get('label') or section.get('id')} "
+                        f"===\n")
+            body.append(section.get("text") or "")
+        for act in (script.get("acts") or []):        # run #1's shape
             body.append(f"\n\n=== {act.get('number','')} "
                         f"{act.get('title') or ''} ===\n")
-            for beat in (act.get("beats") or act.get("sections") or []):
+            for beat in (act.get("beats") or []):
                 body.append(beat if isinstance(beat, str)
                             else (beat.get("narration") or beat.get("text") or ""))
         text_path.write_text("\n".join(filter(None, body)) or

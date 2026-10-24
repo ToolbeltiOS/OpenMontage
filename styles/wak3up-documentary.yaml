@@ -1165,10 +1165,16 @@ asset_reuse:
 # the file is not a fix.
 music_authority:
   mixer: "lib/mix_audio.py"
-  bed_under_speech_lufs: -36
+  # -30, not -36. These were two binding numbers for one level: audio.
+  # music_under_speech_lufs went to -30 when the bed was decided by ear on
+  # 2026-10-21 and this one was left behind, so the compose gate would have
+  # failed on whichever number the mixer did not use — 6 dB apart, against a
+  # +/-1.5 LU check. lib/mix_audio.py reads audio.music_under_speech_lufs and
+  # nothing reads this one, so that is the authority and this restates it.
+  bed_under_speech_lufs: -30
   beds: "at most 3, assigned by act, crossfaded on the boundary under the fade to black"
   ducking: "explicit gain envelope, attack 150ms / release 900ms -- not sidechaincompress"
-  blocking_check: "the delivered film's bed must measure -36 LUFS +/- 1.5 LU"
+  blocking_check: "the delivered film's bed must measure -30 LUFS +/- 1.5 LU"
   why_the_other_checks_missed_it: >
     Integrated loudness of narration-led material is set by the voice. The film
     measured -14.0 LUFS and -1.4 dBTP with a bed 25 dB louder than approved,
