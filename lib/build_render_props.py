@@ -25,7 +25,12 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJ = os.path.join(ROOT, "projects", "they-said-it-couldnt-be-built")
+
+#: Run #1's slug, kept as the default so every existing caller keeps building
+#: the film it always built. A second film passes --project.
+DEFAULT_PROJECT = "they-said-it-couldnt-be-built"
+PROJECT = DEFAULT_PROJECT
+PROJ = os.path.join(ROOT, "projects", PROJECT)
 ART = os.path.join(PROJ, "artifacts")
 AUD = os.path.join(PROJ, "assets", "audio")
 CAP = os.path.join(PROJ, "assets", "captions")
@@ -34,13 +39,71 @@ OUT = os.path.join(PROJ, "renders")
 SECTIONS = ["cold_open", "act1", "act2", "act3", "act4", "outro"]
 
 
+def set_sections(script: dict) -> None:
+    """The timeline's sections, in the script's own order.
+
+    SECTIONS was the six sections run #1 had. This film has a seventh — a
+    title sequence, six to eight seconds of picture with no narration under
+    it — and a section missing from this list is a section the audio timeline
+    does not reserve time for, which puts the sound ahead of the picture from
+    the next act to the end of the film. Only sections with audio on disk are
+    kept: a silent section's wav IS its silence, written by the narration
+    stage, and one that was never written is left out here and reported by the
+    missing-file check rather than silently shortening the film.
+    """
+    global SECTIONS
+    ordered = [s["id"] for s in script["sections"]]
+    SECTIONS = [s for s in ordered if os.path.exists(os.path.join(AUD, s + ".wav"))]
+    dropped = [s for s in ordered if s not in SECTIONS]
+    if dropped:
+        print(f"sections with no audio on disk, left out of the timeline: "
+              f"{', '.join(dropped)}", file=sys.stderr)
+
+
+def set_project(slug: str) -> None:
+    """Point the props builder at a project workspace."""
+    global PROJECT, PROJ, ART, AUD, CAP, OUT
+    PROJECT = slug
+    PROJ = os.path.join(ROOT, "projects", slug)
+    ART = os.path.join(PROJ, "artifacts")
+    AUD = os.path.join(PROJ, "assets", "audio")
+    CAP = os.path.join(PROJ, "assets", "captions")
+    OUT = os.path.join(PROJ, "renders")
+
+
 def slot_id(cut: dict) -> str | None:
-    m = re.search(r"(cold_open_s\d+|act\d_s\d+|outro_s\d+)", cut.get("reason", ""))
+    # `title_sequence_s\d+` is here because a film with a title sequence has a
+    # section that is not an act and not the cold open, and a slot id this
+    # function cannot read sorts to 1e9 — which would have put the title card
+    # at the END of the film, after the outro.
+    m = re.search(r"(cold_open_s\d+|title_sequence_s\d+|act\d_s\d+|outro_s\d+)",
+                  cut.get("reason", ""))
     return m.group(1) if m else None
 
 
 PROXY_MAX = 2560  # long edge; leaves headroom for the 1.0 -> 1.08 parallax push
 FPS = 30          # the composition's rate; a lead is counted in frames
+
+
+def _record_derivation(original: str, derived: str, how: str) -> None:
+    """Write down that a proxy was made, and whose rights it carries.
+
+    Called from all four proxy paths below and defined nowhere, so every one
+    of them raised NameError the first time it actually had a file to
+    downscale. A proxy inherits its original's licence and attribution, and
+    lib/derivation.py is the ledger that says so — the point of recording it
+    at the step that makes the file is that the record cannot drift from what
+    happened. A failure to write the ledger must not stop a render, so it is
+    reported and swallowed.
+    """
+    try:
+        from .derivation import record
+    except ImportError:
+        from derivation import record
+    try:
+        record(original, derived, PROJ, how)
+    except Exception as exc:                      # noqa: BLE001 - see docstring
+        print(f"derivation ledger: {type(exc).__name__}: {exc}", file=sys.stderr)
 
 
 def proxy_image(path: str) -> str:
@@ -223,7 +286,8 @@ def build_audio(music_dir: str, ed: dict, reuse: bool = False) -> tuple[str, lis
     # The approved mixer is now the only path to a mix.
     spans, under_speech = music_spans(music_dir, ed, offsets, total)
     subprocess.run([sys.executable, os.path.join(ROOT, "lib", "mix_audio.py"),
-                    json.dumps(spans), str(under_speech), final_path], check=True)
+                    "--project", PROJECT,
+                    json.dumps(spans), final_path, str(under_speech)], check=True)
     return final_path, offsets
 
 
@@ -257,14 +321,32 @@ def build_captions(offsets: list[float], script: dict) -> tuple[list[dict], int]
         if not os.path.exists(path):
             continue
         tr = json.load(open(path, encoding="utf-8"))
+        # The beat and air markers are NOT spoken, and are not in the
+        # transcript either \u2014 scripts/align_narration.py drops any line
+        # starting with "[" before it aligns. Reading them as script words
+        # put 392 tokens like "beat", "exposition", "awe" and "air" into the
+        # diff against a transcript that has none of them, so the words
+        # around each marker were "re-timed" by spreading real words across a
+        # span that belonged to nothing. The damage shows up in the caption
+        # gate as a cue 0.01s long carrying 462 characters a second.
+        spoken_text = "\n".join(
+            line for line in by_id[section]["text"].splitlines()
+            if not line.strip().startswith("[")
+        )
         # Keep the punctuation: it is what the caption pages break on, and a
         # subtitle track with none reads as a transcript dump.
         script_words = re.findall(
-            r"[\u201c\"(]?[A-Za-z0-9'\u2019-]+[.,;:!?\u2014\u201d\")]*", by_id[section]["text"]
+            r"[\u201c\"(]?[A-Za-z0-9'\u2019-]+[.,;:!?\u2014\u201d\")]*", spoken_text
         )
         script_words = [w for w in script_words if any(c.isalnum() for c in w)]
+        # The transcript's word key is "word" — that is what
+        # scripts/align_narration.py writes and what every transcript on disk
+        # carries, including run #1's. This line read "text" and so raised a
+        # KeyError on the first real transcript it was given; "text" is kept
+        # as a fallback in case an older file is ever handed to it.
         sm = difflib.SequenceMatcher(
-            a=[_norm(w["text"]) for w in tr], b=[_norm(w) for w in script_words]
+            a=[_norm(w.get("word") or w.get("text", "")) for w in tr],
+            b=[_norm(w) for w in script_words]
         )
         out: list[dict] = []
         for op, i1, i2, j1, j2 in sm.get_opcodes():
@@ -303,14 +385,64 @@ def build_captions(offsets: list[float], script: dict) -> tuple[list[dict], int]
     return words, corrected
 
 
+def act_chrome(script: dict) -> dict[str, tuple[str, str]]:
+    """The act number and title every cut carries as on-screen chrome.
+
+    Run #1's titles are hand-trimmed versions of its script labels — "A
+    verdict two thousand years old" against the script's "The verdict that is
+    two thousand years old" — so they are kept verbatim for that film rather
+    than regenerated slightly differently. Every other film derives them from
+    its own script labels, which is where the act titles already live.
+    """
+    if PROJECT == DEFAULT_PROJECT:
+        return {
+            "cold_open": ("00", "Cold open"),
+            "act1": ("01", "A verdict two thousand years old"),
+            "act2": ("02", "The statues that walked"),
+            "act3": ("03", "The hole in the granite"),
+            "act4": ("04", "The cases nobody has closed"),
+            "outro": ("05", "Outro"),
+        }
+    # The number comes from the label's own act number, not from the section's
+    # position: a film with a title sequence has two sections before act 1, and
+    # numbering by position would put "02" on act 1 and disagree with every
+    # authored scene's props, which carry the act number the script gives.
+    out: dict[str, tuple[str, str]] = {}
+    highest = 0
+    for section in script["sections"]:
+        label = (section.get("label") or section["id"]).strip()
+        m = re.match(r"^Act\s+(\d+)\s*[—–-]\s*(.*)$", label)
+        if m:
+            n = int(m.group(1))
+            highest = max(highest, n)
+            out[section["id"]] = (f"{n:02d}", m.group(2).strip())
+        else:
+            out[section["id"]] = ("00", label)
+    # Everything after the last act counts on from it; everything before is 00.
+    seen_act = False
+    for section in script["sections"]:
+        if re.match(r"^Act\s+\d+", (section.get("label") or "").strip()):
+            seen_act = True
+        elif seen_act:
+            out[section["id"]] = (f"{highest + 1:02d}", out[section["id"]][1])
+    return out
+
+
 def main() -> int:
+    argv = sys.argv[1:]
+    if argv and argv[0] == "--project":
+        set_project(argv[1])
+        argv = argv[2:]
+        sys.argv = [sys.argv[0]] + argv
+    print(f"project: {PROJECT}")
     ed = json.load(open(os.path.join(ART, "edit_decisions.json"), encoding="utf-8"))
+    script = json.load(open(os.path.join(ART, "script.json"), encoding="utf-8"))
+    set_sections(script)
     music_dir = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("MUSIC_LIBRARY_DIR", "")
     if not music_dir or not os.path.isdir(music_dir):
         raise SystemExit("pass the music library dir as argv[1] or set MUSIC_LIBRARY_DIR")
 
     mixed, offsets = build_audio(music_dir, ed, reuse="--reuse-audio" in sys.argv)
-    script = json.load(open(os.path.join(ART, "script.json"), encoding="utf-8"))
     captions, corrected = build_captions(offsets, script)
 
     # The scene plan defines the order; the edit must follow it. The approved
@@ -329,14 +461,7 @@ def main() -> int:
     # Every cut carries the act chrome, authored or sourced. The frame and the
     # grade key off it, so a sourced photograph gets the same treatment as a
     # schematic instead of announcing itself as stock.
-    ACTS = {
-        "cold_open": ("00", "Cold open"),
-        "act1": ("01", "A verdict two thousand years old"),
-        "act2": ("02", "The statues that walked"),
-        "act3": ("03", "The hole in the granite"),
-        "act4": ("04", "The cases nobody has closed"),
-        "outro": ("05", "Outro"),
-    }
+    ACTS = act_chrome(script)
     slot_meta = {s["slot_id"]: s for s in
                  json.load(open(os.path.join(ART, "scene_plan.json"), encoding="utf-8"))["metadata"]["slots"]}
     for cut in ed["cuts"]:
@@ -447,11 +572,30 @@ def main() -> int:
         last["out_seconds"] = round(narr_end + tail, 3)
         lead = round(outro_offset - last["in_seconds"], 3)
         if abs(lead) > 0.02:
-            for k in ("like_at", "subscribe_at"):
-                if k in last:
-                    last[k] = round(last[k] + lead, 3)
+            # The press timings are authored against the OUTRO SECTION's clock,
+            # because that is the clock the word timings come off. Adding the
+            # lead converts them to the card's own clock, which is what the
+            # component reads. `lead` is negative when the card is not the
+            # first cut of the outro — this film opens its outro on a
+            # photograph and brings the card in 6.2s later.
+            #
+            # BOTH spellings. The component's schema declares likeAt and
+            # subscribeAt; this rebased like_at and subscribe_at only, so a
+            # correctly authored card had its presses left on the schema's
+            # defaults of 3.4s and 5.6s — the animation landing on whatever
+            # word happened to be there.
+            for snake, camel in (("like_at", "likeAt"),
+                                 ("subscribe_at", "subscribeAt")):
+                for k in (snake, camel):
+                    if k in last and last[k] is not None:
+                        last[k] = round(last[k] + lead, 3)
+                # Whichever one was authored, the component gets the camelCase
+                # name it actually reads.
+                if snake in last and last[snake] is not None:
+                    last[camel] = last[snake]
             print(f"end card holds {lead:.2f}s before the narration; "
-                  f"presses rebased to {last.get('like_at')}s / {last.get('subscribe_at')}s")
+                  f"presses rebased to {last.get('likeAt')}s / "
+                  f"{last.get('subscribeAt')}s")
         t = last["out_seconds"]
 
     # The timeline must cover the narration. edit_decisions was written against

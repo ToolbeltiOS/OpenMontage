@@ -38,10 +38,33 @@ import soundfile as sf
 
 SR = 48000
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJ = os.path.join(ROOT, "projects", "they-said-it-couldnt-be-built")
+
+#: Run #1's slug, kept as the default so that every existing caller and every
+#: test that invoked this module with three positionals still mixes the film it
+#: always mixed. A second film passes --project; nothing about the first one
+#: changes.
+DEFAULT_PROJECT = "they-said-it-couldnt-be-built"
+PROJECT = DEFAULT_PROJECT
+PROJ = os.path.join(ROOT, "projects", PROJECT)
 AUD = os.path.join(PROJ, "assets", "audio")
 OUT = os.path.join(PROJ, "renders")
 SECTIONS = ["cold_open", "act1", "act2", "act3", "act4", "outro"]
+
+
+def set_project(slug: str) -> None:
+    """Point the mixer at a project workspace.
+
+    The paths were module constants naming run #1, which is why the mix was
+    the one stage of the chain a second film could not reach: every other
+    hard-coded path in the chain is reachable through an argument somewhere,
+    and this one was not. They are still module-level — the functions below
+    read them directly — but they are now set in one place.
+    """
+    global PROJECT, PROJ, AUD, OUT
+    PROJECT = slug
+    PROJ = os.path.join(ROOT, "projects", slug)
+    AUD = os.path.join(PROJ, "assets", "audio")
+    OUT = os.path.join(PROJ, "renders")
 
 GAP_SECONDS = 1.5
 GAP_TARGET_LUFS = -26.0        # absolute, not an offset
@@ -93,6 +116,55 @@ def two_pass_loudnorm(src: str, dst: str, I: float, TP: float, LRA: float = 11) 
          "-ar", str(SR), "-ac", "2", dst])
 
 
+def _with_silent_sections(segments: list[dict]) -> list[dict]:
+    """Put back the sections that hold time without speaking.
+
+    A title sequence is six to eight seconds of picture with no narration
+    under it, so the narration plan has no segment for it — the plan is a list
+    of things somebody says. But the PICTURE has a cut there, and
+    `build_render_props` takes its section offsets from the section files on
+    disk, so a section missing from the voice track puts the sound ahead of
+    the picture for the whole rest of the film.
+
+    The section's own wav is the authority for how long it is: for a silent
+    section that file IS the silence, written by the narration stage. Nothing
+    is invented here — a silent section with no file on disk is left out, and
+    the missing-file check below then reports it.
+    """
+    script_path = os.path.join(PROJ, "artifacts", "script.json")
+    if not os.path.exists(script_path):
+        return segments
+    with open(script_path, encoding="utf-8") as fh:
+        order = [s["id"] for s in json.load(fh)["sections"]]
+    spoken = {s.get("section_id") for s in segments}
+    silent = [sid for sid in order
+              if sid not in spoken and os.path.exists(os.path.join(AUD, sid + ".wav"))]
+    if not silent:
+        return segments
+
+    out: list[dict] = []
+    emitted: set[str] = set()
+    for seg in segments:
+        sid = seg.get("section_id")
+        # Any silent section that sits before this one in the script, and has
+        # not been emitted yet, goes in first.
+        for q in silent:
+            if q in emitted:
+                continue
+            if sid in order and order.index(q) < order.index(sid):
+                out.append({"path": os.path.join(AUD, q + ".wav"),
+                            "air_after_s": 0.0, "section_id": q})
+                emitted.add(q)
+        out.append(seg)
+    for q in silent:
+        if q not in emitted:
+            out.append({"path": os.path.join(AUD, q + ".wav"),
+                        "air_after_s": 0.0, "section_id": q})
+    print(f"silent sections placed in the narration timeline: "
+          f"{', '.join(silent)}", file=sys.stderr)
+    return out
+
+
 def narration_segments() -> tuple[list[dict], str]:
     """The ordered pieces of narration, and where the list came from.
 
@@ -114,9 +186,11 @@ def narration_segments() -> tuple[list[dict], str]:
             plan = json.load(fh)
         segments = [
             {"path": os.path.join(AUD, f"{seg['id']}.wav"),
-             "air_after_s": float(seg.get("air_after_s") or 0.0)}
+             "air_after_s": float(seg.get("air_after_s") or 0.0),
+             "section_id": seg.get("section_id")}
             for seg in plan.get("segments", [])
         ]
+        segments = _with_silent_sections(segments)
         missing = [s["path"] for s in segments if not os.path.exists(s["path"])]
         if segments and not missing:
             return segments, "narration_plan"
@@ -128,12 +202,35 @@ def narration_segments() -> tuple[list[dict], str]:
              for s in SECTIONS], "sections")
 
 
-def silence_file(seconds: float) -> str:
-    """A mono/stereo-neutral silence file at the project rate, cached by length."""
-    path = os.path.join(OUT, f".silence_{seconds:.3f}.wav")
+def audio_format(path: str) -> tuple[int, int]:
+    """(sample_rate, channels) of a file, from ffprobe."""
+    out = subprocess.check_output(
+        ["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries",
+         "stream=sample_rate,channels", "-of", "csv=p=0", path],
+        text=True).strip().split(",")
+    return int(out[0]), int(out[1])
+
+
+def silence_file(seconds: float, sample_rate: int = SR, channels: int = 1) -> str:
+    """Silence at the NARRATION's format, cached by length and by format.
+
+    Not at the project rate. The concat demuxer decodes every file with the
+    first file's format and does not resample — the comment forty lines below
+    says so, and was written after a 48 kHz outro among 24 kHz sections was
+    decoded at four times its length. The guard added then checks the
+    NARRATION files against each other; it never saw these, because this
+    function makes them.
+
+    Kokoro writes 24 kHz mono. This wrote 48 kHz, so every written gap was
+    decoded at half speed and played for twice as long: 112.5s of planned air
+    arrived as 225s, and the mix came out 112 seconds longer than the picture.
+    Every loudness check still passed, because silence has no loudness.
+    """
+    layout = "mono" if channels == 1 else "stereo"
+    path = os.path.join(OUT, f".silence_{seconds:.3f}_{sample_rate}_{channels}.wav")
     if not os.path.exists(path):
         run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi",
-             "-i", f"anullsrc=r={SR}:cl=mono", "-t", f"{seconds:.3f}",
+             "-i", f"anullsrc=r={sample_rate}:cl={layout}", "-t", f"{seconds:.3f}",
              "-c:a", "pcm_s16le", path])
     return path
 
@@ -142,6 +239,9 @@ def build_narration() -> tuple[str, list[float], dict]:
     """Concatenate the segments, insert the written air, normalise to -16 LUFS."""
     os.makedirs(OUT, exist_ok=True)
     segments, source = narration_segments()
+    # The silence has to be written in the same format as the thing it sits
+    # between, because the concat demuxer will not resample it.
+    sample_rate, channels = audio_format(segments[0]["path"])
     offsets, t = [], 0.0
     planned_air = 0.0
     listfile = os.path.join(OUT, "narration_concat.txt")
@@ -159,7 +259,7 @@ def build_narration() -> tuple[str, list[float], dict]:
                 # it: the concat demuxer is what builds this timeline, so the
                 # gap has to exist as one of its inputs or it is not in the
                 # file the next stage reads.
-                fh.write(f"file '{silence_file(air)}'\n")
+                fh.write(f"file '{silence_file(air, sample_rate, channels)}'\n")
                 planned_air += air
                 t += air
     # The concat demuxer decodes every file with the FIRST file's format. A
@@ -180,6 +280,24 @@ def build_narration() -> tuple[str, list[float], dict]:
     raw = os.path.join(OUT, "narration_raw.wav")
     run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", listfile,
          "-ar", str(SR), "-ac", "2", raw])
+
+    # What came out must be what went in. The format guard above compares the
+    # narration files with each other and cannot see the silence files this
+    # function writes, which is how 112.5 seconds of planned air arrived as
+    # 225 seconds of it — every gap decoded at half speed, every loudness
+    # check still green, because silence has no loudness. Measuring the
+    # result against the sum of the parts catches that whatever causes it.
+    measured = float(subprocess.check_output(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+         "-of", "csv=p=0", raw]).strip())
+    if abs(measured - t) > 0.25:
+        raise SystemExit(
+            f"the concatenated narration is {measured:.2f}s against "
+            f"{t:.2f}s of inputs, a difference of {measured - t:+.2f}s. The "
+            f"concat demuxer decodes every file at the FIRST file's rate and "
+            f"does not resample, so this is almost always a file in the list "
+            f"written at a different sample rate or channel count.")
+
     voice = os.path.join(OUT, "narration_16.wav")
     two_pass_loudnorm(raw, voice, I=-16, TP=-1.5, LRA=11)
     air = {
@@ -425,18 +543,25 @@ def playbook_under_speech_lufs() -> float:
 
 
 def main() -> int:
-    """argv: <spans json> <out> [under-speech LUFS] [window json]
+    """argv: [--project <slug>] <spans json> <out> [under-speech LUFS] [window json]
 
     The level defaults to the playbook's and only needs stating to audition
-    something else.
+    something else. The project defaults to run #1's, so the positional
+    contract every existing caller uses is unchanged.
     """
-    spans = json.loads(sys.argv[1])
-    out_path = sys.argv[2]
-    under_speech = (float(sys.argv[3]) if len(sys.argv) > 3 and sys.argv[3] != "-"
-                    else playbook_under_speech_lufs())
-    window = json.loads(sys.argv[4]) if len(sys.argv) > 4 else None
+    argv = sys.argv[1:]
+    if argv and argv[0] == "--project":
+        set_project(argv[1])
+        argv = argv[2:]
+    print(f"project: {PROJECT}")
+
+    spans = json.loads(argv[0])
+    out_path = argv[1]
+    stated_level = len(argv) > 2 and argv[2] != "-"
+    under_speech = float(argv[2]) if stated_level else playbook_under_speech_lufs()
+    window = json.loads(argv[3]) if len(argv) > 3 else None
     print(f"bed under speech: {under_speech} LUFS"
-          + ("" if len(sys.argv) > 3 and sys.argv[3] != "-" else " (from the playbook)"))
+          + ("" if stated_level else " (from the playbook)"))
 
     voice_path, offsets, air = build_narration()
     total = len(sf.read(voice_path, dtype="float32")[0]) / SR
