@@ -522,6 +522,23 @@ def main() -> int:
             cut.setdefault(key, value)
         cam_applied += 1
 
+    # The mood table says whether the EDIT may lift the music under a cut.
+    # Whether the music supports it is a separate fact that only the bed
+    # knows, so the flag is reconciled against the bed that was chosen —
+    # here, because this is the stage that rebuilds. Cleared on the artifact
+    # instead, it would be cleared until the next render and the gate would
+    # fail again with no record of why.
+    #
+    # On easter-island the table asked for 21 rises and the bed supported 8.
+    rise_report = {"rises_kept": 0, "rises_cleared": 0, "bed": None}
+    bed_for_rises = os.path.join(OUT, "bed_eq.wav")
+    if os.path.exists(bed_for_rises):
+        try:
+            from .music_arousal import reconcile as reconcile_rises
+        except ImportError:
+            from music_arousal import reconcile as reconcile_rises
+        rise_report = reconcile_rises(ed["cuts"], bed_for_rises)
+
     # Overlays reference a scene_id and carry no timing, and their text still
     # has the plan's `text — "..."` wrapper around it. Both are resolved here:
     # an overlay with no finite in_seconds makes Remotion throw on a NaN
@@ -632,6 +649,10 @@ def main() -> int:
           f"{corrected} re-timed where the transcript disagreed, "
           f"last at {captions[-1]['endMs'] / 1000:.2f}s")
     print(f"mix: {mixed} ({dur(mixed):.2f}s)")
+    if rise_report["bed"]:
+        print(f"music rises: {rise_report['rises_kept']} kept, "
+              f"{rise_report['rises_cleared']} cleared — the bed is not "
+              f"rising there")
     print(f"overlays: {len(overlays)} kept, {len(dropped)} dropped as slot descriptions")
     for d in dropped:
         print("  dropped:", d)

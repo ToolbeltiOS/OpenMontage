@@ -155,6 +155,11 @@ export type ActGrade = {
 export const GRADE_BY_ACT: Record<string, ActGrade> = {
   // Rapa Nui at the edge of the Pacific — cool, open, the least saturated
   cold_open: { temperature: -0.05, saturation: 0.80, lift: 0.07 },
+  // The title card belongs to neither side of it, and without an entry here
+  // it fell through to BASE_ACT_GRADE. It takes act 1's values: the title
+  // hands straight over to act 1, and a wash that changed across that
+  // handover would be the one grade move a viewer could name.
+  title_sequence: { temperature: 0.02, saturation: 0.88, lift: 0.05 },
   // Tiryns and Mycenae: dry stone on a Greek ridge, close to the base look
   act1: { temperature: 0.02, saturation: 0.88, lift: 0.05 },
   // the quarry and the sea route — cooler again, and the flattest

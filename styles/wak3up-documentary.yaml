@@ -640,6 +640,14 @@ visual_language:
   # temperature is the opacity of a warm wash; negative is the cool one.
   grade_by_act:
     cold_open: {temperature: -0.05, saturation: 0.80, lift: 0.07}   # the Pacific, open and cold
+    # The title card sits between the cold open and act 1 and belongs to
+    # neither. Absent from this table it took BASE_ACT_GRADE, so 7.6s of the
+    # easter-island film was the only stretch graded by a fallback. It takes
+    # act 1's values: the title hands straight over to act 1, and a wash that
+    # changes across the handover would be the one grade move a viewer could
+    # name. That film is NOT re-rendered for this — it shipped on the base
+    # grade and the record says so.
+    title_sequence: {temperature:  0.02, saturation: 0.88, lift: 0.05}
     act1:      {temperature:  0.02, saturation: 0.88, lift: 0.05}   # Tiryns, nearest the base look
     act2:      {temperature: -0.04, saturation: 0.82, lift: 0.06}   # the quarry and the sea route
     act3:      {temperature:  0.08, saturation: 0.90, lift: 0.04}   # Aswan granite, the warmest act

@@ -70,6 +70,21 @@ GAP_SECONDS = 1.5
 GAP_TARGET_LUFS = -26.0        # absolute, not an offset
 BOUNDARY_TARGET_LUFS = -22.0
 BOUNDARY_WINDOW = 2.5      # the music crossfade length
+
+#: A cut the edit marked `music_rise_allowed`, and whose bed the arousal gate
+#: found actually rising, lets the music come forward around that cut.
+#:
+#: It reaches GAP_TARGET_LUFS, not BOUNDARY_TARGET_LUFS: coming forward in a
+#: pause is what a gap already is, and -22 is reserved for the act boundary,
+#: where the picture is fading through black and nothing is being said.
+#:
+#: It does NOT lift the bed under speech. `bed_under_speech_lufs` is a
+#: binding playbook number, and a fader move under a voice that is still
+#: talking is the manipulation `lib/music_arousal.py` refuses rises for in
+#: the first place. So a rise is not a new level — it lets a SHORTER pause
+#: take the level a long one already gets, where the music is rising into it.
+RISE_WINDOW = 2.0              # either side of the cut
+RISE_MIN_GAP_SECONDS = 0.4     # the shortest pause a supported rise may lift
 LOOP_XFADE = 8.0           # crossfade between repeats of a bed shorter than its span;
                            # 4s left a 13 dB step on the two piano beds, which
                            # reads as the music restarting rather than turning over
@@ -485,10 +500,17 @@ def measure_air(voice: np.ndarray, total: float) -> dict:
 
 
 def gain_envelope(voice: np.ndarray, offsets: list[float], n: int,
-                  base_lufs: float) -> np.ndarray:
-    """dB offsets applied to the bed, before attack/release smoothing."""
+                  base_lufs: float,
+                  rises: list[float] | None = None) -> np.ndarray:
+    """dB offsets applied to the bed, before attack/release smoothing.
+
+    `rises` are the cut times the edit asked the music to lift under and the
+    bed supports — see RISE_WINDOW above for what that is allowed to mean.
+    """
     gap_boost = GAP_TARGET_LUFS - base_lufs
     boundary_boost = BOUNDARY_TARGET_LUFS - base_lufs
+    rise_spans = [(max(0.0, t - RISE_WINDOW), t + RISE_WINDOW)
+                  for t in (rises or [])]
     speech = speech_envelope(voice)
     if len(speech) < n:
         speech = np.pad(speech, (0, n - len(speech)))
@@ -502,7 +524,13 @@ def gain_envelope(voice: np.ndarray, offsets: list[float], n: int,
     starts = np.flatnonzero(edges == 1)
     ends = np.flatnonzero(edges == -1)
     for a, b in zip(starts, ends):
-        if (b - a) / SR >= GAP_SECONDS:
+        length = (b - a) / SR
+        if length >= GAP_SECONDS:
+            target[a:b] = gap_boost
+        elif length >= RISE_MIN_GAP_SECONDS and any(
+                a / SR < hi and b / SR > lo for lo, hi in rise_spans):
+            # Too short to be a gap on its own, but the music is rising into
+            # this cut and the edit asked for it, so it takes the gap level.
             target[a:b] = gap_boost
 
     # act boundaries rise further, under the fade through black
@@ -560,6 +588,18 @@ def main() -> int:
     stated_level = len(argv) > 2 and argv[2] != "-"
     under_speech = float(argv[2]) if stated_level else playbook_under_speech_lufs()
     window = json.loads(argv[3]) if len(argv) > 3 else None
+
+    # The cuts the edit asked the music to lift under, already reconciled
+    # against this bed by `build_render_props`. Absent, the mix is exactly
+    # what it was: gaps and act boundaries only.
+    rises: list[float] = []
+    props_path = os.path.join(PROJ, "artifacts", "render_props.json")
+    if os.path.exists(props_path):
+        with open(props_path, encoding="utf-8") as fh:
+            rises = [float(c.get("in_seconds", 0.0))
+                     for c in json.load(fh).get("cuts", [])
+                     if c.get("music_rise_allowed")]
+    print(f"music rises the bed supports: {len(rises)}")
     print(f"bed under speech: {under_speech} LUFS"
           + ("" if stated_level else " (from the playbook)"))
 
@@ -578,7 +618,8 @@ def main() -> int:
     # loudness checks all pass either way because they are set by the voice.
     air.update(measure_air(voice, total))
 
-    env_db = smooth(gain_envelope(voice, offsets, n, under_speech), ATTACK_MS, RELEASE_MS)
+    env_db = smooth(gain_envelope(voice, offsets, n, under_speech, rises),
+                    ATTACK_MS, RELEASE_MS)
     duck = (10 ** (env_db[:, None] / 20)).astype(np.float32)
     bed_ducked = bed * duck
 

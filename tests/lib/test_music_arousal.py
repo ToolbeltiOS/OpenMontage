@@ -99,3 +99,48 @@ class TestWhatThisIsNot:
     def test_it_does_not_claim_to_be_essentia(self):
         """The brief named a trained model; this is three signals by hand."""
         assert "Essentia" in ma.__doc__ and "NOT the same thing" in ma.__doc__
+
+
+class TestReconcilingWhatTheEditAsksAgainstWhatTheBedDoes:
+    """The flag is the edit's intent; only the bed knows if it is honourable.
+
+    `music_rise_allowed` comes from the mood table. Whether the music is
+    actually rising there is a separate fact, and on easter-island the table
+    asked for 21 rises and the bed supported 8. Reconciling in the stage that
+    rebuilds matters: a flag cleared by hand on `render_props.json` is
+    cleared until the next render, and the gate fails again on the next run
+    with no record of why.
+    """
+
+    def test_a_rise_the_bed_supports_is_kept(self, tmp_path):
+        bed = tone(tmp_path / "r1.wav", shape="rising")
+        cuts = [{"id": "c001", "in_seconds": 15.0, "music_rise_allowed": True}]
+        report = ma.reconcile(cuts, bed)
+        assert report["rises_kept"] == 1, report
+        assert cuts[0]["music_rise_allowed"] is True
+        assert "music_rise_reason" not in cuts[0]
+
+    def test_a_rise_the_bed_does_not_support_is_cleared_with_its_reason(self, tmp_path):
+        bed = tone(tmp_path / "f1.wav", shape="falling")
+        cuts = [{"id": "c001", "in_seconds": 15.0, "music_rise_allowed": True}]
+        report = ma.reconcile(cuts, bed)
+        assert report["rises_cleared"] == 1, report
+        assert cuts[0]["music_rise_allowed"] is False
+        assert ma.RISE_CLEARED_REASON in cuts[0]["music_rise_reason"]
+        assert "sd/s" in cuts[0]["music_rise_reason"], (
+            "the reason has to carry the measurement, not just the verdict")
+
+    def test_a_cut_that_never_asked_is_untouched(self, tmp_path):
+        bed = tone(tmp_path / "f2.wav", shape="falling")
+        cuts = [{"id": "c001", "in_seconds": 15.0}]
+        ma.reconcile(cuts, bed)
+        assert "music_rise_reason" not in cuts[0]
+
+    def test_reconciling_makes_the_gate_pass(self, tmp_path):
+        """The point of it: what survives is what the bed supports."""
+        bed = tone(tmp_path / "f3.wav", shape="falling")
+        cuts = [{"id": "c001", "in_seconds": 15.0, "music_rise_allowed": True}]
+        ma.reconcile(cuts, bed)
+        problems, measured = ma.check(cuts, bed)
+        assert problems == []
+        assert measured["rises_asked_for"] == 0

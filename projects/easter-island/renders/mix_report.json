@@ -1,5 +1,5 @@
 {
- "output": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/renders/mix_final.wav",
+ "output": "projects/easter-island/renders/mix_final.wav",
  "spans": [
   {
    "name": "open_act1",
@@ -10,7 +10,7 @@
    ],
    "track": "TORSION - Density & Time.mp3",
    "start": 0.0,
-   "end": 317.45
+   "end": 310.45
   },
   {
    "name": "act2_act3",
@@ -19,8 +19,8 @@
     "act3"
    ],
    "track": "EBB - Density & Time.mp3",
-   "start": 317.45,
-   "end": 937.26
+   "start": 310.45,
+   "end": 930.26
   },
   {
    "name": "act4_outro",
@@ -29,8 +29,8 @@
     "outro"
    ],
    "track": "Spooked - Mini Vandals.mp3",
-   "start": 937.26,
-   "end": 1210.08
+   "start": 930.26,
+   "end": 1203.08
   }
  ],
  "under_speech_lufs": -30.0,
@@ -68,7 +68,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -41.9
+    "level_db": -42.0
    },
    {
     "element": "ambience",
@@ -78,7 +78,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -35.9
+    "level_db": -36.0
    },
    {
     "element": "ambience",
@@ -88,7 +88,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -35.9
+    "level_db": -36.0
    },
    {
     "element": "ambience",
@@ -98,7 +98,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -35.9
+    "level_db": -36.0
    },
    {
     "element": "ambience",
@@ -108,7 +108,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -35.9
+    "level_db": -36.0
    },
    {
     "element": "ambience",
@@ -118,7 +118,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -35.9
+    "level_db": -36.0
    },
    {
     "element": "riser",
@@ -127,7 +127,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -23.9
+    "level_db": -24.0
    },
    {
     "element": "riser",
@@ -136,7 +136,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -23.9
+    "level_db": -24.0
    },
    {
     "element": "riser",
@@ -145,7 +145,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -23.9
+    "level_db": -24.0
    },
    {
     "element": "impact",
@@ -154,7 +154,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -17.9
+    "level_db": -18.0
    },
    {
     "element": "impact",
@@ -163,7 +163,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -17.9
+    "level_db": -18.0
    },
    {
     "element": "impact",
@@ -172,7 +172,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -17.9
+    "level_db": -18.0
    },
    {
     "element": "impact",
@@ -181,7 +181,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -17.9
+    "level_db": -18.0
    },
    {
     "element": "impact",
@@ -190,7 +190,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -17.9
+    "level_db": -18.0
    },
    {
     "element": "sting",
@@ -199,7 +199,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -15.9
+    "level_db": -16.0
    },
    {
     "element": "sting",
@@ -208,7 +208,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -15.9
+    "level_db": -16.0
    },
    {
     "element": "sting",
@@ -217,7 +217,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -15.9
+    "level_db": -16.0
    },
    {
     "element": "sting",
@@ -226,7 +226,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -15.9
+    "level_db": -16.0
    },
    {
     "element": "sting",
@@ -235,7 +235,7 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -15.9
+    "level_db": -16.0
    },
    {
     "element": "sting",
@@ -244,10 +244,10 @@
     "provider": "pixabay",
     "url": "https://pixabay.com/sound-effects/",
     "licence": "Pixabay Content License",
-    "level_db": -15.9
+    "level_db": -16.0
    }
   ],
-  "music_bed_db": -29.9,
+  "music_bed_db": -30.0,
   "offsets_db": {
    "ambience": -6,
    "room_tone": -12,
@@ -255,19 +255,19 @@
    "impact_peak": 12,
    "sting_peak": 14
   },
-  "measured_db": -31.1,
-  "peak_dbfs": 0.2,
+  "measured_db": -31.2,
+  "peak_dbfs": 0.0,
   "seconds": 1210.1,
   "present": true
  },
  "bed_under_speech": {
   "lufs": -30.0,
-  "lra": 6.6,
+  "lra": 6.5,
   "peak_dbfs": -15.5
  },
  "final": {
   "lufs": -14.0,
-  "lra": 2.9,
+  "lra": 2.8,
   "peak_dbfs": -1.5
  },
  "note": "LRA is recorded, not targeted: narration-led material has little range."

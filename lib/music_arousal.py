@@ -105,6 +105,50 @@ def slope_at(data: dict[str, Any], seconds: float,
     return float(np.polyfit(times[mask], arousal[mask], 1)[0])
 
 
+#: Written onto a cut whose rise the bed does not support, so the cleared
+#: flag carries the reason it was cleared rather than looking like an edit
+#: that never wanted one.
+RISE_CLEARED_REASON = "bed not rising here"
+
+
+def reconcile(cuts: list[dict[str, Any]], bed_path: str,
+              window_s: float = SLOPE_WINDOW_S) -> dict[str, Any]:
+    """Clear the rises the bed does not support, in the stage that rebuilds.
+
+    The mood table decides whether the EDIT may lift the music. Whether the
+    music supports it is a separate fact, and only the bed knows it — so the
+    flag is set from the table and reconciled here, against the bed that was
+    actually chosen.
+
+    Doing it here rather than by hand on the artifact matters: a flag cleared
+    in `render_props.json` is cleared until the next rebuild, and the gate
+    would fail again on the following run with no record of why. This runs
+    where the props are built, so the reconciliation survives a re-render.
+
+    Returns what it did. It does not raise: an unsupported rise is not an
+    error, it is a request the music cannot honour.
+    """
+    data = curve(bed_path)
+    kept, cleared = [], []
+    for cut in cuts:
+        if not cut.get("music_rise_allowed"):
+            continue
+        at = float(cut.get("in_seconds", 0.0))
+        slope = slope_at(data, at, window_s)
+        if slope >= RISING_THRESHOLD:
+            kept.append({"cut": cut.get("id"), "seconds": round(at, 2),
+                         "slope": round(slope, 4)})
+            continue
+        cut["music_rise_allowed"] = False
+        cut["music_rise_reason"] = (
+            f"{RISE_CLEARED_REASON} ({slope:+.3f} sd/s against a floor of "
+            f"{RISING_THRESHOLD})")
+        cleared.append({"cut": cut.get("id"), "seconds": round(at, 2),
+                        "slope": round(slope, 4)})
+    return {"bed": bed_path, "kept": kept, "cleared": cleared,
+            "rises_kept": len(kept), "rises_cleared": len(cleared)}
+
+
 def check(cuts: list[dict[str, Any]], bed_path: str,
           window_s: float = SLOPE_WINDOW_S) -> tuple[list[str], dict[str, Any]]:
     """Every cut that asks for a rise, against what the bed is doing there."""
