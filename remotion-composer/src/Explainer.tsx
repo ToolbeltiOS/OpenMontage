@@ -1,6 +1,7 @@
 import {
   AbsoluteFill,
   Audio,
+  Easing,
   Img,
   OffthreadVideo,
   Sequence,
@@ -9,6 +10,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { EXPO_IN_OUT } from "./design/system";
 import { loadSpaceGrotesk } from "./lib/localFonts";
 import { TextCard } from "./components/TextCard";
 import { StatCard } from "./components/StatCard";
@@ -252,7 +254,13 @@ export interface Cut {
   measurement?: any;
   cutaway?: any;
   caption?: string;
+  // The authored camera, written by the edit stage and read by the still
+  // components. `parallax` present means this cut has an authored move.
   parallax?: boolean;
+  parallaxFrom?: number;
+  parallaxTo?: number;
+  driftFrom?: number;
+  driftTo?: number;
   layers?: any[];
   reveals?: any[];
   labels?: any[];
@@ -479,9 +487,28 @@ const Vignette: React.FC = () => (
 // Enhanced Image Scene — spring physics, parallax, variety
 // ---------------------------------------------------------------------------
 
-const ImageScene: React.FC<{ src: string; animation?: string }> = ({
+const ImageScene: React.FC<{
+  src: string;
+  animation?: string;
+  /**
+   * The authored camera, as the edit stage writes it and `AnnotatedStill`
+   * already reads it. When `parallax` is present the cut has an authored
+   * move and it is the only thing that may move the plate; the `animation`
+   * presets below are for callers that pass one instead.
+   */
+  parallax?: boolean;
+  parallaxFrom?: number;
+  parallaxTo?: number;
+  driftFrom?: number;
+  driftTo?: number;
+}> = ({
   src,
   animation,
+  parallax,
+  parallaxFrom = 1,
+  parallaxTo = 1,
+  driftFrom = 0,
+  driftTo = 0,
 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
@@ -500,6 +527,15 @@ const ImageScene: React.FC<{ src: string; animation?: string }> = ({
   let translateX = 0;
   let translateY = 0;
   const anim = animation || "zoom-in";
+
+  /**
+   * A cut that carries an authored camera is driven by it, and by nothing
+   * else. Without this branch every sourced still took the `"zoom-in"`
+   * default — a lock drifted, and a pull ran backwards — because the edit
+   * stage writes `camera.move` and `parallaxFrom/To`, which nothing here
+   * read. The maths is `AnnotatedStill`'s, so the two agree cut for cut.
+   */
+  const authored = parallax !== undefined;
 
   // Progress with easing — smoother than linear
   const progress = interpolate(frame, [0, durationInFrames], [0, 1], {
@@ -529,6 +565,31 @@ const ImageScene: React.FC<{ src: string; animation?: string }> = ({
   }
   // "static" or "none" → just display
 
+  // A drift at scale 1 would slide the edge of the picture into frame; the
+  // cover is twice the largest excursion, because the plate moves both ways
+  // from centre. Same guard as AnnotatedStill.
+  const authoredDrift = authored
+    ? interpolate(frame, [0, durationInFrames], [driftFrom, driftTo], {
+        extrapolateRight: "clamp",
+        easing: Easing.bezier(...EXPO_IN_OUT),
+      })
+    : 0;
+  const authoredScale = authored
+    ? Math.max(
+        parallax
+          ? interpolate(frame, [0, durationInFrames], [parallaxFrom, parallaxTo], {
+              extrapolateRight: "clamp",
+              easing: Easing.bezier(...EXPO_IN_OUT),
+            })
+          : 1,
+        1 + 2 * Math.max(Math.abs(driftFrom), Math.abs(driftTo)),
+      )
+    : 1;
+
+  const transform = authored
+    ? `scale(${authoredScale}) translateX(${authoredDrift * 100}%)`
+    : `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+
   return (
     <AbsoluteFill style={{ overflow: "hidden", background: "#0F172A" }}>
       <Img
@@ -538,7 +599,7 @@ const ImageScene: React.FC<{ src: string; animation?: string }> = ({
           height: "100%",
           objectFit: "cover",
           opacity: fadeIn * fadeOut,
-          transform: `scale(${scale}) translate(${translateX}px, ${translateY}px)`,
+          transform,
           willChange: "transform, opacity",
         }}
       />
@@ -1000,7 +1061,15 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
     );
 
   if (cut.source && isImage(cut.source)) {
-    return maybeWrapWithBg(dress(<ImageScene src={cut.source} animation={animation} />));
+    return maybeWrapWithBg(dress(<ImageScene
+        src={cut.source}
+        animation={animation}
+        parallax={cut.parallax}
+        parallaxFrom={cut.parallaxFrom}
+        parallaxTo={cut.parallaxTo}
+        driftFrom={cut.driftFrom}
+        driftTo={cut.driftTo}
+      />));
   }
 
   if (cut.source && isVideo(cut.source)) {
@@ -1021,7 +1090,15 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
 
   // Final fallback — try as image if source exists, otherwise show text_card
   if (cut.source) {
-    return maybeWrapWithBg(dress(<ImageScene src={cut.source} animation={animation} />));
+    return maybeWrapWithBg(dress(<ImageScene
+        src={cut.source}
+        animation={animation}
+        parallax={cut.parallax}
+        parallaxFrom={cut.parallaxFrom}
+        parallaxTo={cut.parallaxTo}
+        driftFrom={cut.driftFrom}
+        driftTo={cut.driftTo}
+      />));
   }
 
   // No source, no type — render as text card with cut id as fallback

@@ -66,7 +66,21 @@ def render(path, frames, fps=30):
 
 #: Four seconds, so the sample at 2.0s and the one at 3.0s both land inside.
 N = 120
-CUTS = [{"id": "c001", "in_seconds": 0.0, "out_seconds": 4.0}]
+
+#: The cut the frames above are a render OF — so it asks for the words they
+#: draw, the way a real cut does. Plate purity reads this to tell an element
+#: that lost its type class from a word printed inside the photograph; a cut
+#: that declares nothing would make every leak look like picture text. The
+#: lines carry no `at`, so the type-lock sampling is unchanged.
+CUTS = [{"id": "c001", "in_seconds": 0.0, "out_seconds": 4.0,
+         "lines": [{"text": line} for line in WORDS]}]
+
+#: The same four seconds of film, as a cut that never asked for any words:
+#: an archival map, whose place names are in the picture and cannot be
+#: tagged. This is the Easter Island case, which failed a correct render.
+PICTURE_ONLY_CUTS = [{"id": "c085", "in_seconds": 0.0, "out_seconds": 4.0,
+                      "source": "/proxies/wm_580033251.jpg",
+                      "sourceLine": "wikimedia · Public domain"}]
 
 
 class TestTypeLock:
@@ -158,6 +172,22 @@ class TestPlatePurity:
         assert measured["words_in_plate"] > 0
         assert "legible in the plate pass" in problems[0]
 
+    def test_words_the_cut_never_asked_for_are_the_picture(self, tmp_path):
+        """The same leaked film, read against a cut with no authored text.
+
+        Identical frames to `test_type_left_in_the_plate_is_caught`. The only
+        difference is whether the cut asked for those words — which is the
+        whole of the distinction between a missed element and an engraved
+        place name.
+        """
+        film = render(tmp_path / "map.mp4", [frame(i) for i in range(N)])
+        problems, measured = vtl.plate_is_clean(str(film), PICTURE_ONLY_CUTS)
+        assert problems == [], problems
+        assert measured["words_in_plate"] == 0
+        assert measured["words_in_picture"] > 0, (
+            "the reading must still be counted, or a plate that changed "
+            "character would pass in silence")
+
     def test_a_single_character_read_out_of_a_texture_is_not_a_word(self):
         """The filter, stated directly: one character is not legible text."""
         assert vtl.MIN_PLATE_WORD_CHARS == 2
@@ -167,3 +197,57 @@ class TestPlatePurity:
         for real in ("THE", "STATUES", "1960", "S054"):
             assert (len(real) >= vtl.MIN_PLATE_WORD_CHARS
                     and any(c.isalnum() for c in real)), real
+
+
+class TestThePlateReadsThePictureToo:
+    """Plate purity asks the cut, instead of assuming.
+
+    The gate's premise was that anything legible in the plate is type that
+    was missed. That is true of a film whose pictures are photographs. The
+    Easter Island film is built from nineteenth-century maps and documents,
+    where the PICTURE is covered in printed words: the gate read 32 of them
+    — 'Cooks Bay', 'ANCIENT ROADS', 'RANO RARAKU', 'PHYSICAL' — and failed a
+    film in which not one element had been missed. Twenty-eight of the 32
+    were on bare sourced stills, cuts that carry no authored text at all and
+    so cannot possibly have untagged type.
+
+    Asking the cut separates them: a word the cut asked to be put on screen,
+    found in the plate, is still the defect the gate was written for.
+    """
+
+    def test_a_word_the_picture_carries_is_not_a_missed_element(self):
+        cut = {"id": "c085", "source": "/proxies/wm_580033251.jpg",
+               "sourceLine": "wikimedia · Public domain",
+               "actTitle": "A hundred and eleven people", "sceneIndex": "S 039"}
+        for engraved in ("Cooks", "Bay", "PHYSICAL", "RARAKU", "Pérouse"):
+            assert not vtl.plate_word_is_authored(engraved, cut), (
+                f"{engraved!r} is printed on the map; no tagging removes it")
+
+    def test_an_untagged_authored_word_still_fails(self):
+        """The defect the gate exists for has to keep failing."""
+        cut = {"id": "c058", "type": "document_reveal",
+               "headline": "What it was for",
+               "lines": [{"text": "“Easter Island is Earth writ small”", "at": 2.0}],
+               "source": "Jared Diamond",
+               "caption": "It travelled further than almost any other"}
+        for authored in ("What", "Easter", "Diamond", "travelled"):
+            assert vtl.plate_word_is_authored(authored, cut), (
+                f"{authored!r} is a word this cut puts on screen — finding it "
+                f"in the plate means it never got the type class")
+
+    def test_a_filename_is_never_a_word(self):
+        """`source` is a credit line on a document and a path on a still."""
+        cut = {"id": "c085", "source": "/proxies/wm_580033251.jpg"}
+        assert not vtl.plate_word_is_authored("wm_580033251", cut)
+        assert not vtl.plate_word_is_authored("proxies", cut)
+
+    def test_the_picture_text_is_counted_not_hidden(self):
+        """A pass must still say what it read.
+
+        A film whose plate suddenly reads a hundred picture words has
+        changed, pass or not, so the number stays beside the verdict.
+        """
+        import inspect
+        body = inspect.getsource(vtl.plate_is_clean)
+        assert "words_in_picture" in body
+        assert "picture_text" in body

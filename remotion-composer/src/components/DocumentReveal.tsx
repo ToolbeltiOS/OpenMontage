@@ -67,7 +67,9 @@ export const DocumentReveal: React.FC<DocumentRevealProps> = ({
       easing: Easing.bezier(...EXPO_OUT),
     });
 
-  // slow push so the plate is never a dead hold
+  // A slow push so the plate is never a dead hold. It moves the PAPER only —
+  // the type sits in an unscaled sibling below, because type that scales with
+  // its plate is the exact thing `lib/verify_type_lock.py` fails a film for.
   const scale = interpolate(frame, [0, durationInFrames], [1.0, 1.045], {
     extrapolateRight: "clamp",
     easing: Easing.bezier(...EXPO_IN_OUT),
@@ -122,7 +124,10 @@ export const DocumentReveal: React.FC<DocumentRevealProps> = ({
             }}
           />
         ) : null}
+      </AbsoluteFill>
 
+      {/* Type — deliberately outside the scaled plate above, and locked. */}
+      <AbsoluteFill>
         <div
           style={{
             position: "absolute",

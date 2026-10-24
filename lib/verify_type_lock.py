@@ -301,6 +301,68 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
     return problems, measured
 
 
+#: Fields that name a FILE or an identifier rather than words on screen.
+#: `source` is both, depending on the component — a credit line on a document
+#: and a path on a sourced still — so it is read only when it is not a path.
+NON_TEXT_KEYS = {
+    "id", "src", "image", "backgroundImage", "backgroundVideo", "asset",
+    "path", "act", "type", "transition_in", "transition_family", "beat",
+    "register", "treatment", "asset_class", "reason", "lead_reason",
+    "camera", "sceneIndex", "actNumber", "status", "index",
+}
+
+
+def authored_words(cut: dict[str, Any]) -> set[str]:
+    """Every word this cut asks to be PUT on screen, lowercased.
+
+    Walks the cut for strings rather than knowing the shape of every
+    component, the same way `declared_moves_until` walks it for times. Keys
+    that carry a path or an identifier are skipped, so a filename never
+    reads as a word someone wrote.
+    """
+    out: set[str] = set()
+
+    def walk(node: Any) -> None:
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if key in NON_TEXT_KEYS:
+                    continue
+                walk(value)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+        elif isinstance(node, str):
+            if node.startswith("/") or node.startswith("http"):
+                return          # a path, not a line of type
+            for raw in node.split():
+                word = "".join(ch for ch in raw.lower() if ch.isalnum())
+                if word:
+                    out.add(word)
+
+    walk(cut)
+    return out
+
+
+def plate_word_is_authored(text: str, cut: dict[str, Any]) -> bool:
+    """Is this plate reading one of the words the cut asked for?
+
+    The gate's premise is that anything legible in the plate is type that
+    was missed. That holds for a film whose pictures are photographs. It
+    does not hold for one built from archival maps and documents, where the
+    PICTURE is covered in printed words: on the Easter Island film every one
+    of the 32 readings was a place name engraved on a nineteenth-century
+    map, or two characters out of grain, and not one was a missed element.
+
+    Asking the cut settles it. A word the cut asked to be put on screen,
+    found in the plate, is an element that did not get the type class —
+    which is the defect this gate was written for, and still fails. A word
+    the cut never mentions was in the photograph, and no amount of tagging
+    will remove it.
+    """
+    word = "".join(ch for ch in text.lower() if ch.isalnum())
+    return bool(word) and word in authored_words(cut)
+
+
 def plate_is_clean(plate: str, cuts: list[dict[str, Any]] | None = None
                    ) -> tuple[list[str], dict[str, Any]]:
     """Nothing readable survives into the plate pass.
@@ -316,6 +378,7 @@ def plate_is_clean(plate: str, cuts: list[dict[str, Any]] | None = None
     cuts = cuts or []
     problems: list[str] = []
     found: list[dict[str, Any]] = []
+    in_picture: list[dict[str, Any]] = []
     skipped: list[str] = []
     with tempfile.TemporaryDirectory() as tmp:
         tmpdir = Path(tmp)
@@ -334,7 +397,11 @@ def plate_is_clean(plate: str, cuts: list[dict[str, Any]] | None = None
                     continue
                 if not any(ch.isalnum() for ch in w["text"]):
                     continue
-                found.append({**w, "cut": cut.get("id"), "seconds": round(at, 2)})
+                entry = {**w, "cut": cut.get("id"), "seconds": round(at, 2)}
+                if plate_word_is_authored(w["text"], cut):
+                    found.append(entry)
+                else:
+                    in_picture.append(entry)
     if found:
         shown = ", ".join(f"{w['text']!r} in {w['cut']}" for w in found[:6])
         problems.append(
@@ -343,6 +410,14 @@ def plate_is_clean(plate: str, cuts: list[dict[str, Any]] | None = None
             f"will drift with the plate: {shown}")
     problems += _too_much_skipped(skipped, cuts, "plate purity")
     return problems, {"words_in_plate": len(found),
+                      # Reported, never failed: words the pictures themselves
+                      # carry. They are counted so the measurement stays
+                      # beside the verdict — a film whose plate suddenly
+                      # reads a hundred of these has changed, pass or not.
+                      "words_in_picture": len(in_picture),
+                      "picture_text": [
+                          {"cut": w["cut"], "text": w["text"]}
+                          for w in in_picture[:40]],
                       "cuts_past_the_end": len(skipped),
                       "found": found[:40]}
 
