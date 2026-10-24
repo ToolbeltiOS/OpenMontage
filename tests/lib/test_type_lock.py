@@ -251,3 +251,64 @@ class TestThePlateReadsThePictureToo:
         body = inspect.getsource(vtl.plate_is_clean)
         assert "words_in_picture" in body
         assert "picture_text" in body
+
+
+class TestWhatTypeLockMeasures:
+    """It measures our words, and only the ones big enough to measure.
+
+    The Easter Island delivery failed on eight scenes, and not one of them
+    was type that moved:
+
+      - five on a single '/' out of twenty to thirty-two words, reading 0.66
+        to 0.77px against a 0.65 tolerance. The scene-index chrome that '/'
+        belongs to moved 0.004px over the same second, correlating at 0.95.
+        A box around one glyph is mostly background, which the module header
+        already gives as the reason the tolerance is not zero.
+      - 'TUPAHOTU' moving 26px on c081, and '-' and 'e' moving 12px on c096.
+        Both cuts are AUTHORED to move — a push and a pull — and both are
+        pictures with print in them, a map and a filmed texture. The print
+        travelled because the camera asked it to.
+
+    Filtering to our own words cost nothing: 143 scenes sampled before and
+    after, 3113 words still measured, worst shift 0.58px.
+    """
+
+    def test_one_glyph_is_not_a_measurable_target(self):
+        for noise in ("/", "-", "e", "+", "|", "4"):
+            assert not vtl.measurable(noise), noise
+        for real in ("La", "1960", "TUPAHOTU", "S039"):
+            assert vtl.measurable(real), real
+
+    def test_chrome_is_type_and_is_measured(self):
+        """The frame paints words. They are ours, and they must hold still."""
+        cut = {"id": "c003", "sceneIndex": "S 003 / NEVER LEFT",
+               "actTitle": "Never left", "sourceLine": "wikimedia · Public domain"}
+        words = vtl.authored_words(cut, chrome=True)
+        for painted in ("s", "003", "never", "left", "wikimedia"):
+            assert painted in words, (
+                f"{painted!r} is painted by the frame — type lock has to "
+                f"measure it, or chrome that crawls goes unseen")
+
+    def test_chrome_is_not_an_untagged_element(self):
+        """Plate purity must not read the frame's own words as a leak."""
+        cut = {"id": "c003", "sceneIndex": "S 003 / NEVER LEFT",
+               "actTitle": "Never left"}
+        assert "003" not in vtl.authored_words(cut)
+        assert not vtl.plate_word_is_authored("003", cut)
+
+    def test_a_word_the_picture_carries_is_not_measured(self):
+        cut = {"id": "c081", "source": "/proxies/wm_348295582.jpg",
+               "sceneIndex": "S 035"}
+        assert "tupahotu" not in vtl.authored_words(cut, chrome=True)
+
+    def test_type_that_moves_is_still_caught_after_the_filter(self, tmp_path):
+        """The whole point of the gate, with the filter in place.
+
+        Same fixture as `test_type_that_drifts_a_pixel_a_second_is_caught`;
+        this asserts the filter did not quietly empty the measurement.
+        """
+        film = render(tmp_path / "drift.mp4",
+                      [frame(i, text_dx=i / 30.0) for i in range(N)])
+        problems, measured = vtl.check(str(film), CUTS)
+        assert problems, "type that drifts a pixel a second is no longer caught"
+        assert measured["scenes_with_movement"] == 1

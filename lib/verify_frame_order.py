@@ -189,13 +189,31 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
     edges = boundaries(cuts)
 
     # 1. isolated black frames
+    #
+    # Only INSIDE a shot. The rule is that a frame or two of black with
+    # picture on both sides came from somewhere else — which is true in the
+    # middle of a shot and false at a cut, where a short black run is the
+    # bottom of the next shot's fade up.
+    #
+    # Measured on the Easter Island delivery: every act boundary cuts to
+    # near-black and fades up into the act card, the same gesture each time.
+    # Act 2's card is graded a shade brighter than act 3's, so its fade
+    # crossed BLACK_LUMA after two frames where act 3's took nine — and the
+    # gate failed the film for the two. The frames either side read 3.84 and
+    # 4.45: not a blink, a threshold.
     black = _runs(luma < BLACK_LUMA)
-    isolated = [(a, n) for a, n in black if n < MIN_BLACK_RUN]
+    edge_frames = {round(e * fps) for e in edges}
+    isolated = [(a, n) for a, n in black
+                if n < MIN_BLACK_RUN and not any(abs(a - e) <= 1
+                                                 for e in edge_frames)]
+    at_a_cut = sum(1 for a, n in black
+                   if n < MIN_BLACK_RUN and any(abs(a - e) <= 1
+                                                for e in edge_frames))
     for a, n in isolated:
         problems.append(
-            f"{a / fps:.2f}s: {n} black frame{'s' if n > 1 else ''} on their own — "
-            f"a hold on black lasts about a second, so this is a frame from "
-            f"somewhere else")
+            f"{a / fps:.2f}s: {n} black frame{'s' if n > 1 else ''} on their own "
+            f"mid-shot — a hold on black lasts about a second, so this is a "
+            f"frame from somewhere else")
 
     # 2. frames that belong to neither neighbour, while the neighbours belong
     #    to each other
@@ -249,6 +267,9 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
         "black_runs": [{"start_seconds": round(a / fps, 2), "frames": n}
                        for a, n in black],
         "isolated_black_runs": len(isolated),
+        # Short black runs that sit on a declared cut: the bottom of a fade
+        # up, counted so the measurement stays beside the verdict.
+        "short_black_at_a_cut": at_a_cut,
         "out_of_order": out_of_order[:40],
         "out_of_order_count": len(out_of_order),
         "reference_correlation": None if correlation is None else round(correlation, 4),

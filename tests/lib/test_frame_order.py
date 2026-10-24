@@ -205,3 +205,50 @@ class TestDeliveryAudio:
         problems, measured = vda.check(str(film), expected_lufs=expected)
         assert problems == [], problems
         assert abs(measured["loudness_delta_db"]) <= vda.LOUDNESS_TOLERANCE_DB
+
+
+def grey(level: int, position: int = 0) -> np.ndarray:
+    """A flat frame at a known luma, with a bar so it is not a dead field."""
+    arr = np.full((270, 480), level, dtype="uint8")
+    if level:
+        x = (position * 7) % 420
+        arr[:, x:x + 50] = min(255, level + 40)
+    return arr
+
+
+class TestShortBlackAtACut:
+    """A frame of black at a cut is the bottom of a fade, not a stray frame.
+
+    The rule catches a frame that came from somewhere else: black, with
+    picture either side of it. That reasoning holds in the middle of a shot
+    and fails at a cut, where the next shot may simply start dark.
+
+    Measured on the Easter Island delivery. Every act boundary cuts to
+    near-black and fades up into the act card — the same gesture each time.
+    Act 2's card is graded a shade brighter than act 3's, so its fade crossed
+    BLACK_LUMA after two frames where act 3's took nine, and the gate failed
+    the film for the two. The frames either side of the threshold read 3.84
+    and 4.45. That is not a blink; it is a threshold.
+    """
+
+    def test_a_short_black_run_on_a_cut_is_not_a_stray_frame(self, tmp_path):
+        frames = ([grey(90, i) for i in range(40)]
+                  + [grey(0), grey(0)]
+                  + [grey(70, i) for i in range(40)])
+        film = render(tmp_path / "fade.mp4", frames)
+        cuts = [{"id": "c001", "in_seconds": 0.0, "out_seconds": 40 / 30},
+                {"id": "c002", "in_seconds": 40 / 30, "out_seconds": 82 / 30}]
+        problems, measured = vfo.check(str(film), cuts)
+        assert measured["short_black_at_a_cut"] == 1
+        assert not [p for p in problems if "black frame" in p], problems
+
+    def test_a_short_black_run_mid_shot_is_still_a_stray_frame(self, tmp_path):
+        """The defect the rule exists for, with no cut anywhere near it."""
+        frames = ([grey(90, i) for i in range(40)]
+                  + [grey(0), grey(0)]
+                  + [grey(90, i) for i in range(40, 80)])
+        film = render(tmp_path / "stray.mp4", frames)
+        cuts = [{"id": "c001", "in_seconds": 0.0, "out_seconds": 82 / 30}]
+        problems, measured = vfo.check(str(film), cuts)
+        assert measured["isolated_black_runs"] == 1
+        assert any("black frame" in p for p in problems), problems

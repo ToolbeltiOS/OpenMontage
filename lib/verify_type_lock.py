@@ -243,6 +243,16 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
                 skipped.append(cut.get("id"))
                 continue                   # the film ends before this cut does
             boxes = words(first_png)
+            # Our type, and only ours. The pictures in an archival film are
+            # maps and documents covered in print, and on a cut authored to
+            # push or pull that print MUST travel — c081's map moved 39px in
+            # a second because the camera asked it to. Reading it as type
+            # that drifted fails a film for obeying its own edit. A word the
+            # cut put on screen, chrome included, is still measured, so the
+            # move this gate exists for is still caught.
+            ours = authored_words(cut, chrome=True)
+            boxes = [b for b in boxes
+                     if measurable(b["text"]) and _normalise(b["text"]) in ours]
             if len(boxes) < MIN_WORDS:
                 continue                   # not a text-bearing scene
             second_png = frame_at(film, t0 + SAMPLE_GAP_S, tmpdir / f"b{n}.png")
@@ -308,11 +318,22 @@ NON_TEXT_KEYS = {
     "id", "src", "image", "backgroundImage", "backgroundVideo", "asset",
     "path", "act", "type", "transition_in", "transition_family", "beat",
     "register", "treatment", "asset_class", "reason", "lead_reason",
-    "camera", "sceneIndex", "actNumber", "status", "index",
+    "camera", "status", "index",
 }
 
+#: Chrome: the persistent frame's own words. They are NOT authored content —
+#: plate purity must not count 'S 039' as an element someone forgot to tag,
+#: because the frame paints it properly. But they ARE type, painted by us and
+#: required to be still, so type lock measures them.
+CHROME_KEYS = {"sceneIndex", "actNumber", "actTitle", "sourceLine"}
 
-def authored_words(cut: dict[str, Any]) -> set[str]:
+
+def _normalise(text: str) -> str:
+    """A reading reduced to the letters and digits in it, lowercased."""
+    return "".join(ch for ch in text.lower() if ch.isalnum())
+
+
+def authored_words(cut: dict[str, Any], chrome: bool = False) -> set[str]:
     """Every word this cut asks to be PUT on screen, lowercased.
 
     Walks the cut for strings rather than knowing the shape of every
@@ -327,6 +348,8 @@ def authored_words(cut: dict[str, Any]) -> set[str]:
             for key, value in node.items():
                 if key in NON_TEXT_KEYS:
                     continue
+                if key in CHROME_KEYS and not chrome:
+                    continue
                 walk(value)
         elif isinstance(node, list):
             for item in node:
@@ -335,12 +358,34 @@ def authored_words(cut: dict[str, Any]) -> set[str]:
             if node.startswith("/") or node.startswith("http"):
                 return          # a path, not a line of type
             for raw in node.split():
-                word = "".join(ch for ch in raw.lower() if ch.isalnum())
+                word = _normalise(raw)
                 if word:
                     out.add(word)
 
     walk(cut)
     return out
+
+
+#: The fewest alphanumeric characters a reading must have before its SHIFT is
+#: worth believing.
+#:
+#: Not the same question as whether it is legible, which is what
+#: MIN_PLATE_WORD_CHARS answers. This is about the measurement: the shift is
+#: phase correlation inside the OCR box, and a box around one glyph is mostly
+#: background — which the module header already records as the reason the
+#: tolerance is not zero.
+#:
+#: Measured on the Easter Island delivery, on five cuts that failed on a
+#: single '/' out of twenty to thirty-two words: the scene-index chrome that
+#: '/' belongs to moved 0.004px over the same second, correlating at 0.95,
+#: while the '/' box alone read 0.66 to 0.77px — straddling the 0.65
+#: tolerance from below the noise floor rather than above it.
+MIN_MEASURED_WORD_CHARS = 2
+
+
+def measurable(text: str) -> bool:
+    """Is this reading a big enough target to measure a shift in?"""
+    return sum(ch.isalnum() for ch in text) >= MIN_MEASURED_WORD_CHARS
 
 
 def plate_word_is_authored(text: str, cut: dict[str, Any]) -> bool:
@@ -359,7 +404,7 @@ def plate_word_is_authored(text: str, cut: dict[str, Any]) -> bool:
     the cut never mentions was in the photograph, and no amount of tagging
     will remove it.
     """
-    word = "".join(ch for ch in text.lower() if ch.isalnum())
+    word = _normalise(text)
     return bool(word) and word in authored_words(cut)
 
 
