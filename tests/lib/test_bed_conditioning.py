@@ -198,3 +198,62 @@ class TestTheSpreadBetweenBeds:
 
         src = inspect.getsource(mx.bed_spread)
         assert "+ crossfade" in src and "- crossfade" in src
+
+
+class TestTheCrossfadeCurve:
+    """`tri` is linear in amplitude, which costs 3 dB on uncorrelated beds.
+
+    At the centre of a `tri` fade both sides sit at 0.5, and two uncorrelated
+    signals at 0.5 sum to 0.707 rather than to 1.0. There is one of these at
+    every act boundary where two beds meet — which is also where the envelope
+    lifts the bed to its loudest level and where the sting lands.
+
+    `qsin` is a quarter-sine fade, which is constant POWER for uncorrelated
+    material. The numbers below are the measurement that chose it, pinned so
+    that a change to either curve shows up here.
+    """
+
+    def _joined(self, tmp_path, curve: str) -> str:
+        a, b = tmp_path / "a.wav", tmp_path / "b.wav"
+        for path, seed in ((a, 1), (b, 99)):
+            subprocess.run(
+                ["ffmpeg", "-v", "error", "-y", "-f", "lavfi",
+                 "-i", f"anoisesrc=d=20:c=pink:r={SR}:seed={seed}",
+                 "-af", "lowpass=f=900", "-ar", str(SR), "-ac", "2",
+                 str(path)], check=True)
+        out = tmp_path / f"x_{curve}.wav"
+        subprocess.run(
+            ["ffmpeg", "-v", "error", "-y", "-i", str(a), "-i", str(b),
+             "-filter_complex",
+             f"[0:a][1:a]acrossfade=d=2.5:c1={curve}:c2={curve}[o]",
+             "-map", "[o]", "-ar", str(SR), "-ac", "2", str(out)], check=True)
+        return str(out)
+
+    def _dip(self, path: str) -> float:
+        import soundfile as sf
+
+        from verify_sfx_level import short_term
+
+        y, sr = sf.read(path, dtype="float32", always_2d=True)
+        t, b = short_term(y, sr)
+        centre = 20.0 - 1.25            # the fade is centred on the join
+        i = int(np.argmin(np.abs(t - centre)))
+        steady = float(np.median(b[(t > 3) & (t < 14)]))
+        return float(b[i]) - steady
+
+    def test_tri_costs_about_three_decibels(self, tmp_path):
+        dip = self._dip(self._joined(tmp_path, "tri"))
+        assert -3.6 < dip < -2.2, f"{dip:.2f} dB"
+
+    def test_qsin_costs_nothing(self, tmp_path):
+        dip = self._dip(self._joined(tmp_path, "qsin"))
+        assert abs(dip) < 0.6, f"{dip:.2f} dB"
+
+    def test_and_the_mixer_uses_qsin_for_both_kinds_of_join(self, tmp_path):
+        import inspect
+
+        src = inspect.getsource(mx.build_bed)
+        assert "c1=tri" not in src
+        assert src.count("XFADE_CURVE") >= 4, (
+            "both the loop joins and the span joins take the curve from the "
+            "one constant")
