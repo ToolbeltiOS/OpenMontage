@@ -132,3 +132,77 @@ class TestItIsWiredIntoTheOnlyRenderPath:
         body = src[i:i + 2000]
         assert '"-c:v", "copy"' in body
         assert "libx264" not in body
+
+
+class TestEveryFrameTheEditAsksForIsInTheFile:
+    """`-shortest` took the end off the film, and the report printed the
+    number the edit asked for beside a file that did not have it.
+
+    The cut durations and the narration timeline do not come to the same
+    length — 169 cuts each rounded to a frame leaves them 0.486s apart on
+    easter-island — and with the audio the shorter of the two, `-shortest`
+    truncated the PICTURE: 36,302 frames delivered against 36,317 asked,
+    half a second of the outro under the closing title card.
+
+    Two things were wrong and both are fixed: the audio is padded to the
+    picture rather than the picture truncated to the audio, and `gates`
+    compares the delivered count against the asked-for one. The frame-motion
+    gate already decoded the film and counted; nothing compared the numbers.
+    """
+
+    @pytest.fixture
+    def short_mix(self, tmp_path):
+        """A mix half a second shorter than the picture, as the real one is."""
+        path = tmp_path / "short.wav"
+        subprocess.run(
+            ["ffmpeg", "-v", "error", "-y", "-f", "lavfi",
+             "-i", "sine=frequency=110:duration=2.5", "-ar", "48000",
+             "-ac", "2", str(path)], check=True)
+        return path
+
+    def _frames(self, path: Path) -> int:
+        out = subprocess.run(
+            ["ffprobe", "-v", "error", "-select_streams", "v:0",
+             "-count_frames", "-show_entries", "stream=nb_read_frames",
+             "-of", "csv=p=0", str(path)], capture_output=True, text=True,
+            check=True).stdout
+        return int(out.strip().rstrip(","))
+
+    def test_a_short_mix_no_longer_truncates_the_picture(self, film, short_mix):
+        before = self._frames(film)
+        assert before == 72, before          # 3s at 24fps
+        fr.remux(film, short_mix)
+        assert self._frames(film) == before, (
+            "the picture was truncated to the audio; apad is missing")
+
+    def test_the_padding_is_silence_and_not_a_repeat(self, film, short_mix):
+        import numpy as np
+
+        fr.remux(film, short_mix)
+        raw = subprocess.run(
+            ["ffmpeg", "-v", "error", "-ss", "2.7", "-i", str(film),
+             "-map", "0:a:0", "-f", "f32le", "-acodec", "pcm_f32le",
+             "-ac", "1", "-ar", "48000", "-"],
+            capture_output=True, check=True).stdout
+        tail = np.frombuffer(raw, dtype="float32")
+        assert tail.size and float(np.abs(tail).max()) < 0.02, (
+            f"the tail peaks at {float(np.abs(tail).max()):.3f}; apad should "
+            f"write silence, not loop the mix")
+
+    def test_the_gate_catches_a_short_file(self):
+        """INJECTED: cuts asking for more frames than the file holds."""
+        import lib.film_render as m
+
+        cuts = [{"out_seconds": 3.5}]        # 105 frames at 30fps
+        asked = m.frame_count(cuts, 30)
+        got = 90
+        assert asked == 105
+        assert asked != got
+        src = Path("lib/film_render.py").read_text()
+        assert "has had the end taken off it" in src
+        assert '"frame count"' in src
+
+    def test_the_report_prints_what_was_delivered_not_what_was_asked(self):
+        src = Path("lib/film_render.py").read_text()
+        assert "delivered of {count} asked" in src
+        assert "| frame count |" in src

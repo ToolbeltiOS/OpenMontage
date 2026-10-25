@@ -56,8 +56,18 @@ def frame_count(cuts: list[dict[str, Any]], fps: int = FPS) -> int:
 
     Not the composition's own duration: `calculateMetadata` adds a second of
     padding for a final fade, and in anything without one that second is an
-    empty background gradient. Dropping it here also makes the picture and the
-    mix exactly the same length.
+    empty background gradient.
+
+    IT DOES NOT MAKE THE PICTURE AND THE MIX THE SAME LENGTH, which is what
+    this docstring used to claim. Measured on easter-island: the cuts sum to
+    1210.567s and the narration timeline the mixer builds comes to 1210.081s,
+    0.486s apart — 169 cuts each rounded to a frame. The delivered file held
+    36,302 frames against the 36,317 asked for, because `deliver` passed
+    `-shortest` and the audio was the shorter of the two. Half a second of the
+    outro, gone, with the report printing the number the edit asked for beside
+    a file that did not have it.
+
+    The mix is padded to the picture now, and `gates` compares the two.
     """
     return round(max(float(c["out_seconds"]) for c in cuts) * fps)
 
@@ -249,13 +259,26 @@ def deliver(look: Path, type_layer: Path, mix: Path, dest: Path) -> None:
     entirely when the demo first shipped silent.
     """
     dest.parent.mkdir(parents=True, exist_ok=True)
+    # `apad` BEFORE `-shortest`, so the shorter of the two is the PICTURE.
+    #
+    # The cut durations and the narration timeline do not come to the same
+    # length — 0.486s apart on easter-island, 169 cuts each rounded to a frame
+    # — and with the audio shorter, `-shortest` truncated the picture: 15
+    # frames of the outro, under the closing title card, with nothing saying
+    # so. Padding the audio instead costs half a second of silence under a
+    # card that is already silent furniture.
+    # Written beside the film and moved into place, as `remux` does: a
+    # twenty-minute encode that dies at minute eighteen must not leave a
+    # truncated file where the delivered one was.
+    tmp = dest.with_suffix(".deliver.mp4")
     run(["ffmpeg", "-v", "error", "-y",
          "-i", str(look), "-i", str(type_layer), "-i", str(mix),
          "-filter_complex", "[0:v][1:v]overlay=format=auto:eof_action=pass[v]",
-         "-map", "[v]", "-map", "2:a:0",
+         "-map", "[v]", "-map", "2:a:0", "-af", "apad",
          "-c:v", "libx264", "-crf", "16", "-preset", "medium",
          "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "320k",
-         "-shortest", str(dest)])
+         "-shortest", str(tmp)])
+    tmp.replace(dest)
 
 
 def remux(dest: Path, mix: Path) -> None:
@@ -274,7 +297,7 @@ def remux(dest: Path, mix: Path) -> None:
     """
     tmp = dest.with_suffix(".remux.mp4")
     run(["ffmpeg", "-v", "error", "-y", "-i", str(dest), "-i", str(mix),
-         "-map", "0:v:0", "-map", "1:a:0",
+         "-map", "0:v:0", "-map", "1:a:0", "-af", "apad",
          "-c:v", "copy", "-c:a", "aac", "-b:a", "320k",
          "-shortest", "-movflags", "+faststart", str(tmp)])
     # Only once ffmpeg has written a whole file. Replacing the delivered film
@@ -304,6 +327,28 @@ def gates(dest: Path, picture: Path, cuts: list[dict[str, Any]],
     }.items():
         results[name] = measured
         problems += [f"{name}: {p}" for p in found]
+
+    # IS EVERY FRAME THE EDIT ASKED FOR IN THE FILE?
+    #
+    # The frame-motion gate already decodes the whole film and counts, and the
+    # report already prints the number the EDIT asked for. Nothing compared
+    # them, so easter-island shipped 36,302 frames under a report that said
+    # 36,317 — half a second of the outro removed by `-shortest`, because the
+    # mix is 0.486s shorter than the cuts and nothing was responsible for
+    # noticing. No decode is added here; this is arithmetic on a figure two
+    # gates already had.
+    asked = frame_count(cuts, fps)
+    got = int(results["frame motion"].get("frames") or 0)
+    results["frame count"] = {"asked": asked, "delivered": got,
+                              "missing": asked - got,
+                              "seconds_missing": round((asked - got) / fps, 3)}
+    if got != asked:
+        problems.append(
+            f"frame count: the file holds {got} frames and the edit asks for "
+            f"{asked} — {abs(asked - got)} "
+            f"{'missing' if got < asked else 'extra'} "
+            f"({abs(asked - got) / fps:.2f}s). A delivered film that is "
+            f"shorter than its own edit has had the end taken off it.")
     return problems, results
 
 
@@ -323,7 +368,8 @@ def report(title: str, dest: Path, picture: Path, count: int, seconds: float,
         f"# {title}",
         "",
         f"`{dest.relative_to(ROOT) if dest.is_relative_to(ROOT) else dest}` · "
-        f"{count} frames · {seconds:.1f}s · plate "
+        f"{results.get('frame count', {}).get('delivered', count)} frames "
+        f"delivered of {count} asked · {seconds:.1f}s · plate "
         f"`{picture.relative_to(ROOT) if picture.is_relative_to(ROOT) else picture}`",
         "",
         "## Gates", "",
@@ -342,6 +388,10 @@ def report(title: str, dest: Path, picture: Path, count: int, seconds: float,
         f"sampled a second apart, {type_lock['scenes_with_movement']} with a "
         f"word in a different place, worst {type_lock['worst_shift_px']}px | "
         f"{verdict('type lock')} |",
+        f"| frame count | {results.get('frame count', {}).get('delivered')} "
+        f"delivered of {results.get('frame count', {}).get('asked')} asked "
+        f"({results.get('frame count', {}).get('seconds_missing')}s missing) | "
+        f"{verdict('frame count')} |",
         f"| delivery audio | {audio.get('mean_dbfs')} dBFS mean, "
         f"{audio.get('integrated_lufs')} LUFS against the mix's {expected_lufs} "
         f"({audio.get('loudness_delta_db')} dB) | {verdict('delivery audio')} |",

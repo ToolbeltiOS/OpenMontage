@@ -52,6 +52,13 @@ def main() -> int:
     ap.add_argument("--remux", action="store_true",
                     help="put the mix onto the delivered film with -c:v copy "
                          "and re-run the gates; renders no picture")
+    ap.add_argument("--deliver-only", action="store_true",
+                    help="re-composite the look and type passes already on "
+                         "disk into the delivered file and re-run the gates; "
+                         "renders nothing in Remotion. Use this, not --remux, "
+                         "when the delivered file is missing frames: a remux "
+                         "copies the stream it is given and cannot put back "
+                         "what is not in it")
     args = ap.parse_args()
 
     project = ROOT / "projects" / args.project
@@ -74,7 +81,14 @@ def main() -> int:
         raise SystemExit(f"no mix at {mix}")
     if args.remux and not dest.exists():
         raise SystemExit(f"--remux needs a delivered film at {dest}")
-    if dest.exists() and not (args.force or args.gates_only or args.remux):
+    if args.deliver_only:
+        for needed in (look, type_layer):
+            if not needed.exists():
+                raise SystemExit(
+                    f"--deliver-only needs {needed}, which is a Remotion "
+                    f"render. Drop the flag to rebuild it.")
+    if dest.exists() and not (args.force or args.gates_only or args.remux
+                              or args.deliver_only):
         raise SystemExit(
             f"{dest} already exists. A delivered film is not overwritten by "
             f"accident — run #1 is published. Pass --force if that is really "
@@ -87,6 +101,9 @@ def main() -> int:
     if args.remux:
         print("5. remux (picture copied, audio replaced)")
         remux(dest, mix)
+    elif args.deliver_only:
+        print("5. deliver (look and type passes reused, picture re-encoded)")
+        deliver(look, type_layer, mix, dest)
     elif not args.gates_only:
         if not args.skip_picture:
             print("1. plate")
