@@ -30,8 +30,8 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "lib"))
 
 from film_render import (COMPOSER, FPS, act_spans, deliver, extract_frames,  # noqa: E402
-                         frame_count, gates, props_for_layer, render_look,
-                         render_plate, render_type, report)
+                         frame_count, gates, props_for_layer, remux,
+                         render_look, render_plate, render_type, report)
 
 
 def main() -> int:
@@ -49,6 +49,9 @@ def main() -> int:
                     help="reuse the existing plate render and frame sequence")
     ap.add_argument("--gates-only", action="store_true",
                     help="re-run the gates and rewrite the report, rendering nothing")
+    ap.add_argument("--remux", action="store_true",
+                    help="put the mix onto the delivered film with -c:v copy "
+                         "and re-run the gates; renders no picture")
     args = ap.parse_args()
 
     project = ROOT / "projects" / args.project
@@ -69,7 +72,9 @@ def main() -> int:
 
     if not mix.exists():
         raise SystemExit(f"no mix at {mix}")
-    if dest.exists() and not (args.force or args.gates_only):
+    if args.remux and not dest.exists():
+        raise SystemExit(f"--remux needs a delivered film at {dest}")
+    if dest.exists() and not (args.force or args.gates_only or args.remux):
         raise SystemExit(
             f"{dest} already exists. A delivered film is not overwritten by "
             f"accident — run #1 is published. Pass --force if that is really "
@@ -79,7 +84,10 @@ def main() -> int:
     print(f"{args.project}: {len(cuts)} cuts, {seconds:.1f}s, {count} frames, "
           f"{len(spans)} act spans, mix {mix.name}")
 
-    if not args.gates_only:
+    if args.remux:
+        print("5. remux (picture copied, audio replaced)")
+        remux(dest, mix)
+    elif not args.gates_only:
         if not args.skip_picture:
             print("1. plate")
             render_plate(props_for_layer(props_path, "plate", work, args.project),

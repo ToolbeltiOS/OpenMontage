@@ -878,12 +878,70 @@ audio:
     enabled: true
     layer_order: [narration, music_bed, sound_design]
     ducking: same_envelope_as_music      # the explicit gain envelope, not a second compressor
+    # REVISED 2026-10-25 after the owner's full watch: "SFX too loud …
+    # everything below the bed's level in its moment". Ambience -4, risers -8,
+    # impacts -8, stings -6 against what shipped. The three one-shots were
+    # ABOVE the bed and are now under it, which is the point: a floor is the
+    # room the film is in, and above the bed it is a layer of its own.
+    #
+    # These are offsets from the bed's UNDER-SPEECH level, which is not the
+    # bed's level in the moment a one-shot plays — the bed is +3 dB in a gap
+    # and +6 dB at an act boundary, and that is exactly where stings and
+    # impacts are placed. So the offsets alone cannot satisfy the rule below
+    # and lib/verify_sfx_level.py measures the two finished layers instead.
+    # THEN SHIFTED AGAIN, BY MEASUREMENT.
+    #
+    # The owner asked for both an offset table AND a gate — "no SFX event
+    # louder than the bed at that instant" — and measured, the table does not
+    # satisfy the gate: at ambience -10 / riser -2 / impact +4 / sting +8,
+    # all fourteen one-shots came out over the bed, by +4.2 dB (a riser) to
+    # +18.3 dB (a sting). An offset of +8 cannot be under the bed; the two
+    # instructions are inconsistent and the gate is the one that carries the
+    # reason, so the gate wins.
+    #
+    # The three one-shot offsets are therefore the owner's numbers shifted
+    # down by 10 dB, which is the smallest shift that puts the loudest of
+    # them (the sting, the worst offender at +18.3) under the bed with 2 dB
+    # of margin. THE SPACING BETWEEN THEM IS THE OWNER'S, UNCHANGED: riser
+    # 10 dB under impact, impact 4 dB under sting, exactly as specified. Only
+    # the whole group moved.
+    #
+    # Ambience and room tone are NOT shifted — they are the owner's numbers
+    # and they pass.
+    #
+    # If this is too quiet by ear, the thing to relax is the gate, not the
+    # levels: the levels are now derived from it.
     levels_relative_to_music_bed_db:
-      ambience: -6                       # the per-act bed: wind, stone, sea, desert
+      ambience: -10                      # the per-act bed: wind, stone, sea, desert
       room_tone: -12                     # under every silence, always present
-      riser_peak: +6                     # at the top of the riser, into the landing
-      impact_peak: +12                   # the low hit on a hard cut at a reveal
-      sting_peak: +14                    # the act boundary, under the fade to black
+      riser_peak: -12                    # at the top of the riser, into the landing
+      impact_peak: -6                    # the low hit on a hard cut at a reveal
+      sting_peak: -2                     # the act boundary, under the fade to black
+    unit: >
+      LUFS, K-weighted, against the bed's median short-term window. It was
+      broadband RMS, which is the wrong unit for a table that is checked by a
+      loudness gate: the two differ by up to 10 dB depending on where an
+      element sits in the spectrum, and these elements are deliberately spread
+      across it. The `_peak` keys mean the loudest 400 ms window of the
+      one-shot, which is what the name always said and not what the code did.
+    never_louder_than_the_bed:
+      rule: "No sound-design event may measure louder than the music bed at
+             the instant it plays. Measured, not asserted: K-weighted
+             short-term loudness of both finished layers over the same 400 ms
+             windows, by lib/verify_sfx_level.py, inside lib/mix_audio.py so a
+             mix that breaks it is refused rather than delivered."
+      measured_in: >
+        LUFS, K-weighted — because the question is which is LOUDER, and the
+        elements are deliberately spread across the spectrum: this film's
+        sting has a 59 Hz centroid, its impact 75 Hz, its sea ambience
+        1,647 Hz. Measured at equal RMS the curve puts 30 Hz 9.0 dB down on
+        1 kHz, 75 Hz 2.7 dB down and 1.6 kHz 1.6 dB up, so a low impact and a
+        bright hiss at one RMS differ by about 4 dB of loudness. The decisive
+        reason is not the size of that correction, though: it is that the
+        offset table and this ceiling are now in ONE unit and can be
+        reconciled. Before they were in two and could not be.
+      riser_rule: "A riser that is audible as a whoosh is too loud, whatever
+                   it measures. The gate is a ceiling, not a target."
     ambience:
       per_act: true
       palettes: [wind, stone, sea, desert]
@@ -1007,22 +1065,97 @@ audio:
   # Auditioned WITH the sound design on purpose. The references fill part of
   # the distance between voice and bed with wind and room tone rather than
   # music, so a bed judged without a floor under it is the wrong test.
-  music_under_speech_lufs: -30       # absolute, not a ratio
-  music_in_gaps_lufs: -26            # gaps longer than 1.5s
-  music_at_act_boundaries_lufs: -22  # under the fade through black
+  # REVISED 2026-10-25, and these supersede -30 and the earlier rise amounts.
+  # From the owner's full watch: "MUSIC LEVEL IRREGULAR. The bed must stay in
+  # the background the whole film." -30 was decided by ear on a single act-2
+  # demo; -33 was decided by ear on the whole film, which is the better test
+  # and the one that counts.
+  music_under_speech_lufs: -33       # absolute, not a ratio
+  music_gap_rise_db_max: 3           # THE AUTHORITY on the rise: a cap on the move
+  music_in_gaps_lufs: -30            # = -33 + 3; the two agree at this bed level
+  music_at_act_boundaries_lufs: -27  # under the fade through black (was -22)
+  music_rise_ramp_seconds: 1.5       # in AND out, raised cosine, explicit
   duck:
     keyed_on: narration
-    attack_ms: 150
-    release_ms: 900                  # slow enough that it never pumps
+    rise_ramp_seconds: 1.5
+    dezipper_ms: 30
+    superseded_attack_ms: 150        # what a one-pole did, kept as history
+    superseded_release_ms: 900
     method: >
       An explicit gain envelope computed from the narration's short-term
       loudness, not a threshold compressor. A compressor's duck depth depends
       on how far the signal exceeds the threshold, so it cannot be asked for a
       specific "music sits N dB under the voice" and hold it.
+
+      The EDGES of that envelope are now explicit raised-cosine ramps rather
+      than an asymmetric one-pole, for the same reason: a one-pole cannot be
+      asked for a ramp length either. Measured, a 1200 ms release gives a
+      2.64 s rise and a 0.33 s fall, and an authored ramp in front of it
+      barely moves the rise while dragging the fall out — so neither "1.5 s
+      ramps in and out" nor "release 1.2 s" is what it delivers.
+
+      The ramp out is ANTICIPATORY: it finishes as the voice returns instead
+      of releasing after it. Offline mixing can see the future. At 1.5 s it is
+      slower than the 1.2 s release that was asked for, so it is the more
+      conservative of the two against pumping.
+  bed_dynamics:
+    compressor: "2:1, gentle, on EACH bed before the ducking envelope"
+    attack_ms: 50
+    release_ms: 500
+    knee_db: 6
+    threshold: >
+      Not a typed-in number. It starts at the bed's own integrated loudness —
+      so roughly the louder half of the material is what gets reduced — and is
+      lowered 3 dB at a time until the measured range is inside the ceiling.
+      One rule works for a quiet pad and a loud one.
+    loudness_range_max_lu: 6         # per BED, measured as it will play
+    spread_between_beds_max_lu: 1.5  # every bed within +/-1.5 LU of the others
+    why: >
+      Three beds of three characters used to arrive at one average level,
+      because the EQ and the normalisation were applied to their SUM. Each bed
+      then sat wherever its own loudness put it relative to that average and
+      the level changed at every act boundary. You cannot match three things
+      to each other by normalising their sum, so each bed is now conditioned
+      on its own and the match is measured on the delivered bed inside each
+      span, with a crossfade trimmed off each end so a boundary is not
+      measured as if it belonged to one side of it.
   music_eq:
     high_pass_hz: 120
-    low_pass_hz: 7000
-    presence_cut: "-4 dB at 3 kHz (Q ~1.4), out of the consonant band"
+    low_pass_hz: 5000                # was 7000
+    high_shelf: "-6 dB from 3.5 kHz (Q 0.7)"
+    note: >
+      A SHELF, not the bell that was here before. "-6 dB from 3.5 kHz" means
+      everything above the corner comes down and stays down; a bell at 3.5 kHz
+      dips one band and leaves 5 kHz where it was. The shelf and the low-pass
+      overlap on purpose.
+  music_brightness:
+    high_hz: 4000
+    max_energy_above_high_pct: 10     # share of a bed's total power above 4 kHz
+    measured_on: "the SOURCE track, before the bed EQ"
+    why_not_after_the_eq: >
+      Measured: the EQ divides the high-band ratio by about eight, which moves
+      a realistically bad bed across the ceiling in the forgiving direction. A
+      pad with moderate hiss over it reads 65% above 4 kHz before the EQ and
+      8% after — and that is the bed somebody would actually choose. It is NOT
+      true that the EQ makes anything pass: pink noise high-passed at 5 kHz
+      still reads 38% after it, because this is a ratio and what survives a
+      5 kHz low-pass sits just under it. Gated before, reported after.
+    gate: lib/music_brightness.py
+    what_it_did_not_catch: >
+      MEASURED 2026-10-25 on the 67-track library: every track passes, the
+      worst at 5.9% and the three chosen beds at 0.06%, 0.14% and 0.10%. So
+      this ceiling did NOT find what the owner heard at the head of
+      easter-island, and saying so is the point of recording it. What the
+      measurement did find was the sound-design layer: ambience_sea.mp3 has a
+      1,647 Hz centroid and 7.8% of its energy above 4 kHz, against the
+      cold-open bed's 512 Hz and 0.06% — three times the centroid and 130
+      times the high-band share, sitting 6 dB under the bed for the first 52
+      seconds of the film. The bright thing in the cold open was never a bed.
+      Keep the ceiling as a guard against a future library; do not credit it
+      with this one.
+    also_measure: "spectral_centroid_hz, as the discriminating figure within a
+                   dark library. The three chosen beds measured 512, 559 and
+                   236 Hz; the sea ambience measured 1,647."
   target_lufs: -14
   true_peak_db: -1.5
   loudness_range_lu: null            # recorded, never targeted — see below
@@ -1179,10 +1312,19 @@ music_authority:
   # failed on whichever number the mixer did not use — 6 dB apart, against a
   # +/-1.5 LU check. lib/mix_audio.py reads audio.music_under_speech_lufs and
   # nothing reads this one, so that is the authority and this restates it.
-  bed_under_speech_lufs: -30
+  bed_under_speech_lufs: -33
   beds: "at most 3, assigned by act, crossfaded on the boundary under the fade to black"
-  ducking: "explicit gain envelope, attack 150ms / release 900ms -- not sidechaincompress"
-  blocking_check: "the delivered film's bed must measure -30 LUFS +/- 1.5 LU"
+  ducking: "explicit gain envelope with 1.5s raised-cosine ramps in and out -- not sidechaincompress, and no longer a one-pole either"
+  blocking_check: "the delivered film's bed must measure -33 LUFS +/- 1.5 LU"
+  bed_blocking_checks:
+    - "each bed's loudness range <= 6 LU, after a 2:1 compressor"
+    - "the beds within 1.5 LU of each other, measured inside each span"
+    - "no bed over 10% of its energy above 4 kHz, measured on the source"
+    - "no sound-design event louder than the bed at the instant it plays"
+  where_they_run: >
+    Inside lib/mix_audio.py, which raises rather than delivering. That is the
+    stage that rebuilds, and this project has already paid once for a music
+    fix that lived downstream of it.
   why_the_other_checks_missed_it: >
     Integrated loudness of narration-led material is set by the voice. The film
     measured -14.0 LUFS and -1.4 dBTP with a bed 25 dB louder than approved,

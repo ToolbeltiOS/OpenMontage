@@ -85,7 +85,7 @@ def main() -> int:
 
     import yaml
 
-    from mix_audio import ATTACK_MS, RELEASE_MS, gain_envelope, smooth
+    from mix_audio import shape_envelope
     from sound_design import build as build_design
 
     playbook = yaml.safe_load(
@@ -131,7 +131,9 @@ def main() -> int:
         bed, _ = sf.read(bed_path, dtype="float32", always_2d=True)
         bed = bed[:n] if len(bed) >= n else np.pad(bed, ((0, n - len(bed)), (0, 0)))
 
-        env_db = smooth(gain_envelope(voice, [0.0], n, target), ATTACK_MS, RELEASE_MS)
+        # ONE envelope path with the film. A demo shaped by a different
+        # envelope is a demo of a mix that does not exist.
+        env_db = shape_envelope(voice, [0.0], n, target)
         duck = (10 ** (env_db[:, None] / 20)).astype(np.float32)
         bed_ducked = bed * duck
 

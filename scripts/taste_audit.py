@@ -160,7 +160,7 @@ READING: dict[str, tuple[str, str]] = {
     'whether picture and sound cut together': ('yes',
      'the J/L budget, stated with the frame counts'),
     'how loud the music sits under the voice': ('yes',
-     'stated 2026-10-21: the level is the playbook\'s -30 LUFS and is never written into the EDL by hand'),
+     'stated 2026-10-25: the level is the playbook\'s -33 LUFS and is never written into the EDL by hand'),
     'whether the frame is ever still': ('yes',
      'do not pass a slideshow downstream'),
     'whether text on screen is readable and sparing': ('yes',

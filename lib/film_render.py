@@ -258,6 +258,31 @@ def deliver(look: Path, type_layer: Path, mix: Path, dest: Path) -> None:
          "-shortest", str(dest)])
 
 
+def remux(dest: Path, mix: Path) -> None:
+    """Put a new mix onto a delivered film without touching the picture.
+
+    `-c:v copy`, so the video stream is the bytes that were already graded,
+    composited and encoded — not a second generation of them. An audio change
+    is the one kind of change that can be delivered this way, and a twenty
+    minute ProRes-to-h264 pass is the one kind of cost worth avoiding.
+
+    THIS IS NOT A LICENCE TO FIX AUDIO DOWNSTREAM. The mix it carries has to
+    be one `lib/mix_audio.py` built from the EDL, which is what the input hash
+    beside `mix_final.wav` exists to say. A remux of a mix that was adjusted
+    by hand is exactly the defect that put rejected music back into run #1 on
+    the next re-render.
+    """
+    tmp = dest.with_suffix(".remux.mp4")
+    run(["ffmpeg", "-v", "error", "-y", "-i", str(dest), "-i", str(mix),
+         "-map", "0:v:0", "-map", "1:a:0",
+         "-c:v", "copy", "-c:a", "aac", "-b:a", "320k",
+         "-shortest", "-movflags", "+faststart", str(tmp)])
+    # Only once ffmpeg has written a whole file. Replacing the delivered film
+    # with a truncated one because the remux died halfway is not a trade
+    # anybody would make.
+    tmp.replace(dest)
+
+
 def gates(dest: Path, picture: Path, cuts: list[dict[str, Any]],
           expected_lufs: float | None, fps: int = FPS
           ) -> tuple[list[str], dict[str, Any]]:

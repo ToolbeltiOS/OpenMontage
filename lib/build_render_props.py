@@ -229,8 +229,9 @@ def music_spans(music_dir: str, ed: dict, offsets: list[float],
     if missing:
         raise SystemExit("music beds named in the EDL were not found: " + ", ".join(missing))
     # The EDL's own level if it states one — run #1's record says -36 and is
-    # published — and otherwise the playbook's, which since 2026-10-21 is -30,
-    # decided by ear from an A/B with the sound design present. The fallback
+    # published — and otherwise the playbook's, which since 2026-10-25 is -33.
+    # It was -30 from 2026-10-21, decided by ear on one act-2 demo; -33 was
+    # decided by ear on the whole film, which is the better test. The fallback
     # used to be -36 written here, which meant a film that stated nothing
     # silently inherited run #1's level from a constant in a function.
     from mix_audio import playbook_under_speech_lufs
@@ -261,6 +262,27 @@ def mix_inputs_hash(ed: dict) -> str:
             h.update(f"{name}:{st.st_size}:{int(st.st_mtime)}".encode())
         except OSError:
             h.update(f"{name}:missing".encode())
+
+    # THE RECONCILED RISES ARE AN INPUT TOO.
+    #
+    # `lib/mix_audio.py` reads `music_rise_allowed` out of render_props.json
+    # and lifts the bed at those cuts, so two mixes with the same music block
+    # and the same narration are still different mixes if the rise set moved.
+    # Leaving them out of the hash would let `--reuse-audio` hand back a mix
+    # built for a rise set that no longer exists — the same class of defect as
+    # the stale bed this stamp was added to stop.
+    #
+    # It also means the hash is only stable after the reconcile has run once
+    # against the bed it is reconciling to, which is why an audio change takes
+    # two passes and the second one converges.
+    props = os.path.join(ART, "render_props.json")
+    rises = []
+    if os.path.exists(props):
+        with open(props, encoding="utf-8") as fh:
+            rises = sorted(round(float(c.get("in_seconds", 0.0)), 3)
+                           for c in json.load(fh).get("cuts", [])
+                           if c.get("music_rise_allowed"))
+    h.update(json.dumps(rises).encode())
     return h.hexdigest()[:16]
 
 
