@@ -115,6 +115,19 @@ MIN_FLAT_DIFF = 1.0
 #:   INJECT zoom-only move       21.660         0.000
 MIN_FROZEN_DIFF = 1.0
 
+#: How far the frame's own travel may differ from the distance the 2D
+#: treatment authored, as a fraction.
+#:
+#: A 2.5D drift has to carry BOTH halves of the move: the pan the edit wrote
+#: and the parallax on top. Only the second was implemented at first, and
+#: six candidate renders travelled 2 to 6 px in 8 seconds where the authored
+#: drift travelled 196 -- every parallax check passed them and they read as
+#: still photographs. Nothing measured the distance, so nothing noticed.
+#:
+#: Measured after calibration, against the authored target: 3.0%, 5.7%,
+#: 0.2%, 0.0% at pans of 0.102, 0.05, -0.1056 and 0.20.
+FRAME_TRAVEL_TOLERANCE = 0.10
+
 #: The absolute anchor-parallax floor, and it is a REGRESSION CHECK ON THE
 #: THREE REFERENCE STILLS ONLY — `check(..., reference=True)`. It is not
 #: applied per cut and cannot be: see the table in
@@ -277,7 +290,7 @@ def parallax_residual(anchors: list[tuple[float, float]],
 
 def flat_twin_difference(image: str, depth: str, move: str, amount: float,
                          seconds: float, fps: int, width: int,
-                         height: int) -> tuple[float, float]:
+                         height: int, pan: float = 0.0) -> tuple[float, float]:
     """How much the depth map changes the render, in 8-bit levels.
 
     The same photograph and the same move, rendered twice: once with the
@@ -296,6 +309,7 @@ def flat_twin_difference(image: str, depth: str, move: str, amount: float,
         flat = str(Path(tmp) / "flat.mp4")
         base = [str(DEPTH_PY), str(ROOT / "scripts" / "render_25d.py"),
                 "--image", image, "--move", move, "--amount", str(amount),
+                "--pan", str(pan),
                 "--seconds", str(seconds), "--fps", str(fps),
                 "--width", str(width), "--height", str(height)]
         if subprocess.run(base + ["--depth", depth, "--out", real],
@@ -339,7 +353,7 @@ def flat_twin_difference(image: str, depth: str, move: str, amount: float,
 
 def parallax_twin_difference(image: str, depth: str, move: str, amount: float,
                              seconds: float, fps: int, width: int,
-                             height: int) -> float:
+                             height: int, pan: float = 0.0) -> float:
     """How much of this render is the MOVE CARRYING THE DEPTH, in 8-bit levels.
 
     The second self-comparison, and the one the flat twin cannot make. The
@@ -377,6 +391,7 @@ def parallax_twin_difference(image: str, depth: str, move: str, amount: float,
         frozen = str(Path(tmp) / "frozen.mp4")
         base = [str(DEPTH_PY), str(ROOT / "scripts" / "render_25d.py"),
                 "--image", image, "--depth", depth, "--seconds", str(seconds),
+                "--pan", str(pan),
                 "--fps", str(fps), "--width", str(width),
                 "--height", str(height)]
         if subprocess.run(base + ["--move", move, "--amount", str(amount),
@@ -389,6 +404,12 @@ def parallax_twin_difference(image: str, depth: str, move: str, amount: float,
             env = {**_env(), "OPENMONTAGE_ISOMETRIC_TRAVEL": "0.0"}
             args = ["--move", move, "--amount", str(amount)]
         else:
+            # FREEZE THE PARALLAX, KEEP THE PAN. `--amount 0` on a drift
+            # zeroes `offset`, which is the depth, while `--pan` still moves
+            # the frame the authored distance. That makes the drift's check
+            # exactly as sharp as the push's: before the pan existed this
+            # froze the whole move, so it proved only that the drift
+            # happened and read 21.076 on c003, whose frame travelled 2px.
             env = _env()
             args = ["--move", move, "--amount", "0.0"]
         if subprocess.run(base + args + ["--out", frozen],
@@ -408,10 +429,25 @@ def parallax_twin_difference(image: str, depth: str, move: str, amount: float,
         return float(np.abs(a[:n] - b[:n]).mean())
 
 
+def frame_travel(track: dict, width: int) -> float:
+    """How far the FRAME itself moved, in px, from the tracked anchors.
+
+    The median of the anchors' horizontal travel. Parallax makes them
+    disagree by a few pixels; the pan moves all of them together, so the
+    middle of them is the frame's own journey.
+    """
+    import numpy as np
+
+    dxs = [(pts[-1][0] - pts[0][0]) * width
+           for pts in track["anchors"].values() if len(pts) >= 2]
+    return float(np.median(dxs)) if dxs else 0.0
+
+
 def check(image: str, depth: str, move: str = "push", amount: float = 0.08,
           seconds: float = 8.0, fps: int = 30, width: int = 1920,
           height: int = 1080,
-          reference: bool = False) -> tuple[list[str], dict[str, Any]]:
+          reference: bool = False,
+          pan: float = 0.0) -> tuple[list[str], dict[str, Any]]:
     """Two per-cut checks, each a self-comparison with one thing changed.
 
     `reference=True` additionally applies the absolute anchor-parallax floor,
@@ -423,7 +459,7 @@ def check(image: str, depth: str, move: str = "push", amount: float = 0.08,
     # fell over trying to find them would report a subprocess error instead
     # of the plain fact that the map is flat.
     diff, motion = flat_twin_difference(image, depth, move, amount, seconds,
-                                        fps, width, height)
+                                        fps, width, height, pan)
     problems: list[str] = []
     if diff < 0:
         return (["the flat-twin renders could not be made"], {"ok": False})
@@ -438,7 +474,7 @@ def check(image: str, depth: str, move: str = "push", amount: float = 0.08,
     # CHECK TWO, and it is the one that catches the failure check one reads
     # as LOUDER than a working render.
     frozen = parallax_twin_difference(image, depth, move, amount, seconds,
-                                      fps, width, height)
+                                      fps, width, height, pan)
     if frozen < 0:
         problems.append("the frozen-parameter twin could not be rendered")
     elif frozen < MIN_FROZEN_DIFF:
@@ -479,6 +515,7 @@ def check(image: str, depth: str, move: str = "push", amount: float = 0.08,
     cmd = [str(DEPTH_PY), str(ROOT / "scripts" / "anchor_track.py"),
            "--image", image, "--depth", depth, "--out", out,
            "--move", move, "--amount", str(amount), "--seconds", str(seconds),
+           "--pan", str(pan),
            "--fps", str(fps), "--width", str(width), "--height", str(height),
            "--anchors"] + [f"{u:.4f},{v:.4f}" for u, v in anchors]
     run = subprocess.run(cmd, capture_output=True, text=True, env=_env())
@@ -502,6 +539,25 @@ def check(image: str, depth: str, move: str = "push", amount: float = 0.08,
     track = json.loads(Path(out).read_text())
     moves = [displacement(track, f"{u:.4f},{v:.4f}") for u, v in anchors]
     fit = parallax_residual(anchors, moves, width, height)
+
+    # DID THE FRAME GO WHERE THE EDIT SENT IT? Only a drift authors a
+    # distance; a push's travel is a consequence of its zoom, not a target.
+    travelled = frame_travel(track, width)
+    target_px = pan * width
+    if move == "drift" and abs(target_px) > 1.0:
+        off = abs(travelled - target_px) / abs(target_px)
+        fit["frame_travel_px"] = round(travelled, 1)
+        fit["frame_travel_target_px"] = round(target_px, 1)
+        fit["frame_travel_error"] = round(off, 4)
+        if off > FRAME_TRAVEL_TOLERANCE:
+            problems.append(
+                f"the frame travelled {travelled:.1f}px where the edit "
+                f"authored {target_px:.1f}px, which is {off * 100:.1f}% out "
+                f"(tolerance {FRAME_TRAVEL_TOLERANCE * 100:.0f}%). A 2.5D "
+                f"drift has to carry the PAN as well as the parallax: "
+                f"`offset` alone sweeps the near plane against the far one "
+                f"and leaves the frame where it was, which renders as a "
+                f"still photograph however much parallax it has.")
 
     if reference and fit["parallax_px"] < REFERENCE_SPREAD_PX:
         problems.append(
@@ -535,6 +591,9 @@ def main() -> int:
     ap.add_argument("--move", default="push")
     ap.add_argument("--amount", type=float, default=0.08)
     ap.add_argument("--seconds", type=float, default=8.0)
+    ap.add_argument("--pan", type=float, default=0.0,
+                    help="the drift's authored pan, as a fraction of frame "
+                         "width; the frame-travel check uses it as target")
     ap.add_argument("--reference", action="store_true",
                     help="also apply the absolute anchor-parallax floor. For "
                          "the three reference stills it is calibrated on, "
@@ -542,7 +601,7 @@ def main() -> int:
     args = ap.parse_args()
     problems, measured = check(args.image, args.depth, args.move,
                                args.amount, args.seconds,
-                               reference=args.reference)
+                               reference=args.reference, pan=args.pan)
     if measured.get("ok"):
         for r in measured["rows"]:
             print(f"  {r['anchor']}  travel {r['travel_px']:7.2f}px  "

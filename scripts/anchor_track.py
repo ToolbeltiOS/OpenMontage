@@ -189,7 +189,7 @@ def decode(clip: str, width: int, height: int):
 
 def track(image: str, depth: str, anchors: list[tuple[float, float]],
           move: str, amount: float, seconds: float, fps: int,
-          width: int, height: int) -> dict:
+          width: int, height: int, pan: float = 0.0) -> dict:
     """Screen position of each anchor, for every frame."""
     import imageio.v3 as iio
     import numpy as np
@@ -228,7 +228,7 @@ def track(image: str, depth: str, anchors: list[tuple[float, float]],
                      "--amount", str(amount), "--seconds", str(seconds),
                      "--fps", str(fps), "--width", str(width),
                      "--height", str(height), "--out", out,
-                     "--anchors", "0,0"],
+                     "--pan", str(pan), "--anchors", "0,0"],
                     capture_output=True, text=True)
                 if run.returncode != 0 or not Path(out).exists():
                     raise SystemExit(
@@ -256,6 +256,7 @@ def track(image: str, depth: str, anchors: list[tuple[float, float]],
                 out[key].append(out[key][-1] if out[key] else [u, v])
     return {
         "image": image, "depth": depth, "move": move, "amount": amount,
+        "pan": pan,
         "seconds": seconds, "fps": fps, "width": width, "height": height,
         "frames": frames, "tolerance": TOLERANCE, "anchors": out,
     }
@@ -269,6 +270,9 @@ def main() -> int:
                     help="normalised x,y of each anchor on the photograph")
     ap.add_argument("--move", default="push")
     ap.add_argument("--amount", type=float, default=0.08)
+    ap.add_argument("--pan", type=float, default=0.0,
+                    help="whole-frame translation for a drift; see "
+                         "scripts/render_25d.py")
     ap.add_argument("--seconds", type=float, default=8.0)
     ap.add_argument("--fps", type=int, default=30)
     ap.add_argument("--width", type=int, default=1920)
@@ -287,7 +291,7 @@ def main() -> int:
         from render_25d import build, load_depth
 
         dep = load_depth(args.depth, args.width, args.height)
-        scene = build(args.move, args.amount, args.seconds)()
+        scene = build(args.move, args.amount, args.seconds, args.pan)()
         scene.input(image=ramp(args.width, args.height, args.axis,
                                args.cycles), depth=dep)
         scene.main(output=args.out, width=args.width, height=args.height,
@@ -300,7 +304,7 @@ def main() -> int:
         anchors.append((float(x), float(y)))
 
     result = track(args.image, args.depth, anchors, args.move, args.amount,
-                   args.seconds, args.fps, args.width, args.height)
+                   args.seconds, args.fps, args.width, args.height, args.pan)
     Path(args.out).write_text(json.dumps(result, indent=1) + "\n")
     print(f"{result['frames']} frames, {len(anchors)} anchor(s) -> {args.out}")
     for key, pts in result["anchors"].items():

@@ -164,8 +164,62 @@ def crop_to_aspect(array, width: int, height: int):
     return np.asarray(im.crop(box).resize((width, height), resample))
 
 
-def build(move: str, amount: float, seconds: float):
-    """A DepthScene whose update() is the edit's move."""
+#: Screen pixels of frame travel per unit of DepthFlow's `center`, at zoom 1.
+#:
+#: `center` is "camera is above this point, shifts the scene around" -- the
+#: whole-frame translation, which is the half of a drift that `offset` does
+#: NOT do. `offset` sweeps the near plane against the far one and leaves the
+#: frame almost where it was: measured, six offset-only drift candidates
+#: travelled 2 to 6 px in 8 seconds against an authored 2D pan of ~196 px,
+#: and read as static.
+#:
+#: CALIBRATED, and it is not a straight line, because the cover zoom
+#: magnifies the plate and a magnified plate covers a given world-space move
+#: in fewer screen pixels. Three measurements, three anchors each:
+#:
+#:   pan    delta center   zoom    travel px   px / unit / zoom^0.75
+#:   0.025         0.05    1.05        -24.7                   512.3
+#:   0.050         0.10    1.10        -47.8                   513.4
+#:   0.100         0.20    1.20        -89.5                   513.4
+#:
+#: So travel_px = CENTER_PX * delta_center / zoom**CENTER_ZOOM_EXP, which
+#: holds to 0.2% over that range. Inverted below to get the delta_center
+#: that produces the distance the edit asked for.
+#:
+#: NEGATIVE: a positive `center` moves the picture LEFT, while the 2D
+#: treatment's `translateX(+D%)` moves it right. The sign is applied where
+#: the move is built, not here.
+CENTER_PX = 513.0
+CENTER_ZOOM_EXP = 0.75
+
+
+def center_for(pan: float, width: int = 1920) -> tuple[float, float]:
+    """The `center` excursion and cover zoom for a pan of `pan` frame widths.
+
+    `pan` is signed and is the TOTAL travel, in the same units the edit
+    stage writes `driftFrom`/`driftTo` in -- so c003's -0.051 -> +0.051 is a
+    pan of 0.102, and the frame has to move 0.102 * 1920 = 195.8 px.
+
+    The cover zoom comes from the SCREEN distance, not from the centre
+    units: a pan of 0.102 needs the plate 10.2% larger so its edge never
+    enters frame, exactly as the 2D treatment computes it. Tying the cover
+    to the centre units instead inflated it to 1.61 for the same move.
+    """
+    zoom = 1.0 + abs(pan)
+    travel_px = abs(pan) * width
+    delta = travel_px * (zoom ** CENTER_ZOOM_EXP) / CENTER_PX
+    return (-delta if pan >= 0 else delta), zoom
+
+
+def build(move: str, amount: float, seconds: float, pan: float = 0.0):
+    """A DepthScene whose update() is the edit's move.
+
+    `pan` is the whole-frame translation, as a fraction of frame width, and
+    `amount` on a drift is the parallax offset laid over it. They are
+    separate because they are separate quantities: the pan is what the 2D
+    treatment authored and has to be reproduced to the screen distance, the
+    offset is the depth and is a look decision.
+    """
     from attrs import define
     from depthflow.scene import DepthScene
 
@@ -186,18 +240,20 @@ def build(move: str, amount: float, seconds: float):
                 self.state.isometric = (DEFAULT_ISOMETRIC
                                         + ISOMETRIC_TRAVEL * (1.0 - t))
             elif move == "drift":
-                # A lateral camera move is already parallax: the near plane
-                # sweeps against the far one, and it sweeps the OTHER way,
-                # which is what makes a drift read as depth rather than as a
-                # pan. Measured, near and far separate by 5.5 px at 0.20.
-                self.state.offset = (amount * (t - 0.5) * 2.0, 0.0)
-                # ABS, because a drift can run either way. A negative amount
-                # is a right-to-left drift and it is authored that way in the
-                # edit (easter-island c027); `1.0 + amount * 0.25` would then
-                # zoom OUT, below 1, and slide the edge of the picture into
-                # frame. The cover has to grow for a drift in both
-                # directions.
-                self.state.zoom = 1.0 + abs(amount) * 0.25
+                # TWO THINGS, AND THE FIRST ONE WAS MISSING.
+                #
+                # `center` pans the whole frame, which is the move the 2D
+                # treatment authored -- a plate sliding across the screen.
+                # `offset` sweeps the near plane against the far one, which
+                # is the parallax, and it moves the FRAME barely at all.
+                # Rendering only the offset gave six candidates that
+                # travelled 2 to 6 px in 8 seconds where the 2D drift
+                # travelled ~196, and they read as static.
+                sweep = (t - 0.5) * 2.0                 # -1 .. +1
+                delta, cover = center_for(pan)
+                self.state.center = (delta * sweep / 2.0, 0.0)
+                self.state.offset = (amount * sweep, 0.0)
+                self.state.zoom = cover
             else:                                   # lock: relief, no move
                 self.state.zoom = 1.0
     return Move
@@ -211,6 +267,11 @@ def main() -> int:
     ap.add_argument("--move", default="push",
                     choices=("push", "pull", "drift", "lock"))
     ap.add_argument("--amount", type=float, default=0.08)
+    ap.add_argument("--pan", type=float, default=0.0,
+                    help="whole-frame translation for a drift, as a fraction "
+                         "of frame width: the distance the 2D treatment "
+                         "authored. `--amount` is then the parallax laid "
+                         "over it.")
     ap.add_argument("--seconds", type=float, default=8.0)
     ap.add_argument("--flat-depth", action="store_true",
                     help="replace the depth map with a constant, for the "
@@ -238,7 +299,7 @@ def main() -> int:
         # contribution. The twin has to be flat AT THE SAME PLACE.
         depth = np.full_like(depth, 128 if depth.dtype == np.uint8 else 0.5)
 
-    scene = build(args.move, args.amount, args.seconds)()
+    scene = build(args.move, args.amount, args.seconds, args.pan)()
     scene.input(image=image, depth=depth)
     scene.main(output=args.out, width=args.width, height=args.height,
                fps=args.fps, time=args.seconds, ssaa=1.0, freewheel=True)

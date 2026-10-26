@@ -67,7 +67,18 @@ def _env() -> dict:
     return {**os.environ, **HEADLESS}
 
 
-def camera_of(cut: dict) -> tuple[str, float]:
+#: The parallax offset a 2.5D drift lays over its pan. UNSET ON PURPOSE.
+#:
+#: The pan is not a choice -- it is the distance the edit authored and the
+#: gate holds it to 10%. The parallax on top is a look decision of the same
+#: kind as `ISOMETRIC_TRAVEL = 0.35` was for the push, and it is made by
+#: watching the candidates in ~/Downloads/visual-quality/drift2, not by
+#: picking a number here. Until it is made, drift cuts stay on the 2D path
+#: and `eligible()` says so rather than guessing.
+DRIFT_PARALLAX: float | None = None
+
+
+def camera_of(cut: dict) -> tuple[str, float, float]:
     """The cut's authored move, as `render_25d.py`'s move and amount.
 
     `parallaxFrom/To` are CSS scales and `driftFrom/To` are fractions of the
@@ -77,10 +88,11 @@ def camera_of(cut: dict) -> tuple[str, float]:
       1.13 -> 1.00   pull 0.13      a move out, and it is authored this way
       1.00 -> 1.00   drift or lock  the zoom is doing nothing
 
-    A drift's amount is HALVED because `render_25d.py` sweeps its offset from
-    -amount to +amount across the cut, so the span is twice the amount, and
-    it is SIGNED because a drift can run either way (c027 runs right to
-    left).
+    A drift returns BOTH: the pan is the total travel the edit authored, as
+    a signed fraction of frame width, and the amount is the parallax laid
+    over it. They are different quantities and the first attempt conflated
+    them -- feeding the authored fraction straight into DepthFlow's `offset`
+    moved c003's frame 2.0px where the 2D treatment moved it 196.
     """
     pf = cut.get("parallaxFrom")
     pt = cut.get("parallaxTo")
@@ -100,10 +112,11 @@ def camera_of(cut: dict) -> tuple[str, float]:
             f"render_25d.py deliberately, with a parallax measurement, "
             f"before giving this cut a depth plate.")
     if zoom:
-        return ("push", pt - pf) if pt > pf else ("pull", pf - pt)
+        return (("push", pt - pf, 0.0) if pt > pf
+                else ("pull", pf - pt, 0.0))
     if drift:
-        return ("drift", (dt - df) / 2.0)
-    return ("lock", 0.0)
+        return ("drift", DRIFT_PARALLAX or 0.0, dt - df)
+    return ("lock", 0.0, 0.0)
 
 
 def eligible(cut: dict) -> str | None:
@@ -122,9 +135,12 @@ def eligible(cut: dict) -> str | None:
     # and a lock has no camera move for it to move through: the clip would be
     # a static frame that cost a render, and `lib/verify_depth_parallax.py`
     # would fail it correctly, because nothing in it has any parallax.
-    move, amount = camera_of(cut)
+    move, amount, pan = camera_of(cut)
     if move == "lock":
         return "authored as a lock (no move to carry parallax)"
+    if move == "drift" and DRIFT_PARALLAX is None:
+        return ("drift, and DRIFT_PARALLAX is not chosen yet — see "
+                "~/Downloads/visual-quality/drift2")
     return None
 
 
@@ -137,12 +153,12 @@ def build_cut(cut: dict, project: str, out_dir: Path,
     if not image.is_absolute():
         image = ROOT / image
     seconds = round(float(cut["out_seconds"]) - float(cut["in_seconds"]), 3)
-    move, amount = camera_of(cut)
+    move, amount, pan = camera_of(cut)
     anchors = [(a["x"], a["y"]) for a in (cut.get("annotations") or [])]
 
     row: dict[str, Any] = {"cut": cid, "image": str(image), "move": move,
-                           "amount": round(amount, 4), "seconds": seconds,
-                           "anchors": len(anchors)}
+                           "amount": round(amount, 4), "pan": round(pan, 4),
+                           "seconds": seconds, "anchors": len(anchors)}
     if dry_run:
         return row
 
@@ -156,7 +172,8 @@ def build_cut(cut: dict, project: str, out_dir: Path,
     clip = out_dir / f"{cid}.mp4"
     cmd = [str(DEPTH_PY), str(ROOT / "scripts" / "render_25d.py"),
            "--image", str(image), "--depth", str(depth), "--out", str(clip),
-           "--move", move, "--amount", str(amount), "--seconds", str(seconds),
+           "--move", move, "--amount", str(amount), "--pan", str(pan),
+           "--seconds", str(seconds),
            "--fps", str(FPS), "--width", str(WIDTH), "--height", str(HEIGHT)]
     run = subprocess.run(cmd, capture_output=True, text=True, env=_env())
     if run.returncode != 0:
@@ -169,7 +186,8 @@ def build_cut(cut: dict, project: str, out_dir: Path,
         cmd = [str(DEPTH_PY), str(ROOT / "scripts" / "anchor_track.py"),
                "--image", str(image), "--depth", str(depth),
                "--out", str(track_out), "--move", move,
-               "--amount", str(amount), "--seconds", str(seconds),
+               "--amount", str(amount), "--pan", str(pan),
+               "--seconds", str(seconds),
                "--fps", str(FPS), "--width", str(WIDTH), "--height", str(HEIGHT),
                "--anchors"] + [f"{x:.4f},{y:.4f}" for x, y in anchors]
         run = subprocess.run(cmd, capture_output=True, text=True, env=_env())
@@ -210,7 +228,8 @@ def main() -> int:
                               args.dry_run))
 
     for r in rows:
-        bits = (f"  {r['cut']}  {r['move']:<5} {r['amount']:+.4f}  "
+        bits = (f"  {r['cut']}  {r['move']:<5} off {r['amount']:+.4f} "
+                f"pan {r['pan']:+.4f}  "
                 f"{r['seconds']:5.2f}s  {r['anchors']} anchor(s)")
         print(bits + ("  " + r["error"] if r.get("error") else
                       ("  -> " + r["clip"] if r.get("clip") else "")))
