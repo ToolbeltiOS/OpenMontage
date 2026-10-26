@@ -67,15 +67,20 @@ def _env() -> dict:
     return {**os.environ, **HEADLESS}
 
 
-#: The parallax offset a 2.5D drift lays over its pan. UNSET ON PURPOSE.
+#: The parallax offset a 2.5D drift lays over its pan.
 #:
-#: The pan is not a choice -- it is the distance the edit authored and the
-#: gate holds it to 10%. The parallax on top is a look decision of the same
-#: kind as `ISOMETRIC_TRAVEL = 0.35` was for the push, and it is made by
-#: watching the candidates in ~/Downloads/visual-quality/drift2, not by
-#: picking a number here. Until it is made, drift cuts stay on the 2D path
-#: and `eligible()` says so rather than guessing.
-DRIFT_PARALLAX: float | None = None
+#: The pan is not a choice -- it is the distance the edit authored, and the
+#: frame-travel gate holds it to 10%. This is the depth laid over it, and it
+#: is a look decision of the same kind as `ISOMETRIC_TRAVEL = 0.35` was for
+#: the push: chosen by watching the six candidates in
+#: ~/Downloads/visual-quality/drift2, not computed.
+#:
+#: 0.08, the middle candidate. Measured on it, frozen-twin parallax reads
+#: 3.551 on c003 and 4.160 on c027, which sits inside the band the approved
+#: pushes occupy (3.54 moai row, 4.46 Tiryns wall, 5.32 Sacsayhuaman joint)
+#: -- so a drift and a push carry comparable depth, which is what keeps the
+#: two from reading as different films.
+DRIFT_PARALLAX: float | None = 0.08
 
 
 def camera_of(cut: dict) -> tuple[str, float, float]:

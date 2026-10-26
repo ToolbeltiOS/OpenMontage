@@ -201,6 +201,25 @@ def too_similar(sig, kept_sigs, threshold: float = 0.92) -> float | None:
     return None
 
 
+def bank_quality(path: str):
+    """The quality floor, imported lazily so the bank builder stays importable.
+
+    `verify_bank_quality` needs OpenCV, which the fetch path otherwise does
+    not, and a bank build that cannot start because a check could not import
+    is worse than one that runs.
+    """
+    import sys as _sys
+
+    _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        import verify_bank_quality
+    except Exception as e:                       # noqa: BLE001
+        print(f"    quality floor unavailable ({e}); size and flatness only",
+              flush=True)
+        return [], {}
+    return verify_bank_quality.check(path)
+
+
 def grayscale_stddev(path: str) -> float:
     import subprocess
     out = subprocess.run(
@@ -315,6 +334,18 @@ def build(subjects: dict, out_dir: str, bank_path: str, top_n: int = TOP_N) -> d
             sd = grayscale_stddev(dest)
             if sd < MIN_STDDEV:
                 print(f"    reject (flat, std {sd:.1f}): {info['title'][:54]}", flush=True)
+                os.remove(dest)
+                continue
+            # THE QUALITY FLOOR, on the downloaded FILE rather than on what
+            # the provider's metadata claimed: focus, JPEG blocking and the
+            # long edge as it actually is. A still that will be held for
+            # eight seconds and pushed into has to survive magnification,
+            # and none of that is visible in an imageinfo record. See
+            # lib/verify_bank_quality.py for the calibration.
+            qproblems, qm = bank_quality(dest)
+            if qproblems:
+                print(f"    reject ({qproblems[0][:60]}): "
+                      f"{info['title'][:40]}", flush=True)
                 os.remove(dest)
                 continue
             sig = signature(dest)
