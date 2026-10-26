@@ -42,6 +42,16 @@
    "verified": "first 150 characters unchanged; the previous description is still present in full; tags 15, category 27, defaultLanguage en and privacyStatus public all unchanged",
    "note": "videos.update REPLACES the snippet, so title, tags, category and both language fields were sent back as they stood. A description-only body would have wiped them by omission.",
    "video_untouched": true
+  },
+  {
+   "at": "2026-10-26T15:25:16.978104+00:00",
+   "what": "description: extended the CORRECTIONS section",
+   "method": "videos.update part=snippet",
+   "added": "The 4.35-tonne replica walk was a 2012 experiment by the same researchers, not part of the 2025 study. Twenty-six rongorongo texts survive, not twenty-four.",
+   "why": "the two material IMPRECISE findings of the round-two provenance repair — see reports/fact_coverage/easter-island-provenance-repair.md",
+   "not_added": "two further IMPRECISE findings judged to be precision of phrasing rather than fact a viewer would be misled by: Eyraud did not COUNT the tablets (his letter records them in every house and gives no number), and the 52-signs / 99.7% figure is of the corpus rather than of the intact texts. Both are in the report.",
+   "verified": "first 150 characters unchanged; everything before the CORRECTIONS line byte-identical; tags 15, privacy public",
+   "video_untouched": true
   }
  ]
 }

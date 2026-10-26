@@ -359,17 +359,38 @@ class TestTheTelegramLine:
         assert "uncovered" in line
 
     def test_it_says_when_cited_ids_do_not_resolve(self):
-        """Coverage can read zero while a section cites ids that are not
-        there, because one resolving id covers a whole section."""
+        """Tested on a fixture, not on a film.
+
+        It used to assert that easter-island's line carried this warning,
+        which was true of a film with thirty dangling citations and became
+        false the moment they were repaired. A test that passes because a
+        project is broken fails when it is fixed.
+        """
         import sys
         from pathlib import Path
 
         sys.path.insert(0, str(Path("scripts").resolve()))
-        from telegram_gate import fact_line
+        import telegram_gate
 
-        line = fact_line("easter-island",
-                         Path("projects/easter-island/artifacts/script.json"))
-        assert "do not resolve" in line
+        book = {"data_points": [{"id": "r01", "claim": "x",
+                                 "source_url": "https://e.test",
+                                 "supports": "Fifty-three houses."}]}
+        script = {"sections": [{"id": "act1", "text": "Fifty-three houses.",
+                                "source_ref": "ledger r01, c58"}]}
+        problems, m = fc.check(script, book, "capitalisation", {})
+        assert m["ids_that_do_not_resolve"] == ["c58"]
+        assert problems, "the warning the line is built from"
+
+    def test_the_repaired_film_has_none_left(self):
+        """What the repair achieved, asserted on the artifact."""
+        import json
+        from pathlib import Path
+
+        art = Path("projects/easter-island/artifacts")
+        _, m = fc.check(json.loads((art / "script.json").read_text()),
+                        json.loads((art / "research_brief.json").read_text()),
+                        "capitalisation")
+        assert m["ids_that_do_not_resolve"] == [], m["ids_that_do_not_resolve"]
 
     def test_it_never_raises(self):
         import sys
