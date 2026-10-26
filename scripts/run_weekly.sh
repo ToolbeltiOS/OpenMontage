@@ -21,6 +21,20 @@
 #   scripts/run_weekly.sh                 # pick a topic and run
 #   scripts/run_weekly.sh --brief <path>  # use this brief instead
 #   scripts/run_weekly.sh --dry-run       # prove the hand-offs, render nothing
+#   RUN_WEEKLY_SMOKE=1 scripts/run_weekly.sh
+#                                         # prove the LAUNCHD path, spend nothing
+#
+# SMOKE MODE
+#   --dry-run proves the hand-offs between the stages. It does not prove the
+#   thing that actually goes wrong with a scheduled job: whether launchd runs
+#   the script at all, with the right environment, writing where it should.
+#   The agent's plist pointed at a file that did not exist for three days and
+#   nothing noticed, because nothing had ever made launchd try.
+#
+#   RUN_WEEKLY_SMOKE=1 runs the real path — the launchd entry, the lock file,
+#   the log rotation, the topic pick, Telegram — and stops at the script gate
+#   without calling `claude -p` and without rendering. It costs nothing and it
+#   is the only thing that exercises the plist.
 set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -31,6 +45,24 @@ LOCK="$REPO/.weekly.lock"
 BRIEF=""
 DRY_RUN=0
 GATE_HOURS="${GATE_HOURS:-12}"
+SMOKE="${RUN_WEEKLY_SMOKE:-0}"
+
+#: How many times a stage may be resumed after a usage limit before the run
+#: fails loudly. The owner's number, 2026-10-24.
+#:
+#: IT WAS NEVER DEFINED. `claude_stage` used it four times and nothing set it.
+#:
+#: Measured, under `set -u` an unbound name in `(( ))` ABORTS THE SHELL: the
+#: error prints, neither branch of the `if` runs, nothing after it runs — and
+#: the exit status is 0. So the first usage limit would have killed the whole
+#: weekly run, with no `fail()`, no Telegram, no "giving up", and a launchd
+#: job that looks like it succeeded. Silent, and indistinguishable from a
+#: clean finish.
+#:
+#: Every part of that was written and reviewed; none of it had ever run. The
+#: test that was supposed to hold the cap asserted only that the STRING
+#: "MAX_RESUMES" appeared in the file.
+MAX_RESUMES="${MAX_RESUMES:-6}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -176,7 +208,9 @@ Write the script to projects/$SLUG/artifacts/script.json and the hero style
 frames to projects/$SLUG/renders/style/. Do not render the film.
 PROMPTEOF
 
-if [[ "$DRY_RUN" == "1" ]]; then
+if [[ "$SMOKE" == "1" ]]; then
+  say "smoke: not calling claude -p"
+elif [[ "$DRY_RUN" == "1" ]]; then
   say "dry run: skipping claude -p"
 else
   say "writing the script (claude -p)"
@@ -186,6 +220,20 @@ else
 fi
 
 # ── 3. the human ─────────────────────────────────────────────────────────
+#
+# The smoke run stops HERE, at the gate, because everything before it is the
+# part a schedule can get wrong unattended and everything after it needs a
+# human anyway.
+if [[ "$SMOKE" == "1" ]]; then
+  say "smoke run reached the gate"
+  notify "<b>smoke run reached the gate</b>
+topic: $TOPIC
+log: $LOGDIR/run.log
+launchd ran the script, took the lock, rotated the logs and picked a topic.
+No model calls, no render, nothing published."
+  say "done (smoke)"
+  exit 0
+fi
 if [[ "$DRY_RUN" == "1" ]]; then
   say "dry run: skipping the script gate (there is no script to approve)"
   say "         scripts/dry_run.py is what exercises the gate"
