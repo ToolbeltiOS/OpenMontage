@@ -83,29 +83,6 @@ def _env() -> dict:
 #: The interpreter that can run DepthFlow. See `scripts/render_25d.py`.
 DEPTH_PY = ROOT / ".venv-depth" / "bin" / "python"
 
-#: Minimum anchor parallax, in pixels, AFTER a plain zoom is fitted and
-#: subtracted. Raw travel is not the measurement — see `parallax_residual`.
-#:
-#: TWO CHECKS, BECAUSE THERE ARE TWO FAILURES AND NEITHER MEASURE CATCHES
-#: BOTH.
-#:
-#:   failure              flat-twin present   anchor parallax
-#:   no-relief depth map             0.000              2.03
-#:   zoom-only move                 21.660              1.50   <- anchors only
-#:   working renders          6.2 to 19.6        3.54 to 5.32
-#:
-#: The flat-twin number is blind to the second failure — it reads HIGHER
-#: there than on any working render. The anchors catch both. Both run.
-#:
-#: 2.5 px, not the 4.0 first proposed. 4.0 came from two hand-picked anchors
-#: at the depth extremes under isometric 0.5; the shipping setting is 0.35
-#: with anchors chosen automatically, and at 4.0 a GOOD render measures 3.54
-#: and fails. 2.5 is the only floor that separates the measured bands, and it
-#: separates them by 1.42x above and 1.23x below. That is THIN, and it is the
-#: honest number: the gate will not survive a photograph with less depth in
-#: it than these three. Widening the margin means more parallax, which is a
-#: look decision at isometric 0.35 and not the gate's to make.
-MIN_SPREAD_PX = 2.5
 
 #: THE VERDICT: how much the depth map changes the picture, as a mean
 #: absolute difference in 8-bit levels between the render and a twin of it
@@ -115,7 +92,35 @@ MIN_SPREAD_PX = 2.5
 #: reach the shader and change anything — rather than inferring it from three
 #: points. Measured, the broken render and its flat twin differed by 0.000;
 #: a working one differs by about 20. There is no band to overlap.
-MIN_FLAT_DIFF = 2.0
+MIN_FLAT_DIFF = 1.0
+
+#: THE SECOND PER-CUT CHECK: how much the move's parallax-carrying parameter
+#: contributes, against a twin with that one parameter frozen. See
+#: `parallax_twin_difference`.
+#:
+#: Also 1.0, and for the same reason: the two failures read EXACTLY 0.000 on
+#: the check that sees them, and the worst working render measured 3.326.
+#: There is no band to overlap, so the floor only has to be above zero and
+#: below 3.3 — unlike the absolute px floor below, which had to thread a gap
+#: between 2.03 and 3.54 and could not be made to work per cut.
+#:
+#:   case                     flat twin   frozen twin
+#:   moai row      approved      19.639         9.550
+#:   tiryns wall   approved       6.166         3.952
+#:   sacsayhuaman  approved      16.012        11.840
+#:   c053 push 0.2427             6.334         3.326
+#:   c154 push 0.0600             7.498         8.011
+#:   c094 pull 0.1542             6.908         7.223
+#:   INJECT no-relief map         0.000        15.251
+#:   INJECT zoom-only move       21.660         0.000
+MIN_FROZEN_DIFF = 1.0
+
+#: The absolute anchor-parallax floor, and it is a REGRESSION CHECK ON THE
+#: THREE REFERENCE STILLS ONLY — `check(..., reference=True)`. It is not
+#: applied per cut and cannot be: see the table in
+#: reports/depth_parallax.md, where one of seven authored cuts clears it
+#: while the flat twin shows the depth map working on all seven.
+REFERENCE_SPREAD_PX = 3.0
 
 #: How much that contribution must CHANGE between the first frame and the
 #: last. Reported; it does NOT separate the two failures on its own.
@@ -131,7 +136,35 @@ MIN_FLAT_MOTION = 1.0
 EDGE_MARGIN = 0.12
 
 
-def pick_anchors(depth_png: str, count: int = 3) -> list[tuple[float, float]]:
+#: Depth percentiles the three anchors are taken from: the NEAREST and
+#: FURTHEST trackable points the picture has, and the middle.
+#:
+#: 10/50/90 was asked for, and it is kept below as `DECILES` because it is
+#: the natural choice, but it cannot be the default. It was asked for to feed
+#: an expected-parallax model, and that model does not exist (see
+#: `parallax_twin_difference`). Without it the deciles have no consumer, and
+#: they are actively worse for the one check that still reads anchors:
+#:
+#:   reference still     extremes 2/50/98     deciles 10/50/90
+#:   moai row                      3.54 px              2.61 px
+#:   tiryns wall                   4.46 px              4.24 px
+#:   sacsayhuaman joint            5.32 px              0.69 px
+#:
+#: The absolute floor is calibrated against the first column, and at 3.0 the
+#: second column fails two of the three stills the floor exists to watch. The
+#: Sacsayhuaman case shows why: its 10th and 50th percentile depths are BOTH
+#: 0.120, so two of the three anchors land side by side and the pair
+#: straddles no depth at all. The extremes are the widest depth separation
+#: the photograph offers, which is what makes the number mean something.
+PERCENTILES = (2.0, 50.0, 98.0)
+
+#: The deciles, available to a caller that wants them. Nothing uses them.
+DECILES = (10.0, 50.0, 90.0)
+
+
+def pick_anchors(depth_png: str, count: int = 3,
+                 percentiles: tuple[float, ...] = PERCENTILES
+                 ) -> list[tuple[float, float]]:
     """A near, a middle and a far point AT THE SAME DISTANCE FROM CENTRE.
 
     The radius is the control. A zoom moves every point in proportion to how
@@ -179,7 +212,8 @@ def pick_anchors(depth_png: str, count: int = 3) -> list[tuple[float, float]]:
     taken = np.zeros_like(d, dtype=bool)
     keep = max(int(min(h, w) * 0.05), 8)          # no two anchors adjacent
     out: list[tuple[float, float]] = []
-    for pct in np.linspace(2, 98, count):
+    for pct in (percentiles[:count] if len(percentiles) >= count
+                else np.linspace(2, 98, count)):
         target = np.percentile(values, pct)
         cost = np.where(band & ~taken, np.abs(d - target), 1e9)
         flat_i = int(np.argmin(cost))
@@ -303,9 +337,87 @@ def flat_twin_difference(image: str, depth: str, move: str, amount: float,
         return present, motion
 
 
+def parallax_twin_difference(image: str, depth: str, move: str, amount: float,
+                             seconds: float, fps: int, width: int,
+                             height: int) -> float:
+    """How much of this render is the MOVE CARRYING THE DEPTH, in 8-bit levels.
+
+    The second self-comparison, and the one the flat twin cannot make. The
+    same photograph, the same depth map, the same everything — rendered once
+    normally and once with the move's PARALLAX-CARRYING PARAMETER FROZEN:
+
+      push, pull   `isometric` held at its start value instead of opening
+      drift        the lateral offset held at zero
+
+    The difference is what that parameter contributes. It is the direct form
+    of the question "does this move carry the camera through the scene, or
+    only scale the picture", which is the failure a flat-twin diff reads as
+    LOUDER than a working render: scaling a static relief changes the picture
+    a great deal, so `present` goes up while nothing parallaxes.
+
+    WHY A SELF-COMPARISON AND NOT A MODEL. The first attempt was the obvious
+    one: predict the expected parallax from the depth map and the authored
+    move, and require the measured fraction of it. It does not work, because
+    there is no first-order model of this shader. Fitting
+    `resid = k * amount * height * |depth - steady|` over 15 tracked anchors
+    gives a k that ranges 8x for drifts and 29x for pushes, with and without
+    a radius term — the shader RAYMARCHES, so where a point lands depends on
+    the depth field along its whole ray and not on the depth under it. The
+    percentile anchors are not dependable either: on the Sacsayhuaman joint
+    the 10th and 50th percentile depths are both 0.120, so two of the three
+    anchors land side by side and never straddle any depth at all.
+
+    A self-comparison needs no model. One parameter changes and everything
+    else is held, so whatever comes out is that parameter's contribution.
+    """
+    import numpy as np
+
+    with tempfile.TemporaryDirectory() as tmp:
+        real = str(Path(tmp) / "real.mp4")
+        frozen = str(Path(tmp) / "frozen.mp4")
+        base = [str(DEPTH_PY), str(ROOT / "scripts" / "render_25d.py"),
+                "--image", image, "--depth", depth, "--seconds", str(seconds),
+                "--fps", str(fps), "--width", str(width),
+                "--height", str(height)]
+        if subprocess.run(base + ["--move", move, "--amount", str(amount),
+                                  "--out", real],
+                          capture_output=True, env=_env()).returncode != 0:
+            return -1.0
+
+        # FREEZE THE PARAMETER THAT CARRIES THE PARALLAX, and only it.
+        if move in ("push", "pull"):
+            env = {**_env(), "OPENMONTAGE_ISOMETRIC_TRAVEL": "0.0"}
+            args = ["--move", move, "--amount", str(amount)]
+        else:
+            env = _env()
+            args = ["--move", move, "--amount", "0.0"]
+        if subprocess.run(base + args + ["--out", frozen],
+                          capture_output=True, env=env).returncode != 0:
+            return -1.0
+
+        def luma(path):
+            raw = subprocess.run(
+                ["ffmpeg", "-nostdin", "-v", "error", "-i", path,
+                 "-f", "rawvideo", "-pix_fmt", "gray", "-"],
+                capture_output=True, check=True).stdout
+            return np.frombuffer(raw, dtype="u1").reshape(
+                -1, height, width).astype("float32")
+
+        a, b = luma(real), luma(frozen)
+        n = min(len(a), len(b))
+        return float(np.abs(a[:n] - b[:n]).mean())
+
+
 def check(image: str, depth: str, move: str = "push", amount: float = 0.08,
           seconds: float = 8.0, fps: int = 30, width: int = 1920,
-          height: int = 1080) -> tuple[list[str], dict[str, Any]]:
+          height: int = 1080,
+          reference: bool = False) -> tuple[list[str], dict[str, Any]]:
+    """Two per-cut checks, each a self-comparison with one thing changed.
+
+    `reference=True` additionally applies the absolute anchor-parallax floor,
+    and is for the three reference stills only — the cases it is calibrated
+    on. It is not a per-cut gate; see `REFERENCE_SPREAD_PX`.
+    """
     # THE VERDICT FIRST, because it does not depend on anchors. A depth map
     # with no relief has no three distinct depths to track, and a gate that
     # fell over trying to find them would report a subprocess error instead
@@ -323,6 +435,25 @@ def check(image: str, depth: str, move: str = "push", amount: float = 0.08,
             f"or its dtype was dropped. The render will look entirely "
             f"plausible and it is a 2D zoom.")
 
+    # CHECK TWO, and it is the one that catches the failure check one reads
+    # as LOUDER than a working render.
+    frozen = parallax_twin_difference(image, depth, move, amount, seconds,
+                                      fps, width, height)
+    if frozen < 0:
+        problems.append("the frozen-parameter twin could not be rendered")
+    elif frozen < MIN_FROZEN_DIFF:
+        carrier = ("`isometric`, which has to open over the cut"
+                   if move in ("push", "pull")
+                   else "the lateral offset")
+        problems.append(
+            f"freezing {carrier} changes this render by {frozen:.3f} levels, "
+            f"under the {MIN_FROZEN_DIFF} floor — so that parameter is "
+            f"contributing nothing and the move does not carry the camera "
+            f"through the scene. The depth map may well be loaded and the "
+            f"picture may well move; a zoom about a pinned depth plane does "
+            f"both and has no parallax. Measured on the injected zoom-only "
+            f"push: flat twin 21.660 (louder than any working render), "
+            f"frozen twin 0.000.")
 
     anchors = pick_anchors(depth)
     if len(anchors) < 3:
@@ -333,10 +464,14 @@ def check(image: str, depth: str, move: str = "push", amount: float = 0.08,
         return problems, {"ok": True, "flat_twin_diff": round(diff, 3),
                           "flat_twin_motion": round(motion, 3),
                           "flat_twin_floor": MIN_FLAT_DIFF,
+        "frozen_twin_diff": round(frozen, 3),
+        "frozen_twin_floor": MIN_FROZEN_DIFF,
+                          "frozen_twin_diff": round(frozen, 3),
+                          "frozen_twin_floor": MIN_FROZEN_DIFF,
                           "flat_motion_floor": MIN_FLAT_MOTION,
                           "rows": [], "parallax_px": 0.0,
                           "raw_travel_spread_px": 0.0, "fitted_zoom": 0.0,
-                          "floor_px": MIN_SPREAD_PX, "move": move,
+                          "floor_px": REFERENCE_SPREAD_PX, "move": move,
                           "amount": amount, "seconds": seconds}
 
     with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as fh:
@@ -355,21 +490,25 @@ def check(image: str, depth: str, move: str = "push", amount: float = 0.08,
         return problems, {"ok": True, "flat_twin_diff": round(diff, 3),
                           "flat_twin_motion": round(motion, 3),
                           "flat_twin_floor": MIN_FLAT_DIFF,
+        "frozen_twin_diff": round(frozen, 3),
+        "frozen_twin_floor": MIN_FROZEN_DIFF,
+                          "frozen_twin_diff": round(frozen, 3),
+                          "frozen_twin_floor": MIN_FROZEN_DIFF,
                           "flat_motion_floor": MIN_FLAT_MOTION, "rows": [],
                           "parallax_px": 0.0, "raw_travel_spread_px": 0.0,
-                          "fitted_zoom": 0.0, "floor_px": MIN_SPREAD_PX,
+                          "fitted_zoom": 0.0, "floor_px": REFERENCE_SPREAD_PX,
                           "move": move, "amount": amount, "seconds": seconds}
 
     track = json.loads(Path(out).read_text())
     moves = [displacement(track, f"{u:.4f},{v:.4f}") for u, v in anchors]
     fit = parallax_residual(anchors, moves, width, height)
 
-    if fit["parallax_px"] < MIN_SPREAD_PX:
+    if reference and fit["parallax_px"] < REFERENCE_SPREAD_PX:
         problems.append(
             f"once a plain zoom is subtracted, the three anchors have "
             f"{', '.join(str(r['residual_px']) for r in fit['rows'])} px of "
             f"travel left — at most {fit['parallax_px']}, under the "
-            f"{MIN_SPREAD_PX} px floor. Points at different depths are "
+            f"{REFERENCE_SPREAD_PX} px floor. Points at different depths are "
             f"moving as a flat plane would. The depth map IS reaching the "
             f"shader ({diff:.1f} levels against a flat twin), so this is the "
             f"MOVE: it scales about a pinned depth plane instead of carrying "
@@ -379,8 +518,12 @@ def check(image: str, depth: str, move: str = "push", amount: float = 0.08,
         **fit, "flat_twin_diff": round(diff, 3),
         "flat_twin_motion": round(motion, 3),
         "flat_twin_floor": MIN_FLAT_DIFF,
+        "frozen_twin_diff": round(frozen, 3),
+        "frozen_twin_floor": MIN_FROZEN_DIFF,
+                          "frozen_twin_diff": round(frozen, 3),
+                          "frozen_twin_floor": MIN_FROZEN_DIFF,
         "flat_motion_floor": MIN_FLAT_MOTION,
-        "floor_px": MIN_SPREAD_PX, "move": move, "amount": amount,
+        "floor_px": REFERENCE_SPREAD_PX, "move": move, "amount": amount,
         "seconds": seconds, "frames": track.get("frames"), "ok": True,
     }
 
@@ -392,21 +535,31 @@ def main() -> int:
     ap.add_argument("--move", default="push")
     ap.add_argument("--amount", type=float, default=0.08)
     ap.add_argument("--seconds", type=float, default=8.0)
+    ap.add_argument("--reference", action="store_true",
+                    help="also apply the absolute anchor-parallax floor. For "
+                         "the three reference stills it is calibrated on, "
+                         "not for an arbitrary cut.")
     args = ap.parse_args()
     problems, measured = check(args.image, args.depth, args.move,
-                               args.amount, args.seconds)
+                               args.amount, args.seconds,
+                               reference=args.reference)
     if measured.get("ok"):
         for r in measured["rows"]:
             print(f"  {r['anchor']}  travel {r['travel_px']:7.2f}px  "
                   f"parallax {r['residual_px']:6.2f}px")
         print(f"  fitted zoom {measured['fitted_zoom']}, anchor parallax "
               f"{measured['parallax_px']}px, raw travel spread "
-              f"{measured['raw_travel_spread_px']}px")
+              f"{measured['raw_travel_spread_px']}px"
+              + (f" (floor {measured['floor_px']}, reference mode)"
+                 if args.reference else " (reported; not a per-cut floor)"))
         print(f"  depth changes the render by "
               f"{measured['flat_twin_diff']} levels against a flat twin "
               f"(floor {measured['flat_twin_floor']}); that contribution "
               f"moves {measured.get('flat_twin_motion')} across the hold "
               f"(reported, not a floor — a zoom moves it too)")
+        print(f"  freezing the move's parallax parameter changes it by "
+              f"{measured.get('frozen_twin_diff')} levels "
+              f"(floor {measured.get('frozen_twin_floor')})")
     for p in problems:
         print("  -", p)
     print("DEPTH PARALLAX:", "PASS" if not problems else "FAIL")

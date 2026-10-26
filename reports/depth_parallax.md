@@ -121,3 +121,49 @@ one passed all seven.
 The drift rows are a separate defect, not evidence about the floor: the
 authored drift amount does not map onto DepthFlow's `offset` (see the wiring
 commit), so those four cuts barely move at all.
+
+## The per-cut gate: two self-comparisons, and why not a model
+
+The expected-parallax model was tried first and does not exist. Fitting
+`residual = k · amount · height · |depth − steady|` over 15 tracked anchors
+gives a `k` spanning **8×** for drifts and **29×** for pushes, with and
+without a radius term. The shader raymarches, so where a point lands depends
+on the depth field along its whole ray rather than the depth beneath it.
+
+The percentile anchors are not dependable either. On the Sacsayhuamán joint
+the 10th and 50th percentile depths are **both 0.120**, so two of three
+anchors land side by side and straddle no depth at all — which is why its
+parallax reads 0.69 px on deciles against 5.32 px on the depth extremes.
+
+So the per-cut gate makes no prediction. It changes one thing and measures
+what that thing contributed:
+
+1. **Flat twin** — the same move with a constant depth map. Floor 1.0.
+2. **Frozen parameter** — the same move with its parallax-carrying parameter
+   held still: `isometric` for a push or pull, the lateral offset for a
+   drift. Floor 1.0.
+
+| case | flat twin | frozen twin | verdict |
+|---|---|---|---|
+| moai row (approved) | 19.639 | 9.550 | pass |
+| Tiryns wall (approved) | 6.166 | 3.952 | pass |
+| Sacsayhuamán (approved) | 16.012 | 11.840 | pass |
+| c053 push 0.2427 | 6.334 | 3.326 | pass |
+| c154 push 0.0600 | 7.498 | 8.011 | pass |
+| c094 pull 0.1542 | 6.908 | 7.223 | pass |
+| c117 drift 0.0136 | 8.441 | 3.742 | pass |
+| c003 drift 0.0510 | 21.942 | 21.076 | pass |
+| INJECT no-relief map | **0.000** | 15.251 | **FAIL** |
+| INJECT zoom-only move | 21.660 | **0.000** | **FAIL** |
+
+Each failure reads **exactly 0.000** on the check that sees it, and the worst
+working render reads 3.326. There is no band to overlap, which is what the
+absolute px floor could never achieve — it had to thread a gap between 2.03
+and 3.54.
+
+**One honest limit.** For a *drift* the frozen twin holds the offset at zero,
+so it proves the lateral move is happening, not that it is big enough. It
+reads 21.076 on c003, whose plate travels only 2.0 px — so this check would
+**not** have caught the drift-mapping defect. For a push or a pull it is
+exactly the right question, because freezing `isometric` leaves the zoom
+untouched and isolates the parallax.
