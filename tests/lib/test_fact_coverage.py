@@ -218,3 +218,148 @@ class TestSentenceAndParagraphSplitting:
     def test_a_sentence_ending_in_a_number_is_not_split(self):
         got = fc.sentences("It is 3.9 hectares. Nobody lives there.")
         assert len(got) == 2, got
+
+
+class TestExemptBySectionTypeNotBySentence:
+    """A per-sentence whitelist turns the gate off one line at a time, and the
+    line that most wants exempting is always the one that most needs checking.
+
+    The outro asserts nothing about the world — it is the sign-off, and it
+    trips the gate only because it contains numerals. Both delivered films
+    fail on exactly those two sentences and on nothing else outside act 4.
+    """
+
+    def test_the_outro_is_exempt(self):
+        assert "outro" in fc.exempt_sections({})
+
+    def test_the_cold_open_is_not(self):
+        assert "cold_open" not in fc.exempt_sections({})
+        assert "cold_open" in fc.NEVER_EXEMPT
+
+    def test_the_playbook_is_where_the_list_lives(self):
+        import yaml
+
+        pb = yaml.safe_load(open("styles/wak3up-documentary.yaml",
+                                 encoding="utf-8"))
+        assert pb["fact_gate"]["exempt_sections"] == ["outro"]
+        assert "cold_open" in pb["fact_gate"]["never_exempt"]
+        assert pb["fact_gate"]["exempt_reason"]["outro"]
+
+    def test_a_playbook_exempting_the_argument_is_refused(self):
+        """INJECTED: the list must not be a way to switch the gate off.
+
+        Exempting a section that carries the argument is a change to the
+        module, in a commit, with a reason — not an entry in a list.
+        """
+        with pytest.raises(SystemExit, match="carry the film's argument"):
+            fc.exempt_sections({"fact_gate": {
+                "exempt_sections": ["outro", "cold_open"]}})
+
+    def test_an_exempt_section_is_not_examined_at_all(self):
+        script = {"sections": [
+            {"id": "outro", "text": "Four open files, and we closed one."},
+            {"id": "act1", "text": "Fifty-three houses.", "claims": ["c02"]},
+        ]}
+        problems, m = fc.check(script, LEDGER, "capitalisation", {})
+        assert problems == []
+        assert m["exempt_sections"] == ["outro"]
+        assert all(r["section"] != "outro" for r in m["rows"])
+
+    def test_the_cold_open_is_still_examined(self):
+        script = {"sections": [
+            {"id": "cold_open", "text": "Fifty-three houses stood there."}]}
+        problems, _ = fc.check(script, LEDGER, "capitalisation", {})
+        assert problems, "the cold open was not checked"
+
+
+class TestClaimIdsMayCarryAPrefix:
+    """A repair's ids are not c-numbers, and the pattern has to know that.
+
+    Numbering a repair in the c-space risks colliding with an id the script
+    already cites — on easter-island, c16-c41 would have made c32 resolve,
+    and c32 is one of act 4's fourteen dangling citations. So the repair uses
+    r01-r26, and a pattern that only matched `c` read a section citing all
+    twenty-six as citing nothing at all.
+    """
+
+    def test_an_r_id_is_read_out_of_prose(self):
+        assert fc.cited_in("claim ledger r01, r26 — brief.json") == ["r01", "r26"]
+
+    def test_c_ids_still_work(self):
+        assert fc.cited_in("ledger c07, c12") == ["c07", "c12"]
+
+    def test_both_at_once(self):
+        assert fc.cited_in("c01 and r09") == ["c01", "r09"]
+
+    def test_a_repair_id_resolves_when_the_ledger_carries_it(self):
+        book = fc.ledger({"data_points": [{"id": "r01", "claim": "x",
+                                           "source_url": "https://e.test"}]})
+        assert "r01" in book
+
+
+class TestNamingADeadIdInAsourceRefReCitesIt:
+    """The field IS the citation list, so a note about an id is a citation.
+
+    Writing "the ids this field carried — c32, c46-c58 — never existed" into
+    act 4's source_ref put c32, c46 and c58 straight back into its citation
+    list, and the gate failed on the explanation of the fix. The same shape as
+    the `music_rise_reason` diagnostic that once failed plate purity.
+    """
+
+    def test_a_note_mentioning_an_id_is_indistinguishable_from_citing_it(self):
+        assert fc.cited_in("repaired; c32 never existed") == ["c32"]
+
+    def test_the_delivered_source_ref_names_no_dead_ids(self):
+        import json
+
+        script = json.loads(
+            open("projects/easter-island/artifacts/script.json",
+                 encoding="utf-8").read())
+        act4 = next(s for s in script["sections"] if s["id"] == "act4")
+        assert fc.cited_in(act4["source_ref"]) == [f"r{i:02d}"
+                                                   for i in range(1, 27)]
+
+
+class TestTheTelegramLine:
+    def test_it_reports_the_two_numbers_asked_for(self):
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from telegram_gate import fact_line
+
+        line = fact_line("easter-island",
+                         Path("projects/easter-island/artifacts/script.json"))
+        assert line.startswith("fact gate: ")
+        assert "sentences need a claim" in line
+        assert "uncovered" in line
+
+    def test_it_says_when_cited_ids_do_not_resolve(self):
+        """Coverage can read zero while a section cites ids that are not
+        there, because one resolving id covers a whole section."""
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from telegram_gate import fact_line
+
+        line = fact_line("easter-island",
+                         Path("projects/easter-island/artifacts/script.json"))
+        assert "do not resolve" in line
+
+    def test_it_never_raises(self):
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from telegram_gate import fact_line
+
+        assert "could not be summarised" in fact_line(
+            "no-such-project", Path("no-such-script.json"))
+
+    def test_it_is_in_the_header_beside_the_script(self):
+        from pathlib import Path
+
+        src = Path("scripts/telegram_gate.py").read_text()
+        i = src.index("header = (")
+        assert "fact_line(project, script_path)" in src[i:i + 400]

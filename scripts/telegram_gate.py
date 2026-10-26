@@ -124,6 +124,43 @@ def post_script_as_text(script_path: Path) -> None:
         telegram.require(f"<i>script {i}/{len(chunks)}</i>\n<pre>{chunk}</pre>")
 
 
+def fact_line(project: str, script_path: Path) -> str:
+    """One line on the fact gate, beside the script it is about.
+
+    COMPUTED HERE, not passed in from the runner. The number has to be about
+    the script in the message — the runner's own run of the gate happens
+    before the notes loop, and a script revised after notes would otherwise be
+    shown next to the figure for the script it replaced.
+
+    The runner fails the run when anything is uncovered, so in an unattended
+    run this reads zero by construction. It is worth sending anyway: it says
+    the gate ran, and how much of the script it had an opinion about.
+
+    Never raises. A reporting extra must not be the reason an approval
+    request fails to send.
+    """
+    try:
+        sys.path.insert(0, str(ROOT / "lib"))
+        from verify_fact_coverage import check
+
+        brief = ROOT / "projects" / project / "artifacts" / "research_brief.json"
+        problems, m = check(json.loads(script_path.read_text()),
+                            json.loads(brief.read_text()))
+        line = (f"fact gate: {m['sentences_needing_a_claim']} sentences need "
+                f"a claim, {m['sentences_uncovered']} uncovered")
+        dead = len(m.get("ids_that_do_not_resolve") or [])
+        if dead:
+            # Coverage can read zero while a section cites ids that are not
+            # there, because one resolving id covers a whole section. Say so
+            # rather than let the zero carry more than it means.
+            line += f" — but {dead} cited claim id(s) do not resolve"
+        if m.get("exempt_sections"):
+            line += f" (exempt: {', '.join(m['exempt_sections'])})"
+        return line
+    except Exception as exc:                       # never block the approval
+        return f"fact gate: could not be summarised ({type(exc).__name__})"
+
+
 def post(project: str, script_path: Path, frames: list[Path],
          title: str, outline: list[str], attempt: int = 1) -> dict:
     """Post the four things, and report what of it actually arrived.
@@ -137,7 +174,8 @@ def post(project: str, script_path: Path, frames: list[Path],
     """
     header = (f"<b>{title}</b>\n"
               f"<i>{project}</i> — script gate"
-              + (" (revised)" if attempt > 1 else "") + "\n\n"
+              + (" (revised)" if attempt > 1 else "") + "\n"
+              + f"<i>{fact_line(project, script_path)}</i>\n\n"
               + "\n".join(outline[:40]))
     telegram.require(header)
 

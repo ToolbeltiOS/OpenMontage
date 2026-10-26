@@ -1298,6 +1298,45 @@ asset_reuse:
        different one. When the picture changes, the caption, the annotation
        anchors and the annotated_still type all go with it."
 
+# ── the fact gate ────────────────────────────────────────────────────
+# Blocking at the script stage, before the Telegram gate: a gate asks a human
+# to approve a script, and a script whose claims do not resolve is not one to
+# put in front of them. lib/verify_fact_coverage.py.
+#
+# A sentence carrying a date, a number, a proper noun or a quotation must have
+# a claim id in its paragraph's claims list, and that claim must exist in the
+# research brief with a source_url. The gate checks that a cited id RESOLVES,
+# not that a citation is present — a citation-present check passes a section
+# citing fourteen ids that never existed, which is what easter-island's act 4
+# did.
+fact_gate:
+  blocks: script_stage
+  proper_nouns: "spaCy en_core_web_sm"
+  numbers: "digits AND spelled out — this channel writes 'three hundred and
+            ninety-four', and a digits-only rule finds almost no figure in the
+            catalogue"
+
+  # EXEMPT BY SECTION TYPE, NEVER BY SENTENCE.
+  #
+  # A per-sentence whitelist is a way to turn the gate off one line at a time,
+  # and the line that most wants exempting is always the one that most needs
+  # checking. A section type is a claim about what a section IS, and it is
+  # arguable in one place instead of fifty.
+  exempt_sections: [outro]
+  exempt_reason:
+    outro: >
+      The outro asserts nothing about the world. It is the sign-off — "four
+      open files, and we closed one of them tonight", "a like and a subscribe
+      is how that happens" — and it trips the gate only because it contains
+      numerals. Both delivered films fail on exactly these two sentences and
+      on nothing else outside act 4.
+
+  # STATED SO IT CANNOT DRIFT. The cold open is the most claim-dense sixty
+  # seconds in the film and it is where a viewer decides whether to believe
+  # the rest; exempting it would be exempting the part that carries the
+  # argument.
+  never_exempt: [cold_open, act1, act2, act3, act4, title_sequence]
+
 # The music is mixed by lib/mix_audio.py and by nothing else. The props
 # builder used to carry its own bed-and-sidechain mix; that mix was rejected
 # and the replacement was applied by re-muxing onto a finished render, so the

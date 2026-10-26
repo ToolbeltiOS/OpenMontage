@@ -80,6 +80,51 @@ WORD_NUMBERS = {
     "eighth", "ninth", "tenth", "hundredth", "thousandth",
 }
 
+#: Section types the gate does not examine, read from the playbook.
+#:
+#: BY SECTION TYPE, NEVER BY SENTENCE. A per-sentence whitelist is a way to
+#: turn the gate off one line at a time, and the line that most wants
+#: exempting is always the one that most needs checking. A section type is a
+#: claim about what a section IS, and it is arguable in one place instead of
+#: fifty.
+DEFAULT_EXEMPT = ("outro",)
+
+#: Sections that may never be exempted, whatever the playbook says. The cold
+#: open is the most claim-dense minute in the film and it is where a viewer
+#: decides whether to believe the rest.
+NEVER_EXEMPT = ("cold_open", "act1", "act2", "act3", "act4", "title_sequence")
+
+
+def exempt_sections(playbook: dict[str, Any] | None = None) -> set[str]:
+    """Which section types the gate skips.
+
+    A playbook that tries to exempt a section in NEVER_EXEMPT is refused
+    rather than obeyed: the list exists so that turning the gate off on the
+    argument requires editing this file, in a commit, with a reason.
+    """
+    if playbook is None:
+        playbook = _playbook()
+    asked = set((playbook.get("fact_gate") or {}).get("exempt_sections")
+                or DEFAULT_EXEMPT)
+    forbidden = asked & set(NEVER_EXEMPT)
+    if forbidden:
+        raise SystemExit(
+            f"the playbook exempts {sorted(forbidden)} from the fact gate, "
+            f"and those sections carry the film's argument. Exempting them "
+            f"is a change to lib/verify_fact_coverage.py, not to a list.")
+    return asked
+
+
+def _playbook() -> dict[str, Any]:
+    import yaml
+
+    path = Path(__file__).resolve().parents[1] / "styles" / "wak3up-documentary.yaml"
+    try:
+        return yaml.safe_load(path.read_text()) or {}
+    except Exception:
+        return {}
+
+
 #: Quotation marks, straight and typographic.
 QUOTES = re.compile(r"[\"“”‘’']{1}[^\"“”]{8,}"
                     r"[\"“”‘’']")
@@ -174,7 +219,11 @@ def triggers(sentence: str, backend: str = "spacy") -> dict[str, list[str]]:
 
 
 # ───────────────────────── the ledger ────────────────────────────────────
-CLAIM_ID = re.compile(r"\bc(\d{1,3})\b", re.I)
+#: A claim id in free prose. The PREFIX is captured, not assumed: the ledger
+#: uses `c` for the research stage's own claims and `r` for entries added by a
+#: provenance repair, and a pattern that only knew about `c` made every `r`
+#: id invisible — a section citing r01-r26 read as citing nothing at all.
+CLAIM_ID = re.compile(r"\b([cr])(\d{1,3})\b", re.I)
 
 
 def ledger(brief: dict[str, Any]) -> dict[str, dict]:
@@ -198,7 +247,7 @@ def cited_in(blob: Any) -> list[str]:
     if isinstance(blob, list):
         return [str(c).lower() for c in blob]
     if isinstance(blob, str):
-        return [f"c{int(n):02d}" for n in CLAIM_ID.findall(blob)]
+        return [f"{p.lower()}{int(n):02d}" for p, n in CLAIM_ID.findall(blob)]
     return []
 
 
@@ -216,12 +265,16 @@ def claims_for(section: dict, paragraph_index: int) -> tuple[list[str], str]:
     return [], "none"
 
 
-def check(script: dict, brief: dict, backend: str = "spacy"
+def check(script: dict, brief: dict, backend: str = "spacy",
+          playbook: dict[str, Any] | None = None
           ) -> tuple[list[str], dict[str, Any]]:
     """Problems and a per-sentence report."""
     book = ledger(brief)
+    skip = exempt_sections(playbook)
     rows: list[dict[str, Any]] = []
     for section in script.get("sections", []):
+        if section.get("id") in skip:
+            continue
         for p_index, para in enumerate(paragraphs(section.get("text") or "")):
             ids, how = claims_for(section, p_index)
             resolved = [i for i in ids if i in book]
@@ -253,6 +306,7 @@ def check(script: dict, brief: dict, backend: str = "spacy"
     needing = [r for r in rows if r["needs_claim"]]
     measured = {
         "backend": backend,
+        "exempt_sections": sorted(skip),
         "sentences": len(rows),
         "sentences_needing_a_claim": len(needing),
         "sentences_uncovered": len(uncovered),

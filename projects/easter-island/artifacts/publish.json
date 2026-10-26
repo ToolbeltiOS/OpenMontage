@@ -18,7 +18,7 @@
  "manual": [
   "PIN the credits comment (no API for it)",
   "set the End Screen (no API)",
-  "confirm the Altered content disclosure is ON in Studio \u2014 the narration is synthesised and the API does not return containsSyntheticMedia, so it cannot be verified from here"
+  "confirm the Altered content disclosure is ON in Studio — the narration is synthesised and the API does not return containsSyntheticMedia, so it cannot be verified from here"
  ],
  "verified_on_youtube": {
   "checked": "2026-10-26",
@@ -29,7 +29,19 @@
   "tags": 15,
   "captions": "en / English / standard / live",
   "playlist": "Documentaries (PLGLHDmJ31GMo), 2 films",
-  "pinned_comment": "posted, 8230 chars \u2014 NOT yet pinned (no API)",
-  "containsSyntheticMedia": "sent true; the API does not return this field, so it is unverified \u2014 check Studio"
- }
+  "pinned_comment": "posted, 8230 chars — NOT yet pinned (no API)",
+  "containsSyntheticMedia": "sent true; the API does not return this field, so it is unverified — check Studio"
+ },
+ "edits": [
+  {
+   "at": "2026-10-26T14:57:29.675300+00:00",
+   "what": "description: appended a CORRECTIONS section",
+   "method": "videos.update part=snippet",
+   "text": "Orongo sits roughly 300 m above the sea, not 250. The birdman's clan's egg rights were for that season, from Motu Nui. Hoa Hakananai'a stands 2.42 m.",
+   "why": "the three IMPRECISE findings of the act 4 provenance repair — see reports/fact_coverage/easter-island-act4-repair.md",
+   "verified": "first 150 characters unchanged; the previous description is still present in full; tags 15, category 27, defaultLanguage en and privacyStatus public all unchanged",
+   "note": "videos.update REPLACES the snippet, so title, tags, category and both language fields were sent back as they stood. A description-only body would have wiped them by omission.",
+   "video_untouched": true
+  }
+ ]
 }
