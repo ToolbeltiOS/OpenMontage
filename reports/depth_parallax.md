@@ -84,3 +84,40 @@ check 1 — a loud depth contribution from a map with no depth in it.
 
 Neither affects the cached float32 depth maps, so no shipped render was
 wrong. They would have made this gate unusable on a uint8 map.
+
+## The px floor cannot be a per-cut gate
+
+Run against the moves the edit stage actually authored on easter-island,
+rather than the 0.08 push the floor was calibrated on:
+
+| cut | move | amount | secs | flat twin | anchor parallax | verdict |
+|---|---|---|---|---|---|---|
+| c061 | drift | +0.0144 | 2.40 | 28.977 | 0.00 | FAIL |
+| c051 | drift | −0.0150 | 2.50 | 7.951 | 0.00 | FAIL |
+| c117 | drift | +0.0136 | 2.27 | 8.441 | 0.97 | FAIL |
+| c003 | drift | +0.0510 | 8.50 | 21.942 | 2.27 | FAIL |
+| c154 | push | +0.0600 | 21.63 | 7.498 | 1.65 | FAIL |
+| c094 | pull | +0.1542 | 8.57 | 6.908 | 12.96 | **PASS** |
+| c053 | push | +0.2427 | 9.33 | 6.334 | 2.46 | FAIL |
+
+**One of seven passes.** The flat-twin column is the thing to read: every one
+is between 6.3 and 29.0 against a floor of 2.0, so the depth map is
+demonstrably changing all seven renders. They are not flat. The absolute px
+floor fails six of them anyway.
+
+Nor is the floor predictable from anything available at build time. Against
+the move amount r = +0.51, against the depth map's p5–p95 spread r = +0.28,
+against their product r = +0.61, on n = 7 — and c053's 0.24 push reads 2.46 px
+while c094's smaller 0.15 pull reads 12.96 px. What the number really depends
+on is where the three automatically chosen anchors happen to land, which is a
+property of the photograph and not of the render's correctness.
+
+So the absolute floor stays where it is calibrated and means something — as a
+regression check on the three reference stills, where it catches both
+injected failures — and it is **not** applied per cut. A per-cut gate has to
+ask whether the depth map changes *this* render, which is check 1, and that
+one passed all seven.
+
+The drift rows are a separate defect, not evidence about the floor: the
+authored drift amount does not map onto DepthFlow's `offset` (see the wiring
+commit), so those four cuts barely move at all.
