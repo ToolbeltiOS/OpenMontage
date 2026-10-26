@@ -350,3 +350,28 @@ class TestTheListingKnowsWhatTheFilmIsAbout:
             assert leaked not in body, (
                 f"{leaked!r} is hardcoded in build(); the next film would "
                 f"publish it as its own subject")
+
+
+class TestWhatCannotBeVerifiedIsSaidOutLoud:
+    """`containsSyntheticMedia` does not come back from videos.list.
+
+    Every other status field round-trips — privacy, licence, embeddable,
+    publicStatsViewable, madeForKids, selfDeclaredMadeForKids — so the absence
+    of this one is not obviously benign: it is either write-only or silently
+    dropped, and from the API there is no way to tell. The narration IS
+    synthesised, so it is not a field to assume about.
+    """
+
+    def test_a_synthetic_film_gets_a_studio_item_for_it(self):
+        from pathlib import Path
+
+        src = Path("scripts/publish_doc.py").read_text()
+        assert 'if listing.get("containsSyntheticMedia")' in src
+        assert "cannot be verified from here" in src
+
+    def test_the_item_is_only_added_when_the_listing_declares_it(self):
+        from pathlib import Path
+
+        src = Path("scripts/publish_doc.py").read_text()
+        i = src.index('if listing.get("containsSyntheticMedia")')
+        assert "manual.append" in src[i:i + 400]

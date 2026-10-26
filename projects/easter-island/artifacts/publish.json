@@ -17,6 +17,19 @@
  ],
  "manual": [
   "PIN the credits comment (no API for it)",
-  "set the End Screen (no API)"
- ]
+  "set the End Screen (no API)",
+  "confirm the Altered content disclosure is ON in Studio \u2014 the narration is synthesised and the API does not return containsSyntheticMedia, so it cannot be verified from here"
+ ],
+ "verified_on_youtube": {
+  "checked": "2026-10-26",
+  "privacyStatus": "public",
+  "publishAt": null,
+  "uploadStatus": "processed",
+  "custom_thumbnail": "maxres present",
+  "tags": 15,
+  "captions": "en / English / standard / live",
+  "playlist": "Documentaries (PLGLHDmJ31GMo), 2 films",
+  "pinned_comment": "posted, 8230 chars \u2014 NOT yet pinned (no API)",
+  "containsSyntheticMedia": "sent true; the API does not return this field, so it is unverified \u2014 check Studio"
+ }
 }

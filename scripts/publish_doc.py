@@ -376,6 +376,21 @@ def main() -> int:
 
     manual += ["set the End Screen (no API)"]
 
+    # WHAT CAME BACK IS NOT WHAT WENT OUT, FOR ONE FIELD.
+    #
+    # Every other status field round-trips through videos.list -- privacy,
+    # licence, embeddable, publicStatsViewable, madeForKids,
+    # selfDeclaredMadeForKids. `containsSyntheticMedia` does not come back at
+    # all, so whether the disclosure was applied or silently dropped cannot be
+    # established from here. The narration IS synthesised, so this is not a
+    # field to assume about: it goes on the Studio list every time the listing
+    # declares it, and the toggle in Studio is the authority.
+    if listing.get("containsSyntheticMedia"):
+        manual.append(
+            "confirm the Altered content disclosure is ON in Studio — the "
+            "narration is synthesised and the API does not return "
+            "containsSyntheticMedia, so it cannot be verified from here")
+
     now = datetime.now(timezone.utc)
     record = {
         "project": args.project, "video_id": video_id, "url": url,
