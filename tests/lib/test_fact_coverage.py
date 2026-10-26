@@ -166,14 +166,22 @@ class TestTheDetectorIsNotSwappedQuietly:
         _, m = fc.check(script_of("x"), LEDGER, "capitalisation")
         assert m["backend"] == "capitalisation"
 
-    def test_the_runner_names_it_too_rather_than_defaulting_in_silence(self):
+    def test_the_runner_names_the_backend_rather_than_defaulting_in_silence(self):
+        """It is spaCy now; en_core_web_sm was installed 2026-10-26.
+
+        The line stays, naming the backend explicitly, so that any future
+        substitution appears in the log of every run that uses it rather than
+        inside a default argument nobody reads.
+        """
         from pathlib import Path
 
         body = Path("scripts/run_weekly.sh").read_text()
-        assert "FACT_BACKEND=" in body
-        assert "--backend \"$FACT_BACKEND\"" in body
-        assert "DELETE THIS LINE" in body, (
-            "the substitute has to be visibly temporary")
+        assert 'FACT_BACKEND="${FACT_BACKEND:-spacy}"' in body
+        assert '--backend "$FACT_BACKEND"' in body
+
+    def test_the_substitute_is_still_there_for_a_machine_without_the_model(self):
+        assert "capitalisation" in fc.BACKENDS
+        assert "spacy" in fc.BACKENDS
 
 
 class TestItBlocksBeforeTheHuman:

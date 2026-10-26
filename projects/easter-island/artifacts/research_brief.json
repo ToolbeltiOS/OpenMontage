@@ -97,7 +97,8 @@
    "source_name": "Ferrara et al., \"The invention of writing on Rapa Nui (Easter Island). New radiocarbon dates on the Rongorongo script\", Scientific Reports 14, 2794 (2 February 2024)",
    "credibility": "primary_source",
    "surprise_factor": "counterintuitive",
-   "usable_as": "hook, script_anchor"
+   "usable_as": "hook, script_anchor",
+   "id": "c01"
   },
   {
    "claim": "No rongorongo text has ever been read. The only part of the corpus whose function is agreed is three lines on one side of the Mamari tablet, identified as a lunar calendar — and even there the text itself cannot be read.",
@@ -105,7 +106,8 @@
    "source_name": "Wikipedia, Decipherment of rongorongo",
    "credibility": "secondary_source",
    "surprise_factor": "surprising",
-   "usable_as": "script_anchor, closing_punch"
+   "usable_as": "script_anchor, closing_punch",
+   "id": "c02"
   },
   {
    "claim": "The Santiago Staff — tablet I — is a chief's staff 126 cm long carrying 2,920 glyphs. It is the longest rongorongo text and the only one that appears to use punctuation.",
@@ -113,7 +115,8 @@
    "source_name": "Wikipedia, Rongorongo",
    "credibility": "secondary_source",
    "surprise_factor": "notable",
-   "usable_as": "stat_card"
+   "usable_as": "stat_card",
+   "id": "c03"
   },
   {
    "claim": "In 1995 Steven Roger Fischer announced he had deciphered rongorongo, reading the Santiago Staff as a creation chant of the form \"X copulated with Y, there issued forth Z\" and claiming about 85% of the corpus was such chants. Andrew Robinson found that on the most generous count only 63 of the staff's 113 sequences fully fit the pattern.",
@@ -121,7 +124,8 @@
    "source_name": "Wikipedia, Decipherment of rongorongo",
    "credibility": "secondary_source",
    "surprise_factor": "surprising",
-   "usable_as": "script_anchor"
+   "usable_as": "script_anchor",
+   "id": "c04"
   },
   {
    "claim": "Jared Diamond describes Rapa Nui as \"as close as we can get to a 'pure' ecological collapse\" and writes that the society ended \"in an epidemic of cannibalism that left 90 percent of the islanders dead\".",
@@ -129,7 +133,8 @@
    "source_name": "Keith Kloor, Discover (2014), quoting Diamond, Collapse (2005)",
    "credibility": "secondary_source",
    "surprise_factor": "notable",
-   "usable_as": "script_anchor"
+   "usable_as": "script_anchor",
+   "id": "c05"
   },
   {
    "claim": "Satellite mapping of the island's rock gardens in shortwave infrared put their total area at about 180 acres — roughly 0.73 km² of an island of 163.6 km² — against earlier estimates of 4.9 to 21.1 km². The implied maximum population is about 3,000, which is approximately what the first Europeans counted.",
@@ -137,7 +142,8 @@
    "source_name": "Davis, DiNapoli, Pakarati, Hunt and Lipo, \"Island-wide characterization of agricultural production challenges the demographic collapse hypothesis for Rapa Nui\", Science Advances 10, eado1459 (21 June 2024)",
    "credibility": "primary_source",
    "surprise_factor": "counterintuitive",
-   "usable_as": "hook, stat_card"
+   "usable_as": "hook, stat_card",
+   "id": "c06"
   },
   {
    "claim": "Fifteen ancient Rapanui genomes, radiocarbon dated between 1670 and 1950 CE and whole-genome sequenced at 0.4–25.6× coverage, reject a severe population bottleneck in the 1600s. The same individuals carry Native American admixture in proportions similar to present-day Rapanui, dated to about 1250–1430 CE.",
@@ -145,7 +151,8 @@
    "source_name": "Moreno-Mayar et al., \"Ancient Rapanui genomes reveal resilience and pre-European contact with the Americas\", Nature 633, 389–397 (2024)",
    "credibility": "primary_source",
    "surprise_factor": "counterintuitive",
-   "usable_as": "script_anchor, closing_punch"
+   "usable_as": "script_anchor, closing_punch",
+   "id": "c07"
   },
   {
    "claim": "In December 1862 Peruvian slave raiders began abductions that lasted several months. About 1,500 people were taken — roughly half the population. 1,408 were shipped to Peru as indentured labour and only about a dozen returned, carrying smallpox. By 1877 there were 111 native inhabitants left.",
@@ -153,7 +160,8 @@
    "source_name": "Wikipedia, Easter Island",
    "credibility": "secondary_source",
    "surprise_factor": "surprising",
-   "usable_as": "script_anchor, closing_punch"
+   "usable_as": "script_anchor, closing_punch",
+   "id": "c08"
   },
   {
    "claim": "A morphometric analysis of more than 400 photographed mata'a — the obsidian points long read as weapons of the island's wars — found no standardised shape and few spearlike tips. Carl Lipo concluded they were general-purpose tools: \"You would cut somebody with a mata'a, but they certainly wouldn't be lethal in any way.\"",
@@ -161,7 +169,8 @@
    "source_name": "Binghamton University Research News, on Lipo et al., Antiquity (2016)",
    "credibility": "secondary_source",
    "surprise_factor": "surprising",
-   "usable_as": "script_anchor"
+   "usable_as": "script_anchor",
+   "id": "c09"
   },
   {
    "claim": "The Easter Island Statue Project excavated two statues in the interior of the Rano Raraku quarry — the first authorised digging there since Thor Heyerdahl's 1954-55 expedition — and found them full-bodied and upright, one on a pedestal and one set in a deep hole, as if meant to stay where they were.",
@@ -169,7 +178,8 @@
    "source_name": "University of California / UCLA, on Van Tilburg et al., Journal of Archaeological Science",
    "credibility": "secondary_source",
    "surprise_factor": "surprising",
-   "usable_as": "hook, script_anchor"
+   "usable_as": "hook, script_anchor",
+   "id": "c10"
   },
   {
    "claim": "Soil from around the excavated quarry statues carried traces of banana, taro and sweet potato, with high levels of calcium and phosphorus. The team reads the quarry as a carving site that was also the most productive garden on the island.",
@@ -177,7 +187,8 @@
    "source_name": "University of California / UCLA, Sarah Sherwood (geoarchaeologist, University of the South)",
    "credibility": "secondary_source",
    "surprise_factor": "counterintuitive",
-   "usable_as": "script_anchor"
+   "usable_as": "script_anchor",
+   "id": "c11"
   },
   {
    "claim": "Hoa Hakananai'a — 2.42 m, 4.2 tonnes, carved from dark flow lava rather than the usual tuff — stood partly buried inside a house at Orongo facing the crater. The crew of HMS Topaze dug it out in November 1868; the ship reached Plymouth on 16 August 1869. Its back carries two facing birdmen, a sooty tern, paddles and komari, carved after the statue was made.",
@@ -185,7 +196,8 @@
    "source_name": "Wikipedia, Hoa Hakananai'a",
    "credibility": "secondary_source",
    "surprise_factor": "surprising",
-   "usable_as": "hook, closing_punch"
+   "usable_as": "hook, closing_punch",
+   "id": "c12"
   },
   {
    "claim": "Katherine Routledge recorded the names of 86 tangata manu — birdmen — during the 1913-15 Mana Expedition.",
@@ -193,7 +205,8 @@
    "source_name": "Wikipedia, Tangata manu",
    "credibility": "secondary_source",
    "surprise_factor": "notable",
-   "usable_as": "stat_card"
+   "usable_as": "stat_card",
+   "id": "c13"
   },
   {
    "claim": "The date of the last birdman competition is not settled: one encyclopedia article gives 1888, another puts the last ceremony at 1866 or 1867, and a third says only that missionaries ended the cult in the 1860s.",
@@ -201,7 +214,8 @@
    "source_name": "Wikipedia, Motu Nui / Hoa Hakananai'a / Tangata manu — three articles, three answers",
    "credibility": "secondary_source",
    "surprise_factor": "surprising",
-   "usable_as": "closing_punch"
+   "usable_as": "closing_punch",
+   "id": "c14"
   },
   {
    "claim": "More than 900 moai are known. All but 53 were carved from Rano Raraku tuff, and 394 in varying states of completion are still visible at the quarry. The tallest ever erected, Paro, stood almost 10 m and weighed 82 tonnes; the heaviest, at Ahu Tongariki, weighs 86 tonnes.",
@@ -209,7 +223,323 @@
    "source_name": "Wikipedia, Moai, citing the Easter Island Statue Project",
    "credibility": "secondary_source",
    "surprise_factor": "notable",
-   "usable_as": "stat_card"
+   "usable_as": "stat_card",
+   "id": "c15"
+  },
+  {
+   "id": "r01",
+   "claim": "Orongo is a ceremonial village of 53 low, sod-covered, windowless stone houses on the rim of the Rano Kau caldera; the doorways are about 50 cm high and must be crawled through.",
+   "source_url": "https://en.wikipedia.org/wiki/Orongo",
+   "source_name": "Orongo — Wikipedia; The Archaeologist, 'Orongo Village'",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "Fifty-three low stone houses at a village called Orongo, sod-covered and windowless, with doors you would have to crawl through, sitting on the rim of a crater two hundred and fifty metres above the sea.",
+   "verdict": "IMPRECISE",
+   "source_says": "The 53 houses, the sod-covered windowless construction and the crawl-through doorway (~50 cm) all check out verbatim. THE ELEVATION DOES NOT. Sources put Orongo at roughly 290-300 m (Lonely Planet ~300 m; Komoot 290 m) with the Rano Kau summit at 324 m. 250 m appears only in a Wikipedia photo caption and in a Chilean travel page describing a 250-metre STRIP of land, not an altitude. The script's own next sentence is also inconsistent with it: a village 250 m above the sea cannot have a 300 m cliff below it."
+  },
+  {
+   "id": "r02",
+   "claim": "The sea cliff below Orongo falls about 300 metres to the shore, at roughly 50 degrees.",
+   "source_url": "https://en.wikipedia.org/wiki/Rano_Kau",
+   "source_name": "Rano Kau — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "Below them the cliff drops three hundred metres into the water.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r03",
+   "claim": "The Rano Kau crater is almost a mile across and its lake is one of the island's only three natural bodies of fresh water.",
+   "source_url": "https://en.wikipedia.org/wiki/Rano_Kau",
+   "source_name": "Rano Kau — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "The crater behind them is almost a mile across and holds one of only three natural bodies of fresh water anywhere on the island.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r04",
+   "claim": "Each contestant appointed one or two hopu, adult men of lesser status, who swam to Motu Nui carrying provisions in a bundle of reeds called a pora and waited for the first sooty tern egg of the season.",
+   "source_url": "https://en.wikipedia.org/wiki/Tangata_manu",
+   "source_name": "Tangata manu — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "Each man competing appointed someone else to do the swimming — a man of lesser status, who went out on a float of bundled reeds and waited on an offshore rock for the first egg of the season to be laid by a returning sooty tern.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r05",
+   "claim": "Motu Nui covers an area of 3.9 hectares.",
+   "source_url": "https://en.wikipedia.org/wiki/Motu_Nui",
+   "source_name": "Motu Nui — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "That rock, Motu Nui, is three point nine hectares of land.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r06",
+   "claim": "Motu Nui is the summit of a submerged volcanic mountain rising over 2,000 metres from the seafloor, and constitutes the westernmost point of Chile.",
+   "source_url": "https://en.wikipedia.org/wiki/Motu_Nui",
+   "source_name": "Motu Nui — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "It is the summit of a mountain rising more than two kilometres from the seafloor, and the westernmost point of Chile.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r07",
+   "claim": "Many hopu were killed by sharks, by drowning, or by falling from cliff faces.",
+   "source_url": "https://en.wikipedia.org/wiki/Tangata_manu",
+   "source_name": "Tangata manu — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "Sharks, drowning, falls from the cliff on the way back up.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r08",
+   "claim": "The new tangata manu's clan held sole rights to collect that season's wild bird eggs and fledglings from Motu Nui; he entered seclusion for a year and was tapu for five months.",
+   "source_url": "https://en.wikipedia.org/wiki/Tangata_manu",
+   "source_name": "Tangata manu — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "His clan took the exclusive right to every egg and every fledgling on those islets for a year, and he himself went into seclusion for a year, under a restriction lasting five months.",
+   "verdict": "IMPRECISE",
+   "source_says": "The seclusion (a year) and the restriction (five months) are exact. THE EGG RIGHTS ARE NOT: the source gives the clan 'that season's' eggs and fledglings, not a year's, and names Motu Nui alone rather than 'those islets'. The script appears to have carried the one-year term of the TITLE across to the egg rights, which are seasonal."
+  },
+  {
+   "id": "r09",
+   "claim": "The winner was consecrated as tangata manu and became the representative of Make Make on earth for a year; the swimming was done by his hopu, not by him.",
+   "source_url": "https://www.got2globe.com/en/editorial/tangata-manu-rapa-nui-easter-island-bird-man/",
+   "source_name": "Got2Globe, 'Tangata Manu'; cf. Makemake (deity) — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "Makemake's representative on earth, decided by somebody else's swim.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r10",
+   "claim": "Katherine Routledge collected the names of 86 tangata manu during the 1913-15 Mana Expedition.",
+   "source_url": "https://en.wikipedia.org/wiki/Tangata_manu",
+   "source_name": "Tangata manu — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "The entire surviving register of the institution is eighty-six names, written down by Katherine Routledge between 1913 and 1915.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r11",
+   "claim": "Hoa Hakananai'a is the moai taken from Orongo in 1868 and held by the British Museum.",
+   "source_url": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "source_name": "Hoa Hakananai'a — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "One object carries the whole change: Hoa Hakananai'a.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r12",
+   "claim": "Hoa Hakananai'a is 2.42 m high, weighs 4.2 tonnes, and is made from a block of dark grey-brown flow lava; most moai are a reddish tuff (compressed volcanic ash).",
+   "source_url": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "source_name": "Hoa Hakananai'a — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "Two and a half metres, four point two tonnes, cut from dark flow lava rather than the compressed ash everything else came from.",
+   "verdict": "IMPRECISE",
+   "source_says": "The weight and the rock type are exact, and 'dark flow lava' is the source's own phrase. THE HEIGHT IS ROUNDED THE WRONG WAY: the statue is 2.42 m, which rounds to two point four, not 'two and a half'. An 8 cm overstatement."
+  },
+  {
+   "id": "r13",
+   "claim": "In 1868 the statue stood upright, partly buried inside a stone house at Orongo, facing the Rano Kau crater with its back to the sea.",
+   "source_url": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "source_name": "Hoa Hakananai'a — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "It was found standing part-buried inside one of those houses, facing the crater.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r14",
+   "claim": "The back carvings were added after the statue was made: two facing birdmen, a smaller bird at the centre of the head said to be a sooty tern, and ceremonial dance paddles (ao).",
+   "source_url": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "source_name": "Hoa Hakananai'a — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "Its back is covered in carving that was added after the statue was finished: two birdmen facing each other, a sooty tern above them, ceremonial paddles.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r15",
+   "claim": "Van Tilburg's three-stage reading ends with the statue's full transformation into a representation of Makemake, bearing a narrative of the birdman myth.",
+   "source_url": "https://www.researchgate.net/publication/283719794_Hoa_hakananai'a_A_new_study_of_an_Easter_Island_statue_in_the_British_Museum",
+   "source_name": "Van Tilburg, 'Hoa hakananai'a: A new study of an Easter Island statue in the British Museum' (2006)",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "One reading has the statue itself becoming the god.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r16",
+   "claim": "Officers and crew of HMS Topaze found the statue in November 1868, dug it out, dragged it down from Rano Kau on a sledge and rafted it to the ship.",
+   "source_url": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "source_name": "Hoa Hakananai'a — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "In November of 1868 a Royal Navy crew dug it out, dragged it down on a sledge and rafted it to their ship.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r17",
+   "claim": "HMS Topaze arrived at Plymouth on 16 August 1869; the statue passed to the British Museum, where it remains.",
+   "source_url": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "source_name": "Hoa Hakananai'a — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "It reached Plymouth the following August and went to the British Museum, where it is still.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r18",
+   "claim": "In November 2018 Laura Rapu, Governor of Easter Island, asked the British Museum to return the statue.",
+   "source_url": "https://en.wikipedia.org/wiki/Hoa_Hakananai%27a",
+   "source_name": "Hoa Hakananai'a — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "In 2018 the island's governor asked for it back.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r19",
+   "claim": "Reference sources disagree on when the birdman competition ended: 1888, about 1867, and 'the 1860s' are all given.",
+   "source_url": "https://en.wikipedia.org/wiki/Motu_Nui",
+   "source_name": "Motu Nui — Wikipedia; Tangata manu — Wikipedia; Got2Globe",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "As for when the swimming stopped: three reference works give three answers.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r20",
+   "claim": "The last known birdman contest was in 1888.",
+   "source_url": "https://en.wikipedia.org/wiki/Motu_Nui",
+   "source_name": "Motu Nui — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "Eighteen eighty-eight.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r21",
+   "claim": "The last competition took place around 1867, after Christian missionaries objected to it.",
+   "source_url": "https://www.got2globe.com/en/editorial/tangata-manu-rapa-nui-easter-island-bird-man/",
+   "source_name": "Got2Globe, 'Tangata Manu'",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "Eighteen sixty-seven.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r22",
+   "claim": "The birdman cult was ended by Christian missionaries in the 1860s.",
+   "source_url": "https://en.wikipedia.org/wiki/Tangata_manu",
+   "source_name": "Tangata manu — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "Or simply the eighteen sixties.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r23",
+   "claim": "Routledge recorded the birdman register in 1913-15 from islanders who would have been alive when the contests ended in the 1860s-1880s; the end date is nevertheless given differently by different sources.",
+   "source_url": "https://en.wikipedia.org/wiki/Tangata_manu",
+   "source_name": "Tangata manu — Wikipedia; Motu Nui — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "This is an event inside the living memory of the people Routledge was recording, and we cannot date it.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r24",
+   "claim": "Routledge's 1914 expedition to Motu Nui documented two caves used in the ritual.",
+   "source_url": "https://en.wikipedia.org/wiki/Motu_Nui",
+   "source_name": "Motu Nui — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "She reached the islet herself in 1914 and found two caves.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r25",
+   "claim": "One of the two caves sheltered the hopu.",
+   "source_url": "https://en.wikipedia.org/wiki/Motu_Nui",
+   "source_name": "Motu Nui — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "One was where the swimmers had sheltered.",
+   "verdict": "CONFIRMED"
+  },
+  {
+   "id": "r26",
+   "claim": "The other cave housed the small moai Moai Maea, known as the 'Boundary of the Land', which had already been removed before 1914 and is held at the Pitt Rivers Museum, Oxford.",
+   "source_url": "https://en.wikipedia.org/wiki/Motu_Nui",
+   "source_name": "Motu Nui — Wikipedia",
+   "credibility": "secondary",
+   "surprise_factor": null,
+   "usable_as": "narration claim",
+   "added": "2026-10-26 act 4 provenance repair",
+   "repairs_sentence": "The other had held a small statue called the Boundary of the Land — which was already in Oxford before she got there.",
+   "verdict": "CONFIRMED"
   }
  ],
  "audience_insights": {
@@ -1480,5 +1810,18 @@
    ],
    "verdict": "pass"
   }
+ },
+ "provenance_repair": {
+  "date": "2026-10-26",
+  "scope": "act 4 of the delivered film, 26 uncovered factual sentences",
+  "why": "The delivered script's act 4 cites claim ids c32 and c46-c58. The ledger held fifteen data points and carried no `id` field at all, so none of those ids resolved under any reading. Every factual sentence in the act was unattributed in a way that looked like attribution.",
+  "what_was_done": "Each of the 26 sentences was researched and recorded as a data point with a source URL and a verdict. The SCRIPT AND THE FILM ARE UNCHANGED, by instruction.",
+  "what_this_does_not_fix": "The script still cites c32 and c46-c58, and none of those ids exist: the repair gives the act's claims sources, it does not make the script's citations resolve, and it is numbered so that it cannot accidentally appear to. Making the fact gate pass on this film would mean editing script.json's source_ref, which was forbidden. The mapping from sentence to repair id is in `repairs_sentence` on each entry.",
+  "counts": {
+   "CONFIRMED": 23,
+   "IMPRECISE": 3,
+   "UNSUPPORTED": 0
+  },
+  "id_space": "r01-r26, deliberately NOT c-numbers. Numbering the repair c16-c41 would have made c32 resolve — and c32 is one of the fourteen ids act 4 cites, so a single accidental collision would have reported the whole act as covered by a claim that has nothing to do with it. The repair must not be able to satisfy the citations it was written because of."
  }
 }

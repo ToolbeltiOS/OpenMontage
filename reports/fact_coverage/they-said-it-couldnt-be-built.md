@@ -1,8 +1,8 @@
 # Fact coverage
 
-`capitalisation` proper-noun backend · 205 sentences · 114 carry a date, a number, a proper noun or a quotation
+`spacy` proper-noun backend · 205 sentences · 97 carry a date, a number, a proper noun or a quotation
 
-**2 uncovered** (1.8% of those that need a claim).
+**2 uncovered** (2.1% of those that need a claim).
 
 Ledger: 43 claims. Cited: 42. **Do not resolve: 0** — none
 

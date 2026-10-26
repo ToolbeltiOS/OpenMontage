@@ -47,22 +47,10 @@ DRY_RUN=0
 GATE_HOURS="${GATE_HOURS:-12}"
 SMOKE="${RUN_WEEKLY_SMOKE:-0}"
 
-#: Which proper-noun detector the fact gate uses.
-#:
-#: `spacy` is the specified one and needs a model that is not installed on
-#: this machine yet:
-#:
-#:     .venv/bin/pip3 install spacy
-#:     .venv/bin/python -m spacy download en_core_web_sm
-#:
-#: Until it is, the gate runs the `capitalisation` substitute, which
-#: OVER-flags by design — it calls any non-whitelisted capitalised word a
-#: proper noun — so its count is an upper bound on what spaCy would find and
-#: it never lets an unsourced sentence through. It is named here, in the
-#: runner, rather than defaulted inside the gate, so that the substitute is
-#: visible in the log of every run that uses it. DELETE THIS LINE once the
-#: model is installed.
-FACT_BACKEND="${FACT_BACKEND:-capitalisation}"
+#: The fact gate's proper-noun detector. spaCy + en_core_web_sm, installed
+#: 2026-10-26. The `capitalisation` substitute remains in the gate for a
+#: machine without the model, but nothing reaches for it by default any more.
+FACT_BACKEND="${FACT_BACKEND:-spacy}"
 
 #: How many times a stage may be resumed after a usage limit before the run
 #: fails loudly. The owner's number, 2026-10-24.
