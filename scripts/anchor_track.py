@@ -86,13 +86,13 @@ def track(image: str, depth: str, anchors: list[tuple[float, float]],
     import numpy as np
 
     sys.path.insert(0, str(ROOT / "scripts"))
-    from render_25d import as_depth, build, crop_to_aspect
+    from render_25d import build, crop_to_aspect, load_depth
 
     src = np.asarray(iio.imread(image))
     if src.ndim == 3 and src.shape[2] == 4:
         src = src[:, :, :3]
     src = crop_to_aspect(src, width, height)
-    dep = as_depth(crop_to_aspect(np.asarray(iio.imread(depth)), width, height))
+    dep = load_depth(depth, width, height)
 
     passes = {}
     with tempfile.TemporaryDirectory() as tmp:

@@ -31,6 +31,7 @@ change WHICH move happens or how fast.
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -62,6 +63,15 @@ DEFAULT_ISOMETRIC = 0.30
 #: parallax demonstration.
 ISOMETRIC_TRAVEL = 0.35
 
+#: A TEST HOOK, and the only reason it exists is that the alternative is
+#: worse. `lib/verify_depth_parallax.py` has to prove it catches a push with
+#: no parallax, which means rendering one, which means ISOMETRIC_TRAVEL = 0.
+#: Editing this file to do that leaves the renderer one forgotten `git
+#: checkout` away from shipping flat, and that has already happened once.
+#: Nothing in the pipeline sets it; the gate's own self-test does.
+if os.environ.get("OPENMONTAGE_ISOMETRIC_TRAVEL"):
+    ISOMETRIC_TRAVEL = float(os.environ["OPENMONTAGE_ISOMETRIC_TRAVEL"])
+
 #: Which depth plane stays put while the rest moves around it. 0.5 pins the
 #: middle distance, which is where a documentary still's subject usually is.
 DEFAULT_STEADY = 0.5
@@ -85,11 +95,54 @@ def as_depth(array):
     a = np.asarray(array)
     if a.ndim == 3:
         a = a[:, :, 0]
+
+    # REJECT WHAT THE SHADER WOULD SILENTLY DROP.
+    #
+    # Not "convert quietly": refuse, by name, with the dtype in the message.
+    # The whole defect was that an unusable array was ACCEPTED — by
+    # ShaderTexture, by the renderer, by a tearing gate — and produced
+    # plausible video. A conversion that happens without saying so is the
+    # same silence one layer further down, and the next person to pass a
+    # uint16 map will get a render that looks right.
+    if a.dtype not in (np.uint8, np.float32, np.float64):
+        raise SystemExit(
+            f"the depth map is {a.dtype}, which DepthFlow's ShaderTexture "
+            f"takes without complaint and then does not load: the sampler "
+            f"returns the zero texture and the render comes out a flat 2D "
+            f"zoom that looks entirely plausible. Only uint8 and float32 "
+            f"load. Convert it deliberately — lib/depth_cache.py writes "
+            f"16-bit PNGs and this is the function that reads them.")
+
     a = a.astype(np.float32)
     span = float(a.max()) - float(a.min())
     if span > 0:
         a = (a - float(a.min())) / span
+    else:
+        # NO RELIEF AT ALL, which still has to leave here in the 0..1 the
+        # rest of the function promises. Skipping the normalisation let the
+        # raw value through: a constant uint8 map arrived at the shader as
+        # depth 128.0, a plane a hundred times past the far limit, and the
+        # render differed from a mid-grey twin by 31 levels of uniform
+        # scale. Measured while testing the gate, which read that as a loud
+        # depth contribution from a map that has no depth in it.
+        a = np.full_like(a, 0.5)
     return a
+
+
+def load_depth(path, width: int, height: int):
+    """Read a cached depth PNG and give the shader what it can load.
+
+    ONE PATH, because the conversion is the thing that was wrong. The cache
+    writes 16-bit PNGs; the shader drops 16-bit arrays without a word. Every
+    caller goes through here so there is no second place to get it right.
+    """
+    import imageio.v3 as iio
+    import numpy as np
+
+    raw = np.asarray(iio.imread(path))
+    if raw.dtype == np.uint16:
+        raw = raw.astype(np.float32) / 65535.0
+    return as_depth(crop_to_aspect(raw, width, height))
 
 
 def crop_to_aspect(array, width: int, height: int):
@@ -153,6 +206,10 @@ def main() -> int:
                     choices=("push", "pull", "drift", "lock"))
     ap.add_argument("--amount", type=float, default=0.08)
     ap.add_argument("--seconds", type=float, default=8.0)
+    ap.add_argument("--flat-depth", action="store_true",
+                    help="replace the depth map with a constant, for the "
+                         "flat twin lib/verify_depth_parallax.py compares "
+                         "against. Everything else is identical.")
     ap.add_argument("--fps", type=int, default=30)
     ap.add_argument("--width", type=int, default=1920)
     ap.add_argument("--height", type=int, default=1080)
@@ -162,11 +219,18 @@ def main() -> int:
     import numpy as np
 
     image = np.asarray(iio.imread(args.image))
-    depth = np.asarray(iio.imread(args.depth))
     if image.ndim == 3 and image.shape[2] == 4:
         image = image[:, :, :3]
     image = crop_to_aspect(image, args.width, args.height)
-    depth = as_depth(crop_to_aspect(depth, args.width, args.height))
+    depth = load_depth(args.depth, args.width, args.height)
+    if args.flat_depth:
+        # MID-GREY FOR THE DTYPE, not the literal 0.5. `full_like(depth,
+        # 0.5)` on a uint8 map truncates to 0, which is not a flat twin of
+        # the picture — it is a flat plane at the NEAR limit, and it differs
+        # from a mid-grey constant map by 31 levels of uniform scale. That
+        # made an injected no-relief map look like a loud depth
+        # contribution. The twin has to be flat AT THE SAME PLACE.
+        depth = np.full_like(depth, 128 if depth.dtype == np.uint8 else 0.5)
 
     scene = build(args.move, args.amount, args.seconds)()
     scene.input(image=image, depth=depth)
