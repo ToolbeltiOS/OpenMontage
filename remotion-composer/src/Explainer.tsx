@@ -800,6 +800,8 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
 
   if (cut.type === "annotated_still" && cut.backgroundImage) {
     return (<AnnotatedStill image={cut.backgroundImage} parallax={cut.parallax}
+      parallaxFrom={cut.parallaxFrom} parallaxTo={cut.parallaxTo}
+      driftFrom={cut.driftFrom} driftTo={cut.driftTo}
       annotations={cut.annotations} measurement={cut.measurement}
       cutaway={cut.cutaway} caption={cut.caption} title={cut.title} dim={cut.dim} {...chrome} />);
   }
