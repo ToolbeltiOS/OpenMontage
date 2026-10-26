@@ -304,24 +304,35 @@ ANGLE_CONSTRAINTS: dict[str, dict[str, Any]] = {
         "entities": [
             "Epic of Gilgamesh", "Flood Tablet",
             "George Smith (Assyriologist)", "Matsya", "Black Sea",
-            "Noah's Ark", "Ark van Noach", "Mount Ararat",
-            "Atrahasis", "Durupınar",
+            "Noah's Ark", "Ark van Noach", "Mount Ararat", "Durupınar",
         ],
-        "thin": {
+        # DURUPINAR WAS NEVER THIN. It measured 0.5 because the depth check
+        # applied a filename test to the members of the subject's OWN Commons
+        # category, and `Category:Durupınar Site` is filed under a capital S
+        # with a Turkish ı and holds thirteen photographs named in Turkish,
+        # Polish and Czech: "Arka Noego", "Noemova archa", "NuhunGemisi",
+        # "Üzengili". Every one is CC BY or CC BY-SA and four are over 3,800
+        # pixels wide. Fixed in lib/source_depth.py; it now counts 13.
+        #
+        # So the act's hero is a PHOTOGRAPH, and the satellite fallback is
+        # not needed. The coordinates are kept below because the formation is
+        # a shape in the ground and an overhead is the shot that shows it is
+        # a shape — an addition to the act, not its hero.
+        "satellite": {
+            "lat": 39.44064, "lon": 44.23481,
+            "wikidata": "Q1267546",
+            "use": "optional overhead, to show the outline. NOT the hero: "
+                   "there are 13 usable photographs.",
+            "sources": ["Sentinel-2 / NASA Worldview true colour",
+                        "USGS or Copernicus DEM tile for a terrain render"],
+        },
+        "supporting": {
+            # The owner's ruling, 2026-10-26: acceptable below the floor as a
+            # supporting entity, which is a different job from a spine one.
             "Atrahasis": {
-                "counted": 2.0,
-                "shoot_instead": ["Cuneiform tablets", "Epic of Gilgamesh"],
-                "why": "it is a text, and the text survives as tablets that "
-                       "are photographed under other names",
-            },
-            "Durupınar": {
-                "counted": 0.5,
-                "shoot_instead": ["Mount Ararat", "public-domain satellite "
-                                  "imagery (NASA/USGS), which is not in a "
-                                  "Commons category under this name"],
-                "why": "this is the one that matters: a boat-shaped formation "
-                       "is a VISUAL claim, and an act built around a picture "
-                       "that does not exist will talk over something else",
+                "counted": 6.0,
+                "as": "one tablet image plus an authored evidence card",
+                "not": "a spine entity — it does not carry an act",
             },
         },
         "register": {
@@ -339,10 +350,14 @@ ANGLE_CONSTRAINTS: dict[str, dict[str, Any]] = {
             "max_chars": 45,
             "exemplars": ["The Flood Before the Bible",
                           "They Keep Finding the Ark"],
-            "exemplars_note": "they are 26 and 25 characters, so neither "
-                              "meets the 30-45 rule stated beside them — "
-                              "the rule is the length, the exemplars are "
-                              "the voice",
+            "exemplars_note": "VOICE EXAMPLES, NOT CANDIDATES — the owner's "
+                              "own ruling, 2026-10-26. They are 26 and 25 "
+                              "characters and the 30-45 rule stands; they "
+                              "are here to show the register and must not be "
+                              "used as titles",
+            "default": "The Flood Story Before the Bible",
+            "default_rule": "use the default unless the script argues "
+                            "otherwise, and say what the argument is",
             "candidates": [
                 "The Flood Story Before the Bible",
                 "Everybody Keeps Finding Noah's Ark",
@@ -446,6 +461,14 @@ def write_brief(brief: dict[str, Any], out_dir: Path) -> Path:
                 f"- No {' or '.join(register['forbidden'])} register.",
                 f"- {register['why'][:1].upper()}{register['why'][1:]}",
             ]
+        supporting = constraint.get("supporting")
+        if supporting:
+            lines += ["", "**Supporting, not spine.** Below the asset floor "
+                      "on purpose — these do not carry an act:", "",
+                      "| entity | counted | used as |", "|---|---|---|"]
+            for name, row in supporting.items():
+                lines.append(f"| {name} | {row['counted']} | {row['as']} |")
+            lines.append("")
         thin = constraint.get("thin")
         if thin:
             lines += [

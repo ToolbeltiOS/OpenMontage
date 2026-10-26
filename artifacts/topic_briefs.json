@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-26T13:36:32.438218+00:00",
+ "generated": "2026-10-26T14:10:10.456160+00:00",
  "ledger_size": 500,
  "clusters_considered": 66,
  "min_assets_per_entity": 8,
@@ -137,8 +137,8 @@
       "Genesis flood narrative"
      ],
      "category_files": 0,
-     "search_files": 24,
-     "counted": 12.0,
+     "search_files": 25,
+     "counted": 12.5,
      "clears": true,
      "examples": [
       "The great flood - Biblical.jpg",
@@ -178,7 +178,7 @@
       "Attributed to Antonio de Bellis - The Sacrifice of Noah - Google Art Project (cropped Noah's wife).jpg",
       "\"Noah's wife\" on Archstoyanie festival.jpg",
       "Rebecca Greenleaf Webster wife of Noah Webster.jpg",
-      "Noah's wife lived a wonderful life - one step - DPLA - 36ca89150e275c9ce638de1b5e022496 (page 11).jpg"
+      "Noah's wife lived a wonderful life - one step - DPLA - 36ca89150e275c9ce638de1b5e022496 (page 3).jpg"
      ]
     },
     {
@@ -215,6 +215,170 @@
    "eligible": true,
    "min_assets": 8,
    "thin": [],
+   "spine_entities": [
+    {
+     "entity": "Epic of Gilgamesh",
+     "categories": [
+      "Epic of Gilgamesh",
+      "The Epic of Gilgamesh"
+     ],
+     "category_files": 16,
+     "search_files": 0,
+     "counted": 16.0,
+     "clears": true,
+     "examples": [
+      "CBS7771 Gilgamesh Epic Penn Museum.jpg",
+      "Clay tablet, Epic of Gilgamesh, from Hattusa, Turkey. 13th century BCE. Neues Museum, Germany.jpg",
+      "Epic of Gilgamesh, three fragments - Oriental Institute Museum, University of Chicago - DSC07124.JPG",
+      "Fragment of Tablet II of the Epic of Gilgamesh. Old-Babylonian period, from southern Iraq. Sulaymaniyah Museum, Iraqi Kurdistan.jpg"
+     ]
+    },
+    {
+     "entity": "Flood Tablet",
+     "categories": [
+      "Flood Tablet"
+     ],
+     "category_files": 8,
+     "search_files": 0,
+     "counted": 8.0,
+     "clears": true,
+     "examples": [
+      "British Museum Flood Tablet 1.jpg",
+      "British Museum Flood Tablet.jpg",
+      "Epic of Gilgamesh, plaster cast of tablet XI, The Flood Tale, Neo-Assyrian period, c. 9th-7th century BC - Harvard Semitic Museum - Cambridge, MA - DSC06162.jpg",
+      "Library of Ashurbanipal The Flood Tablet.jpg"
+     ]
+    },
+    {
+     "entity": "George Smith (Assyriologist)",
+     "categories": [
+      "George Smith (assyriologist)"
+     ],
+     "category_files": 5,
+     "search_files": 36,
+     "counted": 20.5,
+     "clears": true,
+     "examples": [
+      "George Smith-Assyriologist 001.jpg",
+      "George Smith.jpg",
+      "GeorgeSmith.jpg",
+      "Mr. George Smith (cropped).jpg"
+     ]
+    },
+    {
+     "entity": "Matsya",
+     "categories": [
+      "Matsya",
+      "Matsya Purana",
+      "Paintings of Matsya"
+     ],
+     "category_files": 22,
+     "search_files": 0,
+     "counted": 22.0,
+     "clears": true,
+     "examples": [
+      "Dasavataralu - Matsya avatar of Lord Vishnu on Sri Venkateshwara temple, Guntur.jpg",
+      "Ksharpana from Matsya Janpad, Private collection.jpg",
+      "Matsya Avatar of Vishnu LACMA M.79.252.8.jpg",
+      "Matsya Avatar of Vishnu, the Bhattabati Ratneshwar Temple, Murshidabad, West Bengal circa 18th century CE.jpg"
+     ]
+    },
+    {
+     "entity": "Black Sea",
+     "categories": [
+      "Black Sea",
+      "Black Sea Dahu",
+      "Black Sea Arena"
+     ],
+     "category_files": 55,
+     "search_files": 0,
+     "counted": 55.0,
+     "clears": true,
+     "examples": [
+      "A Turquoise Tint for the Black Sea (1229998 - ISS074-E-619520 lrg).jpg",
+      "A Turquoise Tint for the Black Sea (1229998 - ISS074-E-619520).jpg",
+      "Black Sea (2632849445).jpg",
+      "Black Sea (2836439357).jpg"
+     ]
+    },
+    {
+     "entity": "Noah's Ark",
+     "categories": [
+      "Noah's Ark",
+      "Noah's Ark II",
+      "Noah's Ark Zoo Farm"
+     ],
+     "category_files": 4,
+     "search_files": 32,
+     "counted": 20.0,
+     "clears": true,
+     "examples": [
+      "BOWYER BIBLE GENESIS 087. The wickedness of Noah's generation. Genesis cap 6 v 11. Hoet.jpg",
+      "BOWYER BIBLE GENESIS 110. Noah's burnt offering. Genesis cap 8 v 20. Marillier.jpg",
+      "Exhibit Showing First European Rendering of Mt. Ararat - With Noah's Ark - Ishak Pasa Palace - Outside Dogubayazit - Turkey (5809367478).jpg",
+      "Frances Gwendolyn Castens in her Noah's Ark costume, worn when skating, Halifax, Nova Scotia, Canada, 1890s.jpg"
+     ]
+    },
+    {
+     "entity": "Ark van Noach",
+     "categories": [
+      "Ark van Noach (ship, 2012)"
+     ],
+     "category_files": 11,
+     "search_files": 0,
+     "counted": 11.0,
+     "clears": true,
+     "examples": [
+      "Ark van Noach - Krimpen aan den IJssel (28907522361).jpg",
+      "Ark van Noach in Dordrecht, Noah's Ark replica (public domain).jpg",
+      "Ark van Noach in Dordrecht.jpg",
+      "Ark van Noach ship Krimpen aan den IJssel 2.jpg"
+     ]
+    },
+    {
+     "entity": "Mount Ararat",
+     "categories": [
+      "Mount Ararat",
+      "Mount Ararat (Free State)",
+      "Mount Ararat Baptist Church"
+     ],
+     "category_files": 47,
+     "search_files": 0,
+     "counted": 47.0,
+     "clears": true,
+     "examples": [
+      "\"Ararat\" brandy factory, Erevan, Armenia - panoramio.jpg",
+      "00 2399 Mount Ararat, Turkey.jpg",
+      "1998 Mt Ararat, Turquie.jpg",
+      "2001 satellite picture of Mount Ararat.jpg"
+     ]
+    },
+    {
+     "entity": "Atrahasis",
+     "categories": [
+      "Atrahasis"
+     ],
+     "category_files": 2,
+     "search_files": 2,
+     "counted": 2.0,
+     "clears": false,
+     "examples": [
+      "Babylon Story of the Flood, Tablet containing the Epic of Atrahasis, 1635 BCE, probably from Sipar. Currently at the British Museum.jpg",
+      "Fragment of the Babylonian flood story Epic of Atrahasis, Akkadian, Mesopotamia, First Dynasty of Babylon, reign of King Ammi-saduqa, c. 1646-1626 BC, clay- Morgan Library & Museum - New York City - DSC06597.jpg"
+     ]
+    },
+    {
+     "entity": "Durup\u0131nar",
+     "categories": [
+      "Durup\u0131nar Site"
+     ],
+     "category_files": 0,
+     "search_files": 0,
+     "counted": 0.0,
+     "clears": false,
+     "examples": []
+    }
+   ],
    "angle": {
     "recurring_words": [
      "noah",
@@ -229,14 +393,87 @@
      "Noah: The First Drunk in History? \ud83c\udf77",
      "Noah's Flood Story Was Written Centuries Earlier"
     ],
-    "claim": "The Shorts that performed on Noah keep returning to: noah, drunk, noah's, flood. The film has to answer that, not introduce the subject."
+    "claim": "The open files are: the same story in older cultures \u2014 Gilgamesh tablet XI, read by George Smith in 1872; Atrahasis; the Manu flood; the Black Sea deluge hypothesis (Ryan & Pitman, 1997), and its critics; the Ark's stated dimensions, and the Dutch full-scale build; Durup\u0131nar and the Ararat expeditions \u2014 the claims, their best evidence, and the geological reading. Believers and sceptics each get their strongest case, stated at its strongest. Nothing is stated as fact without a ledger entry. No sermon or debunk register.",
+    "constraint": {
+     "framing": "A mystery-first investigation of the Flood story AS AN ARTEFACT: why the same story exists across cultures.",
+     "spine": [
+      "the same story in older cultures \u2014 Gilgamesh tablet XI, read by George Smith in 1872; Atrahasis; the Manu flood",
+      "the Black Sea deluge hypothesis (Ryan & Pitman, 1997), and its critics",
+      "the Ark's stated dimensions, and the Dutch full-scale build",
+      "Durup\u0131nar and the Ararat expeditions \u2014 the claims, their best evidence, and the geological reading"
+     ],
+     "entities": [
+      "Epic of Gilgamesh",
+      "Flood Tablet",
+      "George Smith (Assyriologist)",
+      "Matsya",
+      "Black Sea",
+      "Noah's Ark",
+      "Ark van Noach",
+      "Mount Ararat",
+      "Atrahasis",
+      "Durup\u0131nar"
+     ],
+     "thin": {
+      "Atrahasis": {
+       "counted": 2.0,
+       "shoot_instead": [
+        "Cuneiform tablets",
+        "Epic of Gilgamesh"
+       ],
+       "why": "it is a text, and the text survives as tablets that are photographed under other names"
+      },
+      "Durup\u0131nar": {
+       "counted": 0.5,
+       "shoot_instead": [
+        "Mount Ararat",
+        "public-domain satellite imagery (NASA/USGS), which is not in a Commons category under this name"
+       ],
+       "why": "this is the one that matters: a boat-shaped formation is a VISUAL claim, and an act built around a picture that does not exist will talk over something else"
+      }
+     },
+     "register": {
+      "both_sides": "Believers and sceptics each get their strongest case, stated at its strongest.",
+      "evidence": "Nothing is stated as fact without a ledger entry.",
+      "forbidden": [
+       "sermon",
+       "debunk"
+      ],
+      "why": "the subject is why the same story exists across cultures. A film that arrives knowing the answer is not investigating, and either register loses the half of the audience it was not written for."
+     },
+     "titles": {
+      "min_chars": 30,
+      "max_chars": 45,
+      "exemplars": [
+       "The Flood Before the Bible",
+       "They Keep Finding the Ark"
+      ],
+      "exemplars_note": "they are 26 and 25 characters, so neither meets the 30-45 rule stated beside them \u2014 the rule is the length, the exemplars are the voice",
+      "candidates": [
+       "The Flood Story Before the Bible",
+       "Everybody Keeps Finding Noah's Ark",
+       "The Flood That Predates the Bible",
+       "Four Cultures, One Flood Story"
+      ]
+     },
+     "set_by": "owner, 2026-10-26"
+    }
    },
    "title_candidates": [
-    "Noah: The Part Nobody Can Explain",
-    "What Noah Was Really Built For",
-    "The Noah Problem",
-    "Noah Should Not Exist"
-   ]
+    "The Flood Story Before the Bible",
+    "Everybody Keeps Finding Noah's Ark",
+    "The Flood That Predates the Bible",
+    "Four Cultures, One Flood Story"
+   ],
+   "title_rule": {
+    "min_chars": 30,
+    "max_chars": 45,
+    "exemplars": [
+     "The Flood Before the Bible",
+     "They Keep Finding the Ark"
+    ],
+    "exemplars_note": "they are 26 and 25 characters, so neither meets the 30-45 rule stated beside them \u2014 the rule is the length, the exemplars are the voice"
+   }
   },
   {
    "entity": "King Tut",
@@ -337,8 +574,8 @@
       "Eighteenth Dynasty of Egypt"
      ],
      "category_files": 0,
-     "search_files": 27,
-     "counted": 13.5,
+     "search_files": 28,
+     "counted": 14.0,
      "clears": true,
      "examples": [
       "Head of an Early Eighteenth Dynasty King, ca. 1539-1493 B.C.E.,37.38E.jpg",
@@ -599,7 +836,7 @@
       "Hiroshima Red Cross Hospital & Atomic-bomb Survivors Hospital 20130916-2.JPG",
       "Hiroshima Red Cross Hospital & Atomic-bomb Survivors Hospital 20130916-1.JPG",
       "Hiroshima Red Cross Hospital & Atomic-bomb Survivors Hospital 20130916-3.JPG",
-      "Hiroshima Red Cross Hospital & Atomic-bomb Survivors Hospital 20200809.JPG"
+      "Hiroshima Red Cross Hospital & Atomic-bomb Survivors Hospital 20151003-1.JPG"
      ]
     },
     {

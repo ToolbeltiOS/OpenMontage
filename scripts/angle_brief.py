@@ -40,10 +40,35 @@ def sentence(text: str) -> str:
     return text[:1].upper() + text[1:] if text else text
 
 
+def constraint_for(brief: dict) -> dict | None:
+    """The constraint for this brief, preferring the LIVE table.
+
+    `pick_topic` copies the constraint into the brief, so the brief carries a
+    SNAPSHOT of it as the table stood when the topic was picked. That snapshot
+    is the right thing for the human-readable brief — it records what was
+    decided — and the wrong thing for the prompt: an angle edited after the
+    pick would be ignored by the run it was written for, silently, because the
+    prompt would be built from a week-old copy.
+
+    So the table in `pick_topic.ANGLE_CONSTRAINTS` is the authority and the
+    brief's copy is the fallback, for a brief whose subject has since been
+    removed from the table.
+    """
+    angle = brief.get("angle") or {}
+    frozen = angle.get("constraint")
+    entity = (brief.get("entity") or "").lower()
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from pick_topic import ANGLE_CONSTRAINTS
+
+        return ANGLE_CONSTRAINTS.get(entity) or frozen
+    except Exception:
+        return frozen
+
+
 def render(brief: dict) -> str:
     """The constraint as prompt text, or "" when the subject has none."""
-    angle = brief.get("angle") or {}
-    c = angle.get("constraint")
+    c = constraint_for(brief)
     if not c:
         return ""
 
@@ -85,12 +110,30 @@ def render(brief: dict) -> str:
                        f"Shoot {', '.join(row['shoot_instead'])} instead — "
                        f"{row['why']}.")
 
+    supporting = c.get("supporting")
+    if supporting:
+        out += ["", "Supporting, NOT spine. Below the asset floor on purpose:"]
+        for name, row in supporting.items():
+            out.append(f"  - {name}: {row['counted']} usable assets. "
+                       f"Use as {row['as']}. It is not {row['not']}.")
+
+    sat = c.get("satellite")
+    if sat:
+        out += ["",
+                f"Overhead available at {sat['lat']}, {sat['lon']} "
+                f"(Wikidata {sat['wikidata']}): "
+                + "; ".join(sat["sources"]) + f". {sentence(sat['use'])}"]
+
     titles = c.get("titles")
     if titles:
         out += ["",
                 f"Title: {titles['min_chars']}-{titles['max_chars']} "
                 f"characters. Candidates, in the channel's register:"]
-        out += [f"  - {t}  ({len(t)} chars)" for t in titles["candidates"]]
+        out += [f"  - {t}  ({len(t)} chars)"
+                + ("   <- DEFAULT" if t == titles.get("default") else "")
+                for t in titles["candidates"]]
+        if titles.get("default_rule"):
+            out.append(f"  {sentence(titles['default_rule'])}.")
         if titles.get("exemplars"):
             out.append(
                 "  The owner's own exemplars, quoted for VOICE: "

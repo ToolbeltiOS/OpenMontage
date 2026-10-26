@@ -28,7 +28,7 @@ The Shorts that performed on King Tut keep returning to: king, curse, unexplaine
 | Akhenaten | 39 | 39.0 | yes |
 | King Tut | 35 | 35.0 | yes |
 | Discovery of the tomb of Tutankhamun | 4 | 23.5 | yes |
-| Eighteenth Dynasty of Egypt | 0 | 13.5 | yes |
+| Eighteenth Dynasty of Egypt | 0 | 14.0 | yes |
 | George Herbert, 5th Earl of Carnarvon | 10 | 10.0 | yes |
 | Grand Egyptian Museum | 10 | 10.0 | yes |
 | Ankhesenamun | 9 | 9.0 | yes |

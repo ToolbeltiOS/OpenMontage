@@ -56,7 +56,8 @@ SEARCH_DISCOUNT = 0.5
 USABLE = (".jpg", ".jpeg", ".png", ".tif", ".tiff", ".webm", ".ogv", ".mp4")
 
 
-def _get(params: dict[str, Any], timeout: int = 30) -> dict:
+def _get(params: dict[str, Any], timeout: int = 30,
+         api: str | None = None) -> dict:
     global _last_call
 
     wait = MIN_INTERVAL_S - (time.monotonic() - _last_call)
@@ -64,10 +65,94 @@ def _get(params: dict[str, Any], timeout: int = 30) -> dict:
         time.sleep(wait)
     _last_call = time.monotonic()
 
-    url = COMMONS + "?" + urllib.parse.urlencode({**params, "format": "json"})
+    url = (api or COMMONS) + "?" + urllib.parse.urlencode(
+        {**params, "format": "json"})
     request = urllib.request.Request(url, headers={"User-Agent": UA})
     with urllib.request.urlopen(request, timeout=timeout) as response:
         return json.loads(response.read().decode("utf-8"))
+
+
+WIKIDATA = "https://www.wikidata.org/w/api.php"
+
+#: Trailing words a Commons category adds to a subject's own name without
+#: making it a different subject. `Category:Durupınar Site` is the Durupınar
+#: site; `Category:Mount Ararat (Free State)` is a hill in South Africa.
+CATEGORY_SUFFIXES = ("site", "sites")
+
+
+def _norm(text: str) -> str:
+    return " ".join(text.lower().replace("_", " ").split())
+
+
+def _is_own_category(entity: str, category: str) -> bool:
+    """Is this category the subject itself, rather than something matching it?
+
+    Exact, or the subject plus a generic trailing noun. A parenthetical
+    qualifier means a DISAMBIGUATION, which is the one case where a matching
+    title reliably indicates a different thing.
+    """
+    want, got = _norm(entity), _norm(category)
+    if got == want:
+        return True
+    if got.startswith(want + " "):
+        rest = got[len(want) + 1:]
+        return rest in CATEGORY_SUFFIXES
+    return False
+
+
+def commons_category(entity: str) -> str | None:
+    """The entity's OWN Commons category, from Wikidata, resolved by label.
+
+    Commons files a subject under whatever its editors chose, and searching
+    the category namespace finds that name only by luck of spelling. Durupınar
+    is filed under `Category:Durupınar Site` — capital S, Turkish ı — and
+    every lowercase or ASCII spelling of it returns zero members.
+
+    Wikidata knows the answer: P373 is the Commons category, and the
+    commonswiki sitelink is the same thing when P373 is absent. The item is
+    resolved BY LABEL rather than by a guessed Q-number — Durupınar is
+    Q1267546, and a guess at it would have been a different subject entirely.
+
+    This is also what makes membership trustworthy. A category that Wikidata
+    says IS this subject's category can be counted by membership alone; a
+    category that merely matched a search cannot, because "Mount Ararat"
+    matches "Mount Ararat (Free State)", which is a hill in South Africa.
+    """
+    try:
+        found = _get({"action": "wbsearchentities", "language": "en",
+                      "limit": 5, "search": entity}, api=WIKIDATA)
+        hits = found.get("search") or []
+        # THE LABEL HAS TO BE THE SAME THING, NOT THE NEAREST THING.
+        #
+        # wbsearchentities matches aliases and prefixes and returns whatever
+        # is closest, which is not the same question. Measured: "Ark van
+        # Noach" — the 2012 Dutch full-scale build — returns Q7747, "Noah's
+        # Ark", because the Dutch phrase is an alias of the biblical vessel;
+        # counting its category would have credited the build with 56 files
+        # of a different subject. And "Durupınar" returns nothing at all,
+        # because the item's label is "Durupınar site".
+        #
+        # So an inexact label is no answer, and the search-derived categories
+        # below are left to answer instead.
+        want = _norm(entity)
+        qid = next((h["id"] for h in hits if _norm(h.get("label", "")) == want),
+                   None)
+        if not qid:
+            return None
+        data = _get({"action": "wbgetentities", "ids": qid,
+                     "props": "claims|sitelinks"}, api=WIKIDATA)
+        ent = (data.get("entities") or {}).get(qid) or {}
+        for claim in (ent.get("claims") or {}).get("P373", []):
+            value = (((claim.get("mainsnak") or {}).get("datavalue") or {})
+                     .get("value"))
+            if value:
+                return str(value)
+        link = ((ent.get("sitelinks") or {}).get("commonswiki") or {}).get("title")
+        if link:
+            return link.split(":", 1)[-1]
+    except Exception:
+        return None
+    return None
 
 
 def find_categories(entity: str, limit: int = 4) -> list[str]:
@@ -132,19 +217,28 @@ def search_files(term: str, limit: int = 40) -> list[str]:
     return [m["title"] for m in ((found.get("query") or {}).get("search") or [])]
 
 
-def _usable(titles: list[str], term: str) -> list[str]:
-    """Files that are media, and whose name carries the subject.
-
-    The name test is the same one the asset bank uses, and it is what stops a
-    category of "Egypt" contributing a photograph of a modern street sign to
-    the count for "Great Pyramid".
-    """
-    needles = [w.lower() for w in term.split() if len(w) > 3]
+def _media(titles: list[str]) -> list[str]:
+    """Files that are media at all, whatever they are called."""
     kept = []
     for title in titles:
         name = title.split(":", 1)[-1]
-        if not name.lower().endswith(USABLE):
-            continue
+        if name.lower().endswith(USABLE):
+            kept.append(name)
+    return kept
+
+
+def _usable(titles: list[str], term: str) -> list[str]:
+    """Media whose NAME carries the subject.
+
+    The name test is the same one the asset bank uses, and it is what stops a
+    text search for "Durupınar" — which returns photographs of Mount Ararat,
+    because the search is fuzzy — from counting toward it.
+
+    IT IS FOR SEARCH RESULTS, NOT FOR CATEGORY MEMBERS. See `depth_of`.
+    """
+    needles = [w.lower() for w in term.split() if len(w) > 3]
+    kept = []
+    for name in _media(titles):
         if needles and not any(n in name.lower() for n in needles):
             continue
         kept.append(name)
@@ -153,14 +247,56 @@ def _usable(titles: list[str], term: str) -> list[str]:
 
 def depth_of(entity: str, min_assets: int = 8) -> dict[str, Any]:
     """How many usable assets exist for this one thing."""
-    categories = find_categories(entity) or [entity]
-    members: list[str] = []
+    # The entity's OWN category first, from Wikidata, then whatever the
+    # category search suggests. The two are counted differently below.
+    own = commons_category(entity)
+    searched = find_categories(entity) or [entity]
+    categories = ([own] if own else []) + [c for c in searched if c != own]
+
+    members: list[str] = []          # from the subject's own category
+    loose: list[str] = []            # from categories that merely matched
     for category in dict.fromkeys(categories):
-        members += category_members(category)
-        if len(members) >= min_assets * 4:
+        found = category_members(category)
+        if (own and category == own) or _is_own_category(entity, category):
+            members += found
+        else:
+            loose += found
+        if len(members) + len(loose) >= min_assets * 4:
             break
 
-    from_categories = _usable(members, entity)
+    # MEMBERSHIP IS THE EVIDENCE, FOR A CATEGORY THIS NARROW.
+    #
+    # `find_categories` already requires every significant word of the entity
+    # to appear in the category's own title, so what comes back is the
+    # subject's own category and not a continent's. Applying the filename test
+    # to its members a second time asks a question membership has already
+    # answered — and answers it wrongly for anything photographed by people
+    # who do not write English.
+    #
+    # Measured on Durupınar: `Category:Durupınar Site` holds thirteen files,
+    # named in Turkish, Polish and Czech — "Arka Noego", "Noemova archa",
+    # "NuhunGemisi", "Üzengili". The name test kept ONE, and the subject was
+    # reported as unsourceable at 0.5 usable assets. It has thirteen.
+    #
+    # The test still applies to search results below, where it is the only
+    # thing standing between the count and a fuzzy match.
+    # MEMBERSHIP IS THE EVIDENCE, FOR THE CATEGORY WIKIDATA NAMES.
+    #
+    # A category Wikidata says IS this subject's category has been curated by
+    # people who decided each picture is of this thing, and the filename adds
+    # nothing to that. Applying the name test to its members asks a question
+    # membership has already answered — and answers it wrongly for anything
+    # photographed by people who do not write English.
+    #
+    # Measured on Durupınar: `Category:Durupınar Site` holds thirteen files,
+    # named in Turkish, Polish and Czech — "Arka Noego", "Noemova archa",
+    # "NuhunGemisi", "Üzengili". The name test kept ONE, and the subject was
+    # reported as unsourceable at 0.5 usable assets.
+    #
+    # A category that merely MATCHED a search keeps the name test, because
+    # "Mount Ararat" matches "Mount Ararat (Free State)", a hill in South
+    # Africa whose farm photographs are not this subject.
+    from_categories = _media(members) + _usable(loose, entity)
     counted = float(len(from_categories))
     from_search: list[str] = []
     if counted < min_assets:

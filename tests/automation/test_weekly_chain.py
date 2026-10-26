@@ -915,24 +915,35 @@ class TestTheNoahConstraint:
         assert "sermon" in reg["forbidden"] and "debunk" in reg["forbidden"], (
             "a film that forbids only one of them has picked a side")
 
-    def test_the_thin_entities_are_still_in_the_depth_list(self):
-        """So the brief's table shows them failing.
+    def test_durupinar_is_a_spine_entity_because_it_was_never_thin(self):
+        """It measured 0.5 because the DEPTH CHECK was wrong, not the subject.
 
-        Listing only the ones that clear would report 8 of 8 on a list that
-        quietly dropped the two that cannot be sourced — which is the
-        question `entities` exists to answer, answered backwards.
+        `Category:Durupınar Site` holds thirteen CC BY photographs named in
+        Turkish, Polish and Czech. The filename test applied to the members of
+        the subject's own category kept none of them. Fixed in
+        lib/source_depth.py; the act's hero is a photograph.
         """
         c = self._c()
-        for name in c["thin"]:
-            assert name in c["entities"], (
-                f"{name} is known thin and is not in the depth list, so the "
-                f"brief will not show it failing")
+        assert "Durupınar" in c["entities"]
+        assert "thin" not in c, "Durupınar was the only entry; it clears now"
 
-    def test_every_thin_entity_names_what_to_shoot_instead(self):
-        for name, row in self._c()["thin"].items():
-            assert row["shoot_instead"], name
-            assert row["why"], name
-            assert row["counted"] < 8
+    def test_the_overhead_is_recorded_as_an_addition_not_the_hero(self):
+        sat = self._c()["satellite"]
+        assert sat["wikidata"] == "Q1267546"
+        assert abs(sat["lat"] - 39.4406) < 0.01
+        assert abs(sat["lon"] - 44.2348) < 0.01
+        assert "NOT the hero" in sat["use"]
+
+    def test_atrahasis_is_supporting_and_says_what_it_is_not(self):
+        """The owner's ruling: acceptable below the floor, not a spine act."""
+        c = self._c()
+        row = c["supporting"]["Atrahasis"]
+        assert row["counted"] < 8
+        assert "evidence card" in row["as"]
+        assert "spine" in row["not"]
+        assert "Atrahasis" not in c["entities"], (
+            "a supporting entity in the spine depth list would be counted "
+            "against a floor it is not expected to clear")
 
     def test_the_title_candidates_obey_the_length_rule(self):
         t = self._c()["titles"]
@@ -951,7 +962,16 @@ class TestTheNoahConstraint:
         assert t["exemplars"] == ["The Flood Before the Bible",
                                   "They Keep Finding the Ark"]
         assert all(len(e) < t["min_chars"] for e in t["exemplars"])
-        assert "neither meets" in t["exemplars_note"]
+        assert "NOT CANDIDATES" in t["exemplars_note"], (
+            "the owner ruled these are voice examples and the 30-45 rule "
+            "stands; they must not be used as titles")
+        assert t["exemplars"][0] not in t["candidates"]
+
+    def test_there_is_a_default_and_it_obeys_the_rule(self):
+        t = self._c()["titles"]
+        assert t["default"] == "The Flood Story Before the Bible"
+        assert t["default"] in t["candidates"]
+        assert t["min_chars"] <= len(t["default"]) <= t["max_chars"]
 
     def test_the_brief_uses_the_owners_candidates_not_the_generic_shapes(self):
         from pathlib import Path
@@ -1014,11 +1034,22 @@ class TestTheConstraintReachesThePrompt:
     def test_the_register_is_called_binding(self):
         assert "Register, binding:" in self._rendered()
 
-    def test_the_unsourceable_entities_are_named_with_substitutes(self):
+    def test_the_supporting_entity_is_marked_as_not_the_spine(self):
         out = self._rendered()
-        assert "WILL NOT clear the asset" in out
-        assert "Durupınar: 0.5 usable assets" in out
-        assert "Shoot Mount Ararat" in out
+        assert "Supporting, NOT spine" in out
+        assert "Atrahasis" in out
+        assert "evidence card" in out
+
+    def test_the_overhead_is_offered_with_its_coordinates(self):
+        out = self._rendered()
+        assert "39.44064, 44.23481" in out
+        assert "Q1267546" in out
+        assert "NOT the hero" in out
+
+    def test_the_default_title_is_marked_in_the_prompt(self):
+        out = self._rendered()
+        assert "<- DEFAULT" in out
+        assert "unless the script argues otherwise" in out
 
     def test_the_title_rule_carries_the_counts(self):
         out = self._rendered()
@@ -1064,3 +1095,37 @@ class TestTheConstraintReachesThePrompt:
         from pick_topic import ANGLE_CONSTRAINTS
 
         assert "artefact" in ANGLE_CONSTRAINTS["noah"]["framing"].lower()
+
+    def test_the_live_table_beats_the_copy_frozen_into_the_brief(self):
+        """`pick_topic` snapshots the constraint into the brief.
+
+        An angle edited after the pick would otherwise be ignored by the run
+        it was written for — silently, because the prompt would be built from
+        a week-old copy. Caught in practice: the brief on disk predated the
+        framing clause and still carried an earlier draft of the title note.
+        """
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from angle_brief import constraint_for
+
+        stale = {"entity": "Noah",
+                 "angle": {"constraint": {"spine": ["something else"],
+                                          "set_by": "a week ago"}}}
+        live = constraint_for(stale)
+        assert live["set_by"] == "owner, 2026-10-26"
+        assert "Gilgamesh" in " ".join(live["spine"])
+
+    def test_a_subject_dropped_from_the_table_keeps_its_snapshot(self):
+        """The fallback: a brief whose subject is no longer constrained."""
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from angle_brief import constraint_for
+
+        snapshot = {"spine": ["only in the brief"], "set_by": "then"}
+        got = constraint_for({"entity": "Nineveh",
+                              "angle": {"constraint": snapshot}})
+        assert got == snapshot
