@@ -20,7 +20,7 @@ The Shorts that performed on King Tut keep returning to: king, curse, unexplaine
 - They Hid This Meteorite Dagger in King Tut  
   https://youtube.com/shorts/av9BowfzU3U
 
-## Entities, and how deep the archive is
+## What the island's article suggests
 
 | entity | category files | counted | clears 8 |
 |---|---|---|---|

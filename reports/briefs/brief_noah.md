@@ -20,7 +20,7 @@ The Shorts that performed on Noah keep returning to: noah, drunk, noah's, flood.
 - Noah's Flood Story Was Written Centuries Earlier  
   https://youtube.com/shorts/qplcEEGex5Y
 
-## Entities, and how deep the archive is
+## What the island's article suggests
 
 | entity | category files | counted | clears 8 |
 |---|---|---|---|
@@ -30,7 +30,7 @@ The Shorts that performed on Noah keep returning to: noah, drunk, noah's, flood.
 | Noah | 2 | 18.5 | yes |
 | Lamech (father of Noah) | 0 | 18.0 | yes |
 | Shem | 13 | 13.0 | yes |
-| Genesis flood narrative | 0 | 12.5 | yes |
+| Genesis flood narrative | 0 | 12.0 | yes |
 | Giovanni Benedetto Castiglione | 10 | 10.0 | yes |
 | Noah's wife | 0 | 9.5 | yes |
 | Japheth | 7 | 8.0 | yes |

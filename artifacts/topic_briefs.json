@@ -1,381 +1,723 @@
 {
- "generated": "2026-10-21T20:01:37.184774+00:00",
+ "generated": "2026-10-26T13:36:32.438218+00:00",
  "ledger_size": 500,
- "clusters_considered": 67,
+ "clusters_considered": 66,
  "min_assets_per_entity": 8,
  "entities_checked": 6,
  "briefs": [
   {
-   "entity": "Easter Island",
+   "entity": "Noah",
    "shorts": 2,
-   "median_views": 627,
-   "best_views": 1213,
-   "mean_engagement": 0.86,
+   "median_views": 366,
+   "best_views": 575,
+   "mean_engagement": 1.96,
    "titles": [
-    "The Walking Statues of Easter Island #Shorts",
-    "Easter Island statues have BODIES? \ud83e\udd2f #Shorts"
+    "Noah: The First Drunk in History? \ud83c\udf77 #Shorts",
+    "Noah's Flood Story Was Written Centuries Earlier #Shorts"
    ],
    "urls": [
-    "https://youtube.com/shorts/NMpqzQZnHgo",
-    "https://youtube.com/shorts/5RqimZIyXMw"
+    "https://youtube.com/shorts/qTFEo0GCjWY",
+    "https://youtube.com/shorts/qplcEEGex5Y"
    ],
    "wikidata": {
-    "phrase": "Easter Island",
-    "item": "Q14452",
-    "description": "Polynesian island and special territory of Chile",
-    "sitelinks": 164,
+    "phrase": "Noah",
+    "item": "Q81422",
+    "description": "biblical prophet, son of Lamech, major figure in the Book of Genesis",
+    "sitelinks": 121,
     "subject": true,
-    "why": "it is somewhere",
-    "article": "Easter Island"
+    "why": "it is someone",
+    "article": "Noah"
    },
    "entities": [
     {
-     "entity": "Rano Kau",
+     "entity": "Book of Genesis",
      "categories": [
-      "Rano Kau",
-      "Historical photographs of Rano Kau"
+      "Book of Genesis",
+      "Book of Genesis - Chapter 9",
+      "Book of Genesis - Chapter 49"
      ],
-     "category_files": 27,
+     "category_files": 50,
      "search_files": 0,
-     "counted": 27.0,
+     "counted": 50.0,
      "clears": true,
      "examples": [
-      "Al borde del volc\u00e1n Rano Kao - panoramio.jpg",
-      "Atardecer en Rano Kau.JPG",
-      "Chile-03347 - Rano Kau (49073350807).jpg",
-      "Chile-03382 - Rano Kau (49073130726).jpg"
+      "039.3 402 Sara (Genesis 20 2) \u2022 invenit James Tissot \u2022 pinxit James Tissot \u2022 excudit Maurice de Brunoff apud Philip de Vere \u2022 praesentat Phillip Medhurst.jpg",
+      "056.3 402 Enl\u00e8vement de Dinah, fille de Lia (Genesis 34 2) \u2022 invenit James Tissot \u2022 pinxit James Tissot \u2022 excudit Maurice de Brunoff apud Philip de Vere \u2022 praesentat Phillip Medhurst.jpg",
+      "057.3 402 Le massacre des Sich\u00e9mites (Genesis 35 5) \u2022 invenit James Tissot \u2022 pinxit James Tissot \u2022 excudit Maurice de Brunoff apud Philip de Vere \u2022 praesentat Phillip Medhurst.jpg",
+      "058 403 Joseph raconte ses songes (Genesis 37 8) \u2022 invenit James Tissot \u2022 pinxit James Tissot et alia \u2022 excudit Maurice de Brunoff apud Philip de Vere \u2022 praesentat Phillip Medhurst.jpg"
      ]
     },
     {
-     "entity": "Hanga Roa",
+     "entity": "Noah (name)",
      "categories": [
-      "Hanga Roa",
-      "Hanga Roa O Tai",
-      "Hanga Piko"
+      "Noah (name)"
      ],
-     "category_files": 25,
-     "search_files": 0,
-     "counted": 25.0,
-     "clears": true,
-     "examples": [
-      "Localizaci\u00f3n de Hanga Roa en la Isla de Pascua.png",
-      "Boutique de cycle \u00e0 Hanga Roa.jpg",
-      "Buste de Riro K\u0101inga (Hanga Roa).jpg",
-      "Caba\u00f1a \"Tautira\" en Hanga Roa - panoramio.jpg"
-     ]
-    },
-    {
-     "entity": "Motu Nui",
-     "categories": [
-      "Motu Nui",
-      "Motu Kao Kao",
-      "Motu Iti (Easter Island)"
-     ],
-     "category_files": 22,
-     "search_files": 0,
-     "counted": 22.0,
-     "clears": true,
-     "examples": [
-      "Motu Nui (2).jpg",
-      "Motu Nui (3).jpg",
-      "16 Velikono\u010dni otok (65) Motu Nui.jpg",
-      "Chile-03321 - Swim to Motu Nui (49073158911).jpg"
-     ]
-    },
-    {
-     "entity": "Moai",
-     "categories": [
-      "Moai",
-      "Moai tangata",
-      "Moai kavakava"
-     ],
-     "category_files": 20,
-     "search_files": 0,
+     "category_files": 0,
+     "search_files": 40,
      "counted": 20.0,
      "clears": true,
      "examples": [
-      "A moai lying on the ground, face upwards; on the moai statue road(?), with a White man wearing a hat and a moustache, sitting in front of it, for scale; Oc,G.T.1762, Mana Expedition to Easter Island, British Museum.jpg",
-      "Chile-03413 - Old Moai Head (49073326952).jpg",
-      "Chile-03416 - Female Moai (49072591233).jpg",
-      "Dont Step on Moai - Hanga Roa, Easter Island (5955837307).jpg"
+      "3 grappes de noah.jpg",
+      "Noah(1).png",
+      "Caricature of Noah E. Offutt (1916).png",
+      "Noah Emmerich.jpg"
      ]
     },
     {
-     "entity": "Polynesian rat",
+     "entity": "Noah's Ark",
      "categories": [
-      "Polynesian rat"
+      "Noah's Ark",
+      "Noah's Ark II",
+      "Noah's Ark Zoo Farm"
      ],
-     "category_files": 0,
-     "search_files": 21,
-     "counted": 10.5,
+     "category_files": 4,
+     "search_files": 32,
+     "counted": 20.0,
      "clears": true,
      "examples": [
-      "PolynesianRatNZ.jpg",
-      "Starr-141030-2690-Eucalyptus globulus-habitat with Polynesian rat in parking lot-Hosmers Grove HNP-Maui (25129932392).jpg",
-      "Starr-141030-5157-Eucalyptus globulus-habitat with Polynesian rat in parking lot-Hosmers Grove HNP-Maui (24617671934).jpg",
-      "Starr-141030-2687-Eucalyptus globulus-habitat with Polynesian rat in parking lot-Hosmers Grove HNP-Maui (24952600170).jpg"
+      "BOWYER BIBLE GENESIS 087. The wickedness of Noah's generation. Genesis cap 6 v 11. Hoet.jpg",
+      "BOWYER BIBLE GENESIS 110. Noah's burnt offering. Genesis cap 8 v 20. Marillier.jpg",
+      "Exhibit Showing First European Rendering of Mt. Ararat - With Noah's Ark - Ishak Pasa Palace - Outside Dogubayazit - Turkey (5809367478).jpg",
+      "Frances Gwendolyn Castens in her Noah's Ark costume, worn when skating, Halifax, Nova Scotia, Canada, 1890s.jpg"
      ]
     },
     {
-     "entity": "Easter Island",
+     "entity": "Noah",
      "categories": [
-      "Easter Island",
-      "Easter Island Moai (Dublin)",
-      "Ahu in Easter Island"
+      "Noah",
+      "Noah Wulff",
+      "Noah Eyawo"
      ],
-     "category_files": 8,
+     "category_files": 2,
+     "search_files": 33,
+     "counted": 18.5,
+     "clears": true,
+     "examples": [
+      "Noah Urrea during The Voice Kids Russia in 2018 01.jpg",
+      "Noah Urrea's official autograph.png"
+     ]
+    },
+    {
+     "entity": "Lamech (father of Noah)",
+     "categories": [
+      "Lamech (father of Noah)"
+     ],
+     "category_files": 0,
+     "search_files": 36,
+     "counted": 18.0,
+     "clears": true,
+     "examples": [
+      "BOWYER BIBLE GENESIS 081. Lamech and his two wives. Genesis cap 4 v 19. De Vos.jpg",
+      "Lamech and Cain MET DP818832.jpg",
+      "Mosaici del battistero, genesi 10 Lamech uccide Caino e Tubalkain.jpg",
+      "Lamech lunar crater map.jpg"
+     ]
+    },
+    {
+     "entity": "Shem",
+     "categories": [
+      "Shem",
+      "Shem Schroeck",
+      "Shem Tov Levi"
+     ],
+     "category_files": 13,
      "search_files": 0,
+     "counted": 13.0,
+     "clears": true,
+     "examples": [
+      "A map of Asia as inhabited by Shem (FL27963638 2488683).jpg",
+      "Edward Wells, Karte von den ersten Wohnungen der Soehne des Shem, und von den Laendern welch ihre Colonien bevoelkert haben (FL50290119 2369156).jpg",
+      "John in Korovniki church - patriarch 01 Shem (c. 1654, Yaroslavl).jpg",
+      "Seleznikha church - Shem (18 c.).jpg"
+     ]
+    },
+    {
+     "entity": "Genesis flood narrative",
+     "categories": [
+      "Genesis flood narrative"
+     ],
+     "category_files": 0,
+     "search_files": 24,
+     "counted": 12.0,
+     "clears": true,
+     "examples": [
+      "The great flood - Biblical.jpg",
+      "007.The Great Flood.jpg",
+      "Flood P4280274.jpg",
+      "The Great Flood by Jan Nagel.jpg"
+     ]
+    },
+    {
+     "entity": "Giovanni Benedetto Castiglione",
+     "categories": [
+      "Giovanni Benedetto Castiglione",
+      "Giovanni Benedetto Castiglione - In Front of Noah's Ark (Dresden)",
+      "La maga Circe by Giovanni Benedetto Castiglione"
+     ],
+     "category_files": 10,
+     "search_files": 0,
+     "counted": 10.0,
+     "clears": true,
+     "examples": [
+      "A Family in a Desert Landscape, by Giovanni Benedetto Castiglione (Getty 108G7C).jpg",
+      "Pastoral Journey, by Giovanni Benedetto Castiglione (Getty 103R08).jpg",
+      "The Expulsion of Hagar, by Giovanni Benedetto Castiglione (Getty 103QWF).jpg",
+      "Dresden, Gem\u00e4ldegalerie Alte Meister, Giovanni Benedetto Castiglione, vor der Arche Noah.jpg"
+     ]
+    },
+    {
+     "entity": "Noah's wife",
+     "categories": [
+      "Noah's wife"
+     ],
+     "category_files": 0,
+     "search_files": 19,
+     "counted": 9.5,
+     "clears": true,
+     "examples": [
+      "Attributed to Antonio de Bellis - The Sacrifice of Noah - Google Art Project (cropped Noah's wife).jpg",
+      "\"Noah's wife\" on Archstoyanie festival.jpg",
+      "Rebecca Greenleaf Webster wife of Noah Webster.jpg",
+      "Noah's wife lived a wonderful life - one step - DPLA - 36ca89150e275c9ce638de1b5e022496 (page 11).jpg"
+     ]
+    },
+    {
+     "entity": "Japheth",
+     "categories": [
+      "Japheth",
+      "Japheth Campbell",
+      "Japheth (given name)"
+     ],
+     "category_files": 7,
+     "search_files": 6,
      "counted": 8.0,
      "clears": true,
      "examples": [
-      "Aronie at Capuna Kau, mural painting in stone houses, Easter Island.jpg",
-      "At Angaroa on Cook's Bay - Easter Island, 1868.jpg",
-      "Biking Easter Island.jpg",
-      "Birdman Islands 2.jpg"
+      "Japheth.jpg",
+      "Shem, Ham and Japheth (cropped)3.jpg",
+      "Shem, Ham and Japheth.jpg",
+      "Tissot Shem, Ham and Japheth.jpg"
      ]
     },
     {
-     "entity": "Mataveri International Airport",
+     "entity": "Ham (son of Noah)",
      "categories": [
-      "Mataveri International Airport"
+      "Ham (son of Noah)"
      ],
      "category_files": 0,
-     "search_files": 14,
-     "counted": 7.0,
+     "search_files": 0,
+     "counted": 0.0,
      "clears": false,
-     "examples": [
-      "Mataveri Airport Easter Island Chile.jpg",
-      "Chile-03723 - Mataveri International Airport (49073024011).jpg",
-      "Chile-03721 - Mataveri International Airport (49073235787).jpg",
-      "Mataveri control tower.jpg"
-     ]
-    },
-    {
-     "entity": "Poike",
-     "categories": [
-      "Poike"
-     ],
-     "category_files": 5,
-     "search_files": 9,
-     "counted": 7.0,
-     "clears": false,
-     "examples": [
-      "Poike Volcano.jpg",
-      "Poike.jpg",
-      "Two Polynesian(?) men kneeling on the ground, measuring the length of the foundations of a hare paenga; four horses grazing in the background; slopes of Poike visible in background; Oc,G.T.1637, Mana Expedition to Easter Island, British Museum.jpg",
-      "Velikono\u010dn\u00ed ostrov - sopka Poike - panoramio.jpg"
-     ]
-    },
-    {
-     "entity": "Flag of Easter Island",
-     "categories": [
-      "Flags of Easter Island",
-      "Flag maps of Easter Island"
-     ],
-     "category_files": 5,
-     "search_files": 8,
-     "counted": 6.5,
-     "clears": false,
-     "examples": [
-      "Chile-02836 - Rapa Nui Flag (49072245633).jpg",
-      "Dutrou-Bornier Flag.jpg",
-      "Easter Island flag 1876 to 1888.png",
-      "Easter Island flag.png"
-     ]
-    },
-    {
-     "entity": "Isla de Pascua (commune)",
-     "categories": [
-      "Isla de Pascua (commune)"
-     ],
-     "category_files": 1,
-     "search_files": 3,
-     "counted": 2.0,
-     "clears": false,
-     "examples": [
-      "Comuna Isla de Pascua.png"
-     ]
-    },
-    {
-     "entity": "Ahu (Easter Island)",
-     "categories": [
-      "Ahu (Easter Island)"
-     ],
-     "category_files": 0,
-     "search_files": 1,
-     "counted": 0.5,
-     "clears": false,
-     "examples": [
-      "Ahu Tongariki - Rapa Nui (Easter Island).JPG"
-     ]
-    },
-    {
-     "entity": "Polynesians",
-     "categories": [
-      "Polynesians"
-     ],
-     "category_files": 0,
-     "search_files": 1,
-     "counted": 0.5,
-     "clears": false,
-     "examples": [
-      "French Polynesians of canada.png"
-     ]
+     "examples": []
     }
    ],
    "deepest_six": "6/6",
    "eligible": true,
    "min_assets": 8,
    "thin": [],
-   "spine_entities": [
+   "angle": {
+    "recurring_words": [
+     "noah",
+     "drunk",
+     "noah's",
+     "flood",
+     "written",
+     "centuries",
+     "earlier"
+    ],
+    "source_titles": [
+     "Noah: The First Drunk in History? \ud83c\udf77",
+     "Noah's Flood Story Was Written Centuries Earlier"
+    ],
+    "claim": "The Shorts that performed on Noah keep returning to: noah, drunk, noah's, flood. The film has to answer that, not introduce the subject."
+   },
+   "title_candidates": [
+    "Noah: The Part Nobody Can Explain",
+    "What Noah Was Really Built For",
+    "The Noah Problem",
+    "Noah Should Not Exist"
+   ]
+  },
+  {
+   "entity": "King Tut",
+   "shorts": 2,
+   "median_views": 342,
+   "best_views": 627,
+   "mean_engagement": 1.92,
+   "titles": [
+    "The Curse of King Tut: Unexplained Deaths After the Tomb Opening #Shorts",
+    "They Hid This Meteorite Dagger in King Tut #Shorts"
+   ],
+   "urls": [
+    "https://youtube.com/shorts/TJpQyJoQSfw",
+    "https://youtube.com/shorts/av9BowfzU3U"
+   ],
+   "wikidata": {
+    "phrase": "King Tut",
+    "item": "Q12154",
+    "description": "14th century BCE (18th dynasty) Egyptian pharaoh",
+    "sitelinks": 114,
+    "subject": true,
+    "why": "it is someone",
+    "article": "Tutankhamun"
+   },
+   "entities": [
     {
-     "entity": "Rongorongo",
+     "entity": "Amarna Period",
      "categories": [
-      "Rongorongo",
-      "Rongorongo text A \u2013 Tahua",
-      "Rongorongo text E \u2013 Keiti"
+      "Amarna Period",
+      "Egyptian antiquities from the Amarna Period in the \u00c4gyptisches Museum Berlin"
      ],
-     "category_files": 13,
+     "category_files": 54,
      "search_files": 0,
+     "counted": 54.0,
+     "clears": true,
+     "examples": [
+      "Akhenaten with one of his girls, detail of an altarpiece of a shrine. God Aten and his cartouches appear. C. 1345 BCE. From Amarna, Egypt. Neues Museum.jpg",
+      "Amarna Period Carved Limestone Relief of (probably) Pharaoh Akhnaton & Wife Nefertiti, New Kingdom, 18th Dynasty, c. 1340 BC (28465728740) (cropped).jpg",
+      "Amarna Period Carved Limestone Relief of (probably) Pharaoh Akhnaton & Wife Nefertiti, New Kingdom, 18th Dynasty, c. 1340 BC (28465728740).jpg",
+      "Amarna Period Royal Family Limestone Portrait of a Princess, 18th Dynasty, c. 1340 BC (28466293010).jpg"
+     ]
+    },
+    {
+     "entity": "Akhenaten",
+     "categories": [
+      "Akhenaten",
+      "Akhenaten N 831",
+      "Akhenaten and Nefertiti E15593"
+     ],
+     "category_files": 39,
+     "search_files": 0,
+     "counted": 39.0,
+     "clears": true,
+     "examples": [
+      "Akhenaten names&goddess Amarna tomb I.png",
+      "Akhenaten Throwing Stick EA34213.jpg",
+      "Akhenaten with one of his girls, detail of an altarpiece of a shrine. God Aten and his cartouches appear. C. 1345 BCE. From Amarna, Egypt. Neues Museum.jpg",
+      "Akhenaten's beneficient solar divinity (...) LOC matpc.07418.jpg"
+     ]
+    },
+    {
+     "entity": "King Tut",
+     "categories": [
+      "King Tut (dog)",
+      "King Tut's Wah Wah Hut",
+      "King Tut I (ship, 2003)"
+     ],
+     "category_files": 35,
+     "search_files": 0,
+     "counted": 35.0,
+     "clears": true,
+     "examples": [
+      "Herbert Hoover and King Tut.jpg",
+      "Hoover with King Tut LCCN2016822914.jpg",
+      "King Tut Presidential Police Dog Sentry Box 1929.jpg",
+      "King Tut, the President's Belgian Police dog has taken up his duties at the White House and makes regular rounds to see that the guards are in their places LCCN2002712169.jpg"
+     ]
+    },
+    {
+     "entity": "Discovery of the tomb of Tutankhamun",
+     "categories": [
+      "Discovery of the tomb of Tutankhamun"
+     ],
+     "category_files": 4,
+     "search_files": 39,
+     "counted": 23.5,
+     "clears": true,
+     "examples": [
+      "Fouilles au tombeau de Tu Tenk Amen (i.e. Toutankhamon, Howard Carter supervisant le transport d'objets) - btv1b53097235n.jpg",
+      "Fouilles au tombeau du pharaon Tu Tenk Amen (i.e. Toutankhamon, Howard Carter supervisant le transport d'objets) - btv1b530972435.jpg",
+      "Fouilles de Louqsor au tombeau du pharaon Tu Tenk Amen (i.e. Toutankhamon), large bo\u00eete contenant des \u00e9toffes, inscription des noms du roi et de la reine peintes \u00e0 l'avant de la bo\u00eete, en lettres d'or sur fond... - btv1b53097242q.jpg",
+      "Fouilles de Louqsor au tombeau du pharaon Tu Tenk Amen (i.e. Toutankhamon, quatre Egyptiens portent des) bo\u00eetes de bois contenant des aliments momifi\u00e9s, gigot de mouton (et un autre Egyptien tient une) natte de... - btv1b530972418.jpg"
+     ]
+    },
+    {
+     "entity": "Eighteenth Dynasty of Egypt",
+     "categories": [
+      "Eighteenth Dynasty of Egypt"
+     ],
+     "category_files": 0,
+     "search_files": 27,
+     "counted": 13.5,
+     "clears": true,
+     "examples": [
+      "Head of an Early Eighteenth Dynasty King, ca. 1539-1493 B.C.E.,37.38E.jpg",
+      "Head of Nefertiti or Merit-Aten Quarzite Amarna 18th Dynasty 1340-1335 BCE.jpg",
+      "Black granite statue of the goddess Sekhmet excacvated at Ramesseum in Thebes Egypt 1405-1367 BCE Late 18th Dynasty Penn Museum 02.jpg",
+      "Relief of Horemheb with chapter 110 of the Book of the Dead, 18th Dynasty, reign of Tutankhamun, (1332-1323 BCE) made of Limestone with traces of polychromy, from the Memphite Tomb of Horemheb in Saqqara.jpg"
+     ]
+    },
+    {
+     "entity": "George Herbert, 5th Earl of Carnarvon",
+     "categories": [
+      "George Herbert, 5th Earl of Carnarvon"
+     ],
+     "category_files": 10,
+     "search_files": 0,
+     "counted": 10.0,
+     "clears": true,
+     "examples": [
+      "Carter, Tomb of Tut-Ankh-Amen, The Late Earl of Carnarvon (cropped).jpg",
+      "Carter, Tomb of Tut-Ankh-Amen, The Late Earl of Carnarvon.jpg",
+      "George Edward Stanhope Molyneux Herbert00.jpg",
+      "George Herbert, 5th Earl of Carnarvon (-1923).jpg"
+     ]
+    },
+    {
+     "entity": "Grand Egyptian Museum",
+     "categories": [
+      "Grand Egyptian Museum",
+      "Collections of the Grand Egyptian Museum",
+      "A Trip to the Grand Egyptian Museum 2025"
+     ],
+     "category_files": 10,
+     "search_files": 0,
+     "counted": 10.0,
+     "clears": true,
+     "examples": [
+      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 01.jpg",
+      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 02.jpg",
+      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 03.jpg",
+      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 04.jpg"
+     ]
+    },
+    {
+     "entity": "Ankhesenamun",
+     "categories": [
+      "Ankhesenamun",
+      "Ankhesenamun in popular culture",
+      "Statue of Amunet with features of Ankhesenamun (Karnak temple of Amun-Ra)"
+     ],
+     "category_files": 9,
+     "search_files": 0,
+     "counted": 9.0,
+     "clears": true,
+     "examples": [
+      "Ankhesenamun handing arrow to seated Tutankhamun.jpg",
+      "Ankhesenamun holding Tutankhamen's arm.jpg",
+      "Ankhesenamun offering flowers to Tutankhamun.jpg",
+      "Ankhesenamun offering lotus to seated King.jpg"
+     ]
+    },
+    {
+     "entity": "317a and 317b mummies",
+     "categories": [
+      "317a and 317b mummies"
+     ],
+     "category_files": 1,
+     "search_files": 3,
+     "counted": 2.0,
+     "clears": false,
+     "examples": [
+      "\u80ce\u5150317a\u3068317b, \u30c4\u30bf\u30f3\u30ab\u30fc\u30e1\u30f3\u306e\u5b50\u4f9b.jpg"
+     ]
+    },
+    {
+     "entity": "Curse of the pharaohs",
+     "categories": [
+      "Curse of the pharaohs"
+     ],
+     "category_files": 0,
+     "search_files": 1,
+     "counted": 0.5,
+     "clears": false,
+     "examples": [
+      "The Curse of Artemisia \u2013 Fragment WDL4310.png"
+     ]
+    },
+    {
+     "entity": "Ay (pharaoh)",
+     "categories": [
+      "Ay (pharaoh)"
+     ],
+     "category_files": 0,
+     "search_files": 0,
+     "counted": 0.0,
+     "clears": false,
+     "examples": []
+    },
+    {
+     "entity": "Fan-bearer on the Right Side of the King",
+     "categories": [
+      "Fan-bearer on the Right Side of the King"
+     ],
+     "category_files": 0,
+     "search_files": 0,
+     "counted": 0.0,
+     "clears": false,
+     "examples": []
+    }
+   ],
+   "deepest_six": "6/6",
+   "eligible": true,
+   "min_assets": 8,
+   "thin": [],
+   "angle": {
+    "recurring_words": [
+     "king",
+     "curse",
+     "unexplained",
+     "deaths",
+     "tomb",
+     "opening",
+     "meteorite",
+     "dagger"
+    ],
+    "source_titles": [
+     "The Curse of King Tut: Unexplained Deaths After the Tomb Opening",
+     "They Hid This Meteorite Dagger in King Tut"
+    ],
+    "claim": "The Shorts that performed on King Tut keep returning to: king, curse, unexplained, deaths. The film has to answer that, not introduce the subject."
+   },
+   "title_candidates": [
+    "King Tut: The Part Nobody Can Explain",
+    "What King Tut Was Really Built For",
+    "The King Tut Problem",
+    "King Tut Should Not Exist"
+   ]
+  },
+  {
+   "entity": "Atomic bombings of Hiroshima and Nagasaki",
+   "shorts": 3,
+   "median_views": 214,
+   "best_views": 527,
+   "mean_engagement": 6.54,
+   "titles": [
+    "Why Japan's Underwater Pyramid Terrifies Scientists #Shorts",
+    "Is Japan hiding a 10,000-year-old pyramid? #Shorts",
+    "The Face Carved in Japan's Sunken City #Shorts"
+   ],
+   "urls": [
+    "https://youtube.com/shorts/oDW4G09kD94",
+    "https://youtube.com/shorts/RIZxmJTIZBc",
+    "https://youtube.com/shorts/-iXpsL8sFFU"
+   ],
+   "derived_from": "Japan",
+   "wikidata": {
+    "phrase": "Atomic bombings of Hiroshima and Nagasaki",
+    "item": "Q488",
+    "description": "1945 use of nuclear weapons against Japan in World War II",
+    "sitelinks": 102,
+    "subject": true,
+    "why": "it is somewhere; and it is dated",
+    "article": "Atomic bombings of Hiroshima and Nagasaki"
+   },
+   "note": "split out of Japan, which is a container. The Shorts were about Japan; the evidence for this part is weaker and its score is halved to say so.",
+   "entities": [
+    {
+     "entity": "Boeing B-29 Superfortress",
+     "categories": [
+      "Boeing B-29 Superfortress",
+      "Accidents and incidents involving the Boeing B-29 Superfortress"
+     ],
+     "category_files": 35,
+     "search_files": 0,
+     "counted": 35.0,
+     "clears": true,
+     "examples": [
+      "01 00095244 SDASM Aircraft Image - Boeing B-29 Crew, peace time (53958633656).jpg",
+      "01 00095245 SDASM Aircraft Image - Boeing B-29 Tinianor Saipan (53958882503).jpg",
+      "1944 - B-29 Superfortress Chrysler - 11 Jul MC - Allentown PA.jpg",
+      "1945 B-29 Number 2 on Hokkaido.jpg"
+     ]
+    },
+    {
+     "entity": "Attack on Yokosuka",
+     "categories": [
+      "Attack on Yokosuka"
+     ],
+     "category_files": 3,
+     "search_files": 38,
+     "counted": 20.5,
+     "clears": true,
+     "examples": [
+      "Australian sailors inspecting wrecked ships at Yokosuka September 1945.jpg",
+      "Yokosuka naval base 18 July 1945.jpg",
+      "Yokosuka naval base under attack on 18 July 1945.jpg"
+     ]
+    },
+    {
+     "entity": "Attacks on Kure and the Inland Sea (July 1945)",
+     "categories": [
+      "Attacks on Kure and the Inland Sea (July 1945)"
+     ],
+     "category_files": 0,
+     "search_files": 26,
      "counted": 13.0,
      "clears": true,
      "examples": [
-      "Chile-03436 - Rongorongo (49073321772).jpg",
-      "Kohau rongorongo au mus\u00e9e de la Moneda.jpg",
-      "Rongorongo Schrift.jpg",
-      "Rongorongo X Birdman.jpg"
+      "Iwate sunk after the attack on Kure (2).jpg",
+      "U.S. Navy carrier aircraft attack the Japanese battleship Haruna near Kure, Japan, on 28 July 1945 (80-G-490226).jpg",
+      "Iwate sunk after the attack on Kure.jpg",
+      "Damaged Kure by bombing of US bombers - 1945.png"
      ]
     },
     {
-     "entity": "Orongo",
+     "entity": "Atomic bombings of Hiroshima and Nagasaki",
      "categories": [
-      "Orongo",
-      "Orongo Beach",
-      "Petroglyphs in Orongo area"
+      "Atomic bombings of Hiroshima and Nagasaki",
+      "Casualties of atomic bombings of Hiroshima and Nagasaki",
+      "Films about the atomic bombings of Hiroshima and Nagasaki"
      ],
-     "category_files": 17,
+     "category_files": 11,
      "search_files": 0,
-     "counted": 17.0,
+     "counted": 11.0,
      "clears": true,
      "examples": [
-      "Aldea ceremonial de Orongo, Isla de Pascua.JPG",
-      "Camino a Orongo.JPG",
-      "Casas en Orongo (reconstruidas) (8240965697).jpg",
-      "Ceremonia rapanui en Orongo.JPG"
+      "Amid the wreckage of a prison in Nagasaki, three Manhattan Project specialists use Geiger counters to measure residual radioactivity.jpg",
+      "Atomic Bomb.webm",
+      "Building in Hiroshima left standing after atomic bomb.jpg",
+      "First leaflet which was dropped on Japanese cities in conjunction with the Atomic Bomb.jpg"
      ]
     },
     {
-     "entity": "Rano Raraku",
+     "entity": "Air raids on Japan",
      "categories": [
-      "Rano Raraku",
-      "Rano Raraku (quarry)",
-      "Rano Raraku (volcano)"
-     ],
-     "category_files": 13,
-     "search_files": 0,
-     "counted": 13.0,
-     "clears": true,
-     "examples": [
-      "Easter Island, Rano Raraku, moais (6686043521).jpg",
-      "Gigantes dormidos en la cantera de Rano Raraku.jpg",
-      "Moais enterrado en ladera de Rano Raraku.JPG",
-      "Rano Raraku - zde se vyr\u00e1b\u011bly Moai - panoramio.jpg"
-     ]
-    },
-    {
-     "entity": "Moai",
-     "categories": [
-      "Moai",
-      "Moai tangata",
-      "Moai kavakava"
-     ],
-     "category_files": 20,
-     "search_files": 0,
-     "counted": 20.0,
-     "clears": true,
-     "examples": [
-      "A moai lying on the ground, face upwards; on the moai statue road(?), with a White man wearing a hat and a moustache, sitting in front of it, for scale; Oc,G.T.1762, Mana Expedition to Easter Island, British Museum.jpg",
-      "Chile-03413 - Old Moai Head (49073326952).jpg",
-      "Chile-03416 - Female Moai (49072591233).jpg",
-      "Dont Step on Moai - Hanga Roa, Easter Island (5955837307).jpg"
-     ]
-    },
-    {
-     "entity": "Polynesian rat",
-     "categories": [
-      "Polynesian rat"
+      "Air raids on Japan"
      ],
      "category_files": 0,
      "search_files": 21,
      "counted": 10.5,
      "clears": true,
      "examples": [
-      "PolynesianRatNZ.jpg",
-      "Starr-141030-2690-Eucalyptus globulus-habitat with Polynesian rat in parking lot-Hosmers Grove HNP-Maui (25129932392).jpg",
-      "Starr-141030-5157-Eucalyptus globulus-habitat with Polynesian rat in parking lot-Hosmers Grove HNP-Maui (24617671934).jpg",
-      "Starr-141030-2687-Eucalyptus globulus-habitat with Polynesian rat in parking lot-Hosmers Grove HNP-Maui (24952600170).jpg"
+      "Navigation track chart for USAAF air raids on Japan, Mission No. 277-281.jpg",
+      "Air-Raids-on-Okazaki-1.jpg",
+      "Large scale air-raid shelter in Japan.JPG",
+      "Kobe Mosque survived the air raids in WWII 1945.jpg"
      ]
     },
     {
-     "entity": "Ahu Tongariki",
+     "entity": "Atomic bombs",
      "categories": [
-      "Ahu Tongariki",
-      "Historical photographs of Ahu Tongariki"
+      "Atomic bombs"
      ],
-     "category_files": 53,
-     "search_files": 0,
-     "counted": 53.0,
+     "category_files": 0,
+     "search_files": 18,
+     "counted": 9.0,
      "clears": true,
      "examples": [
-      "15 Moais en Tongariki - panoramio (1).jpg",
-      "15 Moais en Tongariki - panoramio.jpg",
-      "Ahu Tongariki (15 Moais).JPG",
-      "Ahu Tongariki (5138088).jpeg"
+      "Hiroshima Red Cross Hospital & Atomic-bomb Survivors Hospital 20130916-2.JPG",
+      "Hiroshima Red Cross Hospital & Atomic-bomb Survivors Hospital 20130916-1.JPG",
+      "Hiroshima Red Cross Hospital & Atomic-bomb Survivors Hospital 20130916-3.JPG",
+      "Hiroshima Red Cross Hospital & Atomic-bomb Survivors Hospital 20200809.JPG"
      ]
+    },
+    {
+     "entity": "Allied naval bombardments of Japan during World War II",
+     "categories": [
+      "Allied naval bombardments of Japan during World War II"
+     ],
+     "category_files": 8,
+     "search_files": 0,
+     "counted": 8.0,
+     "clears": true,
+     "examples": [
+      "Allied naval operations off Japan during July and August 1945.jpg",
+      "Bombardment of Kamaishi, Japan, 14 July 1945 - 80-G-490143.jpg",
+      "Bombardment of Kamaishi, Japan, 14 July 1945 - 80-G-490143.tiff",
+      "Bombardment of Kamaishi, Japan, 14 July 1945 - 80-G-K-6035.jpg"
+     ]
+    },
+    {
+     "entity": "Acute radiation syndrome",
+     "categories": [
+      "Acute radiation syndrome"
+     ],
+     "category_files": 6,
+     "search_files": 7,
+     "counted": 6.5,
+     "clears": false,
+     "examples": [
+      "Acute-Radiation-Cell-Survival.png",
+      "Acute-Radiation-In-Embryo-Mental-Impairment.png",
+      "Acute-Radiation-Mitosis.png",
+      "Death by haematopoietic syndrome of radiation sickness- influence of dose rate.png"
+     ]
+    },
+    {
+     "entity": "509th Composite Group",
+     "categories": [
+      "509th Composite Group",
+      "509th Composite Group memorial"
+     ],
+     "category_files": 3,
+     "search_files": 9,
+     "counted": 6.0,
+     "clears": false,
+     "examples": [
+      "39th Bombardment Group B-29s North Field Guam.jpg",
+      "Agnew 509thHQ.jpg",
+      "Boeing B-29 Superfortress of the 509th Composite Group, in 1945 (76048591).jpg"
+     ]
+    },
+    {
+     "entity": "Attack on Kure (March 1945)",
+     "categories": [
+      "Attack on Kure (March 1945)"
+     ],
+     "category_files": 0,
+     "search_files": 11,
+     "counted": 5.5,
+     "clears": false,
+     "examples": [
+      "Aircraft carriers under attack at Kure 19 March 1945.jpg",
+      "Japanese warships under attack at Kure March 1945.jpg",
+      "Japanese battleship Yamato under air attack off Kure on 19 March 1945 (80-G-309662).jpg",
+      "U.S. Navy carrier aircraft attack the Japanese Kure Naval Base on 19 March 1945.jpg"
+     ]
+    },
+    {
+     "entity": "Bombing of Fukuoka",
+     "categories": [
+      "Bombing of Fukuoka"
+     ],
+     "category_files": 1,
+     "search_files": 6,
+     "counted": 3.5,
+     "clears": false,
+     "examples": [
+      "XXI Bomber Command map of the Fukuoka area in June 1945.jpg"
+     ]
+    },
+    {
+     "entity": "Battle of Sagami Bay",
+     "categories": [
+      "Battle of Sagami Bay"
+     ],
+     "category_files": 0,
+     "search_files": 0,
+     "counted": 0.0,
+     "clears": false,
+     "examples": []
     }
    ],
+   "deepest_six": "6/6",
+   "eligible": true,
+   "min_assets": 8,
+   "thin": [],
    "angle": {
     "recurring_words": [
-     "statues",
-     "easter",
-     "island",
-     "walking",
-     "bodies"
+     "japan's",
+     "pyramid",
+     "underwater",
+     "terrifies",
+     "scientists",
+     "japan",
+     "hiding",
+     "year"
     ],
     "source_titles": [
-     "The Walking Statues of Easter Island",
-     "Easter Island statues have BODIES? \ud83e\udd2f"
+     "Why Japan's Underwater Pyramid Terrifies Scientists",
+     "Is Japan hiding a 10,000-year-old pyramid?",
+     "The Face Carved in Japan's Sunken City"
     ],
-    "claim": "The open files are: rongorongo \u2014 the undeciphered script; the collapse debate \u2014 ecocide against rats and the 1862 slave raids, both sides' best case; the buried statue bodies; the birdman cult at Orongo. The walking statues get a recap of no more than 60 seconds in act 1 and are not the spine \u2014 run #1 covered them; they are the hook the audience arrives with and not the film.",
-    "constraint": {
-     "spine": [
-      "rongorongo \u2014 the undeciphered script",
-      "the collapse debate \u2014 ecocide against rats and the 1862 slave raids, both sides' best case",
-      "the buried statue bodies",
-      "the birdman cult at Orongo"
-     ],
-     "recap": {
-      "what": "the walking statues",
-      "max_seconds": 60,
-      "where": "act 1",
-      "why": "run #1 covered them; they are the hook the audience arrives with and not the film"
-     },
-     "entities": [
-      "Rongorongo",
-      "Orongo",
-      "Rano Raraku",
-      "Moai",
-      "Polynesian rat",
-      "Ahu Tongariki"
-     ],
-     "set_by": "owner, 2026-10-21"
-    }
+    "claim": "The Shorts that performed on Atomic bombings of Hiroshima and Nagasaki keep returning to: japan's, pyramid, underwater, terrifies. The film has to answer that, not introduce the subject."
    },
    "title_candidates": [
-    "Easter Island: The Part Nobody Can Explain",
-    "What Easter Island Was Really Built For",
-    "The Easter Island Problem",
-    "Easter Island Should Not Exist"
+    "Atomic bombings of Hiroshima and Nagasaki: The Part Nobody Can Explain",
+    "What Atomic bombings of Hiroshima and Nagasaki Was Really Built For",
+    "The Atomic bombings of Hiroshima and Nagasaki Problem",
+    "Atomic bombings of Hiroshima and Nagasaki Should Not Exist"
    ]
   }
  ]

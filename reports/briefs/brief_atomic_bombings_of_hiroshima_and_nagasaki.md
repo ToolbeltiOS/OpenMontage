@@ -22,7 +22,7 @@ The Shorts that performed on Atomic bombings of Hiroshima and Nagasaki keep retu
 - The Face Carved in Japan's Sunken City  
   https://youtube.com/shorts/-iXpsL8sFFU
 
-## Entities, and how deep the archive is
+## What the island's article suggests
 
 | entity | category files | counted | clears 8 |
 |---|---|---|---|
