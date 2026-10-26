@@ -208,6 +208,11 @@ Write the script to projects/$SLUG/artifacts/script.json and the hero style
 frames to projects/$SLUG/renders/style/. Do not render the film.
 PROMPTEOF
 
+# The owner's angle constraint, if this subject has one, as instruction rather
+# than as a field three keys deep in a file the prompt said to "take the first
+# brief" from. Prints nothing when there is no constraint.
+"$PY" "$REPO/scripts/angle_brief.py" --brief "$BRIEF" >> "$PROMPT" 2>/dev/null || true
+
 if [[ "$SMOKE" == "1" ]]; then
   say "smoke: not calling claude -p"
 elif [[ "$DRY_RUN" == "1" ]]; then

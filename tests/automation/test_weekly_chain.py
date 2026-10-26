@@ -862,3 +862,189 @@ class TestEveryCommandTheUnattendedRunIssues:
         source = Path("lib/film_render.py").read_text()
         assert "cwd=COMPOSER" in source
         assert source.count("npx") >= 1
+
+
+class TestTheNoahConstraint:
+    """Friday's subject, and the first constraint that is not Easter Island.
+
+    Adding it found that `recap` was read unconditionally in two places, so
+    the second constraint anybody wrote would have been a KeyError: a recap
+    only means something where a previous film already argued something, and
+    the channel has never covered this.
+    """
+
+    @staticmethod
+    def _c():
+        from scripts.pick_topic import ANGLE_CONSTRAINTS
+
+        return ANGLE_CONSTRAINTS["noah"]
+
+    def test_the_spine_is_the_four_the_owner_named(self):
+        spine = " ".join(self._c()["spine"]).lower()
+        for item in ("gilgamesh", "george smith", "atrahasis", "manu",
+                     "black sea", "ryan", "dimensions", "dutch",
+                     "durupınar", "ararat"):
+            assert item in spine, item
+
+    def test_a_constraint_without_a_recap_still_renders(self):
+        """The KeyError this subject would have hit."""
+        from scripts.pick_topic import angle_of
+
+        assert "recap" not in self._c()
+        claim = angle_of({"entity": "Noah", "titles": ["Noah"]})["claim"]
+        assert "open files" in claim
+
+    def test_a_constraint_with_a_recap_still_renders_too(self):
+        from scripts.pick_topic import angle_of
+
+        claim = angle_of({"entity": "Easter Island",
+                          "titles": ["The Walking Statues"]})["claim"]
+        assert "60 seconds" in claim
+
+    def test_the_register_reaches_the_claim(self):
+        """A rule the script stage never sees is not a rule."""
+        from scripts.pick_topic import angle_of
+
+        claim = angle_of({"entity": "Noah", "titles": ["Noah"]})["claim"]
+        assert "strongest case" in claim
+        assert "without a ledger entry" in claim
+        assert "No sermon or debunk register" in claim
+
+    def test_both_sides_get_their_case_not_one(self):
+        reg = self._c()["register"]
+        assert "sermon" in reg["forbidden"] and "debunk" in reg["forbidden"], (
+            "a film that forbids only one of them has picked a side")
+
+    def test_the_thin_entities_are_still_in_the_depth_list(self):
+        """So the brief's table shows them failing.
+
+        Listing only the ones that clear would report 8 of 8 on a list that
+        quietly dropped the two that cannot be sourced — which is the
+        question `entities` exists to answer, answered backwards.
+        """
+        c = self._c()
+        for name in c["thin"]:
+            assert name in c["entities"], (
+                f"{name} is known thin and is not in the depth list, so the "
+                f"brief will not show it failing")
+
+    def test_every_thin_entity_names_what_to_shoot_instead(self):
+        for name, row in self._c()["thin"].items():
+            assert row["shoot_instead"], name
+            assert row["why"], name
+            assert row["counted"] < 8
+
+    def test_the_title_candidates_obey_the_length_rule(self):
+        t = self._c()["titles"]
+        for candidate in t["candidates"]:
+            assert t["min_chars"] <= len(candidate) <= t["max_chars"], (
+                f"{candidate!r} is {len(candidate)} chars, outside "
+                f"{t['min_chars']}-{t['max_chars']}")
+
+    def test_the_owners_exemplars_are_kept_and_the_conflict_is_recorded(self):
+        """They are 26 and 25 chars against a 30-45 rule stated beside them.
+
+        Quietly padding them would lose the voice; quietly shipping them would
+        break the rule. Both are recorded and the discrepancy is written down.
+        """
+        t = self._c()["titles"]
+        assert t["exemplars"] == ["The Flood Before the Bible",
+                                  "They Keep Finding the Ark"]
+        assert all(len(e) < t["min_chars"] for e in t["exemplars"])
+        assert "neither meets" in t["exemplars_note"]
+
+    def test_the_brief_uses_the_owners_candidates_not_the_generic_shapes(self):
+        from pathlib import Path
+
+        src = Path("scripts/pick_topic.py").read_text()
+        assert 'titles["candidates"] if titles else' in src
+
+    def test_the_generic_shape_would_have_repeated_the_last_film(self):
+        """Why the override matters here specifically."""
+        from scripts.pick_topic import TITLE_SHAPES
+
+        generic = TITLE_SHAPES[0].format(entity="Noah")
+        assert generic == "Noah: The Part Nobody Can Explain"
+        assert generic not in self._c()["titles"]["candidates"]
+
+
+class TestTheConstraintReachesThePrompt:
+    """A constraint the prompt does not name is a constraint the run may skip.
+
+    `pick_topic` writes it into the brief under
+    `briefs[0]["angle"]["constraint"]`, and the weekly prompt said only
+    "Brief: <path> (take the first brief)". An unattended run had to notice
+    the field, infer that it binds, and honour the spine ORDER, the register,
+    the title length and the entities that cannot be sourced. Some of that it
+    would have found; the rest is discovered afterwards, in the finished film.
+    """
+
+    @staticmethod
+    def _rendered():
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from angle_brief import render
+        from pick_topic import angle_of
+
+        return render({"angle": angle_of({"entity": "Noah",
+                                          "titles": ["Noah"]})})
+
+    def test_the_runner_appends_it_to_the_prompt(self):
+        from pathlib import Path
+
+        body = Path("scripts/run_weekly.sh").read_text()
+        assert "angle_brief.py" in body
+        assert '>> "$PROMPT"' in body
+
+    def test_it_is_appended_after_the_prompt_is_written(self):
+        from pathlib import Path
+
+        body = Path("scripts/run_weekly.sh").read_text()
+        assert body.index("PROMPTEOF") < body.index("angle_brief.py")
+        assert body.index("angle_brief.py") < body.index('say "writing the script')
+
+    def test_the_spine_order_is_stated_as_an_order(self):
+        out = self._rendered()
+        assert "in this order" in out
+        assert out.index("Gilgamesh") < out.index("Black Sea") \
+            < out.index("Dutch") < out.index("Ararat expeditions")
+
+    def test_the_register_is_called_binding(self):
+        assert "Register, binding:" in self._rendered()
+
+    def test_the_unsourceable_entities_are_named_with_substitutes(self):
+        out = self._rendered()
+        assert "WILL NOT clear the asset" in out
+        assert "Durupınar: 0.5 usable assets" in out
+        assert "Shoot Mount Ararat" in out
+
+    def test_the_title_rule_carries_the_counts(self):
+        out = self._rendered()
+        assert "30-45 characters" in out
+        assert "(32 chars)" in out
+
+    def test_a_subject_with_no_constraint_renders_nothing(self):
+        """So the runner can append it unconditionally."""
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from angle_brief import render
+        from pick_topic import angle_of
+
+        assert render({"angle": angle_of({"entity": "Petra",
+                                          "titles": ["Petra"]})}) == ""
+
+    def test_capitalising_does_not_lowercase_the_rest(self):
+        """`str.capitalize()` turned "... A film that arrives" into "a film"."""
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from angle_brief import sentence
+
+        assert sentence("the subject is why. A film that arrives") == \
+            "The subject is why. A film that arrives"
+        assert "A film that arrives" in self._rendered()

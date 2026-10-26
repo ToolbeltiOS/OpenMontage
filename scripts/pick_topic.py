@@ -280,6 +280,71 @@ ANGLE_CONSTRAINTS: dict[str, dict[str, Any]] = {
         ],
         "set_by": "owner, 2026-10-21",
     },
+    "noah": {
+        "spine": [
+            "the same story in older cultures — Gilgamesh tablet XI, read by "
+            "George Smith in 1872; Atrahasis; the Manu flood",
+            "the Black Sea deluge hypothesis (Ryan & Pitman, 1997), and its "
+            "critics",
+            "the Ark's stated dimensions, and the Dutch full-scale build",
+            "Durupınar and the Ararat expeditions — the claims, their best "
+            "evidence, and the geological reading",
+        ],
+        # Measured with lib/source_depth.py on 2026-10-26, not guessed. The
+        # two that do not clear are LISTED ANYWAY, so the brief's depth table
+        # shows them failing rather than reporting 8 of 8 on a list that quietly
+        # dropped them.
+        "entities": [
+            "Epic of Gilgamesh", "Flood Tablet",
+            "George Smith (Assyriologist)", "Matsya", "Black Sea",
+            "Noah's Ark", "Ark van Noach", "Mount Ararat",
+            "Atrahasis", "Durupınar",
+        ],
+        "thin": {
+            "Atrahasis": {
+                "counted": 2.0,
+                "shoot_instead": ["Cuneiform tablets", "Epic of Gilgamesh"],
+                "why": "it is a text, and the text survives as tablets that "
+                       "are photographed under other names",
+            },
+            "Durupınar": {
+                "counted": 0.5,
+                "shoot_instead": ["Mount Ararat", "public-domain satellite "
+                                  "imagery (NASA/USGS), which is not in a "
+                                  "Commons category under this name"],
+                "why": "this is the one that matters: a boat-shaped formation "
+                       "is a VISUAL claim, and an act built around a picture "
+                       "that does not exist will talk over something else",
+            },
+        },
+        "register": {
+            "both_sides": "Believers and sceptics each get their strongest "
+                          "case, stated at its strongest.",
+            "evidence": "Nothing is stated as fact without a ledger entry.",
+            "forbidden": ["sermon", "debunk"],
+            "why": "the subject is why the same story exists across cultures. "
+                   "A film that arrives knowing the answer is not "
+                   "investigating, and either register loses the half of the "
+                   "audience it was not written for.",
+        },
+        "titles": {
+            "min_chars": 30,
+            "max_chars": 45,
+            "exemplars": ["The Flood Before the Bible",
+                          "They Keep Finding the Ark"],
+            "exemplars_note": "they are 26 and 25 characters, so neither "
+                              "meets the 30-45 rule stated beside them — "
+                              "the rule is the length, the exemplars are "
+                              "the voice",
+            "candidates": [
+                "The Flood Story Before the Bible",
+                "Everybody Keeps Finding Noah's Ark",
+                "The Flood That Predates the Bible",
+                "Four Cultures, One Flood Story",
+            ],
+        },
+        "set_by": "owner, 2026-10-26",
+    },
 }
 
 
@@ -307,13 +372,22 @@ def angle_of(candidate: dict[str, Any]) -> dict[str, Any]:
     constraint = ANGLE_CONSTRAINTS.get(candidate["entity"].lower())
     if constraint:
         angle["constraint"] = constraint
-        recap = constraint["recap"]
-        angle["claim"] = (
-            f"The open files are: "
-            + "; ".join(constraint["spine"]) + ". "
-            + f"{recap['what'].capitalize()} get a recap of no more than "
-            + f"{recap['max_seconds']} seconds in {recap['where']} and are "
-            + f"not the spine — {recap['why']}.")
+        claim = "The open files are: " + "; ".join(constraint["spine"]) + ". "
+        # A recap is only meaningful where a previous film already argued
+        # something. A subject the channel has not covered has nothing to
+        # recap, and reading constraint["recap"] unconditionally made the
+        # second constraint anybody added a KeyError.
+        recap = constraint.get("recap")
+        if recap:
+            claim += (
+                f"{recap['what'].capitalize()} get a recap of no more than "
+                f"{recap['max_seconds']} seconds in {recap['where']} and are "
+                f"not the spine — {recap['why']}.")
+        register = constraint.get("register")
+        if register:
+            claim += (f"{register['both_sides']} {register['evidence']} "
+                      f"No {' or '.join(register['forbidden'])} register.")
+        angle["claim"] = claim
     return angle
 
 
@@ -344,14 +418,37 @@ def write_brief(brief: dict[str, Any], out_dir: Path) -> Path:
             "**The spine, in order:**", "",
         ]
         lines += [f"{n}. {item}" for n, item in enumerate(constraint["spine"], 1)]
-        recap = constraint["recap"]
-        lines += [
-            "",
-            f"**{recap['what'].capitalize()}:** at most "
-            f"{recap['max_seconds']}s, in {recap['where']}, as a recap. "
-            f"{recap['why'].capitalize()}.",
-            "",
-        ]
+        recap = constraint.get("recap")
+        if recap:
+            lines += [
+                "",
+                f"**{recap['what'].capitalize()}:** at most "
+                f"{recap['max_seconds']}s, in {recap['where']}, as a recap. "
+                f"{recap['why'].capitalize()}.",
+            ]
+        register = constraint.get("register")
+        if register:
+            lines += [
+                "", "**Register.**",
+                f"- {register['both_sides']}",
+                f"- {register['evidence']}",
+                f"- No {' or '.join(register['forbidden'])} register.",
+                f"- {register['why'][:1].upper()}{register['why'][1:]}",
+            ]
+        thin = constraint.get("thin")
+        if thin:
+            lines += [
+                "", "**Named in the spine, but thin on Commons.** Measured, "
+                "not assumed — these will not clear the asset floor and the "
+                "film has to be shot around them:", "",
+                "| entity | counted | shoot instead | why |",
+                "|---|---|---|---|",
+            ]
+            for name, row in thin.items():
+                lines.append(
+                    f"| {name} | {row['counted']} | "
+                    f"{', '.join(row['shoot_instead'])} | {row['why']} |")
+        lines.append("")
     lines += [
         "## Title candidates",
         "",
@@ -480,11 +577,21 @@ def main() -> int:
                     depth["spine_entities"] = [
                         depth_of(name, MIN_ASSETS_PER_ENTITY)
                         for name in constraint["entities"]]
+                titles = constraint.get("titles") if constraint else None
                 briefs.append({
                     **candidate, **depth, "angle": angle,
-                    "title_candidates": [
-                        shape.format(entity=candidate["entity"])
-                        for shape in TITLE_SHAPES],
+                    # The owner's candidates when they set any: the generic
+                    # shapes are read off the channel's Shorts and know
+                    # nothing about THIS film's argument. For Noah they would
+                    # also have produced "Noah: The Part Nobody Can Explain",
+                    # which is the last film's title with a word swapped.
+                    "title_candidates": (
+                        titles["candidates"] if titles else
+                        [shape.format(entity=candidate["entity"])
+                         for shape in TITLE_SHAPES]),
+                    **({"title_rule": {k: titles[k] for k in titles
+                                       if k != "candidates"}}
+                       if titles else {}),
                 })
             if len(briefs) >= args.top:
                 break
