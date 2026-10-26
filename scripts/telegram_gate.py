@@ -154,6 +154,9 @@ def fact_line(project: str, script_path: Path) -> str:
             # there, because one resolving id covers a whole section. Say so
             # rather than let the zero carry more than it means.
             line += f" — but {dead} cited claim id(s) do not resolve"
+        line += f"; framing: {m['framing_sentences']} sentences"
+        if m.get("framing_blocked"):
+            line += f" ({m['framing_blocked']} not exempted)"
         if m.get("exempt_sections"):
             line += f" (exempt: {', '.join(m['exempt_sections'])})"
         return line

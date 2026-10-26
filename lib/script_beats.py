@@ -66,6 +66,17 @@ BEAT_RE = re.compile(
     r"^\s*\[beat:\s*([a-z_]+)\s*(?:\|\s*([a-z_]+)\s*)?\]\s*$", re.IGNORECASE)
 AIR_RE = re.compile(r"^\s*\[air\s+([0-9]*\.?[0-9]+)\s*s\s*\]\s*$", re.IGNORECASE)
 
+#: `[framing]` marks a sentence that counts or signposts the FILM's own
+#: structure rather than saying anything about the world — "Four questions",
+#: "The bones first". `lib/verify_fact_coverage.py` reads it; nothing else
+#: may ever see it, which is what this regex is for.
+#:
+#: It is INLINE, at the head of the sentence it marks, not on its own line.
+#: A line that matches neither BEAT_RE nor AIR_RE becomes narration, so a
+#: bare `[framing]` line would be SPOKEN by the synthesiser. Stripped here,
+#: in the one function every narration path goes through.
+FRAMING_RE = re.compile(r"\[framing\]\s*", re.IGNORECASE)
+
 BEAT_TYPES = ("reveal", "exposition", "landing", "transition")
 DEFAULT_BEAT = "exposition"
 
@@ -95,7 +106,7 @@ def parse_section(text: str) -> list[dict[str, Any]]:
 
     def flush(air: float = 0.0) -> None:
         nonlocal pending_type, pending_register, buf
-        body = "\n".join(buf).strip()
+        body = FRAMING_RE.sub("", "\n".join(buf)).strip()
         if not body:
             # air before any prose attaches to the previous beat instead of
             # opening an empty one

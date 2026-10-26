@@ -92,6 +92,35 @@ WORD_NUMBERS = {
     "eighth", "ninth", "tenth", "hundredth", "thousandth",
 }
 
+#: `[framing]` marks a sentence that counts or signposts the FILM's own
+#: structure rather than saying anything about the world: "Four questions",
+#: "The bones first". It is AUTHORED BY THE SCRIPT STAGE AND NEVER INFERRED
+#: — the gate cannot tell "four questions" (the film's four acts) from "four
+#: tablets" (a fact), and a gate that guessed would be guessing in the
+#: direction of letting claims through.
+FRAMING_MARK = re.compile(r"\[framing\]\s*", re.IGNORECASE)
+
+#: A framing sentence is skipped ONLY if it carries none of these. The marker
+#: is a claim about a sentence's JOB, not a licence, and a sentence that
+#: names something or counts something real is making a claim whatever job
+#: it was given.
+FRAMING_NUMBER_CEILING = 10
+
+#: How much of a film may be framing before the marker is being used to get
+#: out of the gate rather than to describe a sentence.
+FRAMING_MAX_PCT = 5.0
+
+#: Word numbers worth ten or more. A framing sentence may say "four
+#: questions"; it may not say "three hundred and ninety-four".
+BIG_WORD_NUMBERS = {
+    "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+    "seventeen", "eighteen", "nineteen", "twenty", "thirty", "forty",
+    "fifty", "sixty", "seventy", "eighty", "ninety", "hundred", "thousand",
+    "million", "billion", "trillion", "dozen", "tenth", "hundredth",
+    "thousandth",
+}
+
+
 #: Section types the gate does not examine, read from the playbook.
 #:
 #: BY SECTION TYPE, NEVER BY SENTENCE. A per-sentence whitelist is a way to
@@ -159,14 +188,66 @@ WHITELIST = {
 }
 
 
-def sentences(text: str) -> list[str]:
-    """Narration sentences, with the production markers taken out."""
-    clean = MARKERS.sub(" ", text)
-    clean = re.sub(r"\s+", " ", clean).strip()
+#: A sentinel that survives marker-stripping, so that `[framing]` can be
+#: found again after the other production markers are gone.
+_FRAMING_SENTINEL = "\x00F\x00"
+
+
+def sentences_marked(text: str) -> list[tuple[str, bool]]:
+    """(sentence, is_framing) for each narration sentence.
+
+    `[framing]` sits inline at the head of the sentence it marks. It is
+    swapped for a sentinel before the other production markers are stripped,
+    because stripping them all first would lose which sentence it belonged
+    to.
+    """
+    marked = FRAMING_MARK.sub(_FRAMING_SENTINEL, text or "")
+    clean = MARKERS.sub(" ", marked)
+    clean = re.sub(r"[ \t]+", " ", clean).strip()
     if not clean:
         return []
-    parts = re.split(r"(?<=[.!?])\s+(?=[A-Z\"“])", clean)
-    return [p.strip() for p in parts if p.strip()]
+    parts = re.split(r"(?<=[.!?])\s+(?=\x00?F?\x00?[A-Z\"“])", clean)
+    out: list[tuple[str, bool]] = []
+    for part in parts:
+        part = part.strip()
+        if not part:
+            continue
+        framing = _FRAMING_SENTINEL in part
+        out.append((part.replace(_FRAMING_SENTINEL, "").strip(), framing))
+    return [(t, f) for t, f in out if t]
+
+
+def sentences(text: str) -> list[str]:
+    """Narration sentences, with the production markers taken out."""
+    return [t for t, _ in sentences_marked(text)]
+
+
+def framing_disqualifiers(sentence: str, backend: str = "spacy") -> dict:
+    """Why a [framing] sentence may NOT be skipped, if it may not.
+
+    A marker says what a sentence is FOR. It does not say the sentence is
+    harmless: one that names a person or a place, or counts something to ten
+    or beyond, or carries a date, is making a claim about the world whatever
+    job it was given.
+    """
+    out: dict[str, list[str]] = {}
+    propn = BACKENDS[backend](sentence)
+    if propn:
+        out["proper_noun"] = sorted(set(propn))
+    dates = DATE.findall(sentence)
+    if dates:
+        out["date"] = sorted(set(dates))
+    big = [w for w in re.findall(r"[a-zÀ-ɏ'-]+", sentence.lower())
+           if w in BIG_WORD_NUMBERS]
+    for digits in re.findall(r"\d[\d,.]*", sentence):
+        try:
+            if float(digits.replace(",", "")) >= FRAMING_NUMBER_CEILING:
+                big.append(digits)
+        except ValueError:
+            big.append(digits)
+    if big:
+        out[f"number_over_{FRAMING_NUMBER_CEILING}"] = sorted(set(big))
+    return out
 
 
 def paragraphs(text: str) -> list[str]:
@@ -328,8 +409,11 @@ def check(script: dict, brief: dict, backend: str = "spacy",
                 dangling.append((section.get("id"), cited))
         for p_index, para in enumerate(paragraphs(section.get("text") or "")):
             ids, how = claims_for(section, p_index)
-            for sentence in sentences(para):
+            for sentence, is_framing in sentences_marked(para):
                 why = triggers(sentence, backend)
+                blocked = (framing_disqualifiers(sentence, backend)
+                           if is_framing else {})
+                skipped = is_framing and not blocked
                 own = by_sentence.get(_norm_sentence(sentence), [])
                 if own:
                     ids_here, how_here = own, "sentence"
@@ -341,13 +425,17 @@ def check(script: dict, brief: dict, backend: str = "spacy",
                     "section": section.get("id"),
                     "paragraph": p_index,
                     "sentence": sentence,
-                    "needs_claim": bool(why),
+                    "framing": is_framing,
+                    "framing_skipped": skipped,
+                    "framing_blocked_by": blocked,
+                    "needs_claim": bool(why) and not skipped,
                     "triggers": why,
                     "attribution": how_here,
                     "cited": ids_here,
                     "resolved": resolved,
                     "sourced": sourced,
-                    "covered": bool(why) is False or bool(sourced),
+                    "covered": (skipped or bool(why) is False
+                                or bool(sourced)),
                 })
 
     uncovered = [r for r in rows if not r["covered"]]
@@ -365,10 +453,40 @@ def check(script: dict, brief: dict, backend: str = "spacy",
         for where, cited in dangling
     ]
 
+    # A [framing] marker on a sentence that names or counts something real
+    # does not exempt it, and the failure says which word did it.
+    framing_rows = [r for r in rows if r["framing"]]
+    problems += [
+        f"{r['section']}/p{r['paragraph']}: {r['sentence'][:80]!r} is marked "
+        f"[framing] but "
+        + ", ".join(f"{k} {v}" for k, v in r["framing_blocked_by"].items())
+        + " — the marker says what a sentence is FOR, not that it makes no "
+          "claim."
+        for r in framing_rows if r["framing_blocked_by"]
+    ]
+
+    framing_pct = round(100 * len(framing_rows) / len(rows), 2) if rows else 0.0
+    if framing_pct > FRAMING_MAX_PCT:
+        problems.append(
+            f"{len(framing_rows)} of {len(rows)} sentences are marked "
+            f"[framing] ({framing_pct}%), over the {FRAMING_MAX_PCT}% "
+            f"ceiling. Past that the marker is being used to get out of the "
+            f"gate rather than to describe a sentence.")
+
     needing = [r for r in rows if r["needs_claim"]]
     measured = {
         "backend": backend,
         "exempt_sections": sorted(skip),
+        "framing_sentences": len(framing_rows),
+        "framing_pct": framing_pct,
+        "framing_ceiling_pct": FRAMING_MAX_PCT,
+        "framing_skipped": sum(1 for r in framing_rows if r["framing_skipped"]),
+        "framing_blocked": sum(1 for r in framing_rows
+                               if r["framing_blocked_by"]),
+        "framing": [{"section": r["section"], "sentence": r["sentence"],
+                     "skipped": r["framing_skipped"],
+                     "blocked_by": r["framing_blocked_by"]}
+                    for r in framing_rows],
         "sentences": len(rows),
         "sentences_needing_a_claim": len(needing),
         "sentences_uncovered": len(uncovered),
@@ -399,7 +517,26 @@ def report(measured: dict[str, Any], problems: list[str]) -> str:
         + (", ".join(m["ids_that_do_not_resolve"][:20]) or "none") + "", "",
         f"Attribution levels present: {', '.join(m['attribution_levels'])}.",
         "",
+        f"Framing: **{m['framing_sentences']} sentences** "
+        f"({m['framing_pct']}% of {m['sentences']}, ceiling "
+        f"{m['framing_ceiling_pct']}%) — {m['framing_skipped']} skipped, "
+        f"{m['framing_blocked']} not exempted by the marker.",
+        "",
     ]
+    if m.get("framing"):
+        lines += ["## Framing sentences", "",
+                  "Authored by the script stage, never inferred. A marker "
+                  "says what a sentence is FOR; it does not exempt one that "
+                  "names or counts something real.", "",
+                  "| section | skipped | sentence | blocked by |",
+                  "|---|---|---|---|"]
+        for f in m["framing"]:
+            blocked = ", ".join(f"{k} {v}" for k, v in
+                                f["blocked_by"].items()) or "—"
+            lines.append(f"| {f['section']} | "
+                         f"{'yes' if f['skipped'] else '**no**'} | "
+                         f"{f['sentence'][:90]} | {blocked} |")
+        lines.append("")
     if problems:
         lines += ["## Uncovered sentences", ""]
         lines += [f"- {p}" for p in problems[:200]]
@@ -453,6 +590,9 @@ def main() -> int:
           f"({measured['pct_uncovered']}%)")
     print(f"ledger {measured['ledger_size']} claims; "
           f"{len(measured['ids_that_do_not_resolve'])} cited ids do not resolve")
+    print(f"framing: {measured['framing_sentences']} sentences "
+          f"({measured['framing_pct']}%, ceiling "
+          f"{measured['framing_ceiling_pct']}%)")
     for p in problems[:15]:
         print("  -", p)
     if len(problems) > 15:

@@ -1342,6 +1342,54 @@ fact_gate:
             ninety-four', and a digits-only rule finds almost no figure in the
             catalogue"
 
+  # ── framing ────────────────────────────────────────────────────────
+  # A sentence that counts or signposts the FILM's own structure rather than
+  # saying anything about the world: "Four questions", "The bones first",
+  # "Two papers, seven years apart". It trips the gate on an ordinal or a
+  # small number used structurally, and it is not a claim anybody could cite
+  # a source for.
+  framing:
+    marker: "[framing]"
+    placement: >
+      INLINE, at the head of the sentence it marks. Not on its own line: a
+      line matching neither [beat: ...] nor [air N.Ns] becomes narration, so
+      a bare [framing] line would be SPOKEN. lib/script_beats.py strips it
+      before the narration is synthesised, in the one function every
+      narration path goes through.
+
+    # AUTHORED, NEVER INFERRED.
+    authored_not_inferred: >
+      The script stage applies the marker; the gate never guesses it. The
+      gate cannot tell "four questions" — the film's four acts — from "four
+      tablets", which is a fact about the world, and a gate that guessed
+      would be guessing in the direction of letting claims through. The
+      marker is a sentence of authorship, written by whoever wrote the
+      sentence and reviewable at the script gate like anything else they
+      wrote.
+
+    # A MARKER IS NOT A LICENCE.
+    skipped_only_if:
+      - "no proper noun"
+      - "no number of ten or more, in digits or spelled out"
+      - "no date"
+    why_those_three: >
+      The marker says what a sentence is FOR. It does not say the sentence
+      makes no claim: one that names a person or a place, or counts
+      something to ten or beyond, or carries a date, is making a claim about
+      the world whatever job it was given. A [framing] sentence that carries
+      one of them is checked like any other and the failure names the word.
+
+    max_pct_of_sentences: 5
+    why_a_ceiling: >
+      Past about one sentence in twenty the marker is being used to get out
+      of the gate rather than to describe a sentence. easter-island carries
+      four in 180, which is 2.2%.
+
+    reported: >
+      Every framing sentence is listed in the gate's report, with whether it
+      was skipped and what blocked it, and the count goes on the Telegram
+      line beside the script so the owner sees it with everything else.
+
   # EXEMPT BY SECTION TYPE, NEVER BY SENTENCE.
   #
   # A per-sentence whitelist is a way to turn the gate off one line at a time,

@@ -534,3 +534,203 @@ class TestTheCauseIsCheckedAtWriteTime:
 
         body = Path("scripts/run_weekly.sh").read_text()
         assert "DOES NOT COVER ANYTHING any more" in body
+
+
+class TestFramingIsAuthoredNeverInferred:
+    """A sentence that counts the FILM's own structure, not the world.
+
+    "Four questions" means the film's four acts. "Four tablets" is a fact.
+    Nothing in the sentence distinguishes them, which is exactly why the gate
+    does not try: a gate that guessed would be guessing in the direction of
+    letting claims through.
+    """
+
+    def test_the_marker_attaches_to_the_sentence_it_precedes(self):
+        got = fc.sentences_marked("[framing] Four questions. It has an answer.")
+        assert got == [("Four questions.", True), ("It has an answer.", False)]
+
+    def test_an_unmarked_sentence_is_not_framing(self):
+        assert fc.sentences_marked("Four questions.") == [("Four questions.",
+                                                           False)]
+
+    def test_the_marker_is_removed_from_the_sentence_text(self):
+        text, _ = fc.sentences_marked("[framing] The bones first.")[0]
+        assert text == "The bones first."
+        assert "[" not in text
+
+    def test_it_survives_alongside_the_production_markers(self):
+        got = fc.sentences_marked(
+            "[beat: exposition | awe]\n[framing] Four questions.\n[air 1.5s]")
+        assert got == [("Four questions.", True)]
+
+    def test_the_gate_never_infers_it(self):
+        """No code path sets framing from the sentence's own words."""
+        import inspect
+
+        src = inspect.getsource(fc)
+        assert "FRAMING_MARK.sub" in src
+        assert src.count("is_framing") >= 2
+        # the only producer of the flag is the marker
+        assert "framing = _FRAMING_SENTINEL in part" in src
+
+
+class TestAMarkerIsNotALicence:
+    def test_a_clean_framing_sentence_is_skipped(self):
+        for sentence in ("Four questions.", "One of them has an answer.",
+                         "The bones first."):
+            assert fc.framing_disqualifiers(sentence, "spacy") == {}, sentence
+
+    def test_a_proper_noun_blocks_it(self):
+        got = fc.framing_disqualifiers("Orongo sits there.", "spacy")
+        assert got["proper_noun"] == ["Orongo"]
+
+    def test_a_number_of_ten_or_more_blocks_it(self):
+        assert "number_over_10" in fc.framing_disqualifiers(
+            "Three hundred and ninety-four.", "spacy")
+        assert "number_over_10" in fc.framing_disqualifiers(
+            "There were 53 of them.", "spacy")
+
+    def test_a_number_under_ten_does_not(self):
+        assert fc.framing_disqualifiers("Four questions.", "spacy") == {}
+        assert fc.framing_disqualifiers("The bones first.", "spacy") == {}
+
+    def test_a_date_blocks_it(self):
+        got = fc.framing_disqualifiers("It was 1864.", "spacy")
+        assert "date" in got
+
+    def test_a_blocked_framing_sentence_still_has_to_be_covered(self):
+        """INJECTED: the marker used on a sentence that makes a claim."""
+        script = {"sections": [{
+            "id": "act1", "text": "[framing] Orongo had fifty-three houses."}]}
+        problems, m = fc.check(script, LEDGER, "spacy", {})
+        assert problems
+        assert any("marked [framing] but" in p for p in problems)
+        assert m["rows"][0]["framing"] is True
+        assert m["rows"][0]["framing_skipped"] is False
+        assert m["rows"][0]["covered"] is False
+
+    def test_the_failure_names_the_word_that_blocked_it(self):
+        script = {"sections": [{"id": "act1",
+                                "text": "[framing] Orongo is there."}]}
+        problems, _ = fc.check(script, LEDGER, "spacy", {})
+        # the coverage failure comes first; the framing one is its own line
+        blocked = [p for p in problems if "marked [framing] but" in p]
+        assert blocked, problems
+        assert "Orongo" in blocked[0]
+        assert "what a sentence is FOR" in blocked[0]
+
+
+class TestTheFramingCeiling:
+    def _film(self, framing: int, plain: int):
+        parts = ["[framing] Four questions." for _ in range(framing)]
+        parts += ["But nobody can say why." for _ in range(plain)]
+        return {"sections": [{"id": "act1", "text": "\n\n".join(parts)}]}
+
+    def test_a_little_framing_passes(self):
+        problems, m = fc.check(self._film(2, 98), LEDGER, "spacy", {})
+        assert m["framing_pct"] == 2.0
+        assert problems == [], problems
+
+    def test_too_much_framing_fails(self):
+        """INJECTED: the marker used to get out of the gate."""
+        problems, m = fc.check(self._film(20, 80), LEDGER, "spacy", {})
+        assert m["framing_pct"] == 20.0
+        assert any("over the 5.0% ceiling" in p for p in problems)
+
+    def test_the_ceiling_is_five_percent(self):
+        assert fc.FRAMING_MAX_PCT == 5.0
+
+    def test_the_playbook_agrees(self):
+        import yaml
+
+        pb = yaml.safe_load(open("styles/wak3up-documentary.yaml",
+                                 encoding="utf-8"))
+        f = pb["fact_gate"]["framing"]
+        assert f["max_pct_of_sentences"] == fc.FRAMING_MAX_PCT
+        assert f["marker"] == "[framing]"
+        assert "never" in f["authored_not_inferred"].lower()
+
+
+class TestFramingIsReported:
+    def test_every_framing_sentence_is_listed(self):
+        script = {"sections": [{"id": "act1",
+                                "text": "[framing] Four questions."}]}
+        _, m = fc.check(script, LEDGER, "spacy", {})
+        assert m["framing"] == [{"section": "act1",
+                                 "sentence": "Four questions.",
+                                 "skipped": True, "blocked_by": {}}]
+
+    def test_the_report_has_a_framing_table(self):
+        script = {"sections": [{"id": "act1",
+                                "text": "[framing] Four questions."}]}
+        problems, m = fc.check(script, LEDGER, "spacy", {})
+        text = fc.report(m, problems)
+        assert "## Framing sentences" in text
+        assert "Four questions." in text
+        assert "never inferred" in text
+
+    def test_the_telegram_line_carries_the_count(self):
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from telegram_gate import fact_line
+
+        line = fact_line("easter-island",
+                         Path("projects/easter-island/artifacts/script.json"))
+        assert "framing: 4 sentences" in line
+
+
+class TestTheMarkerNeverReachesTheNarration:
+    """A line matching neither [beat:] nor [air] becomes narration, so a
+    bare [framing] line would be SPOKEN by the synthesiser."""
+
+    def test_script_beats_strips_it(self):
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("lib").resolve()))
+        from script_beats import parse_section
+
+        beats = parse_section(
+            "[beat: exposition]\n[framing] Four questions.\n[air 1.0s]")
+        assert beats[0]["text"] == "Four questions."
+        assert "framing" not in beats[0]["text"]
+
+    def test_the_word_count_does_not_include_it(self):
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("lib").resolve()))
+        from script_beats import parse_section
+
+        assert parse_section("[framing] Four questions.")[0]["words"] == 2
+
+    def test_the_delivered_script_still_says_the_same_words(self):
+        """The four markers added to easter-island changed no narration."""
+        import json
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("lib").resolve()))
+        from script_beats import FRAMING_RE
+
+        script = json.loads(
+            Path("projects/easter-island/artifacts/script.json").read_text())
+        marked = [s for s in script["sections"]
+                  if "[framing]" in (s.get("text") or "")]
+        assert len(marked) == 3, [s["id"] for s in marked]
+        # The narration is what is left once the marker is stripped, and it
+        # has to be what it was before the marker was added. Asserted against
+        # the delivered film's own words, taken from the beats the narration
+        # was synthesised from.
+        from script_beats import parse_section
+
+        for section in marked:
+            stripped = FRAMING_RE.sub("", section["text"])
+            assert "[framing]" not in stripped
+            for beat in parse_section(section["text"]):
+                assert "[framing]" not in beat["text"]
+                assert "  " not in beat["text"], (
+                    f"stripping the marker left a double space: "
+                    f"{beat['text'][:80]!r}")

@@ -233,6 +233,18 @@ makes, scoped to one act and cheap enough to run six times. Running it at the
 end instead means composing an act around a claim that was never in the brief
 and finding out when the whole script is done.
 
+A sentence that counts or signposts the FILM's own structure rather than
+saying anything about the world — "Four questions", "The bones first" — takes
+a \`[framing]\` marker inline at the head of the sentence. The gate cannot
+infer it: it cannot tell "four questions", meaning the film's four acts, from
+"four tablets", which is a fact. You write it, and it is reviewable at the
+script gate like any other sentence you wrote.
+
+A marker is not a licence. A [framing] sentence is skipped only if it carries
+no proper noun, no number of ten or more, and no date; one that names or
+counts something real is checked like any other. No more than 5% of the
+film's sentences may be framing.
+
 Do not invent a claim id, and do not renumber one to something that happens
 to exist. If a sentence needs a source the brief does not have, either
 research it and add the data point — with a source_url — or cut the sentence.
