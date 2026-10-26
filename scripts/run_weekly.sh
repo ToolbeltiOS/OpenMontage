@@ -220,12 +220,24 @@ must exist in the research brief's data_points with a source_url.
 Write the script's sections with a \`paragraphs\` list, each entry
 {"text": "...", "claims": ["c07", "c12"]}, and give every data point in the
 research brief an explicit \`id\`. A section-level \`source_ref\` naming a bag
-of ids is what the previous two films did and it is not enough: it attributes
-a whole act to a list, so it cannot say which sentence rests on which claim.
-It is also how a film shipped citing fourteen ids that did not exist.
+of ids DOES NOT COVER ANYTHING any more: it attributes a whole act to a list,
+so it cannot say which sentence rests on which claim, and one resolving id in
+it used to carry thirty sentences.
 
-Do not invent a claim id. If a sentence needs a source the brief does not
-have, either research it and add the data point, or cut the sentence.
+AFTER EACH ACT, BEFORE WRITING THE NEXT ONE, run:
+
+    .venv/bin/python scripts/check_claims.py --project $SLUG --section <act>
+
+and fix what it reports before continuing. It is the same two checks the gate
+makes, scoped to one act and cheap enough to run six times. Running it at the
+end instead means composing an act around a claim that was never in the brief
+and finding out when the whole script is done.
+
+Do not invent a claim id, and do not renumber one to something that happens
+to exist. If a sentence needs a source the brief does not have, either
+research it and add the data point — with a source_url — or cut the sentence.
+easter-island shipped citing fifty-four ids against a fifteen-claim ledger;
+forty-two of them had never existed.
 PROMPTEOF
 
 # The owner's angle constraint, if this subject has one, as instruction rather

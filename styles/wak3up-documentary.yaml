@@ -1311,6 +1311,32 @@ asset_reuse:
 # did.
 fact_gate:
   blocks: script_stage
+
+  # TIGHTENED 2026-10-26, by the owner, after the first version let one claim
+  # carry a whole act: act 3 of easter-island cited sixteen ids, ONE of which
+  # resolved, and passed on it.
+  coverage: per_sentence
+  coverage_sources:
+    - "a ledger claim naming the sentence in `supports` (or
+       `repairs_sentence`, which a provenance repair writes). Per-sentence
+       attribution held in the LEDGER, so a delivered film can be attributed
+       without its script being touched."
+    - "the paragraph's own `claims` list."
+  section_level_covers_nothing: >
+    A section's `claims` or `source_ref` attributes a whole act to a bag of
+    ids. It cannot say which sentence rests on which claim, so it no longer
+    covers anything. Its ids are still read, and still have to resolve.
+  a_dangling_citation_is_a_failure: >
+    Wherever it appears. A script may not cite an id that is not in the
+    brief, whether or not some other id in the same breath resolves. The two
+    delivered films break this thirty times over.
+  checked_at_write_time: >
+    scripts/check_claims.py --project <id> --section <act>, run by the script
+    stage after each act and before the next. The gate alone runs once at the
+    end and tells the writer that something somewhere is wrong — by which
+    point the act has been composed around a claim that was never in the
+    brief. easter-island was written that way: fifty-four ids cited against a
+    fifteen-claim ledger, forty-two of which had never existed.
   proper_nouns: "spaCy en_core_web_sm"
   numbers: "digits AND spelled out — this channel writes 'three hundred and
             ninety-four', and a digits-only rule finds almost no figure in the

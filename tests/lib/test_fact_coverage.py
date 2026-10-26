@@ -28,6 +28,16 @@ def script_of(text: str, **section):
     return {"sections": [{"id": "act1", "text": text, **section}]}
 
 
+def covered_by(text: str, claims: list[str]):
+    """A one-paragraph section whose PARAGRAPH carries the claims.
+
+    Section-level claims stopped covering anything on 2026-10-26; a fixture
+    that still used them would be testing a rule that no longer exists.
+    """
+    return {"sections": [{"id": "act1", "text": text,
+                          "paragraphs": [{"text": text, "claims": claims}]}]}
+
+
 class TestWhatCountsAsAFactualSentence:
     def _t(self, sentence):
         return fc.triggers(sentence, "capitalisation")
@@ -86,15 +96,15 @@ class TestTheLedger:
 class TestCoverage:
     def test_a_sourced_claim_covers_the_sentence(self):
         problems, m = fc.check(
-            script_of("Fifty-three houses stood there.", claims=["c02"]),
-            LEDGER, "capitalisation")
+            covered_by("Fifty-three houses stood there.", ["c02"]),
+            LEDGER, "capitalisation", {})
         assert problems == [], problems
         assert m["sentences_uncovered"] == 0
 
     def test_a_claim_with_no_source_url_does_not(self):
         problems, _ = fc.check(
-            script_of("Fifty-three houses stood there.", claims=["c03"]),
-            LEDGER, "capitalisation")
+            covered_by("Fifty-three houses stood there.", ["c03"]),
+            LEDGER, "capitalisation", {})
         assert problems, "a claim with an empty source_url was accepted"
 
     def test_an_id_that_does_not_resolve_does_not(self):
@@ -103,47 +113,60 @@ class TestCoverage:
         act 4 cites c46 to c58 against a fifteen-claim ledger.
         """
         problems, m = fc.check(
-            script_of("Fifty-three houses stood there.", claims=["c58"]),
-            LEDGER, "capitalisation")
+            covered_by("Fifty-three houses stood there.", ["c58"]),
+            LEDGER, "capitalisation", {})
         assert problems
-        assert "none resolve" in problems[0]
         assert m["ids_that_do_not_resolve"] == ["c58"]
 
     def test_citing_nothing_does_not(self):
         problems, _ = fc.check(
             script_of("Fifty-three houses stood there."), LEDGER,
-            "capitalisation")
-        assert problems and "cites nothing" in problems[0]
+            "capitalisation", {})
+        assert problems and "no claim names this sentence" in problems[0]
 
     def test_a_sentence_with_no_facts_needs_no_claim(self):
         problems, m = fc.check(script_of("But nobody can say why."),
-                               LEDGER, "capitalisation")
+                               LEDGER, "capitalisation", {})
         assert problems == []
         assert m["sentences_needing_a_claim"] == 0
 
 
 class TestWhereTheClaimsAreLookedFor:
-    def test_the_paragraph_wins_over_the_section(self):
+    """Sentence first, then the paragraph. A SECTION COVERS NOTHING.
+
+    It used to be paragraph, then section, then the ids in `source_ref`, and
+    the last two are how one resolving claim carried a whole act.
+    """
+
+    def test_a_claim_naming_the_sentence_wins_over_the_paragraph(self):
+        book = {"data_points": [
+            {"id": "c02", "claim": "a", "source_url": "https://e.test/a"},
+            {"id": "r01", "claim": "b", "source_url": "https://e.test/b",
+             "supports": "Fifty-three houses stood there."}]}
         script = {"sections": [{
             "id": "act1", "text": "Fifty-three houses stood there.",
-            "claims": ["c58"],
-            "paragraphs": [{"text": "...", "claims": ["c02"]}],
-        }]}
-        problems, m = fc.check(script, LEDGER, "capitalisation")
-        assert problems == [], problems
-        assert m["attribution_levels"] == ["paragraph"]
+            "paragraphs": [{"text": "...", "claims": ["c02"]}]}]}
+        _, m = fc.check(script, book, "capitalisation", {})
+        assert m["rows"][0]["attribution"] == "sentence"
+        assert m["rows"][0]["cited"] == ["r01"]
 
-    def test_the_section_is_used_when_the_paragraph_has_none(self):
-        _, m = fc.check(script_of("Fifty-three houses.", claims=["c02"]),
-                        LEDGER, "capitalisation")
-        assert m["attribution_levels"] == ["section"]
+    def test_the_paragraph_is_used_when_no_claim_names_the_sentence(self):
+        _, m = fc.check(covered_by("Fifty-three houses.", ["c02"]),
+                        LEDGER, "capitalisation", {})
+        assert m["rows"][0]["attribution"] == "paragraph"
 
-    def test_the_weaker_level_is_reported_as_such(self):
-        """A pass at section level is not a pass at the level asked for."""
+    def test_a_section_source_ref_attributes_nothing(self):
         _, m = fc.check(script_of("Fifty-three houses.",
                                   source_ref="ledger c02 — x.json"),
-                        LEDGER, "capitalisation")
-        assert m["attribution_levels"] == ["section"]
+                        LEDGER, "capitalisation", {})
+        assert m["rows"][0]["attribution"] == "none"
+        assert m["rows"][0]["covered"] is False
+
+    def test_but_its_ids_are_still_checked_for_resolving(self):
+        _, m = fc.check(script_of("Nothing factual.",
+                                  source_ref="ledger c02, c99 — x.json"),
+                        LEDGER, "capitalisation", {})
+        assert m["ids_that_do_not_resolve"] == ["c99"]
 
 
 class TestTheDetectorIsNotSwappedQuietly:
@@ -258,7 +281,8 @@ class TestExemptBySectionTypeNotBySentence:
     def test_an_exempt_section_is_not_examined_at_all(self):
         script = {"sections": [
             {"id": "outro", "text": "Four open files, and we closed one."},
-            {"id": "act1", "text": "Fifty-three houses.", "claims": ["c02"]},
+            {"id": "act1", "text": "Fifty-three houses.",
+             "paragraphs": [{"text": "x", "claims": ["c02"]}]},
         ]}
         problems, m = fc.check(script, LEDGER, "capitalisation", {})
         assert problems == []
@@ -363,3 +387,129 @@ class TestTheTelegramLine:
         src = Path("scripts/telegram_gate.py").read_text()
         i = src.index("header = (")
         assert "fact_line(project, script_path)" in src[i:i + 400]
+
+
+class TestCoverageIsPerSentenceNotPerSection:
+    """TIGHTENED 2026-10-26. One claim used to carry a whole act.
+
+    Measured on easter-island: act 3 cited sixteen ids, ONE resolved, and it
+    passed on it. Act 2 cited fifteen and two resolved. Act 4 failed only
+    because none of its fourteen landed inside the real range — it was not
+    uniquely broken, it was uniquely unlucky.
+    """
+
+    SCRIPT = {"sections": [{
+        "id": "act1",
+        "text": "Fifty-three houses stood there.\n\nThe cliff drops 300 m.",
+        "source_ref": "research_brief claim ledger c02",
+    }]}
+
+    def test_a_section_level_citation_no_longer_covers(self):
+        problems, m = fc.check(self.SCRIPT, LEDGER, "capitalisation", {})
+        assert problems, "a section-level bag of ids still covered its sentences"
+        assert all(r["attribution"] in ("none", "sentence") for r in m["rows"])
+
+    def test_a_paragraph_level_citation_does(self):
+        script = {"sections": [{
+            "id": "act1", "text": "Fifty-three houses stood there.",
+            "paragraphs": [{"text": "...", "claims": ["c02"]}]}]}
+        problems, m = fc.check(script, LEDGER, "capitalisation", {})
+        assert problems == [], problems
+        assert m["rows"][0]["attribution"] == "paragraph"
+
+    def test_a_ledger_claim_naming_the_sentence_also_does(self):
+        """Per-sentence attribution held in the LEDGER, so a delivered film
+        can be repaired without its script being touched."""
+        book = {"data_points": [{
+            "id": "r01", "claim": "53 houses at Orongo.",
+            "source_url": "https://example.test/a",
+            "supports": "Fifty-three houses stood there."}]}
+        script = {"sections": [{"id": "act1",
+                                "text": "Fifty-three houses stood there."}]}
+        problems, m = fc.check(script, book, "capitalisation", {})
+        assert problems == [], problems
+        assert m["rows"][0]["attribution"] == "sentence"
+
+    def test_repairs_sentence_is_accepted_as_well_as_supports(self):
+        book = {"data_points": [{
+            "id": "r01", "claim": "x", "source_url": "https://example.test/a",
+            "repairs_sentence": "Fifty-three houses stood there."}]}
+        idx = fc.sentence_index(fc.ledger(book))
+        assert idx["Fifty-three houses stood there."] == ["r01"]
+
+    def test_one_claim_cannot_carry_a_whole_act(self):
+        """INJECTED: act 3's shape — many sentences, one resolving id."""
+        script = {"sections": [{
+            "id": "act3",
+            "text": ("Fifty-three houses stood there.\n\n"
+                     "The cliff drops 300 m.\n\n"
+                     "The crater is a mile across."),
+            "claims": ["c01"]}]}
+        _, m = fc.check(script, LEDGER, "capitalisation", {})
+        covered = [r for r in m["rows"] if r["needs_claim"] and r["covered"]]
+        assert covered == [], "a single section-level claim still covered them"
+
+
+class TestADanglingCitationIsItselfAFailure:
+    def test_an_unknown_id_fails_even_when_the_sentence_is_covered(self):
+        """The rule that catches acts 2 and 3: a citation that does not
+        resolve is not a citation, whatever else is in the same breath."""
+        book = {"data_points": [{
+            "id": "r01", "claim": "x", "source_url": "https://example.test/a",
+            "supports": "Fifty-three houses stood there."}]}
+        script = {"sections": [{
+            "id": "act1", "text": "Fifty-three houses stood there.",
+            "source_ref": "ledger r01, c58"}]}
+        problems, m = fc.check(script, book, "capitalisation", {})
+        assert m["rows"][0]["covered"] is True
+        assert problems, "the dangling c58 was tolerated"
+        assert "not a citation" in problems[0]
+        assert m["ids_that_do_not_resolve"] == ["c58"]
+
+    def test_it_says_which_section_cited_it(self):
+        book = {"data_points": [{"id": "c01", "claim": "x",
+                                 "source_url": "https://e.test"}]}
+        script = {"sections": [{"id": "act2", "text": "Nothing factual here.",
+                                "source_ref": "ledger c99"}]}
+        _, m = fc.check(script, book, "capitalisation", {})
+        assert m["dangling_citations"] == [{"section": "act2", "id": "c99"}]
+
+    def test_an_exempt_section_is_not_checked_for_them_either(self):
+        book = {"data_points": [{"id": "c01", "claim": "x",
+                                 "source_url": "https://e.test"}]}
+        script = {"sections": [{"id": "outro", "text": "Four open files.",
+                                "source_ref": "ledger c99"}]}
+        problems, _ = fc.check(script, book, "capitalisation", {})
+        assert problems == []
+
+
+class TestTheCauseIsCheckedAtWriteTime:
+    """A gate that runs once, at the end, tells the writer that something
+    somewhere is wrong — after the act has been composed around a claim that
+    was never in the brief."""
+
+    def test_the_per_act_script_exists_and_scopes_to_one_section(self):
+        from pathlib import Path
+
+        src = Path("scripts/check_claims.py").read_text()
+        assert '"--section"' in src
+        assert "cited_anywhere" in src and "sentence_index" in src
+
+    def test_the_prompt_tells_the_stage_to_run_it_after_each_act(self):
+        from pathlib import Path
+
+        body = Path("scripts/run_weekly.sh").read_text()
+        assert "AFTER EACH ACT, BEFORE WRITING THE NEXT ONE" in body
+        assert "check_claims.py --project $SLUG --section" in body
+
+    def test_the_prompt_forbids_renumbering_to_something_that_exists(self):
+        from pathlib import Path
+
+        body = Path("scripts/run_weekly.sh").read_text()
+        assert "do not renumber one to something that happens" in body
+
+    def test_the_prompt_says_a_section_ref_no_longer_covers(self):
+        from pathlib import Path
+
+        body = Path("scripts/run_weekly.sh").read_text()
+        assert "DOES NOT COVER ANYTHING any more" in body

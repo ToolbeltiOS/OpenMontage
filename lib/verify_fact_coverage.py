@@ -19,22 +19,34 @@ provenance and pointed at nothing.
 That is the finding the sentence counts sit inside, and it is why this gate
 checks that a cited id RESOLVES rather than that a citation is present.
 
-WHERE THE CLAIMS ARE LOOKED FOR
--------------------------------
-In order, first one wins:
+COVERAGE IS PER SENTENCE, AND A SECTION DOES NOT COVER ANYTHING
+---------------------------------------------------------------
+TIGHTENED 2026-10-26 by the owner, because the first version let one claim
+carry a whole act. Measured on easter-island: act 3 cited sixteen ids, ONE
+of which resolved, and passed on it. Act 2 cited fifteen and two resolved.
+Act 4 failed only because none of its fourteen happened to land inside the
+real range — it was not uniquely broken, it was uniquely unlucky.
 
-1. the paragraph's own `claims` list — what the rule asks for, and what the
-   script stage must produce from now on;
-2. the section's `claims` list;
-3. claim ids parsed out of the section's `source_ref` string, which is what
-   the existing scripts have: free prose reading "research_brief claim ledger
-   c17, c07, c18 — projects/<id>/artifacts/research_brief.json".
+A sentence is covered when a claim that resolves, and has a source URL, is
+attributable TO THAT SENTENCE:
 
-Level 3 is how the delivered films can be measured at all, and it is weaker
-in a way worth stating: it attributes a whole section to a bag of ids, so it
-cannot tell which sentence rests on which claim. It is reported as
-`attribution: section` so a pass at that level is never mistaken for a pass
-at the level the rule asks for.
+1. a ledger claim naming the sentence in `supports` (or `repairs_sentence`,
+   which a provenance repair writes). This is per-sentence attribution held
+   in the LEDGER, so an already-delivered film can be repaired without its
+   script being touched;
+2. the paragraph's own `claims` list — what the script stage must produce.
+
+A SECTION'S `claims` OR `source_ref` NO LONGER COVERS ANYTHING. It is still
+read, and every id in it is still checked, because that is where the second
+rule bites:
+
+AND A CITATION THAT DOES NOT RESOLVE IS ITSELF A FAILURE
+---------------------------------------------------------
+Wherever it appears. A script may not cite an id that is not in the brief,
+whether or not some other id in the same breath happens to resolve. That is
+the rule the delivered films break thirty times over, and `scripts/
+check_claims.py` is the same check run per act AS THE SCRIPT IS WRITTEN, so
+the writer cannot invent c16-c58 and discover it at the gate.
 
 NUMBERS ARE SPELLED OUT IN THIS CHANNEL'S SCRIPTS
 -------------------------------------------------
@@ -252,17 +264,51 @@ def cited_in(blob: Any) -> list[str]:
 
 
 def claims_for(section: dict, paragraph_index: int) -> tuple[list[str], str]:
-    """(claim ids, how they were attributed) for one paragraph."""
+    """(claim ids that COVER this paragraph, how they were attributed).
+
+    Only the paragraph's own list covers. A section-level list is returned by
+    `cited_anywhere` instead, for the resolve check, because it says which
+    claims the act rests on and not which sentence rests on which claim.
+    """
     paras = section.get("paragraphs")
     if isinstance(paras, list) and paragraph_index < len(paras):
         entry = paras[paragraph_index]
         if isinstance(entry, dict) and entry.get("claims"):
             return cited_in(entry["claims"]), "paragraph"
-    if section.get("claims"):
-        return cited_in(section["claims"]), "section"
-    if section.get("source_ref"):
-        return cited_in(section["source_ref"]), "section"
     return [], "none"
+
+
+def cited_anywhere(section: dict) -> list[str]:
+    """Every claim id the section names, at any level. All must resolve."""
+    ids: list[str] = []
+    for entry in (section.get("paragraphs") or []):
+        if isinstance(entry, dict):
+            ids += cited_in(entry.get("claims") or [])
+    ids += cited_in(section.get("claims") or [])
+    ids += cited_in(section.get("source_ref") or "")
+    return list(dict.fromkeys(ids))
+
+
+def _norm_sentence(text: str) -> str:
+    return " ".join((text or "").split())
+
+
+def sentence_index(book: dict[str, dict]) -> dict[str, list[str]]:
+    """Sentence -> the claim ids that name it.
+
+    A data point may say which sentence it supports, in `supports` or in
+    `repairs_sentence`. That is per-sentence attribution kept in the ledger
+    rather than in the script, which is the only way a film that has already
+    been delivered can be attributed properly without editing what it says.
+    """
+    out: dict[str, list[str]] = {}
+    for key, point in book.items():
+        named = point.get("supports") or point.get("repairs_sentence")
+        if not named:
+            continue
+        for sentence in ([named] if isinstance(named, str) else list(named)):
+            out.setdefault(_norm_sentence(sentence), []).append(key)
+    return out
 
 
 def check(script: dict, brief: dict, backend: str = "spacy",
@@ -271,24 +317,34 @@ def check(script: dict, brief: dict, backend: str = "spacy",
     """Problems and a per-sentence report."""
     book = ledger(brief)
     skip = exempt_sections(playbook)
+    by_sentence = sentence_index(book)
     rows: list[dict[str, Any]] = []
+    dangling: list[tuple[str, str]] = []
     for section in script.get("sections", []):
         if section.get("id") in skip:
             continue
+        for cited in cited_anywhere(section):
+            if cited not in book:
+                dangling.append((section.get("id"), cited))
         for p_index, para in enumerate(paragraphs(section.get("text") or "")):
             ids, how = claims_for(section, p_index)
-            resolved = [i for i in ids if i in book]
-            sourced = [i for i in resolved if book[i].get("source_url")]
             for sentence in sentences(para):
                 why = triggers(sentence, backend)
+                own = by_sentence.get(_norm_sentence(sentence), [])
+                if own:
+                    ids_here, how_here = own, "sentence"
+                else:
+                    ids_here, how_here = ids, how
+                resolved = [i for i in ids_here if i in book]
+                sourced = [i for i in resolved if book[i].get("source_url")]
                 rows.append({
                     "section": section.get("id"),
                     "paragraph": p_index,
                     "sentence": sentence,
                     "needs_claim": bool(why),
                     "triggers": why,
-                    "attribution": how,
-                    "cited": ids,
+                    "attribution": how_here,
+                    "cited": ids_here,
                     "resolved": resolved,
                     "sourced": sourced,
                     "covered": bool(why) is False or bool(sourced),
@@ -299,8 +355,14 @@ def check(script: dict, brief: dict, backend: str = "spacy",
         f"{r['section']}/p{r['paragraph']}: {r['sentence'][:90]!r} — "
         + ", ".join(f"{k} {v}" for k, v in r["triggers"].items())
         + (f"; cites {r['cited']} and none resolve to a sourced claim"
-           if r["cited"] else "; cites nothing")
+           if r["cited"] else "; no claim names this sentence and its "
+                              "paragraph cites nothing")
         for r in uncovered
+    ]
+    problems += [
+        f"{where}: cites {cited!r}, which is not in the research brief. A "
+        f"citation that does not resolve is not a citation."
+        for where, cited in dangling
     ]
 
     needing = [r for r in rows if r["needs_claim"]]
@@ -313,9 +375,10 @@ def check(script: dict, brief: dict, backend: str = "spacy",
         "pct_uncovered": (round(100 * len(uncovered) / len(needing), 1)
                           if needing else 0.0),
         "ledger_size": len(book),
-        "ids_cited": sorted({i for r in rows for i in r["cited"]}),
-        "ids_that_do_not_resolve": sorted(
-            {i for r in rows for i in r["cited"]} - set(book)),
+        "ids_cited": sorted({i for r in rows for i in r["cited"]}
+                            | {c for _, c in dangling}),
+        "ids_that_do_not_resolve": sorted({c for _, c in dangling}),
+        "dangling_citations": [{"section": w, "id": c} for w, c in dangling],
         "attribution_levels": sorted({r["attribution"] for r in rows}),
         "rows": rows,
     }
