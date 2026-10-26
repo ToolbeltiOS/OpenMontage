@@ -261,6 +261,14 @@ export interface Cut {
   parallaxTo?: number;
   driftFrom?: number;
   driftTo?: number;
+  /**
+   * 2.5D: a clip of this still with the move baked in, and the measured
+   * positions of its annotation anchors. Written by
+   * `scripts/build_25d_cuts.py`; see `lib/depthTrack.ts` for why the anchors
+   * are measured rather than computed.
+   */
+  depth_clip?: string;
+  anchor_track?: any;
   layers?: any[];
   reveals?: any[];
   labels?: any[];
@@ -501,6 +509,13 @@ const ImageScene: React.FC<{
   parallaxTo?: number;
   driftFrom?: number;
   driftTo?: number;
+  /**
+   * A 2.5D clip of this still with the camera move baked in, from
+   * `scripts/render_25d.py`. When present it replaces the plate and every
+   * transform below: the move is in the pixels, so applying one here would
+   * apply it twice. The `animation` presets are ignored for the same reason.
+   */
+  depthClip?: string;
 }> = ({
   src,
   animation,
@@ -509,6 +524,7 @@ const ImageScene: React.FC<{
   parallaxTo = 1,
   driftFrom = 0,
   driftTo = 0,
+  depthClip,
 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
@@ -592,17 +608,31 @@ const ImageScene: React.FC<{
 
   return (
     <AbsoluteFill style={{ overflow: "hidden", background: "#0F172A" }}>
-      <Img
-        src={resolveAsset(src)}
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          opacity: fadeIn * fadeOut,
-          transform,
-          willChange: "transform, opacity",
-        }}
-      />
+      {depthClip ? (
+        <OffthreadVideo
+          src={resolveAsset(depthClip)}
+          muted
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            opacity: fadeIn * fadeOut,
+            willChange: "opacity",
+          }}
+        />
+      ) : (
+        <Img
+          src={resolveAsset(src)}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            opacity: fadeIn * fadeOut,
+            transform,
+            willChange: "transform, opacity",
+          }}
+        />
+      )}
       <Vignette />
     </AbsoluteFill>
   );
@@ -800,6 +830,9 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
 
   if (cut.type === "annotated_still" && cut.backgroundImage) {
     return (<AnnotatedStill image={cut.backgroundImage} parallax={cut.parallax}
+      parallaxFrom={cut.parallaxFrom} parallaxTo={cut.parallaxTo}
+      driftFrom={cut.driftFrom} driftTo={cut.driftTo}
+      depthClip={cut.depth_clip} anchorTrack={cut.anchor_track}
       annotations={cut.annotations} measurement={cut.measurement}
       cutaway={cut.cutaway} caption={cut.caption} title={cut.title} dim={cut.dim} {...chrome} />);
   }
@@ -1069,6 +1102,7 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
         parallaxTo={cut.parallaxTo}
         driftFrom={cut.driftFrom}
         driftTo={cut.driftTo}
+        depthClip={cut.depth_clip}
       />));
   }
 
@@ -1098,6 +1132,7 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
         parallaxTo={cut.parallaxTo}
         driftFrom={cut.driftFrom}
         driftTo={cut.driftTo}
+        depthClip={cut.depth_clip}
       />));
   }
 

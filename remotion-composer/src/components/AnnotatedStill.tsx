@@ -1,10 +1,11 @@
 import React from "react";
-import { AbsoluteFill, Img, interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
+import { AbsoluteFill, Img, OffthreadVideo, interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, TRACK, EXPO_OUT, EXPO_IN_OUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
 import { resolveAsset } from "../lib/resolveAsset";
 import { Graded } from "../design/Frame";
 import { TYPE_CLASS } from "../design/layers";
+import { AnchorTrack, trackedPoint } from "../lib/depthTrack";
 
 export interface StillAnnotation {
   /** Short label, e.g. "corbelled course" */
@@ -50,6 +51,20 @@ export interface AnnotatedStillProps {
    */
   driftFrom?: number;
   driftTo?: number;
+  /**
+   * A 2.5D clip of this still, pre-rendered by `scripts/render_25d.py`, with
+   * the camera move BAKED IN. When present it replaces the plate and the CSS
+   * transform entirely: the move is already in the pixels, so applying one
+   * here would move it twice.
+   */
+  depthClip?: string;
+  /**
+   * Where each annotation's anchor goes, per frame, measured through the
+   * same shader by `scripts/anchor_track.py`. Required with `depthClip` —
+   * the raymarch has no closed-form inverse, so without the track there is
+   * no way to put a dot back on its feature. See `lib/depthTrack.ts`.
+   */
+  anchorTrack?: AnchorTrack;
   annotations?: StillAnnotation[];
   measurement?: MeasurementCallout;
   cutaway?: CutawayMask;
@@ -80,6 +95,8 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
   parallaxTo = 1.08,
   driftFrom = 0,
   driftTo = 0,
+  depthClip,
+  anchorTrack,
   annotations = [],
   measurement,
   cutaway,
@@ -124,10 +141,35 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
    * with the style below exactly — a sign or an ordering wrong here puts
    * every anchor somewhere plausible and wrong.
    */
-  const toScreen = (nx: number, ny: number): [number, number] => [
-    width / 2 + scale * (nx * width + drift * width - width / 2),
-    height / 2 + scale * (ny * height - height / 2),
-  ];
+  const toScreen = (nx: number, ny: number): [number, number] => {
+    /*
+     * 2.5D FIRST, AND IT IS A LOOKUP. A depth-displaced point has no closed
+     * form — the shader raymarches — so its position was measured through
+     * that same shader at build time and travels with the cut.
+     */
+    const tracked = trackedPoint(anchorTrack, nx, ny, frame, durationInFrames, width, height);
+    if (tracked) return tracked;
+
+    /*
+     * THE 2D PLATE, unchanged. The image layer carries `scale(S)
+     * translateX(D%)`, which CSS applies right to left about the element's
+     * centre: a point travels by D first and is then scaled away from the
+     * middle. D is a percentage of the element's own width, so it is
+     * `drift * width` in pixels.
+     *
+     * A cut with a `depthClip` but no track for THIS anchor lands here, and
+     * that is wrong rather than merely approximate: the clip's move is baked
+     * into the pixels and this arithmetic describes a move that is no longer
+     * being applied, so the dot would travel while the picture did not.
+     * `scripts/check_25d_cuts.py` fails the build on exactly that, because
+     * it cannot be seen in a frame — it looks like an annotation slightly
+     * off its feature, which is the defect this branch began with.
+     */
+    return [
+      width / 2 + scale * (nx * width + drift * width - width / 2),
+      height / 2 + scale * (ny * height - height / 2),
+    ];
+  };
 
   const appear = (atSeconds: number, frames: number = SYS.unit) =>
     interpolate(frame, [atSeconds * fps, atSeconds * fps + frames], [0, 1], {
@@ -147,11 +189,30 @@ export const AnnotatedStill: React.FC<AnnotatedStillProps> = ({
       sceneIndex={sceneIndex}
       coords={coords}
     >
-      <AbsoluteFill style={{ transform: `scale(${scale}) translateX(${drift * 100}%)` }}>
-        <Graded act={actNumber}>
-          <Img src={resolveAsset(image)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        </Graded>
-      </AbsoluteFill>
+      {/*
+        NO TRANSFORM ON A DEPTH CLIP. The move is in the pixels already —
+        `render_25d.py` rendered it — so a CSS scale here would apply it a
+        second time, and the measured anchor track would describe only the
+        first. The grade still wraps it, because the grade is a look and not
+        a camera.
+      */}
+      {depthClip ? (
+        <AbsoluteFill>
+          <Graded act={actNumber}>
+            <OffthreadVideo
+              src={resolveAsset(depthClip)}
+              muted
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </Graded>
+        </AbsoluteFill>
+      ) : (
+        <AbsoluteFill style={{ transform: `scale(${scale}) translateX(${drift * 100}%)` }}>
+          <Graded act={actNumber}>
+            <Img src={resolveAsset(image)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          </Graded>
+        </AbsoluteFill>
+      )}
 
       {/* hold the plate down so annotations stay legible */}
       <AbsoluteFill style={{ backgroundColor: `rgba(12,12,14,${dim})` }} />

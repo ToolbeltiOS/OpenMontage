@@ -56,7 +56,11 @@ def stage(cut: dict, into: Path) -> dict:
     """
     into.mkdir(parents=True, exist_ok=True)
     cut = dict(cut)
-    for key in ("source", "image", "backgroundImage"):
+    # `depth_clip` is staged for the same reason as the picture: with a 2.5D
+    # plate the moving image IS the clip, and a cut whose clip Chrome cannot
+    # fetch renders as an empty frame with the annotations floating on it —
+    # which measures as a perfect anchor match over a black plate.
+    for key in ("source", "image", "backgroundImage", "depth_clip"):
         src = cut.get(key)
         if not isinstance(src, str) or not src:
             continue

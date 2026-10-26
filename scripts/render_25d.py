@@ -191,7 +191,13 @@ def build(move: str, amount: float, seconds: float):
                 # which is what makes a drift read as depth rather than as a
                 # pan. Measured, near and far separate by 5.5 px at 0.20.
                 self.state.offset = (amount * (t - 0.5) * 2.0, 0.0)
-                self.state.zoom = 1.0 + amount * 0.25
+                # ABS, because a drift can run either way. A negative amount
+                # is a right-to-left drift and it is authored that way in the
+                # edit (easter-island c027); `1.0 + amount * 0.25` would then
+                # zoom OUT, below 1, and slide the edge of the picture into
+                # frame. The cover has to grow for a drift in both
+                # directions.
+                self.state.zoom = 1.0 + abs(amount) * 0.25
             else:                                   # lock: relief, no move
                 self.state.zoom = 1.0
     return Move
