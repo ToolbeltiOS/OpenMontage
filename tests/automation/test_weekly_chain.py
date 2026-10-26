@@ -1048,3 +1048,19 @@ class TestTheConstraintReachesThePrompt:
         assert sentence("the subject is why. A film that arrives") == \
             "The subject is why. A film that arrives"
         assert "A film that arrives" in self._rendered()
+
+    def test_the_framing_is_stated_before_the_spine(self):
+        """"As an artefact" rules out the two films this subject usually
+        becomes, and it is neither the spine nor the register."""
+        out = self._rendered()
+        assert "AS AN ARTEFACT" in out
+        assert out.index("AS AN ARTEFACT") < out.index("The spine, in this order")
+
+    def test_the_framing_survives_into_the_brief_a_human_reads(self):
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from pick_topic import ANGLE_CONSTRAINTS
+
+        assert "artefact" in ANGLE_CONSTRAINTS["noah"]["framing"].lower()

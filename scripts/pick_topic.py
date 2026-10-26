@@ -281,6 +281,13 @@ ANGLE_CONSTRAINTS: dict[str, dict[str, Any]] = {
         "set_by": "owner, 2026-10-21",
     },
     "noah": {
+        # The owner's opening clause, which is not the spine and not the
+        # register: it is what KIND of film this is. "As an artefact" rules
+        # out the two films this subject usually becomes — one that sets out
+        # to verify the Flood and one that sets out to disprove it — and the
+        # question it leaves is the one the spine answers.
+        "framing": "A mystery-first investigation of the Flood story AS AN "
+                   "ARTEFACT: why the same story exists across cultures.",
         "spine": [
             "the same story in older cultures — Gilgamesh tablet XI, read by "
             "George Smith in 1872; Atrahasis; the Manu flood",
@@ -415,6 +422,10 @@ def write_brief(brief: dict[str, Any], out_dir: Path) -> Path:
             f"titles would suggest, because the picker cannot know what a "
             f"previous film already argued.*",
             "",
+        ]
+        if constraint.get("framing"):
+            lines += [f"**{constraint['framing']}**", ""]
+        lines += [
             "**The spine, in order:**", "",
         ]
         lines += [f"{n}. {item}" for n, item in enumerate(constraint["spine"], 1)]

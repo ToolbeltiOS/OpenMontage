@@ -53,9 +53,10 @@ def render(brief: dict) -> str:
         f"Set by {c['set_by']}. It overrides the angle the Shorts titles",
         "suggest, because the picker cannot know what a previous film argued",
         "or what this one is for.",
-        "",
-        "The spine, in this order, one act each:",
     ]
+    if c.get("framing"):
+        out += ["", sentence(c["framing"])]
+    out += ["", "The spine, in this order, one act each:"]
     out += [f"  {n}. {item}" for n, item in enumerate(c["spine"], 1)]
 
     recap = c.get("recap")
