@@ -20,6 +20,50 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ART = os.path.join(ROOT, "projects", "they-said-it-couldnt-be-built", "artifacts")
 
 
+#: Where the one-frame proofs go. A rule that silently relocates an
+#: annotation is worse than the defect it fixes, so every cut it touches
+#: leaves a picture behind showing what it did.
+ANCHOR_PROOFS = os.path.join(ROOT, "reports", "anchor_texture")
+
+
+def screen_anchors(cut_id: str, image: str, annotations: list,
+                   notes: list) -> list:
+    """Keep, move or drop each anchor by the texture under it.
+
+    Returns the annotations as the rule leaves them, appends a line per
+    decision to `notes`, and writes a proof frame for any cut it changed.
+    """
+    sys.path.insert(0, os.path.join(ROOT, "lib"))
+    import verify_anchor_texture as vat
+
+    path = image if os.path.isabs(image) else os.path.join(ROOT, image)
+    if not os.path.exists(path):
+        notes.append(f"{cut_id}: anchor texture not checked, no {image}")
+        return annotations
+    try:
+        decisions = vat.screen(path, annotations)
+    except SystemExit as e:
+        notes.append(f"{cut_id}: anchor texture not checked ({e})")
+        return annotations
+
+    changed = [d for d in decisions if d["action"] != "keep"]
+    for d in changed:
+        if d["action"] == "move":
+            notes.append(
+                f"{cut_id}: anchor '{d['label'][:40]}' moved {d['moved_px']}px "
+                f"from sd {d['sd']} to sd {d['to_sd']} — nothing to point at "
+                f"where it was")
+        else:
+            notes.append(
+                f"{cut_id}: anchor '{d['label'][:40]}' DROPPED, sd {d['sd']} "
+                f"and no textured point within {vat.MAX_MOVE:.0%} of frame "
+                f"width")
+    if changed:
+        vat.proof(path, decisions,
+                  os.path.join(ANCHOR_PROOFS, f"{cut_id}.png"))
+    return vat.apply(annotations, decisions)
+
+
 def _load(name: str):
     spec = importlib.util.spec_from_file_location(name, os.path.join(ROOT, "lib", "authored", name + ".py"))
     mod = importlib.util.module_from_spec(spec)
@@ -57,6 +101,8 @@ def main() -> int:
 
     authored = resolved = missing = 0
     problems: list[str] = []
+    #: What the anchor-texture rule did, one line per anchor it changed.
+    notes: list[str] = []
 
     for cut in ed["cuts"]:
         sid = slot_id(cut)
@@ -89,7 +135,15 @@ def main() -> int:
                 cut["type"] = "annotated_still"
                 cut["backgroundImage"] = pslot["path"]
                 cut["parallax"] = True
-                cut["annotations"] = spec["annotations"]
+                # AN ANCHOR HAS TO POINT AT SOMETHING THE PICTURE SHOWS.
+                # This is the moment the annotation is bound to a specific
+                # photograph, so it is the only place the rule can be
+                # applied: an anchor on a patch with no texture is moved to
+                # the nearest one that has some, or dropped. See
+                # lib/verify_anchor_texture.py for the calibration and for
+                # the c053 annotation that prompted it.
+                cut["annotations"] = screen_anchors(
+                    cut["id"], pslot["path"], spec["annotations"], notes)
             else:
                 # The picture moved, so run #1's annotated_still type, its
                 # backgroundImage and its anchor coordinates are all stale --
@@ -171,6 +225,10 @@ def main() -> int:
     print(f"authored graphics: {authored}")
     print(f"resolved photographic: {resolved}")
     print(f"missing reuse targets: {missing}")
+    if notes:
+        print(f"anchor texture (MIN_SD 15, proofs in reports/anchor_texture/):")
+        for n in notes:
+            print("  -", n)
     for p in problems[:20]:
         print("  -", p)
     return 1 if problems else 0
