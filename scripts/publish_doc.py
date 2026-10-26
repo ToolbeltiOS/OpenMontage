@@ -199,22 +199,36 @@ def client():
     return build("youtube", "v3", credentials=credentials)
 
 
-def upload(yt, listing: dict, video: Path, publish_at: datetime) -> str:
+def upload(yt, listing: dict, video: Path,
+           publish_at: datetime | None) -> str:
+    """Upload the film. `publish_at` None means public the moment it finishes.
+
+    The two are mutually exclusive at the API: `publishAt` is only meaningful
+    on a private video, and sending it with `privacyStatus: public` is
+    rejected. So this is one branch, not a merge of two dicts.
+
+    SCHEDULING IS THE DEFAULT AND SHOULD STAY THAT WAY for the weekly run: a
+    film that uploads public at 3am has no premiere and no chance to be
+    pulled. `--now` is for a film a human is watching go out.
+    """
     from googleapiclient.errors import HttpError
     from googleapiclient.http import MediaFileUpload
+
+    status: dict = {k: listing[k] for k in
+                    ("selfDeclaredMadeForKids", "license", "embeddable",
+                     "publicStatsViewable", "containsSyntheticMedia")
+                    if k in listing}
+    if publish_at is None:
+        status["privacyStatus"] = "public"
+    else:
+        status["privacyStatus"] = "private"
+        status["publishAt"] = publish_at.isoformat().replace("+00:00", "Z")
 
     body = {
         "snippet": {k: listing[k] for k in
                     ("title", "description", "tags", "categoryId",
                      "defaultLanguage", "defaultAudioLanguage")},
-        "status": {
-            "privacyStatus": "private",
-            "publishAt": publish_at.isoformat().replace("+00:00", "Z"),
-            **{k: listing[k] for k in
-               ("selfDeclaredMadeForKids", "license", "embeddable",
-                "publicStatsViewable", "containsSyntheticMedia")
-               if k in listing},
-        },
+        "status": status,
     }
     media = MediaFileUpload(str(video), chunksize=8 * 1024 * 1024,
                             resumable=True, mimetype="video/mp4")
@@ -247,6 +261,11 @@ def main() -> int:
     ap.add_argument("--captions", default=None)
     ap.add_argument("--check-token", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--now", action="store_true",
+                    help="publish PUBLIC immediately instead of uploading "
+                         "private and scheduling. There is no undo for an "
+                         "audience that has already seen it; the weekly run "
+                         "must not use this")
     args = ap.parse_args()
 
     ok, message = check_token()
@@ -272,14 +291,18 @@ def main() -> int:
     video = Path(args.video) if args.video else project / "renders" / "final.mp4"
     thumbnail = Path(args.thumbnail) if args.thumbnail else project / "renders" / "thumbnail.jpg"
     captions = Path(args.captions) if args.captions else artifacts / "captions.en.srt"
-    publish_at = next_monday()
+    publish_at = None if args.now else next_monday()
 
     print(f"{args.project}: {listing['title']!r}")
     print(f"  video     {video} ({'present' if video.exists() else 'MISSING'})")
     print(f"  thumbnail {thumbnail} ({'present' if thumbnail.exists() else 'missing'})")
     print(f"  captions  {captions} ({'present' if captions.exists() else 'missing'})")
-    print(f"  private now, public {publish_at.isoformat()} "
-          f"({PUBLISH_HOUR:02d}:00 {PUBLISH_TZ})")
+    if publish_at is None:
+        print("  PUBLIC IMMEDIATELY — not scheduled, and there is no undo "
+              "for an audience that has already seen it")
+    else:
+        print(f"  private now, public {publish_at.isoformat()} "
+              f"({PUBLISH_HOUR:02d}:00 {PUBLISH_TZ})")
     if args.dry_run:
         print("dry run: nothing uploaded")
         return 0
@@ -291,7 +314,9 @@ def main() -> int:
     url = f"https://www.youtube.com/watch?v={video_id}"
     print(f"uploaded: {url}")
 
-    done, manual = [f"uploaded private, scheduled {publish_at.isoformat()}"], []
+    done = [("uploaded PUBLIC immediately" if publish_at is None
+             else f"uploaded private, scheduled {publish_at.isoformat()}")]
+    manual: list[str] = []
     from googleapiclient.errors import HttpError
     from googleapiclient.http import MediaFileUpload
 
@@ -351,10 +376,14 @@ def main() -> int:
 
     manual += ["set the End Screen (no API)"]
 
+    now = datetime.now(timezone.utc)
     record = {
         "project": args.project, "video_id": video_id, "url": url,
-        "title": listing["title"], "uploaded": datetime.now(timezone.utc).isoformat(),
-        "publish_at": publish_at.isoformat(), "playlist_id": playlist_id,
+        "title": listing["title"], "uploaded": now.isoformat(),
+        "public_immediately": publish_at is None,
+        "publish_at": now.isoformat() if publish_at is None
+                      else publish_at.isoformat(),
+        "playlist_id": playlist_id,
         "comment_id": comment_id, "done": done, "manual": manual,
     }
     (artifacts / "publish.json").write_text(json.dumps(record, indent=1) + "\n")
@@ -363,16 +392,19 @@ def main() -> int:
     ledger = json.loads(ledger_path.read_text()) if ledger_path.exists() else {"films": []}
     ledger["films"].append({
         "project": args.project, "video_id": video_id, "title": listing["title"],
-        "url": url, "published": publish_at.date().isoformat(),
+        "url": url,
+        "published": (now if publish_at is None else publish_at).date().isoformat(),
         "entities": listing.get("entities", []),
     })
     ledger_path.write_text(json.dumps(ledger, indent=1) + "\n")
 
     import telegram
     telegram.send(
-        f"<b>Scheduled</b> — {listing['title']}\n{url}\n"
-        f"Public {publish_at.astimezone().strftime('%a %d %b %H:%M')} "
-        f"({PUBLISH_TZ})\n\n"
+        (f"<b>Published</b> — {listing['title']}\n{url}\nPublic now\n\n"
+         if publish_at is None else
+         f"<b>Scheduled</b> — {listing['title']}\n{url}\n"
+         f"Public {publish_at.astimezone().strftime('%a %d %b %H:%M')} "
+         f"({PUBLISH_TZ})\n\n")
         + "\n".join(f"✓ {d}" for d in done)
         + ("\n\n<b>In Studio:</b>\n" + "\n".join(f"· {m}" for m in manual)
            if manual else ""))

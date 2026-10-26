@@ -1,0 +1,22 @@
+{
+ "project": "easter-island",
+ "video_id": "CDpzQKwTBsI",
+ "url": "https://www.youtube.com/watch?v=CDpzQKwTBsI",
+ "title": "Easter Island: The Part Nobody Can Explain",
+ "uploaded": "2026-10-26T13:10:29.311682+00:00",
+ "public_immediately": true,
+ "publish_at": "2026-10-26T13:10:29.311682+00:00",
+ "playlist_id": "PLGLHDmJ31GMo",
+ "comment_id": "UgxGLw176AOd-CjkLTd4AaABAg",
+ "done": [
+  "uploaded PUBLIC immediately",
+  "custom thumbnail set",
+  "added to 'Documentaries'",
+  "credits comment posted",
+  "closed captions uploaded"
+ ],
+ "manual": [
+  "PIN the credits comment (no API for it)",
+  "set the End Screen (no API)"
+ ]
+}

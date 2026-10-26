@@ -22,6 +22,37 @@
     "Aswan"
    ],
    "note": "run #1, published by hand before the automation existed"
+  },
+  {
+   "project": "easter-island",
+   "video_id": "CDpzQKwTBsI",
+   "title": "Easter Island: The Part Nobody Can Explain",
+   "url": "https://www.youtube.com/watch?v=CDpzQKwTBsI",
+   "published": "2026-10-26",
+   "entities": [
+    "Orongo",
+    "Easter Island",
+    "taro",
+    "mata'a",
+    "rongorongo",
+    "boustrophedon",
+    "moai",
+    "Motu Nui",
+    "Hoa Hakananai'a",
+    "Katherine Routledge",
+    "Makemake",
+    "Mamari",
+    "Peruvian",
+    "Rano Raraku",
+    "Rapa Nui",
+    "tangata manu",
+    "Eug\u00e8ne Eyraud",
+    "Florentin Jaussen",
+    "Metoro Tau'a Ure",
+    "Tahiti",
+    "Rano Kau"
+   ],
+   "runtime_seconds": 1191
   }
  ]
 }

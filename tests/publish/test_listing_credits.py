@@ -155,3 +155,198 @@ class TestTheDescription:
     def test_the_title_sequence_is_not_a_chapter(self):
         listing = json.loads((ART / "listing.json").read_text())
         assert not any("Title" in c["title"] for c in listing["chapters"])
+
+
+class TestPublicNowIsASeparateBranch:
+    """`publishAt` and `privacyStatus: public` are mutually exclusive.
+
+    `publishAt` is only meaningful on a private video; sending it alongside
+    `public` is rejected by the API. So the two are one branch and not a merge
+    of two dicts, and the default stays scheduled: a film that uploads public
+    at 3am has no premiere and no chance to be pulled. `--now` is for a film a
+    human is watching go out.
+    """
+
+    @staticmethod
+    def _body(publish_at):
+        """The body `upload` builds, without touching the network."""
+        import sys
+        from datetime import datetime, timezone
+        from pathlib import Path
+        from unittest import mock
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        import publish_doc
+
+        listing = {"title": "T", "description": "D", "tags": ["a"],
+                   "categoryId": "27", "defaultLanguage": "en",
+                   "defaultAudioLanguage": "en", "license": "youtube",
+                   "embeddable": True, "publicStatsViewable": True,
+                   "selfDeclaredMadeForKids": False,
+                   "containsSyntheticMedia": True}
+        captured = {}
+
+        class FakeRequest:
+            def next_chunk(self):
+                return None, {"id": "VID"}
+
+        class FakeVideos:
+            def insert(self, part, body, media_body):
+                captured.update(body)
+                return FakeRequest()
+
+        class FakeYT:
+            def videos(self):
+                return FakeVideos()
+
+        with mock.patch.object(publish_doc, "MediaFileUpload", create=True):
+            with mock.patch("googleapiclient.http.MediaFileUpload",
+                            lambda *a, **k: None):
+                publish_doc.upload(FakeYT(), listing, Path("x.mp4"), publish_at)
+        return captured
+
+    def test_scheduled_is_private_with_a_publish_at(self):
+        from datetime import datetime, timezone
+
+        when = datetime(2026, 11, 2, 13, 0, tzinfo=timezone.utc)
+        status = self._body(when)["status"]
+        assert status["privacyStatus"] == "private"
+        assert status["publishAt"] == "2026-11-02T13:00:00Z"
+
+    def test_now_is_public_with_no_publish_at(self):
+        status = self._body(None)["status"]
+        assert status["privacyStatus"] == "public"
+        assert "publishAt" not in status, (
+            "publishAt alongside public is rejected by the API")
+
+    def test_both_carry_the_declarations_either_way(self):
+        from datetime import datetime, timezone
+
+        for when in (None, datetime(2026, 11, 2, 13, 0, tzinfo=timezone.utc)):
+            status = self._body(when)["status"]
+            assert status["containsSyntheticMedia"] is True, (
+                "the narration is synthesised and the declaration must "
+                "survive both branches")
+            assert status["selfDeclaredMadeForKids"] is False
+
+    def test_the_weekly_runner_does_not_pass_now(self):
+        """There is no undo for an audience that has already seen it."""
+        from pathlib import Path
+
+        runner = Path("scripts/run_weekly.sh").read_text()
+        assert "--now" not in runner, (
+            "the unattended weekly run must never publish immediately")
+
+
+class TestTheListingKnowsWhatTheFilmIsAbout:
+    """`tags` was fifteen hardcoded Easter Island strings.
+
+    Everything else in `build` is derived from the project's own artifacts.
+    `tags` was not, and `build` is what the weekly run calls for every film —
+    so the next film would have published somebody else's subject in its own
+    metadata, and `entities` went to the ledger empty, which is what the topic
+    picker reads to avoid making the same film twice.
+
+    The source is the script's own `pronunciation_guides`: the script stage
+    writes one for every name the narrator could not read cold, so the list is
+    by construction the unusual named things the film discusses. A regex over
+    capitalised words cannot do this — `rongorongo`, `moai` and `tangata manu`
+    are lower case and each is the subject of an act.
+    """
+
+    @staticmethod
+    def _script(guides, title="A Film About Things"):
+        return {"title": title,
+                "sections": [{"id": "act1", "text": "Some narration.",
+                              "pronunciation_guides": guides}]}
+
+    def test_the_guides_are_the_subjects(self):
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from build_listing import subjects
+
+        got = subjects(self._script(
+            [{"word": "rongorongo", "phonetic": "x"},
+             {"word": "tangata manu", "phonetic": "y"}]), {})
+        assert "rongorongo" in got and "tangata manu" in got, got
+
+    def test_a_lower_case_subject_survives(self):
+        """The thing a capitalised-word regex would have dropped."""
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from build_listing import subjects
+
+        assert "moai" in subjects(
+            self._script([{"word": "moai", "phonetic": "MOH-eye"}]), {})
+
+    def test_the_title_names_a_subject_without_a_guide(self):
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from build_listing import subjects
+
+        got = subjects(self._script([], title="Easter Island: The Open Files"),
+                       {})
+        assert "Easter Island" in got, got
+
+    def test_non_ascii_names_are_counted_not_dropped(self):
+        """INJECTED: json.dumps escapes them by default, and the default sorted
+        this film's third-most-discussed person last."""
+        import json as _json
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        from build_listing import subjects
+
+        script = self._script([{"word": "Eugène Eyraud", "phonetic": "x"},
+                               {"word": "Zeta", "phonetic": "y"}])
+        script["sections"][0]["text"] = "Eugène Eyraud " * 5 + "Zeta"
+        assert _json.dumps(script).count("Eugène") == 0, (
+            "the escaping this test is about has changed")
+        got = subjects(script, {})
+        assert got[0] == "Eugène Eyraud", got
+
+    def test_a_script_with_no_subjects_refuses_rather_than_shipping_generic(self):
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        import build_listing
+
+        assert build_listing.MIN_SUBJECT_TAGS >= 3
+        src = Path("scripts/build_listing.py").read_text()
+        assert "no subject in its metadata" in src
+        assert "raise SystemExit" in src
+
+    def test_the_generic_tags_cannot_be_squeezed_out(self):
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path("scripts").resolve()))
+        import build_listing
+
+        named = [f"Subject {i}" for i in range(40)]
+        keep = [t for t in build_listing.GENERIC_TAGS
+                if t.lower() not in {n.lower() for n in named}]
+        tags = named[:build_listing.MAX_TAGS - len(keep)] + keep
+        assert len(tags) == build_listing.MAX_TAGS
+        for t in build_listing.GENERIC_TAGS:
+            assert t in tags
+
+    def test_no_easter_island_string_is_hardcoded_any_more(self):
+        """The whole point: build() is called for every film."""
+        from pathlib import Path
+
+        src = Path("scripts/build_listing.py").read_text()
+        body = src[src.index("def build(project"):]
+        for leaked in ("Easter Island", "rongorongo", "Rapa Nui", "Orongo",
+                       "Rano Raraku", "Jared Diamond"):
+            assert leaked not in body, (
+                f"{leaked!r} is hardcoded in build(); the next film would "
+                f"publish it as its own subject")

@@ -181,6 +181,91 @@ def music_lines(ed: dict) -> list[str]:
     return out
 
 
+#: Tags every film of this kind carries, whatever it is about. Deliberately
+#: short: a tag that is true of everything tells YouTube nothing, and the
+#: subject tags below are the ones doing work.
+GENERIC_TAGS = ["documentary", "history"]
+
+#: How many tags YouTube will take before it starts dropping them.
+MAX_TAGS = 15
+
+#: Below this many SUBJECT tags the derivation has failed and the listing is
+#: refused. Three is enough to be sure the script carried named subjects at
+#: all; the hand-written list this replaced had twelve.
+MIN_SUBJECT_TAGS = 3
+
+
+def subjects(script: dict, brief: dict) -> list[str]:
+    """The named things this film is about, most-mentioned first.
+
+    FROM THE SCRIPT'S OWN PRONUNCIATION GUIDES, which is the best source in
+    the project and the only one that is authored rather than inferred: the
+    script stage writes a guide for every name the narrator could not be
+    expected to read cold, so the list is, by construction, the unusual named
+    things the film discusses. A regex over capitalised words cannot do this
+    — `rongorongo`, `moai` and `tangata manu` are all lower case, and all
+    three are subjects of whole acts.
+
+    The title's own proper nouns are always included: a film is about what it
+    says it is about.
+
+    Ordered by how often the script says each one, which puts subjects above
+    incidental vocabulary without anybody having to decide which is which. On
+    easter-island that is Orongo 12, Routledge 7, rongorongo 5 and Eyraud 5
+    at the top, against taro 2 and boustrophedon 1 at the bottom.
+
+    THIS REPLACED A HARDCODED LIST. `build` is called by the weekly run for
+    every film and everything else in it is derived from the project's own
+    artifacts; `tags` was fifteen Easter Island strings, so the next film
+    would have published somebody else's subject in its own metadata.
+    """
+    import re
+
+    # The WHOLE script artifact, and `ensure_ascii=False` matters: the default
+    # escapes non-ASCII, so counting never matched "Eugène Eyraud" and sorted
+    # the film's third-most-discussed person last.
+    #
+    # The whole artifact rather than the narration alone, because the
+    # narration is 17,000 characters and almost every name appears in it once
+    # or twice — the ranking degenerates to alphabetical and drops
+    # `rongorongo` and `tangata manu` off the end of a 15-tag list. The cues,
+    # the speaker directions and the source refs are where a subject that
+    # drives the film shows up repeatedly, which is the signal wanted: on
+    # easter-island it gives Orongo 12, Routledge 7, rongorongo 5, Eyraud 5.
+    #
+    # Every pronunciation-guide word gets one free mention from the guide
+    # itself. That is uniform across them, so it does not change the order.
+    blob = json.dumps(script, ensure_ascii=False).lower()
+    found: dict[str, str] = {}
+
+    for section in script.get("sections", []):
+        for guide in section.get("pronunciation_guides") or []:
+            word = (guide.get("word") or "").strip()
+            if len(word) >= 3:
+                found.setdefault(word.lower(), word)
+
+    # The title and the brief's topic, for the place-names a narrator reads
+    # without help — "Easter Island" needs no guide and is the subject.
+    for text in (script.get("title", ""), brief.get("topic", "") or ""):
+        for match in re.finditer(
+                r"\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)", text):
+            phrase = match.group(1).strip()
+            if len(phrase) >= 4 and phrase.lower() not in STOPWORD_PHRASES:
+                found.setdefault(phrase.lower(), phrase)
+
+    return sorted(found.values(),
+                  key=lambda name: (-blob.count(name.lower()), name.lower()))
+
+
+#: Phrases that match the proper-noun shape and name nothing.
+STOPWORD_PHRASES = {
+    "the part nobody can explain", "part nobody can explain", "nobody",
+    "the", "a", "an", "four", "both", "which", "here", "none", "whatever",
+    "neither", "published", "carving", "work", "settlement", "satellite",
+    "earlier", "between", "nearly", "almost",
+}
+
+
 def build(project: str) -> dict:
     proj = ROOT / "projects" / project
     art, aud = proj / "artifacts", proj / "assets" / "audio"
@@ -225,10 +310,22 @@ def build(project: str) -> dict:
     ]
     description = "\n".join(parts)
 
-    tags = ["Easter Island", "Rapa Nui", "moai", "Rano Raraku", "rongorongo",
-            "birdman", "Orongo", "archaeology", "Polynesia", "ancient history",
-            "collapse", "Jared Diamond", "Katherine Routledge", "documentary",
-            "ancient engineering"]
+    named = subjects(script, brief)
+    if len(named) < MIN_SUBJECT_TAGS:
+        raise SystemExit(
+            f"only {len(named)} subject(s) could be derived for {project}: "
+            f"{named}. The script carries no pronunciation guides and its "
+            f"title names nothing, so the listing would publish a film with "
+            f"no subject in its metadata. Fix the script stage rather than "
+            f"shipping generic tags.")
+    # The generic tags take the LAST slots rather than the leftover ones, so
+    # a film with more than thirteen named subjects does not squeeze them out
+    # entirely. Subjects first because they are what YouTube matches on; the
+    # broad two are there so the film is findable by someone browsing a kind
+    # rather than a subject.
+    keep = [t for t in GENERIC_TAGS if t.lower() not in
+            {n.lower() for n in named}]
+    tags = named[:MAX_TAGS - len(keep)] + keep
 
     return {
         "title": script["title"],
@@ -245,6 +342,7 @@ def build(project: str) -> dict:
         "containsSyntheticMedia": True,
         "playlist": "Documentaries",
         "chapters": chaps,
+        "entities": named,
         "pinned_comment": block,
         "attribution": att,
     }
