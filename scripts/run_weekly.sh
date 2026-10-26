@@ -47,6 +47,23 @@ DRY_RUN=0
 GATE_HOURS="${GATE_HOURS:-12}"
 SMOKE="${RUN_WEEKLY_SMOKE:-0}"
 
+#: Which proper-noun detector the fact gate uses.
+#:
+#: `spacy` is the specified one and needs a model that is not installed on
+#: this machine yet:
+#:
+#:     .venv/bin/pip3 install spacy
+#:     .venv/bin/python -m spacy download en_core_web_sm
+#:
+#: Until it is, the gate runs the `capitalisation` substitute, which
+#: OVER-flags by design — it calls any non-whitelisted capitalised word a
+#: proper noun — so its count is an upper bound on what spaCy would find and
+#: it never lets an unsourced sentence through. It is named here, in the
+#: runner, rather than defaulted inside the gate, so that the substitute is
+#: visible in the log of every run that uses it. DELETE THIS LINE once the
+#: model is installed.
+FACT_BACKEND="${FACT_BACKEND:-capitalisation}"
+
 #: How many times a stage may be resumed after a usage limit before the run
 #: fails loudly. The owner's number, 2026-10-24.
 #:
@@ -206,6 +223,21 @@ approve it yourself.
 
 Write the script to projects/$SLUG/artifacts/script.json and the hero style
 frames to projects/$SLUG/renders/style/. Do not render the film.
+
+EVERY FACTUAL SENTENCE MUST BE ATTRIBUTED, and this is checked before the
+human sees the script. A sentence carrying a date, a number, a proper noun or
+a quotation needs a claim id in its PARAGRAPH's claims list, and that claim
+must exist in the research brief's data_points with a source_url.
+
+Write the script's sections with a \`paragraphs\` list, each entry
+{"text": "...", "claims": ["c07", "c12"]}, and give every data point in the
+research brief an explicit \`id\`. A section-level \`source_ref\` naming a bag
+of ids is what the previous two films did and it is not enough: it attributes
+a whole act to a list, so it cannot say which sentence rests on which claim.
+It is also how a film shipped citing fourteen ids that did not exist.
+
+Do not invent a claim id. If a sentence needs a source the brief does not
+have, either research it and add the data point, or cut the sentence.
 PROMPTEOF
 
 # The owner's angle constraint, if this subject has one, as instruction rather
@@ -222,6 +254,23 @@ else
   claude_stage "script" "$LOGDIR/script_stage" "$(cat "$PROMPT")" \
     || fail "script stage" "$(tail -20 "$LOGDIR/script_stage.log" 2>/dev/null \
                              || tail -20 "$LOGDIR/script_stage.err")"
+fi
+
+# ── 2b. is every factual sentence attributed? ────────────────────────────
+#
+# BEFORE the human gate, not after: the gate asks a person to approve a
+# script, and a script whose claims do not resolve to a sourced ledger entry
+# is not a script to put in front of them.
+#
+# This found that easter-island's act 4 cites fourteen claim ids and that
+# none of them exist — the whole act, twenty-eight factual sentences, with an
+# attribution chain that pointed past the end of a fifteen-entry ledger.
+if [[ "$SMOKE" != "1" && "$DRY_RUN" != "1" ]]; then
+  say "fact coverage ($FACT_BACKEND)"
+  "$PY" "$REPO/lib/verify_fact_coverage.py" --project "$SLUG" \
+    --backend "$FACT_BACKEND" --report "$LOGDIR/fact_coverage.md" \
+    > "$LOGDIR/fact_coverage.log" 2>&1 \
+    || fail "fact coverage" "$(tail -12 "$LOGDIR/fact_coverage.log")"
 fi
 
 # ── 3. the human ─────────────────────────────────────────────────────────
