@@ -7226,20 +7226,25 @@
   "strategy": "one bed per two acts, crossfaded on the act boundary under the fade through black",
   "crossfade_seconds": 2.5,
   "levels": {
-   "under_speech_lufs": -30.0,
-   "_level_authority": "audio.music_under_speech_lufs in the playbook, decided by ear on 2026-10-21. lib/mix_audio.py reads it from there; this restates it.",
-   "gap_lufs": -26.0,
+   "under_speech_lufs": -33.0,
+   "_level_authority": "audio.music_under_speech_lufs in the playbook. REVISED 2026-10-25 from -30 to -33 after the owner's full watch: \"the bed must stay in the background the whole film\". -30 was decided on one act-2 demo; -33 on the whole film.",
+   "gap_rise_db_max": 3.0,
+   "gap_lufs": -30.0,
    "gap_seconds": 1.5,
-   "boundary_lufs": -22.0,
-   "duck_attack_ms": 150,
-   "duck_release_ms": 900,
-   "eq": "highpass 120 Hz x2, lowpass 7 kHz x2, -4 dB at 3 kHz (Q~1.4)",
-   "ducking": "explicit gain envelope, not sidechaincompress"
+   "boundary_lufs": -27.0,
+   "rise_ramp_seconds": 1.5,
+   "dezipper_ms": 30,
+   "eq": "highpass 120 Hz x2, high shelf -6 dB from 3.5 kHz (Q 0.7), lowpass 5 kHz x2",
+   "bed_compressor": "2:1, attack 50ms, release 500ms, knee 6 dB, threshold from the bed's own loudness, lowered 3 dB at a time until the range is inside 6 LU",
+   "bed_loudness_range_max_lu": 6.0,
+   "bed_spread_max_lu": 1.5,
+   "ducking": "explicit gain envelope with 1.5s raised-cosine ramps in and out, anticipatory on the way out; not sidechaincompress and no longer a one-pole"
   },
   "brief": "Sparse ambient pads or sustained tones. Elevator-quiet. No melody, no percussion, no swells.",
   "selection": {
    "method": "every track in MUSIC_LIBRARY_DIR measured against the playbook's three criteria by scripts/measure_music.py; see artifacts/music_candidates.json",
-   "not_done": "The playbook also asks for a 20-second audition of the shortlist, EQ'd and levelled as it will sit in the mix. This run is unattended and no audition by ear took place. The choice rests on the measurements alone and this says so."
+   "not_done": "The playbook also asks for a 20-second audition of the shortlist, EQ'd and levelled as it will sit in the mix. This run is unattended and no audition by ear took place. The choice rests on the measurements alone and this says so.",
+   "brightness": "Measured for all 67 tracks on 2026-10-25: lib/music_brightness.py, artifacts/music_brightness.json. Every track passes the 10%-above-4-kHz ceiling, so that gate did not choose these beds; the centroid did."
   },
   "beds": [
    {
@@ -7249,16 +7254,24 @@
      "title_sequence",
      "act1"
     ],
-    "track": "TORSION - Density & Time.mp3",
-    "path": "/Users/mac/wak3up/assets/ambient_sources/TORSION - Density & Time.mp3",
-    "seconds": 673.7,
+    "track": "Spooked - Mini Vandals.mp3",
+    "path": "/Users/mac/wak3up/assets/ambient_sources/Spooked - Mini Vandals.mp3",
+    "seconds": 353.4,
     "measured": {
-     "melodic_movement": 0.0486,
-     "build_db": 3.61,
-     "rhythmic_periodicity": 0.1657
+     "melodic_movement": 0.0202,
+     "build_db": 3.87,
+     "rhythmic_periodicity": 0.0714
     },
     "misses": [],
-    "why": "Meets all three criteria and is long enough to cover the span without a loop seam."
+    "why": "The only other track in the library meeting all three criteria, and long enough to cover act 4 and the outro unlooped. SWAPPED 2026-10-25 with act4_outro, after the owner's full watch reported a high pitch at the start. The two tracks are the only ones in a 67-track library that meet all three movement criteria, so the approved set to choose the softest from has exactly two members. Measured as the segments actually play \u2014 build_bed takes the middle of a track, not its head \u2014 Spooked is 353 Hz against TORSION's 683, and carries 0.73% of its energy above 2 kHz against 1.29%. Both cover their new span unlooped, so the swap costs no loop seam: Spooked is 353.4s against a 320s span, TORSION 673.7s against 273s.",
+    "brightness": {
+     "spectral_centroid_hz": 235.9,
+     "energy_above_4k_pct": 0.1,
+     "energy_above_4k_pct_after_eq": 0.02,
+     "in_film_centroid_hz": 352.6,
+     "in_film_energy_above_2k_pct": 0.73,
+     "note": "whole-track figures, plus the segment that actually plays. They differ because build_bed takes the middle of a track."
+    }
    },
    {
     "name": "act2_act3",
@@ -7277,7 +7290,15 @@
     "misses": [
      "build_db 6.57 >= 5"
     ],
-    "why": "880s covers 620s of film without looping. Misses the build_db preference at 6.57 dB against 5; recorded rather than hidden."
+    "why": "880s covers 620s of film without looping. Misses the build_db preference at 6.57 dB against 5; recorded rather than hidden.",
+    "brightness": {
+     "spectral_centroid_hz": 558.7,
+     "energy_above_4k_pct": 0.14,
+     "energy_above_4k_pct_after_eq": 0.02,
+     "in_film_centroid_hz": 896.3,
+     "in_film_energy_above_2k_pct": 3.16,
+     "note": "whole-track figures, plus the segment that actually plays. They differ because build_bed takes the middle of a track."
+    }
    },
    {
     "name": "act4_outro",
@@ -7285,16 +7306,24 @@
      "act4",
      "outro"
     ],
-    "track": "Spooked - Mini Vandals.mp3",
-    "path": "/Users/mac/wak3up/assets/ambient_sources/Spooked - Mini Vandals.mp3",
-    "seconds": 353.4,
+    "track": "TORSION - Density & Time.mp3",
+    "path": "/Users/mac/wak3up/assets/ambient_sources/TORSION - Density & Time.mp3",
+    "seconds": 673.7,
     "measured": {
-     "melodic_movement": 0.0202,
-     "build_db": 3.87,
-     "rhythmic_periodicity": 0.0714
+     "melodic_movement": 0.0486,
+     "build_db": 3.61,
+     "rhythmic_periodicity": 0.1657
     },
     "misses": [],
-    "why": "The only other track in the library meeting all three criteria, and long enough to cover act 4 and the outro unlooped."
+    "why": "Meets all three criteria and is long enough to cover the span without a loop seam. SWAPPED 2026-10-25 with act4_outro, after the owner's full watch reported a high pitch at the start. The two tracks are the only ones in a 67-track library that meet all three movement criteria, so the approved set to choose the softest from has exactly two members. Measured as the segments actually play \u2014 build_bed takes the middle of a track, not its head \u2014 Spooked is 353 Hz against TORSION's 683, and carries 0.73% of its energy above 2 kHz against 1.29%. Both cover their new span unlooped, so the swap costs no loop seam: Spooked is 353.4s against a 320s span, TORSION 673.7s against 273s.",
+    "brightness": {
+     "spectral_centroid_hz": 512.1,
+     "energy_above_4k_pct": 0.06,
+     "energy_above_4k_pct_after_eq": 0.01,
+     "in_film_centroid_hz": 682.8,
+     "in_film_energy_above_2k_pct": 1.29,
+     "note": "whole-track figures, plus the segment that actually plays. They differ because build_bed takes the middle of a track."
+    }
    }
   ],
   "rejected": []

@@ -1,6 +1,6 @@
 # Film delivery — easter-island — final.mp4
 
-`projects/easter-island/renders/final.mp4` · 36317 frames · 1210.6s · plate `remotion-composer/out/easter-island/plate.mp4`
+`projects/easter-island/renders/final.mp4` · 36317 frames delivered of 36317 asked · 1210.6s · plate `remotion-composer/out/easter-island/plate.mp4`
 
 ## Gates
 
@@ -10,7 +10,8 @@
 | frame order | 0 frames out of place, 0 isolated black, correlation with the plate 0.9963 | PASS |
 | plate purity | 0 words legible in the plate pass | PASS |
 | type lock | 143 text-bearing scenes sampled a second apart, 0 with a word in a different place, worst 0.58px | PASS |
-| delivery audio | -16.3 dBFS mean, -14.03 LUFS against the mix's -14.0 (-0.03 dB) | PASS |
+| frame count | 36317 delivered of 36317 asked (0.0s missing) | PASS |
+| delivery audio | -16.9 dBFS mean, -14.01 LUFS against the mix's -14.0 (-0.01 dB) | PASS |
 
 ## Luma map
 
@@ -1227,5 +1228,5 @@ One character per frame, 30 per row — a second a row. `#` is black, `+` under 
  1207.0s |++++++++++++++++++++++++++++++
  1208.0s |++++++++++++++++++++++++++++++
  1209.0s |+++++++++++++++++++++++++#####
- 1210.0s |##
+ 1210.0s |#################
 ```
