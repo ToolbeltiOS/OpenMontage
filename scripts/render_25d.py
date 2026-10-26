@@ -40,12 +40,56 @@ from pathlib import Path
 #: the treatment is replacing and zero for a motionless photograph.
 DEFAULT_HEIGHT = 0.08
 
-#: How much of the relief reads as parallax rather than as scale.
+#: How much of the relief reads as parallax rather than as scale, at the
+#: start of the cut.
 DEFAULT_ISOMETRIC = 0.30
+
+#: How far the isometric opens over the cut. THIS IS WHERE THE PARALLAX
+#: COMES FROM, and a zoom alone has none.
+#:
+#: `steady` pins a depth plane and `zoom` scales about it, so a push with
+#: nothing else moving is a 2D zoom that happens to own a depth map.
+#: Measured on the moai quarry still, three anchors at one column — a near
+#: statue, the far hillside, and the middle distance — move over an 8s push:
+#:
+#:     zoom only          +30.0  +28.5  +29.0   (1.5 px apart: flat)
+#:     dolly   +0.6       +36.5  +28.5  +31.5
+#:     isometric +0.5     +43.0  +28.5  +33.5   (14.5 px apart)
+#:
+#: 0.35 sits between: the foreground magnifies about a third again as much
+#: as the background, which reads as a camera moving in rather than a
+#: picture being scaled, and does not turn a documentary still into a
+#: parallax demonstration.
+ISOMETRIC_TRAVEL = 0.35
 
 #: Which depth plane stays put while the rest moves around it. 0.5 pins the
 #: middle distance, which is where a documentary still's subject usually is.
 DEFAULT_STEADY = 0.5
+
+
+def as_depth(array):
+    """The depth map in a form the shader will actually load.
+
+    A 16-bit single-channel array is SILENTLY IGNORED. ShaderTexture takes
+    it without complaint, the sampler comes back as the zero texture, and the
+    render proceeds as a flat 2D zoom with a depth map that was never read.
+    The only sign is one line on the first frame — "texture unloadable ...
+    using zero texture" — which scrolls past in a progress bar.
+
+    Measured: with a uint16 map, a real depth map and a FLAT one produce
+    byte-identical video. uint8 and float32 both work; float32 is used here
+    because it keeps the 16 bits the cache stored.
+    """
+    import numpy as np
+
+    a = np.asarray(array)
+    if a.ndim == 3:
+        a = a[:, :, 0]
+    a = a.astype(np.float32)
+    span = float(a.max()) - float(a.min())
+    if span > 0:
+        a = (a - float(a.min())) / span
+    return a
 
 
 def crop_to_aspect(array, width: int, height: int):
@@ -83,9 +127,16 @@ def build(move: str, amount: float, seconds: float):
             self.state.steady = DEFAULT_STEADY
             if move == "push":
                 self.state.zoom = 1.0 + amount * t
+                self.state.isometric = DEFAULT_ISOMETRIC + ISOMETRIC_TRAVEL * t
             elif move == "pull":
                 self.state.zoom = 1.0 + amount * (1.0 - t)
+                self.state.isometric = (DEFAULT_ISOMETRIC
+                                        + ISOMETRIC_TRAVEL * (1.0 - t))
             elif move == "drift":
+                # A lateral camera move is already parallax: the near plane
+                # sweeps against the far one, and it sweeps the OTHER way,
+                # which is what makes a drift read as depth rather than as a
+                # pan. Measured, near and far separate by 5.5 px at 0.20.
                 self.state.offset = (amount * (t - 0.5) * 2.0, 0.0)
                 self.state.zoom = 1.0 + amount * 0.25
             else:                                   # lock: relief, no move
@@ -115,7 +166,7 @@ def main() -> int:
     if image.ndim == 3 and image.shape[2] == 4:
         image = image[:, :, :3]
     image = crop_to_aspect(image, args.width, args.height)
-    depth = crop_to_aspect(depth, args.width, args.height)
+    depth = as_depth(crop_to_aspect(depth, args.width, args.height))
 
     scene = build(args.move, args.amount, args.seconds)()
     scene.input(image=image, depth=depth)
