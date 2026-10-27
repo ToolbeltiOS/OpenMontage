@@ -11,6 +11,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { EXPO_IN_OUT } from "./design/system";
+import { Illustration } from "./scenes/Illustration";
 import { loadSpaceGrotesk } from "./lib/localFonts";
 import { TextCard } from "./components/TextCard";
 import { StatCard } from "./components/StatCard";
@@ -268,6 +269,8 @@ export interface Cut {
    */
   mapPlate?: string;
   mapPlateCredit?: string;
+  /** illustration: what the generated plate depicts, for the strip */
+  subject?: string;
   layers?: any[];
   reveals?: any[];
   labels?: any[];
@@ -811,6 +814,11 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
       driftFrom={cut.driftFrom} driftTo={cut.driftTo}
       annotations={cut.annotations} measurement={cut.measurement}
       cutaway={cut.cutaway} caption={cut.caption} title={cut.title} dim={cut.dim} {...chrome} />);
+  }
+  if (cut.type === "illustration" && cut.backgroundImage) {
+    return (<Illustration image={cut.backgroundImage} subject={cut.subject ?? cut.title ?? ""}
+      parallax={cut.parallax} parallaxFrom={cut.parallaxFrom} parallaxTo={cut.parallaxTo}
+      caption={cut.caption} title={cut.title} {...chrome} />);
   }
   if (cut.type === "schematic" && cut.layers) {
     return (<Schematic viewBox={cut.viewBox} layers={cut.layers} reveals={cut.reveals}
