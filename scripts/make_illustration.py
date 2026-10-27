@@ -77,9 +77,11 @@ def main() -> int:
     ap.add_argument("--estimate", action="store_true")
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--i-accept-cost", type=float, default=None,
-                    metavar="USD_PER_IMAGE",
-                    help="the per-image price you accept. Required before "
-                         "anything is generated on a paid backend.")
+                    metavar="USD_PER_FILM",
+                    help="the per-FILM budget you accept, in dollars. The "
+                         "run is refused if the estimate exceeds it. "
+                         "Required before anything is generated on a paid "
+                         "backend.")
     args = ap.parse_args()
 
     if args.list:
@@ -103,17 +105,32 @@ def main() -> int:
         return 0
 
     price = PRICES[args.backend]
+    total = price * n
     if price > 0:
         if args.i_accept_cost is None:
             print("\n  STOPPED. This backend charges per image and nothing "
                   "has been generated.")
-            print(f"  Re-run with --i-accept-cost {price} to proceed, or use "
+            print(f"  This run would cost ${total:.4f}. Re-run with "
+                  f"--i-accept-cost <your per-film budget> to proceed, or "
                   f"--backend comfyui-local for the $0 route.")
             return 2
-        if abs(args.i_accept_cost - price) > 1e-9:
-            print(f"\n  STOPPED. You accepted ${args.i_accept_cost}/image and "
-                  f"the recorded price is ${price}/image. Nothing generated.")
+        # A PER-FILM CAP, NOT A PER-IMAGE PRICE. The thing worth bounding is
+        # what a film costs, because the image count is what grows: a cap of
+        # $0.05 buys about sixteen schnell images or two dev ones, and the
+        # script says which rather than leaving it to be worked out after
+        # the bill.
+        if total > args.i_accept_cost + 1e-9:
+            print(f"\n  STOPPED. {n} image(s) on {args.backend} is "
+                  f"${total:.4f}, over the ${args.i_accept_cost:.4f} cap "
+                  f"for this film. Nothing generated.")
+            affordable = int(args.i_accept_cost // price) if price else 0
+            print(f"  At ${price:.4f}/image the cap affords {affordable} "
+                  f"image(s), or use a cheaper backend: "
+                  + ", ".join(f"{b} (${PRICES[b]:.4f})"
+                              for b in sorted(PRICES, key=PRICES.get)
+                              if PRICES[b] < price) or "none cheaper")
             return 2
+        print(f"\n  Within budget: ${total:.4f} of ${args.i_accept_cost:.4f}.")
         if not os.environ.get("FAL_KEY"):
             print("\n  STOPPED. FAL_KEY is not configured, so this backend "
                   "cannot be called at all.")
