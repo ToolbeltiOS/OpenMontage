@@ -52,9 +52,17 @@ DEPTH_PY = ROOT / ".venv-depth" / "bin" / "python"
 HEADLESS = {"WINDOW_BACKEND": "headless"}
 
 #: A still whose content is TEXT is never given a 2.5D treatment. A depth
-#: model reads a page as a surface at one distance with noise on it, and the
-#: displacement turns straight lines of type into waves. The same rule keeps
-#: Real-ESRGAN off these.
+#: model reads engraved line work as a surface that is not there, and
+#: displacing it bends the lettering and, on a map, the coastline -- which
+#: is the content, so that is a factual distortion and not a look.
+#:
+#: THIS USED TO BE AN ASSET CLASS AND THE GUARD DID NOTHING. No stage sets
+#: `text_bearing`: the classifier runs scale and occupancy contests plus a
+#: luma split, giving vast / intimate / dense / empty / bright, and has no
+#: notion of text. So every document in the bank was eligible, and two are
+#: in the film -- c005 is a 1786 chart of the island, c081 and c124 an
+#: engraved "EASTER ISLAND POLITICAL" figure carrying an authored push and
+#: pull. It is now measured per asset instead. See lib/text_bearing.py.
 NEVER = ("text_bearing",)
 
 FPS = 30
@@ -140,6 +148,20 @@ def eligible(cut: dict) -> str | None:
     # and a lock has no camera move for it to move through: the clip would be
     # a static frame that cost a render, and `lib/verify_depth_parallax.py`
     # would fail it correctly, because nothing in it has any parallax.
+    # MEASURED, not looked up. The asset_class above never carries it.
+    path = Path(image)
+    if not path.is_absolute():
+        path = ROOT / path
+    if path.exists():
+        import lib.text_bearing as tb
+
+        document, words, via = tb.is_text_bearing_asset(path)
+        if document:
+            return (f"text-bearing: {words} legible words (floor "
+                    f"{tb.MIN_WORDS}"
+                    + (f", from its {via}" if via != "self" else "")
+                    + ") — a depth model would bend the lettering")
+
     move, amount, pan = camera_of(cut)
     if move == "lock":
         return "authored as a lock (no move to carry parallax)"
