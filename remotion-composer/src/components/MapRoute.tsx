@@ -224,12 +224,18 @@ export const MapRoute: React.FC<MapRouteProps> = ({
             as a hairline so the route has an edge to read against. */}
         <path
           d={landPath}
-          fill={basemap ? "none" : "#16161B"}
-          stroke={SYS.rule}
+          fill={basemap || mapPlate ? "none" : "#16161B"}
+          /* ON A HISTORICAL PLATE THE MODERN COASTLINE IS NOT DRAWN AT ALL.
+             The plate has its own coastline, surveyed by hand two centuries
+             earlier, and the two do not coincide. Drawn together they read
+             as a registration error -- and worse, as an assertion that the
+             old survey was wrong, which is not what the cut is saying. The
+             plate is the map; the route is the only thing added to it. */
+          stroke={mapPlate ? "none" : SYS.rule}
           strokeWidth={basemap ? 0.8 : 1}
-          opacity={basemap ? 0.65 : 1}
+          opacity={mapPlate ? 0 : basemap ? 0.65 : 1}
         />
-        {borderPath ? (
+        {borderPath && !mapPlate ? (
           <path d={borderPath} fill="none" stroke={SYS.rule} strokeWidth={0.6} opacity={0.5} />
         ) : null}
         <path

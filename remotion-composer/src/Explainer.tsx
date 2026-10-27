@@ -261,6 +261,13 @@ export interface Cut {
   parallaxTo?: number;
   driftFrom?: number;
   driftTo?: number;
+  /**
+   * A historical map plate under the route, with its credit. Written by
+   * `lib/map_plate.py`, which also records the licence, the attribution,
+   * the source and the reason on the cut — see CUT_FIELDS there.
+   */
+  mapPlate?: string;
+  mapPlateCredit?: string;
   layers?: any[];
   reveals?: any[];
   labels?: any[];
@@ -811,6 +818,7 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
   }
   if (cut.type === "map_route" && cut.route) {
     return (<MapRoute route={cut.route} markers={cut.markers} center={cut.center}
+      mapPlate={cut.mapPlate} mapPlateCredit={cut.mapPlateCredit}
       scale={cut.scale} draw_seconds={cut.draw_seconds} draw_at={cut.draw_at}
       distance_callout={cut.distance_callout} title={cut.title} caption={cut.caption}
       arc={cut.arc} {...chrome} />);
