@@ -83,19 +83,25 @@ PROVIDERS = {
 #: 12 textures. The name on the left is what a component asks for; the
 #: ambientCG id on the right is what it resolves to.
 TEXTURES = {
-    "aged-paper-1": "Paper006",
-    "aged-paper-2": "Paper005",
-    "aged-paper-3": "Paper001",
-    "parchment": "Paper003",
-    "sandstone": "Bricks084",
+    "aged-paper-1": "Paper006",     # brown kraft
+    "aged-paper-2": "Paper001",     # smooth white
+    "aged-paper-3": "Paper003",     # crumpled white
+    "parchment": "Paper005",        # tan, creased — the one that reads aged
+    "sandstone": "Rock060",         # pale tan ROCK, not masonry
     "granite": "Granite002A",
-    "basalt": "Rock064",
+    "basalt": "Rock035",            # near-black, flecked
     "sand": "Ground054",
     "slate": "RoofingTiles003",
-    "rusted-iron": "Metal063",
+    "rusted-iron": "Metal041B",     # visible rust, not clean steel
     "linen": "Fabric086",
-    "vellum": "Leather037",
+    "vellum": "Leather035D",        # pale cream, skin-like
 }
+#: THE NAME IS THE CONTRACT, because components ask for a texture by name
+#: and nobody looks at the file. The first mapping was made from search
+#: results without looking at them, and shipped a BRICK WALL as "sandstone"
+#: behind a pyramid section, mossy cobbles as "basalt", clean steel as
+#: "rusted-iron" and flat brown leather as "vellum". Every id above was
+#: chosen from a rendered contact sheet of candidates.
 
 #: 4 HDRIs for model_orbit lighting.
 HDRIS = {
@@ -136,6 +142,20 @@ NOT_A_CONTRIBUTOR = {"badges"}
 
 #: Contributors the licence file names as CC0 rather than CC BY 3.0.
 GAME_ICONS_CC0 = {"viscious-speed", "zeromancer"}
+
+#: Tokens that mark a glyph as fantasy or video-game furniture rather than
+#: something a documentary would draw. game-icons.net is a GAME icon set, so
+#: a theme match alone returns "death-star" under astronomy, "boulder-dash"
+#: under stone and "black-knight-helm" under ships. The themes are right and
+#: the names are not.
+GAME_FLAVOURED = {
+    "death", "demon", "devil", "dragon", "elf", "orc", "goblin", "troll",
+    "wizard", "witch", "magic", "magical", "spell", "rune", "mana", "zombie",
+    "undead", "skeleton", "vampire", "ghost", "monster", "beast", "alien",
+    "laser", "cyber", "robot", "mech", "sci", "fi", "space", "star-wars",
+    "knight", "paladin", "barbarian", "ninja", "samurai", "pirate",
+    "dash", "dungeon", "quest", "rpg", "level", "boss", "power-up",
+}
 
 #: Roughly how many glyphs to keep in total. The themes are sampled evenly
 #: rather than first-come, so one prolific theme cannot crowd out the rest.
@@ -266,6 +286,35 @@ def game_icons_authors() -> dict[str, str]:
     return out
 
 
+def recolourable(svg: bytes) -> bytes:
+    """A game-icons tile turned into a glyph that takes the film's colour.
+
+    THE FILES ARE NOT TRANSPARENT. Each is a 512x512 tile with an opaque
+    background path -- `<path d="M0 0h512v512H0z"/>`, black by default --
+    and the icon drawn over it in `fill="#fff"`. Dropped into a frame that
+    is a black square with a white mark in it, and no CSS can recolour it:
+    masking needs alpha and there is none.
+
+    So the background path is removed and the icon's fill is set to
+    `currentColor`, which is what Lucide already does and what lets one
+    `color` rule tint every glyph in the film.
+
+    This is an ADAPTATION. CC BY 3.0 permits it with attribution, and the
+    manifest records that the file was modified, because a recipient should
+    not have to diff it against the original to find out.
+    """
+    import re
+
+    text = svg.decode("utf-8", "replace")
+    # the full-canvas background rect, however the viewBox is sized
+    text = re.sub(r'<path d="M0 0h(\d+)v(\d+)H0z"\s*/>', "", text, count=1)
+    text = text.replace('fill="#fff"', 'fill="currentColor"')
+    if "currentColor" not in text:
+        # no explicit white fill: the icon inherits, so declare it on the root
+        text = text.replace("<svg ", '<svg fill="currentColor" ', 1)
+    return text.encode("utf-8")
+
+
 def glyphs(dry: bool) -> list[dict]:
     """game-icons, from the repository archive -- one request, not 150."""
     out, dest = [], LIB / "glyphs"
@@ -285,8 +334,17 @@ def glyphs(dry: bool) -> list[dict]:
                  and Path(n).parts[1] not in NOT_A_CONTRIBUTOR]
         for theme, terms in GLYPH_THEMES.items():
             for n in names:
-                stem = Path(n).stem.lower()
-                if any(t in stem for t in terms):
+                # WHOLE TOKENS, NOT SUBSTRINGS. A substring match put
+                # "american-football-helmet" in the ships theme (it contains
+                # "helm") and "anarchy" in ancient sites (it contains
+                # "arch"). The names are hyphen-separated words, so they are
+                # matched as words, with a plural allowed because the themes
+                # are written in the singular and the icons are not
+                # ("ancient-columns" for "column").
+                tokens = set(Path(n).stem.lower().split("-"))
+                if tokens & GAME_FLAVOURED:
+                    continue
+                if any(t in tokens or f"{t}s" in tokens for t in terms):
                     picked[theme].append(n)
         per = max(1, GLYPH_TARGET // len(GLYPH_THEMES))
         for theme, found in picked.items():
@@ -303,12 +361,15 @@ def glyphs(dry: bool) -> list[dict]:
                 stem = Path(n).stem
                 sub = dest / theme
                 sub.mkdir(parents=True, exist_ok=True)
-                (sub / f"{stem}.svg").write_bytes(z.read(n))
+                (sub / f"{stem}.svg").write_bytes(recolourable(z.read(n)))
                 e = entry("game-icons", f"{theme}/{stem}", sub / f"{stem}.svg",
                           f"https://game-icons.net/1x1/{slug}/{stem}.html",
                           attribution=f"{author} (game-icons.net)",
                           kind="glyph", theme=theme, contributor=author,
-                          contributor_slug=slug)
+                          contributor_slug=slug,
+                          modified="background path removed, fill set to "
+                                   "currentColor so the glyph takes the "
+                                   "film's colour")
                 if cc0:
                     e["licence"] = "CC0 1.0"
                 guard(e)
@@ -385,7 +446,53 @@ def main() -> int:
          "assets": sorted(by_name.values(), key=lambda a: a["path"])},
         indent=1) + "\n")
     print(f"\n  manifest: {len(by_name)} assets -> {path.relative_to(ROOT)}")
+    write_glyph_index(sorted(by_name.values(), key=lambda a: a["path"]))
     return 0
+
+
+#: Where the generated glyph index goes. The components need a name -> path
+#: map at build time, and TypeScript cannot read the manifest out of
+#: `public/` while compiling, so it is emitted as a module.
+GLYPH_INDEX = ROOT / "remotion-composer" / "src" / "design" / "glyphIndex.ts"
+
+
+def write_glyph_index(assets: list[dict]) -> None:
+    """Emit the name -> published path map the `glyph()` helper reads.
+
+    GENERATED, NEVER EDITED. A hand-kept list of 139 glyph names drifts from
+    the files the moment one is added, and a glyph helper that returns a
+    path to nothing renders an empty box that no gate is looking for.
+    """
+    rows = []
+    for a in assets:
+        if a.get("kind") != "glyph":
+            continue
+        name = Path(a["path"]).stem
+        published = "library/" + str(Path(a["path"]).relative_to(
+            "assets/library")).replace("\\", "/")
+        rows.append((name, published, a["theme"], a["contributor"]))
+    seen: dict[str, tuple] = {}
+    for name, published, theme, who in rows:
+        seen.setdefault(name, (published, theme, who))
+    body = "\n".join(
+        f'  "{n}": "{p}",' for n, (p, _t, _w) in sorted(seen.items()))
+    themes: dict[str, list[str]] = {}
+    for n, (_p, t, _w) in sorted(seen.items()):
+        themes.setdefault(t, []).append(n)
+    by_theme = "\n".join(
+        f'  "{t}": [{", ".join(chr(34) + n + chr(34) for n in ns)}],'
+        for t, ns in sorted(themes.items()))
+    GLYPH_INDEX.parent.mkdir(parents=True, exist_ok=True)
+    GLYPH_INDEX.write_text(
+        "// GENERATED by scripts/fetch_library.py — do not edit.\n"
+        f"// {len(seen)} glyphs from game-icons.net, CC BY 3.0, attributed\n"
+        "// per artist in assets/library/manifest.json.\n\n"
+        "export const GLYPHS: Record<string, string> = {\n"
+        f"{body}\n}};\n\n"
+        "export const GLYPH_THEMES: Record<string, string[]> = {\n"
+        f"{by_theme}\n}};\n")
+    print(f"  glyph index: {len(seen)} names -> "
+          f"{GLYPH_INDEX.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

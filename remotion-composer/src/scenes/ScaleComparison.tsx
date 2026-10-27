@@ -2,6 +2,7 @@ import React from "react";
 import { interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, TRACK, EXPO_OUT, LAYOUT, stagger } from "../design/system";
 import { SceneShell } from "../design/Scene";
+import { Glyph } from "../design/Texture";
 import { T, CountUp } from "../design/Type";
 import { TYPE_CLASS } from "../design/layers";
 
@@ -12,6 +13,8 @@ export interface ScaleItem {
   note?: string;
   /** the subject the film is arguing about — drawn in the accent */
   hero?: boolean;
+  /** a house-library glyph beside the label; see design/glyphIndex.ts */
+  glyph?: string;
 }
 
 export interface ScaleComparisonProps {
@@ -120,6 +123,11 @@ export const ScaleComparison: React.FC<ScaleComparisonProps> = ({
                 >
                   {it.label}
                 </T>
+                {it.glyph ? (
+                  <Glyph name={it.glyph} size={28}
+                         color={it.hero ? SYS.accent : SYS.muted}
+                         style={{ marginTop: 8 }} />
+                ) : null}
                 {it.note ? (
                   <T
                     level="body"

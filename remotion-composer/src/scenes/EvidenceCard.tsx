@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, TRACK, EXPO_OUT, LAYOUT, stagger } from "../design/system";
 import { SceneShell } from "../design/Scene";
+import { TextureName } from "../design/Texture";
 import { T } from "../design/Type";
 import { TYPE_CLASS } from "../design/layers";
 
@@ -16,6 +17,12 @@ const STATUS_LABEL: Record<EvidenceStatus, string> = {
 };
 
 export interface EvidenceCardProps {
+  /**
+   * House-library texture behind the scene. Omit for the default; pass
+   * `null` to go back to the flat ground. See `design/Texture.tsx`.
+   */
+  texture?: TextureName | null;
+
   /** ledger id or running index — the dossier's own numbering */
   index?: string;
   /** the claim, stated once, in the Display level */
@@ -40,6 +47,7 @@ export interface EvidenceCardProps {
  * is what keeps a contested claim from reading like a settled one.
  */
 export const EvidenceCard: React.FC<EvidenceCardProps> = ({
+  texture,
   index,
   claim,
   attribution,
@@ -69,10 +77,26 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
   });
 
   const contested = status === "contested" || status === "unpublished";
-  const chipColor = contested ? SYS.muted : SYS.accent;
+
+  /*
+   * ON PAPER THE CARD'S OWN TYPE HAS TO INVERT TOO, not just the chrome.
+   * `paperInk` flips the frame furniture -- hairline, data strip, caption --
+   * and leaves the card body alone, so the first textured render put the
+   * claim in off-white on off-white parchment and it could not be read at
+   * all. The claim is the one thing on this card that must survive.
+   */
+  const onPaper = texture !== null;
+  const ink = onPaper
+    ? { text: SYS.paperInk, muted: "rgba(36,31,24,0.62)", accent: "#8A5A1E" }
+    : { text: SYS.text, muted: SYS.muted, accent: SYS.accent };
+  const chipColor = contested ? ink.muted : ink.accent;
 
   return (
     <SceneShell
+      {...(texture === null
+        ? {}
+        : { texture: texture ?? "parchment", textureKind: "paper" as const,
+            paperInk: true })}
       actNumber={actNumber}
       actTitle={actTitle}
       sceneIndex={sceneIndex}
@@ -95,7 +119,7 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
         {/* left rail: the ledger number, vertically ruled */}
         <div style={{ width: 150, flexShrink: 0, textAlign: "right", paddingTop: 10 }}>
           {index ? (
-            <T level="data" size={TYPE.data} color={SYS.accent} at={0.1} align="right">
+            <T level="data" size={TYPE.data} color={ink.accent} at={0.1} align="right">
               {index}
             </T>
           ) : null}
@@ -105,13 +129,18 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
               marginLeft: "auto",
               width: 1,
               height: 96 * boxP,
-              background: SYS.rule,
+              background: onPaper ? "rgba(36,31,24,0.30)" : SYS.rule,
             }}
           />
         </div>
 
         <div style={{ flex: 1, maxWidth: 1180 }}>
-          <T level="display" size={TYPE.display} at={0.35} index={0} style={{ lineHeight: 1.18 }}>
+          {/* The claim passed NO colour, so it took `T`'s default — which is
+              the film's off-white, and on parchment that is off-white on
+              off-white. The one line on this card that must be readable was
+              the one line not told what colour to be. */}
+          <T level="display" size={TYPE.display} color={ink.text} at={0.35}
+             index={0} style={{ lineHeight: 1.18 }}>
             {claim}
           </T>
 
@@ -120,14 +149,14 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
               marginTop: 34,
               width: `${100 * boxP}%`,
               height: 1,
-              background: SYS.rule,
+              background: onPaper ? "rgba(36,31,24,0.30)" : SYS.rule,
             }}
           />
 
           <T
             level="data"
             size={TYPE.dataSm}
-            color={SYS.text}
+            color={ink.text}
             at={1.1}
             index={0}
             style={{ marginTop: 24, letterSpacing: "0.06em" }}
@@ -139,7 +168,7 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
             <T
               level="body"
               size={TYPE.bodySm}
-              color={SYS.muted}
+              color={ink.muted}
               at={1.1}
               index={1}
               style={{ marginTop: 10 }}

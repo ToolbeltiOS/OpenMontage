@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-26T21:16:37",
+ "generated": "2026-10-26T21:25:18",
  "providers": {
   "ambientcg": {
    "name": "ambientCG",
@@ -28,21 +28,6 @@
  },
  "assets": [
   {
-   "name": "ancient-sites/anarchy",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/anarchy.html",
-   "path": "assets/library/glyphs/ancient-sites/anarchy.svg",
-   "kind": "glyph",
-   "theme": "ancient-sites",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
    "name": "ancient-sites/ancient-columns",
    "provider": "game-icons.net",
    "provider_key": "game-icons",
@@ -55,7 +40,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/ancient-ruins",
@@ -70,7 +56,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/arch-bridge",
@@ -85,67 +72,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "ancient-sites/archaeopteryx-fossil",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Caro Asercion (game-icons.net)",
-   "url": "https://game-icons.net/1x1/caro-asercion/archaeopteryx-fossil.html",
-   "path": "assets/library/glyphs/ancient-sites/archaeopteryx-fossil.svg",
-   "kind": "glyph",
-   "theme": "ancient-sites",
-   "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
-  },
-  {
-   "name": "ancient-sites/archer",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/archer.html",
-   "path": "assets/library/glyphs/ancient-sites/archer.svg",
-   "kind": "glyph",
-   "theme": "ancient-sites",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "ancient-sites/archive-register",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/archive-register.html",
-   "path": "assets/library/glyphs/ancient-sites/archive-register.svg",
-   "kind": "glyph",
-   "theme": "ancient-sites",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "ancient-sites/archive-research",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/archive-research.html",
-   "path": "assets/library/glyphs/ancient-sites/archive-research.svg",
-   "kind": "glyph",
-   "theme": "ancient-sites",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/ball-pyramid",
@@ -160,7 +88,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/byzantin-temple",
@@ -175,7 +104,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/castle-ruins",
@@ -190,7 +120,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/clock-tower",
@@ -205,7 +136,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
+   "contributor_slug": "caro-asercion",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/colombian-statue",
@@ -220,7 +152,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/column-vase",
@@ -235,7 +168,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/control-tower",
@@ -250,22 +184,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "ancient-sites/dungeon-gate",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/dungeon-gate.html",
-   "path": "assets/library/glyphs/ancient-sites/dungeon-gate.svg",
-   "kind": "glyph",
-   "theme": "ancient-sites",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/egyptian-pyramids",
@@ -280,7 +200,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/egyptian-temple",
@@ -295,7 +216,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/evil-tower",
@@ -310,7 +232,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/gate",
@@ -325,7 +248,104 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ancient-sites/great-pyramid",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/great-pyramid.html",
+   "path": "assets/library/glyphs/ancient-sites/great-pyramid.svg",
+   "kind": "glyph",
+   "theme": "ancient-sites",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ancient-sites/greek-temple",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/greek-temple.html",
+   "path": "assets/library/glyphs/ancient-sites/greek-temple.svg",
+   "kind": "glyph",
+   "theme": "ancient-sites",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ancient-sites/heaven-gate",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/heaven-gate.html",
+   "path": "assets/library/glyphs/ancient-sites/heaven-gate.svg",
+   "kind": "glyph",
+   "theme": "ancient-sites",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ancient-sites/human-pyramid",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/human-pyramid.html",
+   "path": "assets/library/glyphs/ancient-sites/human-pyramid.svg",
+   "kind": "glyph",
+   "theme": "ancient-sites",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ancient-sites/india-gate",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/india-gate.html",
+   "path": "assets/library/glyphs/ancient-sites/india-gate.svg",
+   "kind": "glyph",
+   "theme": "ancient-sites",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ancient-sites/ionic-column",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/ionic-column.html",
+   "path": "assets/library/glyphs/ancient-sites/ionic-column.svg",
+   "kind": "glyph",
+   "theme": "ancient-sites",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ancient-sites/tarot-16-the-tower",
@@ -340,7 +360,8 @@
    "kind": "glyph",
    "theme": "ancient-sites",
    "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
+   "contributor_slug": "caro-asercion",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "animals/barn-owl",
@@ -355,22 +376,8 @@
    "kind": "glyph",
    "theme": "animals",
    "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
-  },
-  {
-   "name": "animals/berries-bowl",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/berries-bowl.html",
-   "path": "assets/library/glyphs/animals/berries-bowl.svg",
-   "kind": "glyph",
-   "theme": "animals",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "caro-asercion",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "animals/bird-cage",
@@ -385,7 +392,8 @@
    "kind": "glyph",
    "theme": "animals",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "animals/bird-house",
@@ -400,7 +408,8 @@
    "kind": "glyph",
    "theme": "animals",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "animals/bird-scepter",
@@ -415,142 +424,8 @@
    "kind": "glyph",
    "theme": "animals",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "animals/boat-fishing",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/boat-fishing.html",
-   "path": "assets/library/glyphs/animals/boat-fishing.svg",
-   "kind": "glyph",
-   "theme": "animals",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "animals/bowl-of-rice",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Caro Asercion (game-icons.net)",
-   "url": "https://game-icons.net/1x1/caro-asercion/bowl-of-rice.html",
-   "path": "assets/library/glyphs/animals/bowl-of-rice.svg",
-   "kind": "glyph",
-   "theme": "animals",
-   "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
-  },
-  {
-   "name": "animals/bowling-alley",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/bowling-alley.html",
-   "path": "assets/library/glyphs/animals/bowling-alley.svg",
-   "kind": "glyph",
-   "theme": "animals",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "animals/bowling-pin",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/bowling-pin.html",
-   "path": "assets/library/glyphs/animals/bowling-pin.svg",
-   "kind": "glyph",
-   "theme": "animals",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "animals/bowling-strike",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/bowling-strike.html",
-   "path": "assets/library/glyphs/animals/bowling-strike.svg",
-   "kind": "glyph",
-   "theme": "animals",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "animals/bulldozer",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/bulldozer.html",
-   "path": "assets/library/glyphs/animals/bulldozer.svg",
-   "kind": "glyph",
-   "theme": "animals",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "animals/bullet-bill",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/bullet-bill.html",
-   "path": "assets/library/glyphs/animals/bullet-bill.svg",
-   "kind": "glyph",
-   "theme": "animals",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "animals/bullet-impacts",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/bullet-impacts.html",
-   "path": "assets/library/glyphs/animals/bullet-impacts.svg",
-   "kind": "glyph",
-   "theme": "animals",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "animals/bully-minion",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/bully-minion.html",
-   "path": "assets/library/glyphs/animals/bully-minion.svg",
-   "kind": "glyph",
-   "theme": "animals",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "animals/canned-fish",
@@ -565,7 +440,8 @@
    "kind": "glyph",
    "theme": "animals",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "animals/charging-bull",
@@ -580,7 +456,8 @@
    "kind": "glyph",
    "theme": "animals",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "animals/circling-fish",
@@ -595,37 +472,72 @@
    "kind": "glyph",
    "theme": "animals",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
-   "name": "animals/classical-knowledge",
+   "name": "animals/double-fish",
    "provider": "game-icons.net",
    "provider_key": "game-icons",
    "licence": "CC BY 3.0",
    "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
    "licence_recorded": "2026-10-26",
    "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/classical-knowledge.html",
-   "path": "assets/library/glyphs/animals/classical-knowledge.svg",
+   "url": "https://game-icons.net/1x1/delapouite/double-fish.html",
+   "path": "assets/library/glyphs/animals/double-fish.svg",
    "kind": "glyph",
    "theme": "animals",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
-   "name": "animals/cloaked-figure-on-horseback",
+   "name": "animals/eagle-head",
    "provider": "game-icons.net",
    "provider_key": "game-icons",
    "licence": "CC BY 3.0",
    "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
    "licence_recorded": "2026-10-26",
-   "attribution": "Caro Asercion (game-icons.net)",
-   "url": "https://game-icons.net/1x1/caro-asercion/cloaked-figure-on-horseback.html",
-   "path": "assets/library/glyphs/animals/cloaked-figure-on-horseback.svg",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/eagle-head.html",
+   "path": "assets/library/glyphs/animals/eagle-head.svg",
    "kind": "glyph",
    "theme": "animals",
-   "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "animals/egyptian-bird",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/egyptian-bird.html",
+   "path": "assets/library/glyphs/animals/egyptian-bird.svg",
+   "kind": "glyph",
+   "theme": "animals",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "animals/fish-bucket",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/fish-bucket.html",
+   "path": "assets/library/glyphs/animals/fish-bucket.svg",
+   "kind": "glyph",
+   "theme": "animals",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "animals/fish-cooked",
@@ -640,7 +552,72 @@
    "kind": "glyph",
    "theme": "animals",
    "contributor": "DarkZaitzev",
-   "contributor_slug": "darkzaitzev"
+   "contributor_slug": "darkzaitzev",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "animals/fish-eggs",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/fish-eggs.html",
+   "path": "assets/library/glyphs/animals/fish-eggs.svg",
+   "kind": "glyph",
+   "theme": "animals",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "animals/fish-escape",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/fish-escape.html",
+   "path": "assets/library/glyphs/animals/fish-escape.svg",
+   "kind": "glyph",
+   "theme": "animals",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "animals/fish-scales",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/fish-scales.html",
+   "path": "assets/library/glyphs/animals/fish-scales.svg",
+   "kind": "glyph",
+   "theme": "animals",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "animals/fish-smoking",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/fish-smoking.html",
+   "path": "assets/library/glyphs/animals/fish-smoking.svg",
+   "kind": "glyph",
+   "theme": "animals",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "animals/fried-fish",
@@ -655,7 +632,72 @@
    "kind": "glyph",
    "theme": "animals",
    "contributor": "DarkZaitzev",
-   "contributor_slug": "darkzaitzev"
+   "contributor_slug": "darkzaitzev",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "animals/horse-head",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/horse-head.html",
+   "path": "assets/library/glyphs/animals/horse-head.svg",
+   "kind": "glyph",
+   "theme": "animals",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "animals/kiwi-bird",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/kiwi-bird.html",
+   "path": "assets/library/glyphs/animals/kiwi-bird.svg",
+   "kind": "glyph",
+   "theme": "animals",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "animals/nest-birds",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/nest-birds.html",
+   "path": "assets/library/glyphs/animals/nest-birds.svg",
+   "kind": "glyph",
+   "theme": "animals",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "animals/sand-snake",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/sand-snake.html",
+   "path": "assets/library/glyphs/animals/sand-snake.svg",
+   "kind": "glyph",
+   "theme": "animals",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/aztec-calendar-sun",
@@ -670,22 +712,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "astronomy/death-star",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/death-star.html",
-   "path": "assets/library/glyphs/astronomy/death-star.svg",
-   "kind": "glyph",
-   "theme": "astronomy",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/exploding-planet",
@@ -700,7 +728,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/falcon-moon",
@@ -715,7 +744,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/falling-star",
@@ -730,7 +760,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/flower-star",
@@ -745,7 +776,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/galaxy",
@@ -760,7 +792,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/heraldic-sun",
@@ -775,7 +808,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
+   "contributor_slug": "caro-asercion",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/knocked-out-stars",
@@ -790,7 +824,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/moon-bats",
@@ -805,7 +840,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/moon-orbit",
@@ -820,7 +856,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/north-star-shuriken",
@@ -835,7 +872,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "DarkZaitzev",
-   "contributor_slug": "darkzaitzev"
+   "contributor_slug": "darkzaitzev",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/planet-conquest",
@@ -850,7 +888,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/planet-core",
@@ -865,7 +904,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/polar-star",
@@ -880,7 +920,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/round-star",
@@ -895,7 +936,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/sea-star",
@@ -910,7 +952,24 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "astronomy/seven-pointed-star",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/seven-pointed-star.html",
+   "path": "assets/library/glyphs/astronomy/seven-pointed-star.svg",
+   "kind": "glyph",
+   "theme": "astronomy",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/star-shuriken",
@@ -925,7 +984,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "DarkZaitzev",
-   "contributor_slug": "darkzaitzev"
+   "contributor_slug": "darkzaitzev",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/tarot-17-the-star",
@@ -940,7 +1000,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
+   "contributor_slug": "caro-asercion",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/tarot-18-the-moon",
@@ -955,7 +1016,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
+   "contributor_slug": "caro-asercion",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "astronomy/tarot-19-the-sun",
@@ -970,7 +1032,8 @@
    "kind": "glyph",
    "theme": "astronomy",
    "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
+   "contributor_slug": "caro-asercion",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "religion/crystal-shrine",
@@ -985,7 +1048,8 @@
    "kind": "glyph",
    "theme": "religion",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "religion/fire-shrine",
@@ -1000,7 +1064,8 @@
    "kind": "glyph",
    "theme": "religion",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "religion/hand-of-god",
@@ -1015,22 +1080,8 @@
    "kind": "glyph",
    "theme": "religion",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "religion/pagoda",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/pagoda.html",
-   "path": "assets/library/glyphs/religion/pagoda.svg",
-   "kind": "glyph",
-   "theme": "religion",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "religion/prayer-beads",
@@ -1045,7 +1096,8 @@
    "kind": "glyph",
    "theme": "religion",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "religion/prayer",
@@ -1060,7 +1112,8 @@
    "kind": "glyph",
    "theme": "religion",
    "contributor": "Lorc",
-   "contributor_slug": "lorc"
+   "contributor_slug": "lorc",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "religion/shinto-shrine-mirror",
@@ -1075,7 +1128,8 @@
    "kind": "glyph",
    "theme": "religion",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "religion/shinto-shrine",
@@ -1090,7 +1144,8 @@
    "kind": "glyph",
    "theme": "religion",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "religion/spark-spirit",
@@ -1105,7 +1160,8 @@
    "kind": "glyph",
    "theme": "religion",
    "contributor": "Lorc",
-   "contributor_slug": "lorc"
+   "contributor_slug": "lorc",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "religion/star-altar",
@@ -1120,7 +1176,8 @@
    "kind": "glyph",
    "theme": "religion",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "religion/sun-priest",
@@ -1135,7 +1192,8 @@
    "kind": "glyph",
    "theme": "religion",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "religion/sword-altar",
@@ -1150,82 +1208,8 @@
    "kind": "glyph",
    "theme": "religion",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "religion/tarot-02-the-high-priestess",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Caro Asercion (game-icons.net)",
-   "url": "https://game-icons.net/1x1/caro-asercion/tarot-02-the-high-priestess.html",
-   "path": "assets/library/glyphs/religion/tarot-02-the-high-priestess.svg",
-   "kind": "glyph",
-   "theme": "religion",
-   "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
-  },
-  {
-   "name": "ships/american-football-helmet",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/american-football-helmet.html",
-   "path": "assets/library/glyphs/ships/american-football-helmet.svg",
-   "kind": "glyph",
-   "theme": "ships",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "ships/astronaut-helmet",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/astronaut-helmet.html",
-   "path": "assets/library/glyphs/ships/astronaut-helmet.svg",
-   "kind": "glyph",
-   "theme": "ships",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "ships/battleship",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Cathelineau (game-icons.net)",
-   "url": "https://game-icons.net/1x1/cathelineau/battleship.html",
-   "path": "assets/library/glyphs/ships/battleship.svg",
-   "kind": "glyph",
-   "theme": "ships",
-   "contributor": "Cathelineau",
-   "contributor_slug": "cathelineau"
-  },
-  {
-   "name": "ships/black-knight-helm",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/black-knight-helm.html",
-   "path": "assets/library/glyphs/ships/black-knight-helm.svg",
-   "kind": "glyph",
-   "theme": "ships",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ships/boat-engine",
@@ -1240,7 +1224,8 @@
    "kind": "glyph",
    "theme": "ships",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ships/boat-fishing",
@@ -1255,7 +1240,8 @@
    "kind": "glyph",
    "theme": "ships",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ships/boat-horizon",
@@ -1270,7 +1256,8 @@
    "kind": "glyph",
    "theme": "ships",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ships/boat-propeller",
@@ -1285,7 +1272,8 @@
    "kind": "glyph",
    "theme": "ships",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ships/brutal-helm",
@@ -1300,7 +1288,8 @@
    "kind": "glyph",
    "theme": "ships",
    "contributor": "Carl Olsen",
-   "contributor_slug": "carl-olsen"
+   "contributor_slug": "carl-olsen",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ships/cadillac-helm",
@@ -1315,7 +1304,8 @@
    "kind": "glyph",
    "theme": "ships",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ships/canoe",
@@ -1330,7 +1320,8 @@
    "kind": "glyph",
    "theme": "ships",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ships/cargo-ship",
@@ -1345,67 +1336,8 @@
    "kind": "glyph",
    "theme": "ships",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "ships/centurion-helmet",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/centurion-helmet.html",
-   "path": "assets/library/glyphs/ships/centurion-helmet.svg",
-   "kind": "glyph",
-   "theme": "ships",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "ships/crafting",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/crafting.html",
-   "path": "assets/library/glyphs/ships/crafting.svg",
-   "kind": "glyph",
-   "theme": "ships",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "ships/custodian-helmet",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/custodian-helmet.html",
-   "path": "assets/library/glyphs/ships/custodian-helmet.svg",
-   "kind": "glyph",
-   "theme": "ships",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "ships/diving-helmet",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/diving-helmet.html",
-   "path": "assets/library/glyphs/ships/diving-helmet.svg",
-   "kind": "glyph",
-   "theme": "ships",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ships/fishing-boat",
@@ -1420,7 +1352,8 @@
    "kind": "glyph",
    "theme": "ships",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "ships/frog-mouth-helm",
@@ -1435,67 +1368,184 @@
    "kind": "glyph",
    "theme": "ships",
    "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
+   "contributor_slug": "caro-asercion",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
-   "name": "ships/full-motorcycle-helmet",
+   "name": "ships/gauls-helm",
    "provider": "game-icons.net",
    "provider_key": "game-icons",
    "licence": "CC BY 3.0",
    "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
    "licence_recorded": "2026-10-26",
    "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/full-motorcycle-helmet.html",
-   "path": "assets/library/glyphs/ships/full-motorcycle-helmet.svg",
+   "url": "https://game-icons.net/1x1/delapouite/gauls-helm.html",
+   "path": "assets/library/glyphs/ships/gauls-helm.svg",
    "kind": "glyph",
    "theme": "ships",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
-   "name": "ships/iron-hulled-warship",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Cathelineau (game-icons.net)",
-   "url": "https://game-icons.net/1x1/cathelineau/iron-hulled-warship.html",
-   "path": "assets/library/glyphs/ships/iron-hulled-warship.svg",
-   "kind": "glyph",
-   "theme": "ships",
-   "contributor": "Cathelineau",
-   "contributor_slug": "cathelineau"
-  },
-  {
-   "name": "ships/warlord-helmet",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Caro Asercion (game-icons.net)",
-   "url": "https://game-icons.net/1x1/caro-asercion/warlord-helmet.html",
-   "path": "assets/library/glyphs/ships/warlord-helmet.svg",
-   "kind": "glyph",
-   "theme": "ships",
-   "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
-  },
-  {
-   "name": "stone/boulder-dash",
+   "name": "ships/harbor-dock",
    "provider": "game-icons.net",
    "provider_key": "game-icons",
    "licence": "CC BY 3.0",
    "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
    "licence_recorded": "2026-10-26",
    "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/boulder-dash.html",
-   "path": "assets/library/glyphs/stone/boulder-dash.svg",
+   "url": "https://game-icons.net/1x1/delapouite/harbor-dock.html",
+   "path": "assets/library/glyphs/ships/harbor-dock.svg",
    "kind": "glyph",
-   "theme": "stone",
+   "theme": "ships",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ships/interceptor-ship",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/interceptor-ship.html",
+   "path": "assets/library/glyphs/ships/interceptor-ship.svg",
+   "kind": "glyph",
+   "theme": "ships",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ships/light-helm",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/light-helm.html",
+   "path": "assets/library/glyphs/ships/light-helm.svg",
+   "kind": "glyph",
+   "theme": "ships",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ships/lighthouse",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/lighthouse.html",
+   "path": "assets/library/glyphs/ships/lighthouse.svg",
+   "kind": "glyph",
+   "theme": "ships",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ships/overlord-helm",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/overlord-helm.html",
+   "path": "assets/library/glyphs/ships/overlord-helm.svg",
+   "kind": "glyph",
+   "theme": "ships",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ships/paper-boat",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/paper-boat.html",
+   "path": "assets/library/glyphs/ships/paper-boat.svg",
+   "kind": "glyph",
+   "theme": "ships",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ships/raft",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/raft.html",
+   "path": "assets/library/glyphs/ships/raft.svg",
+   "kind": "glyph",
+   "theme": "ships",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ships/sail",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/sail.html",
+   "path": "assets/library/glyphs/ships/sail.svg",
+   "kind": "glyph",
+   "theme": "ships",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ships/scout-ship",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/scout-ship.html",
+   "path": "assets/library/glyphs/ships/scout-ship.svg",
+   "kind": "glyph",
+   "theme": "ships",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "ships/ship-bow",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/ship-bow.html",
+   "path": "assets/library/glyphs/ships/ship-bow.svg",
+   "kind": "glyph",
+   "theme": "ships",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/cave-entrance",
@@ -1510,22 +1560,8 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "stone/caveman",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/caveman.html",
-   "path": "assets/library/glyphs/stone/caveman.svg",
-   "kind": "glyph",
-   "theme": "stone",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/cliff-crossing",
@@ -1540,7 +1576,8 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/curling-stone",
@@ -1555,7 +1592,40 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "stone/dripping-stone",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Lorc (game-icons.net)",
+   "url": "https://game-icons.net/1x1/lorc/dripping-stone.html",
+   "path": "assets/library/glyphs/stone/dripping-stone.svg",
+   "kind": "glyph",
+   "theme": "stone",
+   "contributor": "Lorc",
+   "contributor_slug": "lorc",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "stone/falling-boulder",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Lorc (game-icons.net)",
+   "url": "https://game-icons.net/1x1/lorc/falling-boulder.html",
+   "path": "assets/library/glyphs/stone/falling-boulder.svg",
+   "kind": "glyph",
+   "theme": "stone",
+   "contributor": "Lorc",
+   "contributor_slug": "lorc",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/falling-rocks",
@@ -1570,7 +1640,8 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/menhir",
@@ -1585,7 +1656,8 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/mountain-cave",
@@ -1600,7 +1672,8 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/mountain-climbing",
@@ -1615,7 +1688,8 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Caro Asercion",
-   "contributor_slug": "caro-asercion"
+   "contributor_slug": "caro-asercion",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/mountain-road",
@@ -1630,7 +1704,8 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/rock-golem",
@@ -1645,37 +1720,24 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
-   "name": "stone/rocket-thruster",
+   "name": "stone/rock",
    "provider": "game-icons.net",
    "provider_key": "game-icons",
    "licence": "CC BY 3.0",
    "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
    "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/rocket-thruster.html",
-   "path": "assets/library/glyphs/stone/rocket-thruster.svg",
+   "attribution": "John Redman (game-icons.net)",
+   "url": "https://game-icons.net/1x1/john-redman/rock.html",
+   "path": "assets/library/glyphs/stone/rock.svg",
    "kind": "glyph",
    "theme": "stone",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "stone/rocking-chair",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/rocking-chair.html",
-   "path": "assets/library/glyphs/stone/rocking-chair.svg",
-   "kind": "glyph",
-   "theme": "stone",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor": "John Redman",
+   "contributor_slug": "john-redman",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/sea-cliff",
@@ -1690,22 +1752,8 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "stone/shamrock",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/shamrock.html",
-   "path": "assets/library/glyphs/stone/shamrock.svg",
-   "kind": "glyph",
-   "theme": "stone",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/stone-bridge",
@@ -1720,7 +1768,8 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/stone-bust",
@@ -1735,7 +1784,8 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/stone-path",
@@ -1750,7 +1800,8 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/stone-pile",
@@ -1765,7 +1816,8 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/stone-stack",
@@ -1780,7 +1832,8 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "stone/stone-wall",
@@ -1795,7 +1848,40 @@
    "kind": "glyph",
    "theme": "stone",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "stone/stone-wheel",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/stone-wheel.html",
+   "path": "assets/library/glyphs/stone/stone-wheel.svg",
+   "kind": "glyph",
+   "theme": "stone",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "stone/underground-cave",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/underground-cave.html",
+   "path": "assets/library/glyphs/stone/underground-cave.svg",
+   "kind": "glyph",
+   "theme": "stone",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/3d-hammer",
@@ -1810,7 +1896,8 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/axe-in-log",
@@ -1825,7 +1912,8 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/axe-sword",
@@ -1840,22 +1928,8 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "tools/boat-propeller",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/boat-propeller.html",
-   "path": "assets/library/glyphs/tools/boat-propeller.svg",
-   "kind": "glyph",
-   "theme": "tools",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/broken-axe",
@@ -1870,22 +1944,8 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "tools/chainsaw",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/chainsaw.html",
-   "path": "assets/library/glyphs/tools/chainsaw.svg",
-   "kind": "glyph",
-   "theme": "tools",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/chisel",
@@ -1900,7 +1960,8 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/crosscut-saw",
@@ -1915,7 +1976,8 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/drill",
@@ -1930,37 +1992,8 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "tools/earth-africa-europe",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/earth-africa-europe.html",
-   "path": "assets/library/glyphs/tools/earth-africa-europe.svg",
-   "kind": "glyph",
-   "theme": "tools",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "tools/european-flag",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/european-flag.html",
-   "path": "assets/library/glyphs/tools/european-flag.svg",
-   "kind": "glyph",
-   "theme": "tools",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/hammer-break",
@@ -1975,7 +2008,8 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/hammer-sickle",
@@ -1990,7 +2024,8 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/hand-saw",
@@ -2005,7 +2040,8 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/jumping-rope",
@@ -2020,37 +2056,8 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "tools/magic-axe",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/magic-axe.html",
-   "path": "assets/library/glyphs/tools/magic-axe.svg",
-   "kind": "glyph",
-   "theme": "tools",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "tools/mandrill-head",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/mandrill-head.html",
-   "path": "assets/library/glyphs/tools/mandrill-head.svg",
-   "kind": "glyph",
-   "theme": "tools",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/monkey-wrench",
@@ -2065,22 +2072,8 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
-  },
-  {
-   "name": "tools/propeller-beanie",
-   "provider": "game-icons.net",
-   "provider_key": "game-icons",
-   "licence": "CC BY 3.0",
-   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
-   "licence_recorded": "2026-10-26",
-   "attribution": "Delapouite (game-icons.net)",
-   "url": "https://game-icons.net/1x1/delapouite/propeller-beanie.html",
-   "path": "assets/library/glyphs/tools/propeller-beanie.svg",
-   "kind": "glyph",
-   "theme": "tools",
-   "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/pulley-hook",
@@ -2095,7 +2088,8 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "tools/rope-bridge",
@@ -2110,7 +2104,120 @@
    "kind": "glyph",
    "theme": "tools",
    "contributor": "Delapouite",
-   "contributor_slug": "delapouite"
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "tools/rope-coil",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/rope-coil.html",
+   "path": "assets/library/glyphs/tools/rope-coil.svg",
+   "kind": "glyph",
+   "theme": "tools",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "tools/rope-dart",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/rope-dart.html",
+   "path": "assets/library/glyphs/tools/rope-dart.svg",
+   "kind": "glyph",
+   "theme": "tools",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "tools/sharp-axe",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/sharp-axe.html",
+   "path": "assets/library/glyphs/tools/sharp-axe.svg",
+   "kind": "glyph",
+   "theme": "tools",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "tools/skipping-rope",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/skipping-rope.html",
+   "path": "assets/library/glyphs/tools/skipping-rope.svg",
+   "kind": "glyph",
+   "theme": "tools",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "tools/stake-hammer",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/stake-hammer.html",
+   "path": "assets/library/glyphs/tools/stake-hammer.svg",
+   "kind": "glyph",
+   "theme": "tools",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "tools/thor-hammer",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/thor-hammer.html",
+   "path": "assets/library/glyphs/tools/thor-hammer.svg",
+   "kind": "glyph",
+   "theme": "tools",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
+  },
+  {
+   "name": "tools/war-axe",
+   "provider": "game-icons.net",
+   "provider_key": "game-icons",
+   "licence": "CC BY 3.0",
+   "licence_statement": "https://github.com/game-icons/icons/blob/master/license.txt",
+   "licence_recorded": "2026-10-26",
+   "attribution": "Delapouite (game-icons.net)",
+   "url": "https://game-icons.net/1x1/delapouite/war-axe.html",
+   "path": "assets/library/glyphs/tools/war-axe.svg",
+   "kind": "glyph",
+   "theme": "tools",
+   "contributor": "Delapouite",
+   "contributor_slug": "delapouite",
+   "modified": "background path removed, fill set to currentColor so the glyph takes the film's colour"
   },
   {
    "name": "desert-sun",
@@ -2473,9 +2580,9 @@
    "licence_statement": "https://ambientcg.com/license",
    "licence_recorded": "2026-10-26",
    "attribution": "",
-   "url": "https://ambientcg.com/get?file=Paper005_1K-JPG.zip",
+   "url": "https://ambientcg.com/get?file=Paper001_1K-JPG.zip",
    "path": "assets/library/textures/aged-paper-2.jpg",
-   "asset_id": "Paper005",
+   "asset_id": "Paper001",
    "kind": "texture"
   },
   {
@@ -2486,9 +2593,9 @@
    "licence_statement": "https://ambientcg.com/license",
    "licence_recorded": "2026-10-26",
    "attribution": "",
-   "url": "https://ambientcg.com/get?file=Paper001_1K-JPG.zip",
+   "url": "https://ambientcg.com/get?file=Paper003_1K-JPG.zip",
    "path": "assets/library/textures/aged-paper-3.jpg",
-   "asset_id": "Paper001",
+   "asset_id": "Paper003",
    "kind": "texture"
   },
   {
@@ -2499,9 +2606,9 @@
    "licence_statement": "https://ambientcg.com/license",
    "licence_recorded": "2026-10-26",
    "attribution": "",
-   "url": "https://ambientcg.com/get?file=Rock064_1K-JPG.zip",
+   "url": "https://ambientcg.com/get?file=Rock035_1K-JPG.zip",
    "path": "assets/library/textures/basalt.jpg",
-   "asset_id": "Rock064",
+   "asset_id": "Rock035",
    "kind": "texture"
   },
   {
@@ -2538,9 +2645,9 @@
    "licence_statement": "https://ambientcg.com/license",
    "licence_recorded": "2026-10-26",
    "attribution": "",
-   "url": "https://ambientcg.com/get?file=Paper003_1K-JPG.zip",
+   "url": "https://ambientcg.com/get?file=Paper005_1K-JPG.zip",
    "path": "assets/library/textures/parchment.jpg",
-   "asset_id": "Paper003",
+   "asset_id": "Paper005",
    "kind": "texture"
   },
   {
@@ -2551,9 +2658,9 @@
    "licence_statement": "https://ambientcg.com/license",
    "licence_recorded": "2026-10-26",
    "attribution": "",
-   "url": "https://ambientcg.com/get?file=Metal063_1K-JPG.zip",
+   "url": "https://ambientcg.com/get?file=Metal041B_1K-JPG.zip",
    "path": "assets/library/textures/rusted-iron.jpg",
-   "asset_id": "Metal063",
+   "asset_id": "Metal041B",
    "kind": "texture"
   },
   {
@@ -2577,9 +2684,9 @@
    "licence_statement": "https://ambientcg.com/license",
    "licence_recorded": "2026-10-26",
    "attribution": "",
-   "url": "https://ambientcg.com/get?file=Bricks084_1K-JPG.zip",
+   "url": "https://ambientcg.com/get?file=Rock060_1K-JPG.zip",
    "path": "assets/library/textures/sandstone.jpg",
-   "asset_id": "Bricks084",
+   "asset_id": "Rock060",
    "kind": "texture"
   },
   {
@@ -2603,9 +2710,9 @@
    "licence_statement": "https://ambientcg.com/license",
    "licence_recorded": "2026-10-26",
    "attribution": "",
-   "url": "https://ambientcg.com/get?file=Leather037_1K-JPG.zip",
+   "url": "https://ambientcg.com/get?file=Leather035D_1K-JPG.zip",
    "path": "assets/library/textures/vellum.jpg",
-   "asset_id": "Leather037",
+   "asset_id": "Leather035D",
    "kind": "texture"
   }
  ]

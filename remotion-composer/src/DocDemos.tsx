@@ -99,11 +99,11 @@ export const DemoTimeline: React.FC = () => (
     actTitle="A verdict two thousand years old"
     sceneIndex="S 034 / TIMELINE"
     events={[
-      { year: -1400, label: "Tiryns walls raised", at: 0.4 },
-      { year: -1200, label: "Mycenaean world ends", at: 1.2 },
-      { year: 170, label: "Pausanias records the Cyclopes", at: 2.1, accent: true },
-      { year: 1922, label: "Petrie's core described", at: 3.0 },
-      { year: 2017, label: "Big Void detected", at: 3.8, accent: true },
+      { year: -1400, label: "Tiryns walls raised", at: 0.4, glyph: "stone-wall" },
+      { year: -1200, label: "Mycenaean world ends", at: 1.2, glyph: "ancient-ruins" },
+      { year: 170, label: "Pausanias records the Cyclopes", at: 2.1, accent: true, glyph: "greek-temple" },
+      { year: 1922, label: "Petrie's core described", at: 3.0, glyph: "chisel" },
+      { year: 2017, label: "Big Void detected", at: 3.8, accent: true, glyph: "moon-orbit" },
     ]}
     caption="Negative years are BC"
   />
