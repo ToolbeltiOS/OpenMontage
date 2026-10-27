@@ -1375,6 +1375,59 @@ a call site that drops the camera props — and each is caught.
   (`transitions` is an object where the schema wants an array; `layer` is an
   integer where it wants a string enum). Run #1's record is left as published.
 
+### Assessed and rejected — do not re-try these without new evidence
+
+Both were specified, built far enough to measure, and dropped on the
+measurements. They are recorded here so the next person does not spend the
+same days arriving at the same answer. The full working is in
+[`reports/realesrgan_assessment.md`](reports/realesrgan_assessment.md).
+
+**Real-ESRGAN ncnn-vulkan 2× upscaling — NOT ADOPTED.**
+
+1. *It never fires.* 0 of 325 banked images are under 2500px. The bank
+   rejects anything under 3000 at fetch time and the smallest it holds is
+   3020.
+2. *The small files have nothing to recover.* 121 derived stills are under
+   2500px, but they are cropped at native resolution —
+   `wm_401695745_detail` is a 1744px file from a crop 1742 source pixels
+   wide. They are small by design (`DETAIL_FRAC 0.45`, `EXTREME_FRAC 0.30`)
+   and `lib/derived_shots.py` already floors them at `MIN_CROP_PX = 1600`.
+3. *Lanczos is more faithful.* Ground truth at 2560×1440, halved to
+   1280×720, restored three ways:
+
+   | method | PSNR | SSIM | sharpness |
+   |---|---|---|---|
+   | truth | — | — | 3067.0 |
+   | bicubic | 30.10 | 0.8873 | — |
+   | **lanczos** | **30.28** | **0.8935** | 2260.2 |
+   | real-esrgan | 29.07 | 0.8715 | 2772.1 |
+
+   It is 1.2 dB worse and loses on SSIM. It *reads* sharper (2772 against
+   2260) and that sharpness is **invented** — further from the original
+   while looking crisper. In a film assembled from sourced photographs,
+   hallucinated detail in a historical image is a provenance problem.
+4. *The binary silently corrupts its output on this Mac*, always with exit
+   code 0 and correct dimensions: default threading assembles tiles in the
+   wrong positions, `-t 1536` returns an entirely black frame, and `-j
+   1:1:1` worked once then failed deterministically on another input (four
+   attempts, identical −0.0052 correlation). Detectable by phase
+   correlation against a bicubic upscale (+0.92 real, ~0.00 corrupt) — but
+   every output would need verifying.
+5. *Cost:* ~2 min/image threaded, ~6 min single-threaded.
+
+**RIFE frame interpolation — DROPPED, not attempted.** It was conditional on
+the upscaler being straightforward. It was not, and the same two questions
+would decide it: does it beat the simpler alternative on a measurement
+against ground truth, and does it invent motion that was not in the source.
+Re-open it only with an answer to both.
+
+What the investigation did produce is kept: the `text_bearing` guard in
+`scripts/build_25d_cuts.py` had never matched anything, because no stage
+sets that class. It is now measured per asset by
+[`lib/text_bearing.py`](lib/text_bearing.py), and it follows the derivation
+chain — a crop of a map is still a map, and reads four words where its
+parent reads twenty.
+
 ---
 
 ## Testing
