@@ -203,9 +203,21 @@ def annotate(project: str, write: bool = False) -> list[dict]:
     brief = json.loads((art / "research_brief.json").read_text())
     script = json.loads((art / "script.json").read_text())
     plan = json.loads((art / "scene_plan.json").read_text())
-    rows = plan if isinstance(plan, list) else next(
+    rows = plan if isinstance(plan, list) else plan.get("scenes") or next(
         (v for v in plan.values() if isinstance(v, list)), [])
     by_time = sorted(rows, key=lambda r: r.get("start_seconds", 0))
+    # THE AUTHORED SLOT IS WHERE claim_id LIVES. The `scenes` list is the
+    # timing and description; `metadata.slots` is what the planner authored,
+    # and the buildability gate requires claim_id there. Reading only
+    # `scenes` would find none of them and report every route undated while
+    # the ids sat in the same file.
+    #
+    # Keyed on `slot_id`, which is what the slots carry -- they have no
+    # `id` at all, while the scenes do. Keying on `id` silently built an
+    # all-None map and every lookup missed.
+    slots = {s.get("slot_id") or s.get("id"): s for s in
+             (plan.get("metadata", {}).get("slots") or [])
+             if isinstance(s, dict)}
 
     out = []
     for cut in props.get("cuts", []):
@@ -220,6 +232,10 @@ def annotate(project: str, write: bool = False) -> list[dict]:
         scene = next((r for r in by_time
                       if r.get("start_seconds", 0) <= mid
                       <= r.get("end_seconds", 0)), None)
+        if scene is not None:
+            slot = slots.get(scene.get("id"))
+            if slot and slot.get("claim_id") and not scene.get("claim_id"):
+                scene = {**scene, "claim_id": slot["claim_id"]}
         got = for_cut(cut, scene, brief, script)
         if got["event_year"] is not None:
             cut["event_year"] = got["event_year"]

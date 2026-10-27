@@ -55,6 +55,41 @@ def check_slot(slot: dict[str, Any], contract: dict[str, Any]) -> list[str]:
         )
         return problems
 
+    # A ROUTE MUST NAME THE CLAIM IT ILLUSTRATES.
+    #
+    # The year a route is dated to decides whether it is drawn on a
+    # historical chart or on modern terrain, and that year comes from the
+    # ledger claim the scene is about. Inferring which claim that is from
+    # the scene's one-line description does not work and is not safely
+    # wrong: on easter-island it dated the birdman swim to the 1868 HMS
+    # Topaze visit, and matched "the small statue's route" to a 1914
+    # expedition on the word "small". A wrong year silently selects a wrong
+    # plate, which is a confident false statement about what the mapped
+    # people were looking at.
+    #
+    # The planner knows. It is choosing a claim to illustrate when it
+    # authors the scene, and writing the id down costs it nothing. So this
+    # is required at authoring time rather than guessed at render time.
+    #
+    # A claim that resolves to NO DATE is not a failure: that route gets
+    # terrain with the reason "undated event". Only a MISSING claim_id
+    # fails, because that is the planner declining to say what the scene is
+    # about.
+    # Driven by the contract's `slot_required`, so the rule is declared in
+    # one place rather than hard-coded here and documented there.
+    for key in (contract.get(comp, {}) or {}).get("slot_required", []):
+        if slot.get(key):
+            continue
+        if key == "claim_id":
+            problems.append(
+                f"{sid}: {comp} names no claim_id — the planner must say "
+                f"which ledger claim this scene illustrates, because the "
+                f"claim's date decides whether the route is drawn on a "
+                f"historical chart or on terrain, and it cannot be inferred "
+                f"from the description")
+        else:
+            problems.append(f"{sid}: {comp} requires slot field {key!r}")
+
     spec = contract.get(comp)
     if not spec:
         problems.append(
