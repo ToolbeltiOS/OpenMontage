@@ -47,6 +47,24 @@ NEGATIVE_PROMPT = (
     "signature, logo"
 )
 
+#: PROMPT-LEVEL NEGATION DOES NOT RELIABLY EXCLUDE A THING, and this is
+#: worth knowing before anyone trusts NEGATIVE_PROMPT to keep something out.
+#:
+#: The sledge-teams test was rendered three times. Two of the three put a
+#: WHEEL ON AN AXLE under the sledge -- including one whose prompt said "NO
+#: WHEELS, no cart, no axle" and whose negative listed "wheel, wheels,
+#: cart, wagon, axle". FLUX schnell has no negative-prompt input at all, so
+#: Pixazo folds the negative into the prompt text, where naming a thing can
+#: just as easily summon it.
+#:
+#: The practical rule: the negative is a nudge against a STYLE (photoreal,
+#: colour, cartoon) and cannot be relied on to exclude an OBJECT. Where an
+#: object would be a factual error -- and a wheel under a megalith is
+#: exactly that, since the claim these films make is that it was moved
+#: without one -- the render has to be looked at and rejected, not
+#: prompted around.
+NEGATION_IS_UNRELIABLE = True
+
 #: Slot tags where an illustration is refused outright.
 FORBIDDEN_TAGS = ("evidence", "stills_of_record")
 
