@@ -139,6 +139,36 @@ Three treatments, and the mix is governed by the playbook:
   Every still must name its motion treatment — a parallax/2.5D push, a slow drift
   across a larger frame. A still with no movement is a dead hold.
 
+### 5b. A `map_route` Slot Names The Claim It Illustrates
+
+Every `map_route` slot carries **`claim_id`**: the id of the ledger claim in
+the research brief that this route is about.
+
+```json
+{ "slot_id": "act4_s025", "treatment": "graphic", "component": "map_route",
+  "claim_id": "r17",
+  "props": { "route": [[-109.45, -27.20], [-0.13, 51.50]] } }
+```
+
+**Why you and not a later stage.** The year a route is dated to decides
+whether it is drawn on a historical chart or on modern terrain, and that year
+comes from the claim. You are choosing a claim to illustrate when you write
+the slot; a stage downstream has only your one-line description and has to
+guess. Measured on easter-island, guessing from the description dated the
+birdman swim to an 1868 ship's visit and matched "the small statue's route"
+to a 1914 expedition on the word *small*. A wrong year silently picks a
+wrong chart, which is a confident false statement about what the people in
+the film were looking at.
+
+**The dated event, not the publication.** `claim_id` points at the claim; the
+date is read from the claim's own text. A claim sourced to a 2024 paper may
+be about 1786, and 1786 is the year that matters.
+
+**A claim with no date in it is fine.** That route is drawn on terrain with
+the reason `undated event` recorded on the cut. What is *not* fine is a
+`map_route` slot with no `claim_id`: that is declining to say what the scene
+is about, and the buildability check fails it.
+
 ### 6. Compute The Visual Mix And State Slideshow Risk
 
 Count the slots by treatment and record real percentages in
@@ -186,6 +216,9 @@ It must exit 0 before you checkpoint. The check enforces two things:
   `remotion-composer/component-contract.json`, and supplies props that satisfy
   that component's contract — required props, required keys on every array
   item, and every enum value in range.
+- **A slot supplies the slot-level fields its component declares** in
+  `slot_required` — for `map_route` that is `claim_id`, which is not a prop
+  and is never passed to the component. See §5b.
 - **A sourced slot points at a file that is on disk.**
 
 `"cross_section — the pyramid in section"` is a description, not a scene. It

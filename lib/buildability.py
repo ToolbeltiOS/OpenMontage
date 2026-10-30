@@ -55,6 +55,32 @@ def check_slot(slot: dict[str, Any], contract: dict[str, Any]) -> list[str]:
         )
         return problems
 
+    # SLOT-LEVEL FIELDS THE COMPONENT DECLARES, which are not props and are
+    # never passed to it. `map_route` declares `claim_id`: the ledger claim
+    # the route illustrates, whose date decides whether the route is drawn
+    # on a historical chart or on terrain.
+    #
+    # The planner must say. Inferring it from the slot's one-line
+    # description does not work and fails unsafely -- measured on
+    # easter-island it dated the birdman swim to an 1868 ship's visit and
+    # matched "the small statue's route" to a 1914 expedition on the word
+    # "small" -- and a wrong year silently picks a wrong chart.
+    #
+    # A claim that resolves to NO DATE is not a failure; that route gets
+    # terrain with the reason recorded. Only a MISSING claim_id fails.
+    for key in (contract.get(comp, {}) or {}).get("slot_required", []):
+        if slot.get(key):
+            continue
+        if key == "claim_id":
+            problems.append(
+                f"{sid}: {comp} names no claim_id — the planner must say "
+                f"which ledger claim this scene illustrates, because the "
+                f"claim's date decides whether the route is drawn on a "
+                f"historical chart or on terrain, and it cannot be inferred "
+                f"from the description")
+        else:
+            problems.append(f"{sid}: {comp} requires slot field {key!r}")
+
     spec = contract.get(comp)
     if not spec:
         problems.append(
