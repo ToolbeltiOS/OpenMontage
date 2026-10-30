@@ -1,6 +1,9 @@
-# The $0 local Flux route: tried once, does not run on this machine
+# The $0 local Flux route: REJECTED
 
-**Result: stopped. The machine swaps hard and no image was produced.**
+**Tried once, stopped on the swap condition, and removed.** ComfyUI and
+the 16.05 GB checkpoint were deleted on 2026-10-30, recovering 18 GB. The
+illustration route uses Pixazo's free tier instead — see
+[`pixazo_backend.md`](pixazo_backend.md).
 
 ## What was set up
 
@@ -37,8 +40,8 @@ model is larger than the memory.
 - A **GGUF quantisation** (schnell Q4 is roughly 6.8 GB) would fit, at some
   cost in quality. It is not what was asked for and is not a free lunch, but
   it is the obvious next thing if the local route is wanted later.
-- The 16.05 GB checkpoint is still on disk at
-  `~/Developer/ComfyUI/models/checkpoints/`. It has not been deleted.
+- The 16.05 GB checkpoint and the whole ComfyUI tree are **deleted**.
+  Anyone retrying this starts from the download.
 
 ## Note on the workflow
 

@@ -48,15 +48,38 @@ TESTS = {
         "ancient near-eastern dress",
 }
 
-#: Per-image prices, in US dollars, as third-party trackers reported them
-#: in late 2026. NOT confirmed against fal.ai's own pricing page, which did
-#: not load, so they are a guide for the estimate and not an authority.
+#: Per-image prices, in US dollars.
+#:
+#: Pixazo is first because it has a FREE TIER -- 750 images a month -- and
+#: the price below is what an image costs once that is gone. The Shorts
+#: pipeline in ~/Desktop/wak3up already uses the same endpoint, and the free
+#: allowance is held by the ACCOUNT and shared across every key on it, so
+#: the two pipelines spend the same bucket. See lib/pixazo_quota.py.
+#:
+#: The fal figures come from third-party trackers and were not confirmed
+#: against fal.ai's own pricing page, which did not load.
 PRICES = {
+    "pixazo/flux-1-schnell": 0.0012,
+    "cloudflare/flux-1-schnell": 0.0,
     "fal/flux-schnell": 0.003,
-    "fal/flux-dev": 0.025,
     "fal/flux2-dev-turbo": 0.008,
-    "comfyui-local": 0.0,
+    "fal/flux-dev": 0.025,
 }
+
+#: Backends with a free allowance, where the price above applies only after
+#: it runs out. The quota check, not the price, governs these.
+FREE_TIER = {"pixazo/flux-1-schnell", "cloudflare/flux-1-schnell"}
+
+#: The endpoint and auth header the Shorts pipeline uses, read from
+#: ~/Desktop/wak3up/visual_generator.py. Azure API Management, hence the
+#: Ocp-Apim header rather than a bearer token.
+PIXAZO_URL = "https://gateway.pixazo.ai/flux-1-schnell/v1/getData"
+PIXAZO_AUTH_HEADER = "Ocp-Apim-Subscription-Key"
+
+#: Cloudflare Workers AI, the fallback. Free-tier allowance is per account
+#: in neurons rather than images, so it is not counted the same way.
+CLOUDFLARE_URL = ("https://api.cloudflare.com/client/v4/accounts/"
+                  "{account}/ai/run/@cf/black-forest-labs/flux-1-schnell")
 
 
 def estimate(backend: str, count: int) -> str:
@@ -67,11 +90,95 @@ def estimate(backend: str, count: int) -> str:
             + ("  (local, no charge)" if price == 0 else ""))
 
 
+def generate_pixazo(prompt: str, negative: str, dest: Path,
+                    size: tuple[int, int] = (1920, 1080)) -> tuple[bool, str]:
+    """One image from Pixazo's FLUX.1 schnell, same endpoint as the Shorts run.
+
+    The negative prompt is folded into the prompt text. Pixazo's schnell
+    endpoint takes `prompt`, `num_steps`, `width` and `height` and nothing
+    else -- there is no negative field -- so the house negative is appended
+    as a clause rather than silently dropped, which would leave an
+    illustration free to come back photoreal.
+    """
+    import requests
+
+    key = os.environ.get("PIXAZO_API_KEY", "")
+    if not key:
+        return False, "PIXAZO_API_KEY is not set"
+    body = {
+        "prompt": f"{prompt}. Not: {negative}" if negative else prompt,
+        "num_steps": 4,
+        "width": size[0],
+        "height": size[1],
+    }
+    try:
+        r = requests.post(PIXAZO_URL, timeout=120, json=body, headers={
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+            PIXAZO_AUTH_HEADER: key,
+        })
+    except Exception as e:                                  # noqa: BLE001
+        return False, f"request failed: {e}"
+    if r.status_code != 200:
+        return False, f"HTTP {r.status_code}: {r.text[:160]}"
+    url = (r.json() or {}).get("output", "")
+    if not url:
+        return False, f"no output url: {str(r.json())[:160]}"
+    img = requests.get(url, timeout=120)
+    if img.status_code != 200:
+        return False, f"image fetch HTTP {img.status_code}"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(img.content)
+    return True, str(dest)
+
+
+def generate_cloudflare(prompt: str, negative: str, dest: Path,
+                        size: tuple[int, int] = (1920, 1080)
+                        ) -> tuple[bool, str]:
+    """The fallback: Workers AI, same model, different shape of answer.
+
+    Workers AI returns base64 in a JSON envelope rather than a URL, and
+    takes `steps` where Pixazo takes `num_steps`. Treating the two as
+    interchangeable is how a fallback silently returns nothing.
+    """
+    import base64
+
+    import requests
+
+    token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
+    account = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
+    if not (token and account):
+        return False, "CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID not set"
+    try:
+        r = requests.post(
+            CLOUDFLARE_URL.format(account=account), timeout=120,
+            headers={"Authorization": f"Bearer {token}"},
+            json={"prompt": f"{prompt}. Not: {negative}" if negative else prompt,
+                  "steps": 4})
+    except Exception as e:                                  # noqa: BLE001
+        return False, f"request failed: {e}"
+    if r.status_code != 200:
+        return False, f"HTTP {r.status_code}: {r.text[:160]}"
+    blob = (r.json() or {}).get("result", {})
+    b64 = blob.get("image") if isinstance(blob, dict) else None
+    if not b64:
+        return False, f"no image in result: {str(r.json())[:160]}"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(base64.b64decode(b64))
+    return True, str(dest)
+
+
+BACKENDS = {
+    "pixazo/flux-1-schnell": generate_pixazo,
+    "cloudflare/flux-1-schnell": generate_cloudflare,
+}
+
+
 def main() -> int:
     import lib.illustration_spec as spec
 
     ap = argparse.ArgumentParser()
-    ap.add_argument("--backend", default="fal/flux-dev",
+    ap.add_argument("--backend", default="pixazo/flux-1-schnell",
                     choices=sorted(PRICES))
     ap.add_argument("--subjects", nargs="*", default=sorted(TESTS))
     ap.add_argument("--estimate", action="store_true")
@@ -89,24 +196,28 @@ def main() -> int:
             print(f"  {name}\n     {spec.full_prompt(subject)[:150]}...")
         return 0
 
+    import lib.pixazo_quota as quota
+
     n = len(args.subjects)
     print(f"  {n} illustration(s), backend {args.backend}")
-    print("  " + estimate(args.backend, n))
-    print(f"  FAL_KEY configured: {bool(os.environ.get('FAL_KEY'))}")
-    reachable = False
-    try:
-        urllib.request.urlopen("http://127.0.0.1:8188/system_stats", timeout=3)
-        reachable = True
-    except Exception:
-        pass
-    print(f"  local ComfyUI on :8188: {'reachable' if reachable else 'not running'}")
+    free = args.backend in FREE_TIER
+    if args.backend.startswith("pixazo"):
+        ok, why = quota.check(n)
+        print(f"  free-tier quota: {'OK' if ok else 'REFUSED'}")
+        print(f"    {why}")
+        print(f"  key configured: {bool(os.environ.get('PIXAZO_API_KEY'))}")
+        if not ok:
+            print("\n  STOPPED on the free-tier ceiling. Nothing generated.")
+            return 2
+    else:
+        print("  " + estimate(args.backend, n))
 
     if args.estimate:
         return 0
 
     price = PRICES[args.backend]
     total = price * n
-    if price > 0:
+    if price > 0 and not free:
         if args.i_accept_cost is None:
             print("\n  STOPPED. This backend charges per image and nothing "
                   "has been generated.")
@@ -135,14 +246,51 @@ def main() -> int:
             print("\n  STOPPED. FAL_KEY is not configured, so this backend "
                   "cannot be called at all.")
             return 2
-    if args.backend == "comfyui-local" and not reachable:
-        print("\n  STOPPED. ComfyUI is not running on :8188.")
+    fn = BACKENDS.get(args.backend)
+    if fn is None:
+        print(f"\n  STOPPED. {args.backend} has no client in this script.")
         return 2
 
     DEST.mkdir(parents=True, exist_ok=True)
-    print("\n  (generation would run here; records written with "
-          "lib/illustration_spec.licence_record)")
-    return 0
+    records, made, failed = [], 0, []
+    import time as _time
+
+    for i, name in enumerate(args.subjects):
+        subject = TESTS.get(name, name)
+        prompt = spec.full_prompt(subject)
+        dest = DEST / f"{name}.png"
+        if i:
+            # Under 80% of the published rate limit, and the cautious of the
+            # two published figures. See lib/pixazo_quota.py.
+            _time.sleep(quota.spacing_seconds())
+        ok, detail = fn(prompt, spec.NEGATIVE_PROMPT, dest)
+        print(f"  {'made ' if ok else 'FAILED'} {name}: {detail[:110]}",
+              flush=True)
+        if not ok:
+            failed.append((name, detail))
+            continue
+        made += 1
+        rec = spec.licence_record(subject, args.backend, prompt)
+        rec["path"] = str(dest.relative_to(ROOT))
+        records.append(rec)
+
+    if made and args.backend.startswith("pixazo"):
+        total_used = quota.record(made)
+        print(f"\n  recorded {made} against the free tier "
+              f"({total_used} this month by OpenMontage; the Shorts "
+              f"pipeline's usage is not visible from here)")
+
+    if records:
+        man = DEST / "manifest.json"
+        blob = json.loads(man.read_text()) if man.exists() else {"assets": []}
+        by = {a["path"]: a for a in blob["assets"]}
+        for r in records:
+            by[r["path"]] = r
+        blob["assets"] = sorted(by.values(), key=lambda a: a["path"])
+        man.write_text(json.dumps(blob, indent=1) + "\n")
+        print(f"  provenance: {len(by)} record(s) -> "
+              f"{man.relative_to(ROOT)}")
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":
