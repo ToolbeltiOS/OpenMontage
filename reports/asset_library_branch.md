@@ -1,7 +1,33 @@
 # `asset-library` — the house library
 
-Branched from `automation`, unmerged until after Friday's run.
-`visual-quality` is frozen for its own merge and is untouched.
+Branched from `automation`, and **unmerged until after `visual-quality`
+merges next week**.
+
+## Merge order, agreed
+
+1. **`visual-quality`** first.
+2. **`asset-library`** second.
+
+Each goes in only after a **2-minute slice renders end to end through
+`scripts/render_film.py`** — not a bare Remotion render — **with every gate
+green**. The distinction matters: a flat Explainer pass hands
+`plate_is_clean` the type it is looking for and `check_motion` a picture
+with no grain, so the absolute numbers mean nothing and only a before/after
+comparison does. Through `render_film.py` they mean something.
+
+## What went to `automation` early, and why
+
+Two commits, both bug-fix-shaped and both pushed:
+
+- `db20713` — AnnotatedStill never read the authored camera (19 of 20 cuts
+  ran the default move).
+- `f75c570` — the scene director requires `claim_id` on every `map_route`
+  slot, **with the buildability check that enforces it**. The gate was
+  ported alongside the skill because the skill states the check fails a
+  route without one; on `automation` it did not, and an instruction
+  claiming an enforcement that does not exist is the inert-guard failure in
+  the one file the planner reads. Those ~20 lines are identical to the ones
+  `asset-library` already carries and will merge with it.
 
 ## Library of Congress is not reachable from here
 
