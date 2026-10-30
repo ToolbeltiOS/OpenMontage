@@ -27,6 +27,8 @@ nobody downstream has to guess whether a frame was sourced or made.
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 #: The house style. Fixed, so illustrations across films read as one hand
 #: rather than as whatever the prompt happened to say that week.
 STYLE_PROMPT = (
@@ -117,3 +119,93 @@ def licence_record(subject: str, model: str, prompt: str,
 
 def full_prompt(subject: str) -> str:
     return f"{subject}. {STYLE_PROMPT}"
+
+
+# --------------------------------------------------------------------------
+# APPROVAL
+#
+# An illustration is the one picture in the film nobody sourced, so it is
+# the one picture that does not get in on the strength of the pipeline
+# having produced it. It is shown at the script gate, with its subject, and
+# it is used only if the person approved the gate AND actually saw it.
+#
+# THOSE ARE TWO CONDITIONS AND THE SECOND IS THE EASY ONE TO LOSE. An upload
+# that fails leaves a gate that was approved and an illustration nobody
+# looked at, and an "ok" covering a picture the viewer never saw is exactly
+# the informed-consent failure the gate exists to prevent. So the record is
+# written from what the gate CONFIRMED DELIVERED, not from the list it tried
+# to send.
+# --------------------------------------------------------------------------
+
+#: Where the gate records what it showed and the person approved.
+APPROVED = Path("assets/library/illustrations/approved.json")
+
+
+def approved_record(root: Path | None = None) -> dict:
+    path = (root or Path(".")) / APPROVED
+    if not path.exists():
+        return {"approved": []}
+    import json
+
+    return json.loads(path.read_text())
+
+
+def record_approval(subjects: list[str], project: str, attempt: int,
+                    root: Path | None = None) -> Path:
+    """Write the subjects the gate delivered and the person approved."""
+    import datetime as dt
+    import json
+
+    path = (root or Path(".")) / APPROVED
+    path.parent.mkdir(parents=True, exist_ok=True)
+    blob = approved_record(root)
+    seen = {a["subject"]: a for a in blob.get("approved", [])}
+    for sub in subjects:
+        seen[sub] = {"subject": sub, "project": project, "attempt": attempt,
+                     "approved_at": dt.datetime.now().isoformat(
+                         timespec="seconds")}
+    blob["approved"] = sorted(seen.values(), key=lambda a: a["subject"])
+    blob["note"] = ("Written by scripts/telegram_gate.py from the "
+                    "illustrations it CONFIRMED DELIVERED and the person "
+                    "then approved. An illustration that failed to upload "
+                    "is not here, because the approval did not cover it.")
+    path.write_text(json.dumps(blob, indent=1) + "\n")
+    return path
+
+
+def usable(subject: str, root: Path | None = None) -> tuple[bool, str]:
+    """May this illustration be used in the film?"""
+    ok = {a["subject"] for a in approved_record(root).get("approved", [])}
+    if subject in ok:
+        return True, "approved at the script gate"
+    return False, (f"not approved at the script gate — an illustration is "
+                   f"the one picture nobody sourced, so it is used only if "
+                   f"it was shown and approved")
+
+
+def demote_unapproved(cuts: list[dict], root: Path | None = None
+                      ) -> list[dict]:
+    """Turn every unapproved illustration cut back into its fallback.
+
+    THE FALLBACK IS THE SLOT'S OWN, not a blank. A slot that asked for an
+    illustration already describes something the film needs to show, so it
+    goes back to whatever it would have been without one: a sourced still
+    if the slot has a path, and an authored graphic otherwise. Dropping the
+    cut entirely would leave a hole in the narration it was holding.
+    """
+    changed = []
+    for cut in cuts:
+        if cut.get("type") != "illustration":
+            continue
+        subject = cut.get("subject") or cut.get("title") or ""
+        ok, why = usable(subject, root)
+        if ok:
+            continue
+        fell_to = "still" if cut.get("source") else "text_card"
+        cut["type"] = "annotated_still" if fell_to == "still" else "text_card"
+        cut.pop("subject", None)
+        cut["illustration_refused"] = why
+        cut["illustration_fallback"] = fell_to
+        changed.append({"cut": cut.get("id"), "subject": subject,
+                        "fell_to": fell_to, "why": why})
+    return changed

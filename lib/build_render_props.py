@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 import re
 import subprocess
 import sys
@@ -546,6 +547,28 @@ def main() -> int:
         cut.setdefault("actNumber", num)
         cut.setdefault("actTitle", title)
         cut.setdefault("sceneIndex", "S " + sid.rsplit("_s", 1)[-1])
+
+    # AN ILLUSTRATION NOT APPROVED AT THE GATE IS NOT USED.
+    #
+    # It is the only picture in the film nobody sourced, so it does not get
+    # in on the strength of having been generated. The gate shows each one
+    # with its subject and records the ones it CONFIRMED DELIVERED; anything
+    # else — a render made after the gate, or one whose upload failed — goes
+    # back to the slot's fallback here rather than reaching the film.
+    #
+    # Applied before the proxy pass, so a demoted cut is proxied as the
+    # still it has become.
+    try:
+        import illustration_spec
+    except ImportError:
+        from . import illustration_spec          # type: ignore[no-redef]
+    demoted = illustration_spec.demote_unapproved(ed["cuts"], Path(ROOT))
+    for d in demoted:
+        print(f"  illustration refused: {d['cut']} ({d['subject']!r}) -> "
+              f"{d['fell_to']}", flush=True)
+    if demoted:
+        print(f"  {len(demoted)} illustration(s) fell back; approve them at "
+              f"the script gate to use them", flush=True)
 
     # Oversized stills are rendered against downscaled proxies.
     proxied = 0

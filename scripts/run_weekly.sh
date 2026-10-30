@@ -311,6 +311,7 @@ while true; do
     --project "$SLUG" \
     --script "$REPO/projects/$SLUG/artifacts/script.json" \
     --frames "$REPO/projects/$SLUG/renders/style" \
+    --illustrations "$REPO/assets/library/illustrations" \
     --hours "$GATE_HOURS" --attempt "$ATTEMPT"
   GATE=$?
   case "$GATE" in
