@@ -176,6 +176,11 @@ BACKENDS = {
 
 def main() -> int:
     import lib.illustration_spec as spec
+    try:
+        from lib.env_loader import load_env
+        load_env()
+    except Exception:                                       # noqa: BLE001
+        pass
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--backend", default="pixazo/flux-1-schnell",
