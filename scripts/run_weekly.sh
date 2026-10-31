@@ -84,6 +84,52 @@ exec > >(tee -a "$LOGDIR/run.log") 2>&1
 
 say() { printf '\n== %s == %s\n' "$(date +%H:%M:%S)" "$*"; }
 
+# ── which code is about to run ───────────────────────────────────────────
+#
+# THE RUNNER EXECUTES THE WORKING TREE, NOT A BRANCH. On 2026-10-30 that
+# produced a full film from the unmerged `asset-library` branch, because a
+# development checkout had been left there after a push to `automation`.
+# Pushing a branch does nothing if the runner reads a different one.
+#
+# Two defences, and the first is the real one:
+#
+#   1. The plist points at a DEDICATED WORKTREE pinned to RUN_BRANCH
+#      (~/Developer/wak3up-docs/runner), which no development checkout can
+#      reach.
+#   2. This check, which refuses to start if the tree it is in is not on
+#      RUN_BRANCH or is not clean. A guard is worth having even behind a
+#      worktree, because worktrees can be switched too.
+#
+# The branch and commit go in the log header and the start notice, so a run
+# can always be traced to the code that made it.
+RUN_BRANCH="${RUN_BRANCH:-automation}"
+RUN_HEAD="$(git -C "$REPO" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+RUN_ON="$(git -C "$REPO" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+RUN_DIRTY="$(git -C "$REPO" status --porcelain 2>/dev/null | wc -l | tr -d ' ')"
+
+say "code: $RUN_ON @ $RUN_HEAD  (expected $RUN_BRANCH, $RUN_DIRTY uncommitted)"
+
+if [[ "$RUN_ON" != "$RUN_BRANCH" ]]; then
+  notify "<b>Weekly run refused to start</b>
+The checkout at $REPO is on <b>$RUN_ON</b>, not <b>$RUN_BRANCH</b>.
+
+A run from the wrong branch makes a film out of code that has not been
+merged, and the gates it passes are not the gates anyone agreed to. Put the
+tree back on $RUN_BRANCH, or set RUN_BRANCH if this is deliberate."
+  say "REFUSED: on $RUN_ON, expected $RUN_BRANCH"
+  exit 7
+fi
+
+if [[ "$RUN_DIRTY" != "0" ]]; then
+  notify "<b>Weekly run refused to start</b>
+$REPO is on $RUN_BRANCH but has <b>$RUN_DIRTY uncommitted change(s)</b>.
+
+The film would be made from code that is in no commit, so nothing could be
+traced back to it afterwards. Commit or stash, then re-run."
+  say "REFUSED: $RUN_DIRTY uncommitted change(s) on $RUN_BRANCH"
+  exit 7
+fi
+
 notify() {  # best effort; a notifier that raises must not stop a render
   "$PY" "$REPO/lib/telegram.py" --send "$1" >/dev/null 2>&1 || true
 }
@@ -183,6 +229,7 @@ SLUG="$(printf '%s' "$TOPIC" | tr '[:upper:] ' '[:lower:]-' | tr -cd 'a-z0-9-')"
 say "topic: $TOPIC  (project $SLUG)"
 notify "<b>Weekly run started</b>
 topic: $TOPIC
+code: <code>$RUN_ON @ $RUN_HEAD</code>
 log: $LOGDIR"
 
 # ── 2. the film, up to the script ────────────────────────────────────────

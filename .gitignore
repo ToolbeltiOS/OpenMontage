@@ -124,6 +124,14 @@ remotion-composer/public/demo-props/caption-burn-*
 
 venv/
 .venv/
+# WITHOUT THE SLASH TOO, because a trailing slash matches a DIRECTORY and
+# git treats a symlink as a file. The runner worktree symlinks .venv and
+# node_modules at the main checkout's copies rather than duplicating
+# gigabytes, and those symlinks showed as untracked — which would leave the
+# runner tree permanently dirty and make run_weekly.sh refuse to start on
+# its own clean-tree guard.
+.venv
+remotion-composer/node_modules
 
 # Backlot local cache (thumbnails)
 .backlot/
