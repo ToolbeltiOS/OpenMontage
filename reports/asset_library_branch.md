@@ -75,3 +75,71 @@ a cut illustrates is a content decision for the scene planner.
 
 **Open:** the scene planner does not yet write `claim_id`. Until it does,
 every route is terrain.
+
+---
+
+## Merge week, item 1: an approved illustration that no cut uses
+
+Found on 2026-11-01 while diagnosing the Noah render. The three
+illustrations generated for Noah were posted to the Telegram script gate and
+approved by the owner at `2026-10-31T09:20:42` — and **appear in no cut of
+the film**.
+
+`assets/library/illustrations/approved.json` is read by
+`scripts/telegram_gate.py`, `lib/illustration_spec.py` and
+`scripts/make_illustration.py`. It is read by nothing in the scene planner,
+the asset bank or the render path. Measured on the Noah props:
+
+| | |
+|---|---|
+| approved for `noah` | 3 |
+| referenced by a cut in `render_props.json` | **0** |
+| planner asset mix | `still 29.6 / graphic 53.5 / texture 17.0` — no illustration class exists |
+
+So the illustration route ends at the gate. The owner approved a decision
+that had no effect, and a report could have said the illustrations were in a
+film they were not in.
+
+**This is the third gate-without-consumer this project has produced**, after
+the `cut.texture` that was never forwarded (first style-frame before/after
+came back byte-identical on four of six pairs, both sides being the "after")
+and the camera props `AnnotatedStill` never read. The pattern is always the
+same: a gate reads what was *authored* and nothing reads what was
+*rendered*.
+
+`lib/verify_approved_use.py` makes it a hard failure, in both directions:
+
+- an illustration approved for the project that no cut references;
+- a cut referencing an illustration that was not approved for the project,
+  which is the standing rule — an illustration not approved at the gate is
+  not used, and the slot falls back to a still or an authored graphic.
+
+It matches on **file basename, not path**, because `props_for_layer` stages
+assets and `assets/library/illustrations/ark-build.png` in the plan is
+`assets_noah/ark-build.png` by the time the renderer sees it. And it
+searches the whole props blob as text rather than a known set of fields,
+because the two previous faults of this kind were both a field that was
+never forwarded: a check that looks only where the asset is *supposed* to be
+cannot see it missing.
+
+Blocking, from `gates()` in `lib/film_render.py`. Proved not inert — six
+cases, both directions:
+
+| case | verdict |
+|---|---|
+| approved and used | PASS |
+| approved, staged under a different directory | PASS |
+| approved and not used | FAIL |
+| used but not approved | FAIL |
+| two approved, one used | FAIL |
+| nothing approved, nothing used | PASS |
+
+On `noah` as it stands it reads **FAIL**, naming all three files. That is
+correct and is left standing: the Noah film is wanted as it is, the fault is
+known, and the work of giving illustrations a consumer in the scene planner
+is this item.
+
+**Still to do, and it is the item itself:** give the planner an illustration
+slot class so an approved illustration can be chosen for a cut. The gate
+turns a silent omission into a stopped build; it does not supply the
+consumer.

@@ -83,7 +83,10 @@ def main() -> int:
     audio_report = json.loads((out_dir / "demo_audio_report.json").read_text())
     expected = next((m["mix_measured_lufs"] for m in audio_report["mixes"]
                      if m["file"] == mix.name), None)
-    problems, results = gates(dest, picture, cuts, expected, FPS)
+    # No project, so the approved-asset-use gate is skipped: the demo has no
+    # script gate and nothing is ever approved for it. The film path passes
+    # its project and is checked.
+    problems, results = gates(dest, picture, cuts, expected, FPS, None)
     out = report(f"Demo delivery — act 2, bed -{args.bed}", dest, picture, count,
                  seconds, results, problems, expected,
                  ROOT / "reports" / f"demo_delivery_bed{args.bed}.md")

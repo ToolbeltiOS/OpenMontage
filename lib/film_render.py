@@ -440,7 +440,8 @@ def remux(dest: Path, mix: Path) -> None:
 
 
 def gates(dest: Path, picture: Path, cuts: list[dict[str, Any]],
-          expected_lufs: float | None, fps: int = FPS
+          expected_lufs: float | None, fps: int = FPS,
+          project: str | None = None
           ) -> tuple[list[str], dict[str, Any]]:
     """Every blocking check, on the file that is about to be delivered."""
     sys.path.insert(0, str(ROOT / "lib"))
@@ -470,6 +471,19 @@ def gates(dest: Path, picture: Path, cuts: list[dict[str, Any]],
     # mix is 0.486s shorter than the cuts and nothing was responsible for
     # noticing. No decode is added here; this is arithmetic on a figure two
     # gates already had.
+    # DID WHAT THE OWNER APPROVED REACH THE FILM?
+    #
+    # Blocking, and the third guard of its kind, because this project has now
+    # produced three gates that proved an intention while nothing checked the
+    # render: a `texture` field never forwarded, camera props the renderer
+    # never read, and three illustrations approved at the script gate that
+    # appear in no cut. See lib/verify_approved_use.py.
+    if project:
+        from verify_approved_use import check as check_approved
+        ok_use, use_problems, use_summary = check_approved(project)
+        results["approved asset use"] = use_summary
+        problems += [f"approved asset use: {p}" for p in use_problems]
+
     asked = frame_count(cuts, fps)
     got = int(results["frame motion"].get("frames") or 0)
     results["frame count"] = {"asked": asked, "delivered": got,

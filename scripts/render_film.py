@@ -127,7 +127,7 @@ def main() -> int:
     expected = None
     if mix_report.exists():
         expected = ((json.loads(mix_report.read_text()) or {}).get("final") or {}).get("lufs")
-    problems, results = gates(dest, picture, cuts, expected, FPS)
+    problems, results = gates(dest, picture, cuts, expected, FPS, args.project)
     # named after the file delivered, not the project: a slice rendered to
     # check the path works must not leave a report that reads as the film's
     out = report(f"Film delivery — {args.project} — {dest.name}", dest, picture,
