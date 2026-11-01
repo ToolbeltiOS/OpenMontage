@@ -1,0 +1,32 @@
+{
+ "project": "noah",
+ "state": "approved at the gate, consumed by nothing, approvals revoked",
+ "revoked_at": "2026-11-01T15:35:52",
+ "why": "The owner approved three illustrations at the Telegram script gate at 2026-10-31T09:20:42. None of them appears in any cut of the film: render_props.json references none of the three files, and the planner's asset mix (still 29.6 / graphic 53.5 / texture 17.0) has no illustration class for one to be chosen into. assets/library/illustrations/approved.json is read by scripts/telegram_gate.py, lib/illustration_spec.py and scripts/make_illustration.py, and by nothing in the scene planner, the asset bank or the render path. The illustration route ends at the gate.",
+ "so_what": "The approvals were revoked rather than waived, so that lib/verify_approved_use.py passes by being TRUE and not by being excused. There is no waiver mechanism and none was added: a gate with an exemption for the case that produced it is not a gate. The film is delivered without illustrations, which is what it always was; what changed is that the record no longer claims otherwise.",
+ "fix": "Merge-week item 1: give the scene planner an illustration slot class so an approved illustration can be chosen for a cut. Written up in reports/asset_library_branch.md. Until then an illustration cannot reach a film, and approving one at the gate has no effect.",
+ "precedent": "The third gate-without-consumer in this project, after the cut.texture that was never forwarded to the component and the camera props AnnotatedStill never read. In each case a gate read what was authored and nothing read what was rendered.",
+ "illustrations": [
+  {
+   "subject": "a Greek traveller in a himation standing before the colossal unworked limestone blocks of the Tiryns citadel wall, scale of a man against the masonry, second century AD",
+   "approved_at": "2026-10-31T09:20:42",
+   "path": "assets/library/illustrations/pausanias-at-tiryns.png",
+   "provenance": "kept in assets/library/illustrations/manifest.json",
+   "referenced_by_any_cut": false
+  },
+  {
+   "subject": "a very large wooden vessel under construction on dry land, timber frames and scaffolding, workers with adzes and bow drills, ancient near-eastern dress",
+   "approved_at": "2026-10-31T09:20:42",
+   "path": "assets/library/illustrations/ark-build.png",
+   "provenance": "kept in assets/library/illustrations/manifest.json",
+   "referenced_by_any_cut": false
+  },
+  {
+   "subject": "teams of people hauling a large carved stone statue on a wooden sledge with ropes over bare ground, many figures straining, no machinery",
+   "approved_at": "2026-10-31T09:20:42",
+   "path": "assets/library/illustrations/sledge-teams.png",
+   "provenance": "kept in assets/library/illustrations/manifest.json",
+   "referenced_by_any_cut": false
+  }
+ ]
+}
