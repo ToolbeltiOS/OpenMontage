@@ -84,6 +84,74 @@ exec > >(tee -a "$LOGDIR/run.log") 2>&1
 
 say() { printf '\n== %s == %s\n' "$(date +%H:%M:%S)" "$*"; }
 
+notify() {  # best effort; a notifier that raises must not stop a render
+  "$PY" "$REPO/lib/telegram.py" --send "$1" >/dev/null 2>&1 || true
+}
+
+fail() {
+  say "FAILED at $1"
+  notify "<b>Weekly run failed</b>
+stage: $1
+$2
+
+log: $LOGDIR/run.log"
+  exit 1
+}
+
+# ── power ────────────────────────────────────────────────────────────────
+#
+# A RUN TAKES HOURS AND A CLAMSHELL MAC ON BATTERY SLEEPS THROUGH THEM.
+# Measured on the 2026-10-30 run: on battery with the lid shut, the machine
+# slept 75 times across two model stages and 19.5 hours of the 41 were sleep,
+# each wake returning "Connection lost while your computer was asleep" — 36
+# in the script stage (9.10 h) and 39 in the render stage (10.43 h). Then the
+# battery ran down. `caffeinate -dimsu` runs throughout and cannot help: it
+# does not hold a clamshell awake on battery.
+#
+# So battery at the start is a REFUSAL, not a warning. "Late beats none" does
+# not apply, because late is not what happens — the film never arrives.
+# Mid-run it is a PAUSE instead: by then there is a script, a scene plan and
+# an asset bank on disk, and those are worth waiting for power to finish.
+power_source() { pmset -g batt 2>/dev/null | sed -n "1s/.*drawing from '\([^']*\)'.*/\1/p"; }
+power_charge() { pmset -g batt 2>/dev/null | sed -n '2s/.*	\([0-9]*%\);.*/\1/p'; }
+on_battery()   { [[ "$(power_source)" == *Battery* ]]; }
+
+POWER_WAIT_HOURS="${POWER_WAIT_HOURS:-6}"
+POWER_POLL="${POWER_POLL:-120}"
+
+# Pause here until the mains come back. $1 names where we are, so the
+# notification says what is waiting rather than just that something is.
+require_power() {
+  local where="$1" waited=0 told=0 limit=$((POWER_WAIT_HOURS * 3600))
+  # A dry run or a smoke run is minutes, not hours. Power is not its problem.
+  [[ "${DRY_RUN:-0}" == "1" || "${SMOKE:-0}" == "1" ]] && return 0
+  while on_battery; do
+    if (( told == 0 )); then
+      say "PAUSED before $where: on battery ($(power_charge))"
+      notify "<b>Weekly run paused: on battery</b>
+before: $where
+charge: $(power_charge)
+
+The work so far is on disk and will be picked up where it stopped. Plug in
+and open the lid; the run carries on by itself within $((POWER_POLL / 60)) minutes.
+It gives up after ${POWER_WAIT_HOURS}h on battery."
+      told=1
+    fi
+    if (( waited >= limit )); then
+      fail "$where" "on battery for ${POWER_WAIT_HOURS}h with no mains — stopped before $where"
+    fi
+    sleep "$POWER_POLL"
+    waited=$((waited + POWER_POLL))
+  done
+  if (( told )); then
+    say "power back ($(power_source)) — carrying on with $where"
+    notify "<b>Weekly run resumed</b>
+power: $(power_source) $(power_charge)
+carrying on with: $where"
+  fi
+}
+
+
 # ── which code is about to run ───────────────────────────────────────────
 #
 # THE RUNNER EXECUTES THE WORKING TREE, NOT A BRANCH. On 2026-10-30 that
@@ -150,26 +218,16 @@ traced back to it afterwards. Commit or stash, then re-run."
   exit 7
 fi
 
-RUN_POWER_WARNING=0
 if [[ "$RUN_POWER" == *Battery* ]]; then
-  say "WARNING: on battery (${RUN_CHARGE:-?}) — a run takes hours and a Mac on"
-  say "         battery with the lid shut sleeps through them"
-  RUN_POWER_WARNING=1
+  notify "<b>not running: on battery / lid closed</b>
+plug in, open the lid, re-fire with
+<code>launchctl kickstart -k gui/$(id -u)/com.wak3up.docs.weekly</code>
+
+charge: ${RUN_CHARGE:-?}. A run takes hours; a clamshell Mac on battery
+sleeps through them and the battery runs out before the film is made."
+  say "REFUSED: on battery (${RUN_CHARGE:-?}) — plug in, open the lid, re-fire"
+  exit 7
 fi
-
-notify() {  # best effort; a notifier that raises must not stop a render
-  "$PY" "$REPO/lib/telegram.py" --send "$1" >/dev/null 2>&1 || true
-}
-
-fail() {
-  say "FAILED at $1"
-  notify "<b>Weekly run failed</b>
-stage: $1
-$2
-
-log: $LOGDIR/run.log"
-  exit 1
-}
 
 # ── a claude -p stage, resumable ────────────────────────────────────
 #
@@ -257,11 +315,11 @@ say "topic: $TOPIC  (project $SLUG)"
 notify "<b>Weekly run started</b>
 topic: $TOPIC
 code: <code>$RUN_ON @ $RUN_HEAD</code>
-power: ${RUN_POWER:-unknown} ${RUN_CHARGE:-}$( ((RUN_POWER_WARNING)) \
-  && printf '%s' " — a run takes hours; on battery with the lid shut it sleeps through them" )
+power: ${RUN_POWER:-unknown} ${RUN_CHARGE:-}
 log: $LOGDIR"
 
 # ── 2. the film, up to the script ────────────────────────────────────────
+require_power "the script stage"
 PROMPT="$LOGDIR/prompt.txt"
 cat > "$PROMPT" <<PROMPTEOF
 Make this week's documentary.
@@ -345,6 +403,7 @@ else
 fi
 
 # ── 2b. is every factual sentence attributed? ────────────────────────────
+require_power "the fact gate"
 #
 # BEFORE the human gate, not after: the gate asks a person to approve a
 # script, and a script whose claims do not resolve to a sourced ledger entry
@@ -362,6 +421,7 @@ if [[ "$SMOKE" != "1" && "$DRY_RUN" != "1" ]]; then
 fi
 
 # ── 3. the human ─────────────────────────────────────────────────────────
+require_power "the script gate"
 #
 # The smoke run stops HERE, at the gate, because everything before it is the
 # part a schedule can get wrong unattended and everything after it needs a
@@ -414,6 +474,7 @@ done
 fi
 
 # ── 4. the render ────────────────────────────────────────────────────────
+require_power "the render"
 if [[ "$DRY_RUN" == "1" ]]; then
   say "dry run: skipping the render"
 else
@@ -455,6 +516,7 @@ rebuilding, say so and do that rather than rendering 36,000 frames again." \
 fi
 
 # ── 5. publish ───────────────────────────────────────────────────────────
+require_power "publishing"
 if [[ "$DRY_RUN" == "1" && ! -f "$REPO/projects/$SLUG/artifacts/listing.json" ]]; then
   say "dry run: no listing for $SLUG, so there is nothing to publish"
   say "         scripts/dry_run.py is what exercises the publisher"
