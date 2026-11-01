@@ -33,10 +33,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import collections
 import os
+import re
 import shutil
 import subprocess
 import sys
+import threading
+import time
 from pathlib import Path
 from typing import Any
 
@@ -49,6 +53,104 @@ FPS = 30
 def run(cmd: list[str], cwd: Path | None = None) -> None:
     print("  $", " ".join(str(c) for c in cmd[:9]), "..." if len(cmd) > 9 else "")
     subprocess.run(cmd, cwd=cwd, check=True)
+
+
+#: How often the watchdog looks, and how long it will tolerate no progress.
+#:
+#: WHY THIS EXISTS. The Noah plate was launched three times as a background
+#: task of the agent driving the stage, and all three times the harness
+#: stopped that task at its two-hour limit. The third died with 33,055 of
+#: 35,561 frames rendered — and left nothing: no output file, no error line,
+#: no exit status, because a killed process writes none of those. The stage
+#: was waiting on
+#:
+#:     until grep -qE "2. frames|3. look|error occurred" render.log; do ...
+#:
+#: and not one of those three strings can ever appear once the render is
+#: dead, so the wait slept forever on a process that no longer existed. A
+#: waiter keyed on strings that only a LIVING process emits cannot report a
+#: death. This watchdog watches the process, not the text.
+WATCH_INTERVAL = 30
+WATCH_STALL = 600
+
+#: Remotion's two counters. `Encoded` trails `Rendered` by a long way — it
+#: was at 886 when 33,055 frames had been rendered — so a reader who takes
+#: the last line of the log as "the frame we got to" is out by 32,000.
+_PROGRESS = re.compile(r"^(Rendered|Encoded)\s+(\d+)/(\d+)")
+
+
+def cut_at_frame(cuts: list[dict[str, Any]] | None, frame: int,
+                 fps: int = FPS) -> str:
+    """The cut on screen at a frame, named well enough to go and look at it."""
+    for c in cuts or []:
+        if round(float(c["in_seconds"]) * fps) <= frame < round(
+                float(c["out_seconds"]) * fps):
+            where = " ".join(str(x) for x in (c.get("act"), c.get("sceneIndex"))
+                             if x)
+            kind = c.get("type") or c.get("treatment") or "?"
+            return f"{c.get('id', '?')} ({kind}{', ' + where if where else ''})"
+    return f"no cut covers frame {frame}"
+
+
+def run_watched(cmd: list[str], cwd: Path | None, label: str, count: int,
+                cuts: list[dict[str, Any]] | None = None) -> None:
+    """`run`, but it cannot hang and it cannot die quietly.
+
+    Progress is read from the child's own output as it arrives. If no frame
+    is reported for WATCH_STALL seconds the child is killed; if it exits
+    non-zero, or exits having rendered fewer frames than asked, the failure
+    names the frame, the cut on screen at that frame, and the last twenty
+    lines. Nothing here greps for a fixed frame number or a fixed phrase.
+    """
+    print("  $", " ".join(str(c) for c in cmd[:9]), "..." if len(cmd) > 9 else "")
+    sys.stdout.flush()
+    proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT, text=True, bufsize=1)
+    tail: collections.deque[str] = collections.deque(maxlen=20)
+    state = {"frame": 0, "at": time.monotonic(), "stalled": False}
+    lock = threading.Lock()
+
+    def watch() -> None:
+        while proc.poll() is None:
+            time.sleep(WATCH_INTERVAL)
+            with lock:
+                idle = time.monotonic() - state["at"]
+                if idle < WATCH_STALL:
+                    continue
+                state["stalled"] = True
+            print(f"  WATCHDOG: no progress for {int(idle)}s at frame "
+                  f"{state['frame']}/{count} — killing {label}")
+            sys.stdout.flush()
+            proc.kill()
+            return
+
+    watcher = threading.Thread(target=watch, daemon=True)
+    watcher.start()
+
+    assert proc.stdout is not None
+    for line in proc.stdout:
+        line = line.rstrip("\n")
+        tail.append(line)
+        print(line)
+        sys.stdout.flush()
+        m = _PROGRESS.match(line)
+        if m and m.group(1) == "Rendered":
+            with lock:
+                state["frame"] = int(m.group(2))
+                state["at"] = time.monotonic()
+    rc = proc.wait()
+
+    if rc == 0 and not state["stalled"]:
+        return
+
+    why = (f"no progress for {WATCH_STALL}s" if state["stalled"]
+           else f"exited {rc}" if rc > 0 else f"killed by signal {-rc}")
+    raise SystemExit(
+        f"{label} FAILED: {why}\n"
+        f"  reached frame {state['frame']} of {count}\n"
+        f"  on screen there: {cut_at_frame(cuts, state['frame'])}\n"
+        f"  last {len(tail)} lines:\n"
+        + "\n".join(f"    {t}" for t in tail))
 
 
 def frame_count(cuts: list[dict[str, Any]], fps: int = FPS) -> int:
@@ -161,6 +263,14 @@ def stage_assets(blob: Any, project: str) -> dict[str, Any]:
 
     missing: list[str] = []
     for node, key, value in list(_asset_values(blob)):
+        # A prop that ALREADY points into public/ needs no staging and must
+        # not be rewritten: basemap tiles are cut straight into
+        # remotion-composer/public/basemaps by scripts/build_basemap_tile.py,
+        # and the renderer reads them from there by the same relative name.
+        # Resolving them against the repo root instead reported six real
+        # tiles as missing assets and refused the render.
+        if not value.startswith("/") and (COMPOSER / "public" / value).exists():
+            continue
         source = Path(value) if value.startswith("/") else ROOT / value
         if not source.exists():
             missing.append(value)
@@ -208,10 +318,29 @@ def props_for_layer(props_path: Path, mode: str, work: Path,
     return dest
 
 
-def render_plate(props: Path, dest: Path, count: int) -> None:
+#: Remotion's own default: about half the cores.
+#:
+#: MEASURED, because the first guess here was wrong. This was briefly set to
+#: cores - 1 (7 of 8) on the reasoning that concurrency is free — it changes
+#: how fast frames are made, never what is in them — and the first minute's
+#: estimate agreed, dropping from "over two hours" to "about 43 minutes".
+#: Sustained, it was the opposite: 7 renderers managed 2.6 frames/s over
+#: twenty minutes, against 4.6 frames/s sustained over two hours at the
+#: default on the same film and the same machine. Seven Chromium renderers
+#: and ffmpeg on eight cores contend; the first minute cannot see it.
+#:
+#: A Remotion ETA printed in the first minute is not a measurement. Overriding
+#: this needs a sustained rate over at least ten minutes, in the comment.
+CONCURRENCY = max(1, (os.cpu_count() or 4) // 2)
+
+
+def render_plate(props: Path, dest: Path, count: int,
+                 cuts: list[dict[str, Any]] | None = None) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    run(["npx", "remotion", "render", ENTRY, "Explainer", str(dest),
-         f"--props={props}", f"--frames=0-{count - 1}", "--gl=angle"], cwd=COMPOSER)
+    run_watched(["npx", "remotion", "render", ENTRY, "Explainer", str(dest),
+                 f"--props={props}", f"--frames=0-{count - 1}", "--gl=angle",
+                 f"--concurrency={CONCURRENCY}"],
+                COMPOSER, "plate", count, cuts)
 
 
 def extract_frames(picture: Path, frames_dir: Path, count: int) -> None:
@@ -227,28 +356,32 @@ def extract_frames(picture: Path, frames_dir: Path, count: int) -> None:
 
 
 def render_look(frames_dir: Path, dest: Path, count: int,
-                act: str = "act2", acts: list[dict[str, Any]] | None = None) -> None:
+                act: str = "act2", acts: list[dict[str, Any]] | None = None,
+                cuts: list[dict[str, Any]] | None = None) -> None:
     props: dict[str, Any] = {"dir": frames_dir.name, "act": act, "stack": "full",
                              "frames": count}
     if acts:
         props["acts"] = acts
-    run(["npx", "remotion", "render", ENTRY, "FilmLookPass", str(dest),
-         f"--props={json.dumps(props)}", f"--frames=0-{count - 1}", "--gl=angle"],
-        cwd=COMPOSER)
+    run_watched(["npx", "remotion", "render", ENTRY, "FilmLookPass", str(dest),
+                 f"--props={json.dumps(props)}", f"--frames=0-{count - 1}",
+                 "--gl=angle", f"--concurrency={CONCURRENCY}"],
+                COMPOSER, "look pass", count, cuts)
 
 
-def render_type(props: Path, dest: Path, count: int) -> None:
+def render_type(props: Path, dest: Path, count: int,
+                cuts: list[dict[str, Any]] | None = None) -> None:
     """Only the type, over transparency.
 
     ProRes 4444 because it is the one format in the renderer that carries an
     alpha channel losslessly. It is a working file — about 8MB a second — and
     it stays in remotion-composer/out, which is gitignored.
     """
-    run(["npx", "remotion", "render", ENTRY, "Explainer", str(dest),
-         f"--props={props}", f"--frames=0-{count - 1}",
-         "--codec=prores", "--prores-profile=4444",
-         "--pixel-format=yuva444p10le", "--image-format=png", "--gl=angle"],
-        cwd=COMPOSER)
+    run_watched(["npx", "remotion", "render", ENTRY, "Explainer", str(dest),
+                 f"--props={props}", f"--frames=0-{count - 1}",
+                 "--codec=prores", "--prores-profile=4444",
+                 "--pixel-format=yuva444p10le", "--image-format=png",
+                 "--gl=angle", f"--concurrency={CONCURRENCY}"],
+                COMPOSER, "type pass", count, cuts)
 
 
 def deliver(look: Path, type_layer: Path, mix: Path, dest: Path) -> None:
