@@ -253,6 +253,171 @@ def run_watched(cmd: list[str], cwd: Path | None, label: str, count: int,
         + "\n".join(f"    {t}" for t in tail))
 
 
+def frame_count(cuts: list[dict[str, Any]], fps: int = FPS) -> int:
+    """Frames up to the last cut's end.
+
+    Not the composition's own duration: `calculateMetadata` adds a second of
+    padding for a final fade, and in anything without one that second is an
+    empty background gradient.
+
+    IT DOES NOT MAKE THE PICTURE AND THE MIX THE SAME LENGTH, which is what
+    this docstring used to claim. Measured on easter-island: the cuts sum to
+    1210.567s and the narration timeline the mixer builds comes to 1210.081s,
+    0.486s apart — 169 cuts each rounded to a frame. The delivered file held
+    36,302 frames against the 36,317 asked for, because `deliver` passed
+    `-shortest` and the audio was the shorter of the two. Half a second of the
+    outro, gone, with the report printing the number the edit asked for beside
+    a file that did not have it.
+
+    The mix is padded to the picture now, and `gates` compares the two.
+    """
+    return round(max(float(c["out_seconds"]) for c in cuts) * fps)
+
+
+def act_spans(cuts: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """When each act is on screen, for the shader's per-act grade.
+
+    The grade is per act and the look pass is one composition, so without this
+    a twenty-minute film is graded as whichever act was named first.
+
+    Act names are section ids, and a film has sections that are not numbered:
+    this crashed on `cold_open` with `invalid literal for int()`, because it
+    coerced every label to `act<N>` and the demo's cuts were numbered "01".
+    `gradeForAct` in design/system.ts has always normalised the same two
+    forms — a section id as it stands, a bare number to `act<N>` — so this
+    mirrors it rather than inventing a third rule, and `cold_open` and
+    `outro` keep the grades the playbook writes for them.
+    """
+    spans: list[dict[str, Any]] = []
+    for cut in cuts:
+        # The SECTION ID first, the chrome's display number only as a
+        # fallback. They agree on a numbered act and disagree on every other
+        # section: the cold open carries actNumber "00", which normalises to
+        # `act0` — a key no grade table has — so 35 seconds of it was being
+        # graded with the fallback while `act: cold_open` sat right beside it
+        # naming the grade the playbook writes. It also split the cold open
+        # into two spans with a third in between.
+        raw = cut.get("act") or cut.get("actNumber")
+        if raw is None:
+            continue
+        key = str(raw).strip().lower()
+        name = f"act{int(key)}" if key.isdigit() else key
+        start, end = float(cut["in_seconds"]), float(cut["out_seconds"])
+        if spans and spans[-1]["act"] == name:
+            spans[-1]["to_seconds"] = end
+        else:
+            spans.append({"act": name, "from_seconds": start, "to_seconds": end})
+    return spans
+
+
+#: File extensions a props value has to end in to be treated as an asset.
+ASSET_SUFFIXES = (".png", ".jpg", ".jpeg", ".webp", ".gif",
+                  ".mp4", ".mov", ".webm")
+
+
+def _asset_values(blob: Any):
+    """Every (container, key, value) in the props that names a local asset."""
+    stack: list[Any] = [blob]
+    while stack:
+        node = stack.pop()
+        items = (node.items() if isinstance(node, dict)
+                 else enumerate(node) if isinstance(node, list) else ())
+        for key, value in items:
+            if isinstance(value, str):
+                plain = value.split("?")[0].lower()
+                if (plain.endswith(ASSET_SUFFIXES)
+                        and not value.startswith(("http://", "https://", "data:"))):
+                    yield node, key, value
+            elif isinstance(value, (dict, list)):
+                stack.append(value)
+
+
+def stage_assets(blob: Any, project: str) -> dict[str, Any]:
+    """Put every asset the props name where the renderer can actually read it.
+
+    WHY THIS STAGE EXISTS
+    ---------------------
+    The first real film render died at frame 0 with
+
+        Not allowed to load local resource:
+        file:///Users/.../renders/proxies/wm_20150500.jpg
+
+    87 of the 104 asset paths in the props were absolute filesystem paths.
+    `resolveAsset` in the composer turns an absolute path into a `file://`
+    URL, and a page served from http://localhost is not allowed to load one —
+    so that branch of the resolver cannot work in a render or in the Studio.
+    It looks accommodating and is a dead end.
+
+    Remotion reads assets from `remotion-composer/public/`, which is why the
+    demo path worked: `build_demo_cut.py` copied its assets in. The film path
+    had no such step, because run #1 was finished by hand and the gates were
+    written against the demo. So the one documented full-film path had never
+    once resolved a real project's assets.
+
+    Hard links, not copies: the proxies are hundreds of megabytes and the
+    staging directory is gitignored working space. A cross-device link falls
+    back to a copy.
+    """
+    stage = COMPOSER / "public" / f"assets_{project}"
+    stage.mkdir(parents=True, exist_ok=True)
+
+    missing: list[str] = []
+    for node, key, value in list(_asset_values(blob)):
+        # A prop that ALREADY points into public/ needs no staging and must
+        # not be rewritten: basemap tiles are cut straight into
+        # remotion-composer/public/basemaps by scripts/build_basemap_tile.py,
+        # and the renderer reads them from there by the same relative name.
+        # Resolving them against the repo root instead reported six real
+        # tiles as missing assets and refused the render.
+        if not value.startswith("/") and (COMPOSER / "public" / value).exists():
+            continue
+        source = Path(value) if value.startswith("/") else ROOT / value
+        if not source.exists():
+            missing.append(value)
+            continue
+        # The basename alone collides: two acts can both carry a detail.jpg.
+        digest = hashlib.sha1(str(source.resolve()).encode()).hexdigest()[:8]
+        dest = stage / f"{digest}_{source.name}"
+        if not dest.exists():
+            try:
+                os.link(source, dest)
+            except OSError:
+                shutil.copy2(source, dest)
+        node[key] = f"{stage.name}/{dest.name}"
+
+    if missing:
+        raise SystemExit(
+            f"{len(missing)} asset(s) in the props do not exist, and a render "
+            f"finds that out at the frame that needs them:\n  "
+            + "\n  ".join(missing[:10]))
+    return blob
+
+
+def props_for_layer(props_path: Path, mode: str, work: Path,
+                    project: str | None = None) -> Path:
+    """The same props with one field added, written where the renderer sees it.
+
+    `project` names the staging directory under `public/`. Without it the
+    props go through unstaged, which is only right for props that already
+    point into `public/` — the demo's do, because its own builder copied them
+    there.
+    """
+    blob = json.loads(props_path.read_text())
+    blob["layer_mode"] = mode
+    if project:
+        # The renderer has no business with the mix. `deliver()` is the one
+        # place the audio enters, by ffmpeg, onto the finished picture — and
+        # the plate, look and type passes would otherwise each carry a
+        # 232MB wav through Remotion's asset downloader, which refuses a
+        # file:// URL anyway. Picture-only layers, mix at the mux.
+        blob.pop("audio", None)
+        blob = stage_assets(blob, project)
+    work.mkdir(parents=True, exist_ok=True)
+    dest = work / f"props_{mode}.json"
+    dest.write_text(json.dumps(blob))
+    return dest
+
+
 #: Remotion's own default: about half the cores.
 #:
 #: MEASURED, because the first guess here was wrong. This was briefly set to
