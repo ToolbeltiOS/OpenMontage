@@ -105,9 +105,28 @@ say() { printf '\n== %s == %s\n' "$(date +%H:%M:%S)" "$*"; }
 RUN_BRANCH="${RUN_BRANCH:-automation}"
 RUN_HEAD="$(git -C "$REPO" rev-parse --short HEAD 2>/dev/null || echo unknown)"
 RUN_ON="$(git -C "$REPO" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
-RUN_DIRTY="$(git -C "$REPO" status --porcelain 2>/dev/null | wc -l | tr -d ' ')"
 
-say "code: $RUN_ON @ $RUN_HEAD  (expected $RUN_BRANCH, $RUN_DIRTY uncommitted)"
+# The dirty check is about CODE, not about what the runner itself writes.
+# pick_topic.py writes artifacts/topic_briefs.json and reports/briefs/*.md
+# into this very tree, so a tree that has ever run is dirty for ever — and a
+# guard that refuses on that refuses every run after the first. Measured: the
+# runner worktree was created clean at 09:25:52 on 2026-10-31 and was dirty
+# with four generated files by 09:37:03. The guard exists so the film can be
+# traced to the code that made it, so it is the code that must be committed.
+RUN_CODE=(lib scripts schemas styles remotion-composer/src config.yaml)
+RUN_DIRTY="$(git -C "$REPO" status --porcelain -- "${RUN_CODE[@]}" 2>/dev/null | wc -l | tr -d ' ')"
+RUN_DIRTY_ALL="$(git -C "$REPO" status --porcelain 2>/dev/null | wc -l | tr -d ' ')"
+
+# A render is hours long and a sleeping Mac is a stopped render. Measured on
+# the 2026-10-30 run: the machine was on battery with the lid shut, slept 75
+# times across two stages, and 19.5 hours of a 41-hour run were sleep — each
+# wake costing an API round trip that came back "Connection lost while your
+# computer was asleep". caffeinate cannot hold a clamshell awake on battery.
+RUN_POWER="$(pmset -g batt 2>/dev/null | sed -n "1s/.*drawing from '\([^']*\)'.*/\1/p")"
+RUN_CHARGE="$(pmset -g batt 2>/dev/null | sed -n '2s/.*	\([0-9]*%\);.*/\1/p')"
+
+say "code: $RUN_ON @ $RUN_HEAD  (expected $RUN_BRANCH, $RUN_DIRTY uncommitted in code, $RUN_DIRTY_ALL in all)"
+say "power: ${RUN_POWER:-unknown} ${RUN_CHARGE:-}"
 
 if [[ "$RUN_ON" != "$RUN_BRANCH" ]]; then
   notify "<b>Weekly run refused to start</b>
@@ -122,12 +141,20 @@ fi
 
 if [[ "$RUN_DIRTY" != "0" ]]; then
   notify "<b>Weekly run refused to start</b>
-$REPO is on $RUN_BRANCH but has <b>$RUN_DIRTY uncommitted change(s)</b>.
+$REPO is on $RUN_BRANCH but has <b>$RUN_DIRTY uncommitted change(s) to code</b>
+(${RUN_CODE[*]}).
 
 The film would be made from code that is in no commit, so nothing could be
 traced back to it afterwards. Commit or stash, then re-run."
-  say "REFUSED: $RUN_DIRTY uncommitted change(s) on $RUN_BRANCH"
+  say "REFUSED: $RUN_DIRTY uncommitted change(s) to code on $RUN_BRANCH"
   exit 7
+fi
+
+RUN_POWER_WARNING=0
+if [[ "$RUN_POWER" == *Battery* ]]; then
+  say "WARNING: on battery (${RUN_CHARGE:-?}) — a run takes hours and a Mac on"
+  say "         battery with the lid shut sleeps through them"
+  RUN_POWER_WARNING=1
 fi
 
 notify() {  # best effort; a notifier that raises must not stop a render
@@ -230,6 +257,8 @@ say "topic: $TOPIC  (project $SLUG)"
 notify "<b>Weekly run started</b>
 topic: $TOPIC
 code: <code>$RUN_ON @ $RUN_HEAD</code>
+power: ${RUN_POWER:-unknown} ${RUN_CHARGE:-}$( ((RUN_POWER_WARNING)) \
+  && printf '%s' " — a run takes hours; on battery with the lid shut it sleeps through them" )
 log: $LOGDIR"
 
 # ── 2. the film, up to the script ────────────────────────────────────────
@@ -399,8 +428,25 @@ finished — read the artifact and carry on from the first stage it does not
 mark. Do not rebuild the script; it is approved.
 
 Continue the pipeline for project $SLUG from the approved script through to a
-delivered film. Auto-approve every gate. Render with scripts/render_film.py,
-which is the only full-film render path.
+delivered film. Auto-approve every gate.
+
+START THE PICTURE WITH
+
+    scripts/render_detached.sh $SLUG
+
+and NOT as a background task of your own. scripts/render_film.py is still
+the only full-film render path; that wrapper is how it is started. It puts
+the render in its own session and returns at once, so the render survives
+your waiter, your stage and this script. Then poll
+projects/$SLUG/render_status.json for the outcome and
+projects/$SLUG/render.log for progress.
+
+A render here takes HOURS and a background task is stopped at two. The Noah
+plate was launched three times as a background task and killed three times,
+the last at 33,055 of 35,561 frames, leaving no file and no error — and the
+waiter, which grepped the log for strings only a live render prints, slept
+on a process that no longer existed. Do not wait on a fixed frame number or
+a fixed phrase: render_film.py has its own watchdog and fails loudly.
 
 If the picture is already rendered and only a gate or the audio needs
 rebuilding, say so and do that rather than rendering 36,000 frames again." \
