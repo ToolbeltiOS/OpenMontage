@@ -642,6 +642,21 @@ def report(title: str, dest: Path, picture: Path, count: int, seconds: float,
         f"| delivery audio | {audio.get('mean_dbfs')} dBFS mean, "
         f"{audio.get('integrated_lufs')} LUFS against the mix's {expected_lufs} "
         f"({audio.get('loudness_delta_db')} dB) | {verdict('delivery audio')} |",
+    ]
+    # Every gate in `results` gets a row, or a gate can block a delivery
+    # without appearing in the table that is supposed to account for it —
+    # which is what the approved-asset-use gate did on its first run. The
+    # rows above are written by hand because each reads its own measurements;
+    # anything added to `gates()` and not given a row lands here.
+    for name, measured in results.items():
+        if name in ("frame motion", "frame order", "plate purity", "type lock",
+                    "frame count", "delivery audio"):
+            continue
+        detail = ", ".join(f"{k.replace('_', ' ')} {v}"
+                           for k, v in measured.items()) if isinstance(
+                               measured, dict) else str(measured)
+        lines.append(f"| {name} | {detail} | {verdict(name)} |")
+    lines += [
         "",
         "## Luma map", "",
         "One character per frame, 30 per row — a second a row. `#` is black, "
