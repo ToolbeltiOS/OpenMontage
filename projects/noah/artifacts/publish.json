@@ -1,0 +1,24 @@
+{
+ "project": "noah",
+ "video_id": "gQvV4K3LxVc",
+ "url": "https://www.youtube.com/watch?v=gQvV4K3LxVc",
+ "title": "The Flood Story Before the Bible",
+ "uploaded": "2026-11-02T15:23:33.140066+00:00",
+ "public_immediately": true,
+ "publish_at": "2026-11-02T15:23:33.140066+00:00",
+ "playlist_id": "PLGLHDmJ31GMo",
+ "comment_id": "Ugx7pc8_K9MNIxqvtn14AaABAg",
+ "done": [
+  "uploaded PUBLIC immediately",
+  "custom thumbnail set",
+  "added to 'Documentaries'",
+  "credits comment posted in 2 parts"
+ ],
+ "manual": [
+  "no caption file at /Users/mac/Developer/wak3up-docs/OpenMontage/projects/noah/artifacts/captions.en.srt",
+  "set the End Screen (no API)",
+  "confirm the Altered content disclosure is ON in Studio \u2014 the narration is synthesised and the API does not return containsSyntheticMedia, so it cannot be verified from here",
+  "PIN the credits comment (no API for it)"
+ ],
+ "comment_parts": 2
+}
