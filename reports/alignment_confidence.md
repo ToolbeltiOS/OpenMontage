@@ -90,3 +90,53 @@ silently passing, and the gate names the paragraphs.
 
 Attempt counts live in `projects/<id>/artifacts/alignment_qa.json`, so the
 two-attempt budget survives a re-run.
+
+---
+
+## 2026-11-02: what neither gate catches — local drift
+
+Measured on noah, which shipped without a caption track because of this.
+
+WhisperX placed **every one of 2,687 words**: 0 unplaced, 0 under the 40ms
+floor, `WORD TIMINGS: PASS`. The track was still unusable — **39 of 275 cues
+over the 20 chars/second ceiling**, worst at 47, in a film averaging 13.6.
+
+The error is local and **it conserves**: 15 further cues run **under 9
+chars/s**. Words are held too long exactly where others are rushed, so the
+section totals come out right and every whole-film measure looks correct.
+Re-running the alignment reproduced it to the word — 2,690 of 2,690 timings
+identical — because the aligner is deterministic and was doing what it always
+does.
+
+**Both gates look straight at this and see nothing, for the same reason: they
+measure a word.**
+
+| gate | what it reported on noah | why it misses drift |
+|---|---|---|
+| word duration | 0 of 2,687 under 40ms, PASS | `repair_unplaced` spreads unplaced runs and `enforce_floor` pads every word to 41ms, so it reads the REPAIR, not the alignment |
+| mean confidence | 0.352 over the ceiling vs 0.590 elsewhere | real but partial — only 1 of the 39 is in the near-zero band, so it narrows the search and does not find the fault |
+
+Confidence still earns its place: it is the only one of the two that moved at
+all. But neither is a cue-level instrument, and a cue is what a viewer reads.
+
+**The conclusion for the playbook** (`captions.timing`): word-level forced
+alignment on synthetic speech drifts locally, and **the sentence is the
+authority for cue timing**. Word timings are a hint inside a sentence, never
+the span of a cue.
+
+### The agreed fix, for merge week
+
+1. Detect sentence boundaries from silence — VAD over the narration wav.
+2. Match that sequence to the script's sentence sequence.
+3. Give each sentence its **measured** span.
+4. Distribute each sentence's words inside that span by character count.
+5. Build cues from the result.
+
+**Acceptance: A/B on act 2 against the current track. Cues over 20 cps AND
+cues under 9 cps must both drop to near zero** — both, because the error
+conserves, and fixing only the fast cues would mean the time was moved
+somewhere else rather than corrected. If it holds, apply to noah and
+easter-island and upload both tracks.
+
+Until then noah serves YouTube's automatic captions, which is better than a
+track that overrides them and flashes.
