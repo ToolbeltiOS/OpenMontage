@@ -1,0 +1,165 @@
+{
+ "subjects": {
+  "george_smith": {
+   "terms": [
+    "george smith",
+    "smith",
+    "rassam",
+    "hormuzd",
+    "assyriologist",
+    "portrait",
+    "engraving",
+    "photograph",
+    "chaldean",
+    "layard",
+    "plate",
+    "frontispiece"
+   ],
+   "categories": [
+    "Category:George Smith (assyriologist)",
+    "Category:The Chaldean Account of Genesis",
+    "Category:Hormuzd Rassam",
+    "Category:Assyriologists"
+   ],
+   "assets": [
+    {
+     "asset_id": "wm_95978456",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/noah/assets/images/bank_deep/wm_95978456.jpg",
+     "subject": "george_smith",
+     "title": "File:Mr. George Smith, the man who transliterated and read the so-called the Babylonian Flood Story of Tablet XI.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Mr._George_Smith,_the_man_who_transliterated_and_read_the_so-called_the_Babylonian_Flood_Story_of_Tablet_XI.jpg",
+     "width": 3059,
+     "height": 4054,
+     "artist": "Osama Shukir Muhammed Amin FRCP(Glasg)",
+     "licence": "CC BY-SA 4.0",
+     "credit": "Own work",
+     "stddev": 63.8,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_383833237",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/noah/assets/images/bank_deep/wm_383833237.jpg",
+     "subject": "george_smith",
+     "title": "File:Mr. George Smith (cropped).jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Mr._George_Smith_(cropped).jpg",
+     "width": 2173,
+     "height": 3048,
+     "artist": "Osama Shukir Muhammed Amin FRCP(Glasg)",
+     "licence": "CC BY-SA 4.0",
+     "credit": "File:Mr._George_Smith,_the_man_who_transliterated_and_read_the_so-called_the_Babylonian_Flood_Story_of_Tablet_XI.jpg",
+     "stddev": 64.8,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_445434742",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/noah/assets/images/bank_deep/wm_445434742.jpg",
+     "subject": "george_smith",
+     "title": "File:George Smith-Assyriologist 001.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:George_Smith-Assyriologist_001.jpg",
+     "width": 1500,
+     "height": 1998,
+     "artist": "AnonymousUnknown author",
+     "licence": "Public domain",
+     "credit": "Morris Jastrow (1915) The Civilization of Babylonia and Assyria, J.B. Lippincott Co., Philadelphia and London",
+     "stddev": 68.3,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_137923427",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/noah/assets/images/bank_deep/wm_137923427.jpg",
+     "subject": "george_smith",
+     "title": "File:The Chaldean Account of Genesis (1876) - frontispiece.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:The_Chaldean_Account_of_Genesis_(1876)_-_frontispiece.jpg",
+     "width": 1456,
+     "height": 1740,
+     "artist": "Unknown authorUnknown author",
+     "licence": "Public domain",
+     "credit": "https://archive.org/details/chaldeanaccounto00smit",
+     "stddev": 100.8,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_584592283",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/noah/assets/images/bank_deep/wm_584592283.jpg",
+     "subject": "george_smith",
+     "title": "File:The Chaldean Account of Genesis (1876) - illustration - page 164.png",
+     "page": "https://commons.wikimedia.org/wiki/File:The_Chaldean_Account_of_Genesis_(1876)_-_illustration_-_page_164.png",
+     "width": 1519,
+     "height": 1277,
+     "artist": "George Smith\n\nPublisher Scribner, Armstrong &amp; Co.",
+     "licence": "Public domain",
+     "credit": "https://en.wikisource.org/wiki/Index:The_Chaldean_Account_of_Genesis_(1876).djvu",
+     "stddev": 38.0,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_560211133",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/noah/assets/images/bank_deep/wm_560211133.jpg",
+     "subject": "george_smith",
+     "title": "File:The Chaldean Account of Genesis (1876) (page 82 crop).jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:The_Chaldean_Account_of_Genesis_(1876)_(page_82_crop).jpg",
+     "width": 1428,
+     "height": 1235,
+     "artist": "George Smith",
+     "licence": "Public domain",
+     "credit": "Internet Archive identifier: chaldeanaccounto00smit",
+     "stddev": 20.0,
+     "provider": "wikimedia"
+    }
+   ]
+  },
+  "durupinar": {
+   "terms": [
+    "durupinar",
+    "durupınar",
+    "uzengili",
+    "üzengili",
+    "site",
+    "formation",
+    "boat",
+    "ridge",
+    "ararat",
+    "anomaly",
+    "mound",
+    "ground",
+    "aerial",
+    "satellite",
+    "nuh"
+   ],
+   "categories": [
+    "Category:Durupınar Site",
+    "Category:Ararat anomaly"
+   ],
+   "assets": [
+    {
+     "asset_id": "wm_855587690",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/noah/assets/images/bank_deep/wm_855587690.jpg",
+     "subject": "durupinar",
+     "title": "File:The Durupinar site in July 2019.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:The_Durupinar_site_in_July_2019.jpg",
+     "width": 3264,
+     "height": 2448,
+     "artist": "Wikkiwooki",
+     "licence": "CC BY-SA 4.0",
+     "credit": "Own work",
+     "stddev": 56.4,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_202544127",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/noah/assets/images/bank_deep/wm_202544127.jpg",
+     "subject": "durupinar",
+     "title": "File:The Structure Claimed to be the Noah's Ark near the Mount Ararat in Turkey.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:The_Structure_Claimed_to_be_the_Noah%27s_Ark_near_the_Mount_Ararat_in_Turkey.jpg",
+     "width": 1024,
+     "height": 768,
+     "artist": "Mfikretyilmaz",
+     "licence": "CC BY 3.0",
+     "credit": "Own work",
+     "stddev": 72.5,
+     "provider": "wikimedia"
+    }
+   ]
+  }
+ }
+}

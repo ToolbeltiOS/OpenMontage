@@ -1,0 +1,233 @@
+{
+ "subjects": {
+  "rongorongo": {
+   "terms": [
+    "rongorongo",
+    "tablet",
+    "tahua",
+    "mamari",
+    "aruku",
+    "keiti",
+    "staff",
+    "santiago",
+    "text",
+    "inscription",
+    "echancree",
+    "boustrophedon",
+    "glyph"
+   ],
+   "categories": [
+    "Category:Rongorongo inscriptions",
+    "Category:Rongorongo"
+   ],
+   "assets": [
+    {
+     "asset_id": "wm_254314127",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/assets/images/bank_small/wm_254314127.jpg",
+     "subject": "rongorongo",
+     "title": "File:Chile-03436 - Rongorongo (49073321772).jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Chile-03436_-_Rongorongo_(49073321772).jpg",
+     "width": 6000,
+     "height": 4000,
+     "artist": "Dennis G. Jarvis",
+     "licence": "CC BY-SA 2.0",
+     "credit": "Chile-03436 - Rongorongo",
+     "stddev": 53.5,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_230321078",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/assets/images/bank_small/wm_230321078.jpg",
+     "subject": "rongorongo",
+     "title": "File:Rongorongo B-r Aruku-Kurenga.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Rongorongo_B-r_Aruku-Kurenga.jpg",
+     "width": 3504,
+     "height": 1440,
+     "artist": "Photograph form the Trocadéro Museum (for GFDL, cite source above as old copyright holder)",
+     "licence": "CC BY-SA 3.0",
+     "credit": "Chauvet, Stéphen-Charles; on-line translation by Ann Altman (2004) [1935]       L'île de Pâques et ses mystères (Easter Island and its Mysteries), Paris:  Éditions Tel",
+     "stddev": 53.3,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_162474237",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/assets/images/bank_small/wm_162474237.jpg",
+     "subject": "rongorongo",
+     "title": "File:Rongorongo C-b Mamari.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Rongorongo_C-b_Mamari.jpg",
+     "width": 2504,
+     "height": 1720,
+     "artist": "unknown (for GFDL, cite source above as old copyright holder)",
+     "licence": "CC BY-SA 3.0",
+     "credit": "Chauvet, Stéphen-Charles; on-line translation by Ann Altman (2004) [1935]       L'île de Pâques et ses mystères (Easter Island and its Mysteries), Paris:  Éditions Tel",
+     "stddev": 63.4,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_503323974",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/assets/images/bank_small/wm_503323974.jpg",
+     "subject": "rongorongo",
+     "title": "File:Rongorongo A-b Tahua left.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Rongorongo_A-b_Tahua_left.jpg",
+     "width": 3280,
+     "height": 1224,
+     "artist": "Photographs from the Trocadéro Museum (for GFDL, cite source above as old copyright holder)",
+     "licence": "CC BY-SA 3.0",
+     "credit": "Chauvet, Stéphen-Charles; on-line translation by Ann Altman (2004) [1935]       L'île de Pâques et ses mystères (Easter Island and its Mysteries), Paris:  Éditions Tel",
+     "stddev": 56.4,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_604271017",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/assets/images/bank_small/wm_604271017.jpg",
+     "subject": "rongorongo",
+     "title": "File:Rongorongo A-a Tahua left.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Rongorongo_A-a_Tahua_left.jpg",
+     "width": 3424,
+     "height": 1136,
+     "artist": "Photographs from the Trocadéro Museum (for GFDL, cite source above as old copyright holder)",
+     "licence": "CC BY-SA 3.0",
+     "credit": "Chauvet, Stéphen-Charles; on-line translation by Ann Altman (2004) [1935]       L'île de Pâques et ses mystères (Easter Island and its Mysteries), Paris:  Éditions Tel",
+     "stddev": 50.8,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_310196487",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/assets/images/bank_small/wm_310196487.jpg",
+     "subject": "rongorongo",
+     "title": "File:Rongorongo A-b Tahua right.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Rongorongo_A-b_Tahua_right.jpg",
+     "width": 3274,
+     "height": 1121,
+     "artist": "Photographs from the Trocadéro Museum (for GFDL, cite source above as old copyright holder)",
+     "licence": "CC BY-SA 3.0",
+     "credit": "Chauvet, Stéphen-Charles; on-line translation by Ann Altman (2004) [1935]       L'île de Pâques et ses mystères (Easter Island and its Mysteries), Paris:  Éditions Tel",
+     "stddev": 65.5,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_997580035",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/assets/images/bank_small/wm_997580035.jpg",
+     "subject": "rongorongo",
+     "title": "File:Rongorongo Schrift.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Rongorongo_Schrift.jpg",
+     "width": 2256,
+     "height": 1496,
+     "artist": "msdstefan",
+     "licence": "CC BY-SA 3.0 de",
+     "credit": "msdstefan",
+     "stddev": 20.5,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_153821577",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/assets/images/bank_small/wm_153821577.jpg",
+     "subject": "rongorongo",
+     "title": "File:Rongorongo B-v Aruku-Kurenga.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Rongorongo_B-v_Aruku-Kurenga.jpg",
+     "width": 2403,
+     "height": 1128,
+     "artist": "Photograph form the Trocadéro Museum (for GFDL, cite source above as old copyright holder)",
+     "licence": "CC BY-SA 3.0",
+     "credit": "Chauvet, Stéphen-Charles; on-line translation by Ann Altman (2004) [1935]       L'île de Pâques et ses mystères (Easter Island and its Mysteries), Paris:  Éditions Tel",
+     "stddev": 62.1,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_349338380",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/assets/images/bank_small/wm_349338380.jpg",
+     "subject": "rongorongo",
+     "title": "File:Rongorongo D-a Échancrée.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Rongorongo_D-a_%C3%89chancr%C3%A9e.jpg",
+     "width": 2180,
+     "height": 1212,
+     "artist": "unknown (for GFDL, cite source above as old copyright holder)",
+     "licence": "CC BY-SA 3.0",
+     "credit": "Chauvet, Stéphen-Charles; on-line translation by Ann Altman (2004) [1935]       L'île de Pâques et ses mystères (Easter Island and its Mysteries), Paris:  Éditions Tel",
+     "stddev": 64.6,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_426050565",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/assets/images/bank_small/wm_426050565.jpg",
+     "subject": "rongorongo",
+     "title": "File:Rongorongo E-v Keiti.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Rongorongo_E-v_Keiti.jpg",
+     "width": 1988,
+     "height": 712,
+     "artist": "unknown (for GFDL, cite source above as old copyright holder)",
+     "licence": "CC BY-SA 3.0",
+     "credit": "Chauvet, Stéphen-Charles; on-line translation by Ann Altman (2004) [1935]       L'île de Pâques et ses mystères (Easter Island and its Mysteries), Paris:  Éditions Tel",
+     "stddev": 75.4,
+     "provider": "wikimedia"
+    }
+   ]
+  },
+  "rapa_nui_record": {
+   "terms": [
+    "rapa nui",
+    "easter island",
+    "isla de pascua",
+    "signature",
+    "1770",
+    "treaty",
+    "jaussen",
+    "routledge",
+    "expedition",
+    "engraving",
+    "plate",
+    "osterinsel",
+    "mystery of easter island"
+   ],
+   "categories": [
+    "Category:Signatures of the Rapa Nui chiefs in 1770",
+    "Category:Florentin-Étienne Jaussen",
+    "Category:Historical photographs of Easter Island"
+   ],
+   "assets": [
+    {
+     "asset_id": "wm_36655557",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/assets/images/bank_small/wm_36655557.jpg",
+     "subject": "rapa_nui_record",
+     "title": "File:Etienne Jaussen.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Etienne_Jaussen.jpg",
+     "width": 4000,
+     "height": 3000,
+     "artist": "Alainauzas",
+     "licence": "CC BY-SA 4.0",
+     "credit": "Own work",
+     "stddev": 37.8,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_132133834",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/assets/images/bank_small/wm_132133834.jpg",
+     "subject": "rapa_nui_record",
+     "title": "File:A Rock At Orongo Carved With Figures Of Bird-Men, The Mystery of Easter Island, published 1919.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:A_Rock_At_Orongo_Carved_With_Figures_Of_Bird-Men,_The_Mystery_of_Easter_Island,_published_1919.jpg",
+     "width": 2267,
+     "height": 1709,
+     "artist": "Unknown authorUnknown author",
+     "licence": "Public domain",
+     "credit": "Katherine Routledge: The Mystery of Easter Island, 1919\n\nhttps://archive.org/details/mysteryofeaster00rout → [1]",
+     "stddev": 50.5,
+     "provider": "wikimedia"
+    },
+    {
+     "asset_id": "wm_304468401",
+     "path": "/Users/mac/Developer/wak3up-docs/OpenMontage/projects/easter-island/assets/images/bank_small/wm_304468401.jpg",
+     "subject": "rapa_nui_record",
+     "title": "File:Florentin-Étienne Jaussen.jpg",
+     "page": "https://commons.wikimedia.org/wiki/File:Florentin-%C3%89tienne_Jaussen.jpg",
+     "width": 1522,
+     "height": 2053,
+     "artist": "Unknown authorUnknown author",
+     "licence": "Public domain",
+     "credit": "http://www.hebdo-ardeche.fr/blog/2015/07/04/une-grande-journee-s’annonce-ce-samedi-4 juillet/\nhttp://www.ville-papeete.pf/articles.php?id=285",
+     "stddev": 57.0,
+     "provider": "wikimedia"
+    }
+   ]
+  }
+ }
+}

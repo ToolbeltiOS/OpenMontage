@@ -1,0 +1,59 @@
+{
+  "policy": "Pixabay is restricted by the playbook to ONE role: elemental mood beds — water, rain, clay, rock, snow, reed, dust. Never a named site, never a depiction. There is no Pixabay clip of the Bosporus breaching, of Durupınar or of a cuneiform tablet, and a clip presented as one would be a false statement about the evidence.",
+  "method": "Every clip below was looked at as a thumbnail on a contact sheet (renders/tex_all_01..03.png) before it was kept or refused. A clip is kept only if it would survive the film's grade: near-black field, bone, a single ochre accent. Nothing was kept on the strength of the query that found it.",
+  "rounds": [
+    {
+      "round": 1,
+      "queries": 14,
+      "returned": 40,
+      "kept": 13,
+      "note": "The queries were elemental but not dark, and Pixabay's library skews bright and commercial: turquoise pools, gold bokeh, drone-teal coastlines, a barrel wave, an erupting volcano."
+    },
+    {
+      "round": 2,
+      "queries": 14,
+      "returned": 34,
+      "kept": 13,
+      "note": "Queries rewritten to say DARK and to name the material. Hit rate went from 33% to 38% and the kept clips are much closer to the palette."
+    }
+  ],
+  "kept": [
+    {"clip_id": "pixabay_video_11722", "what": "rain running down dark glass, one warm lamp behind it", "why": "the film's design read is a researcher's desk at night; this is that window"},
+    {"clip_id": "pixabay_video_28236", "what": "rain on a dark window, blue-grey, no light source", "why": "the colder half of the same idea"},
+    {"clip_id": "pixabay_video_313", "what": "white rain streaks falling against pure black", "why": "rain as a graphic element, nothing behind it to place or date"},
+    {"clip_id": "pixabay_video_380875", "what": "sparse white rain against black", "why": "the quiet end of the same figure"},
+    {"clip_id": "pixabay_video_380894", "what": "dense white rain against black", "why": "the loud end; held for the Black Sea act"},
+    {"clip_id": "pixabay_video_17013", "what": "rain rings spreading on brown standing water", "why": "water arriving on water, which is the act 2 claim in one frame"},
+    {"clip_id": "pixabay_video_181916", "what": "rain falling on dark blue-grey water", "why": "same, colder and wider"},
+    {"clip_id": "pixabay_video_14324", "what": "brown water running hard over a weir", "why": "volume of water, desaturates to near-monochrome"},
+    {"clip_id": "pixabay_video_304019", "what": "dark grey water surface, slow swell, no horizon", "why": "a sea with nothing in it to identify — the only honest way to put the Black Sea on screen"},
+    {"clip_id": "pixabay_video_283533", "what": "dark navy wave breaking, low light", "why": "mass of water without the stock-footage turquoise"},
+    {"clip_id": "pixabay_video_345020", "what": "monochrome stormy sea running over a rock shelf", "why": "water meeting a sill, which is act 2's mechanism as texture"},
+    {"clip_id": "pixabay_video_374784", "what": "dark water breaking on black rock, seen from above", "why": "near-monochrome; reads as geology rather than as coast"},
+    {"clip_id": "pixabay_video_233867", "what": "dark water surface at dusk, one warm band", "why": "the quiet hold; carries a landing"},
+    {"clip_id": "pixabay_video_286278", "what": "pale flat sea, cream and grey, no features", "why": "stillness before anything happens; takes the grade well"},
+    {"clip_id": "pixabay_video_2147", "what": "dark storm cloud, monochrome, slow timelapse", "why": "the sky without weather kitsch"},
+    {"clip_id": "pixabay_video_306", "what": "dark cloud lit from beneath in ochre", "why": "the palette's own accent, occurring naturally"},
+    {"clip_id": "pixabay_video_22555", "what": "night sky over a dark peak", "why": "act 4's altitude without naming a mountain"},
+    {"clip_id": "pixabay_video_32082", "what": "winter trees in white fog, no colour at all", "why": "bone-white field; a breath between claims"},
+    {"clip_id": "pixabay_video_345357", "what": "white smoke curling on black", "why": "abstract drift for an unresolved beat"},
+    {"clip_id": "pixabay_video_78", "what": "dark particulate dispersal on black", "why": "sediment as a figure, not as a place"},
+    {"clip_id": "pixabay_video_55607", "what": "brown clay surface with a single crack", "why": "clay is what the whole first act is written on"},
+    {"clip_id": "pixabay_video_89769", "what": "aerial of cracked mud, desaturated, a channel through it", "why": "a drained bed — act 2's before-picture"},
+    {"clip_id": "pixabay_video_121499", "what": "ochre dust suspended in a flat field", "why": "paper-and-dust grain in the accent colour"},
+    {"clip_id": "pixabay_video_375788", "what": "wet cobblestones under raking light", "why": "worked stone, wet; the nearest honest texture to a dug site"},
+    {"clip_id": "pixabay_video_7148", "what": "reeds against a grey sky, black and white", "why": "a quffa is made of reed and bitumen; this is its material"},
+    {"clip_id": "pixabay_video_7152", "what": "pale reeds standing in flat water", "why": "the same material, in the water it grows in"}
+  ],
+  "kept_count": 26,
+  "refused_count": 48,
+  "refused_reasons": {
+    "wrong_palette": "turquoise swimming pool, teal barrel waves, gold and orange bokeh, green aurora, orange ink dispersal, purple sunsets — the playbook forbids a teal-and-orange grade and these ARE one",
+    "stock_sheen": "clean modern 4K drone plates of bright coastlines and blue-sky peaks; the playbook names this exactly — 'stock-footage sheen standing in for archive material'",
+    "depicts_a_place": "a flooded house with a red roof, a snowed-in village with a church spire, a city skyline, a desert of Joshua trees. Each one is a modern, identifiable, wrong place, and putting it under a claim about 5600 BC is a false image rather than a texture",
+    "depicts_an_event_that_did_not_happen": "an erupting volcano with lightning. Ararat is a dormant stratovolcano; an eruption on screen over that sentence would over-claim",
+    "aspect": "six clips are portrait or near-square and arrive pillarboxed into a 16:9 canvas",
+    "not_a_texture_at_all": "a gold ornate frame template, raw bacon, lipstick being applied, orchids, blossom branches, a composited tree-on-a-rock"
+  },
+  "shortfall_note": "26 clips against roughly 30 texture beats. The remainder is authored with the texture_field component rather than repeating a clip, which is what that component exists for. No clip is used twice."
+}

@@ -128,6 +128,19 @@ def film(tmp_path):
 
             threading.Timer(seconds, go).start()
 
+        def status_after(self, seconds: float, blob: dict) -> None:
+            """Write render_status.json LATER, the way the wrapper does.
+
+            render_detached.sh writes it from its EXIT trap, so it appears
+            when the render ends and not before. A test that pre-writes it
+            beside a live pid is asserting a state production cannot reach —
+            and that is the state the 14:30:56 defect lived in.
+            """
+            def go():
+                self.status.write_text(json.dumps(blob))
+
+            threading.Timer(seconds, go).start()
+
         def run(self, *extra: str, timeout_hours: float = 0.0015,
                 wait: float = 25):
             env = {**os.environ, **FAST, "AWAIT_ROOT": str(tmp_path)}
@@ -332,9 +345,15 @@ class TestCompletionComesFromRenderFilm:
         running" to run_weekly.sh.
         """
         film.live_pid()
-        film.log_lines("1. plate")
-        film.status.write_text(json.dumps(
-            {"outcome": "failed", "exit_code": 3}))
+        film.log_lines("=== attempt 20261107T142641  (pid 1, automation@x) ===",
+                       "1. plate")
+        # The render ends and ITS trap writes the status, in that order. A
+        # status file sitting there while the pid is alive is a previous
+        # attempt's and is shelved — see
+        # TestEvidenceBelongsToOneAttempt.
+        film.kill_after(0.6)
+        film.status_after(0.9, {"outcome": "failed", "exit_code": 3,
+                                "started": "20261107T142641"})
         done = film.run()
         assert done.returncode == 1, done.stdout
         assert "render_status.json: exit 3" in done.stdout
@@ -363,3 +382,105 @@ class TestTheFreeCases:
             capture_output=True, text=True, env=env, timeout=20)
         assert done.returncode == 1
         assert "no project at" in done.stderr
+
+
+class TestEvidenceBelongsToOneAttempt:
+    """The 14:30:56 defect, and the worse one standing behind it.
+
+    2026-11-07. The render was restarted by hand and was 6,000 frames into
+    its look pass. The weekly run re-fired, skipped every finished stage
+    correctly, reached the compose stage, and printed:
+
+        a render is already going (pid 10914) — waiting on it rather than
+        starting a second
+        render finished after 0 min: failed — render_status.json: exit 1
+
+    `render_status.json` had been written at 13:49 by the EXIT trap of a
+    render that no longer existed. The waiter moved the old status aside only
+    in the branch where IT started the render; the attach branch skipped that
+    line, so the first poll judged a live render on a dead one's exit code.
+
+    Behind it, the same mistake with a worse outcome: `render.log` is
+    CUMULATIVE — render_detached.sh tees every attempt onto it — and
+    `log_state` scanned the whole file, so a previous attempt's
+    `FILM DELIVERY: PASS` would have been read as this attempt's verdict and
+    an undelivered film would have gone to publish.
+
+    One rule fixes both: this attempt begins at the last `=== attempt`
+    header, and nothing above it is evidence.
+    """
+
+    @staticmethod
+    def _mod():
+        import importlib
+        import sys
+        sys.path.insert(0, str(ROOT / "scripts"))
+        return importlib.import_module("await_render")
+
+    def test_a_live_render_is_never_judged_by_a_status_file(self):
+        """A live render CANNOT have written one: the trap runs on exit."""
+        mod = self._mod()
+        dead = {"outcome": "failed", "exit_code": 1, "started": "20261107T110155"}
+        assert mod.status_for(dead, "20261107T142641", 10914) == {}
+        assert mod.status_for(dead, None, 10914) == {}
+
+    def test_a_status_from_another_attempt_is_not_this_attempt_s(self):
+        mod = self._mod()
+        dead = {"outcome": "failed", "exit_code": 1, "started": "20261107T110155"}
+        assert mod.status_for(dead, "20261107T142641", None) == {}
+        mine = dict(dead, started="20261107T142641")
+        assert mod.status_for(mine, "20261107T142641", None) == mine
+
+    def test_an_unstamped_status_is_still_read_when_nothing_is_running(self):
+        """Older wrappers wrote no `started`. Absence is not contradiction."""
+        mod = self._mod()
+        blob = {"outcome": "delivered", "exit_code": 0}
+        assert mod.status_for(blob, "20261107T142641", None) == blob
+
+    def test_the_previous_attempt_s_verdict_is_not_read_as_this_one_s(self, tmp_path):
+        """The control: a PASS above the header, nothing below it."""
+        mod = self._mod()
+        log = tmp_path / "render.log"
+        log.write_text(
+            "=== attempt 20261107T110155  (pid 73329, automation@689b77c) ===\n"
+            "1. plate\n"
+            "Rendered 36803/36803\n"
+            "FILM DELIVERY: PASS\n"
+            "=== attempt 20261107T142641  (pid 10914, automation@69bfc95) ===\n"
+            "3. look pass\n"
+            "Rendered 6377/36803, time remaining: 19m 45s\n")
+        state = mod.log_state(log)
+        assert state["attempt"] == "20261107T142641"
+        assert state["verdict"] is None, (
+            "the previous attempt's PASS was read as this attempt's — an "
+            "undelivered film would have gone to publish")
+        assert (state["frames"], state["total"]) == (6377, 36803)
+        assert state["pass"] == "3. look pass"
+
+    def test_this_attempt_s_verdict_is_still_read(self):
+        """And the fix must not make the waiter blind."""
+        import tempfile
+        mod = self._mod()
+        with tempfile.TemporaryDirectory() as d:
+            log = Path(d) / "render.log"
+            log.write_text(
+                "=== attempt 20261107T110155  (pid 73329) ===\n"
+                "FILM DELIVERY: FAIL\n"
+                "=== attempt 20261107T142641  (pid 10914) ===\n"
+                "6. gates\n"
+                "FILM DELIVERY: PASS\n")
+            state = mod.log_state(log)
+            assert state["verdict"] == "PASS"
+            assert state["attempt"] == "20261107T142641"
+
+    def test_a_frame_count_does_not_carry_across_an_attempt(self, tmp_path):
+        """36,803 of 36,803 above the header is not progress below it."""
+        mod = self._mod()
+        log = tmp_path / "render.log"
+        log.write_text(
+            "=== attempt 20261107T110155  (pid 73329) ===\n"
+            "Rendered 36803/36803\n"
+            "=== attempt 20261107T142641  (pid 10914) ===\n"
+            "1. plate\n")
+        state = mod.log_state(log)
+        assert state["frames"] is None and state["total"] is None

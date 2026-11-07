@@ -42,10 +42,27 @@ projects/**
 !projects/*/artifacts/narration_plan.json
 !projects/*/artifacts/scene_plan.json
 !projects/*/artifacts/research_brief.json
-!projects/*/artifacts/asset_bank.json
+# EVERY asset bank, not just the one spelling. The fetcher writes
+# asset_bank_deep.json and asset_bank_small.json beside asset_bank.json, and
+# a builder that read only the first spelling left 18 CC BY-SA Wikimedia
+# images out of easter-island's credits — attribution is a CONDITION of that
+# licence. The glob is the point: a bank that exists and is not tracked is a
+# licence record that exists on one laptop.
+!projects/*/artifacts/asset_bank*.json
+# The Pixabay texture clips are screened OUTSIDE the bank, which is how the
+# other 18 missing credits were lost. This is their only licence record.
+!projects/*/artifacts/texture_screening.json
 !projects/*/artifacts/run1_assignment.json
 !projects/*/artifacts/metadata.json
 !projects/*/artifacts/publish.json
+# script.json is the AUTHORED TEXT and derived_assets.json is the RIGHTS
+# PROVENANCE of every crop, loop and upscale the film cut to. Neither can be
+# recomputed, both of their neighbours in the chain are tracked, and nine
+# tests read them — tests which passed only in the checkout that happened to
+# produce the files and failed in the runner worktree, where a published
+# film's own provenance did not exist.
+!projects/*/artifacts/script.json
+!projects/*/artifacts/derived_assets.json
 # listing.json is the PUBLISHED RECORD: the title, description, chapters and
 # the credit for every asset the film used. It is what the film claims about
 # itself and about whose work is in it, so it is tracked. render_props.json

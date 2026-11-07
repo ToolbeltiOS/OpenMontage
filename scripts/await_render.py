@@ -100,6 +100,16 @@ STAGE_RE = re.compile(r"^\s*(\d)\.\s+(.+?)\s*$")
 #: Its last word, and the thing that means the render is over.
 VERDICT_RE = re.compile(r"^FILM DELIVERY:\s*(PASS|FAIL)\s*$", re.M)
 
+#: `=== attempt 20261107T142641  (pid 10914, automation@69bfc95) ===`
+#:
+#: THE CUMULATIVE LOG HOLDS EVERY ATTEMPT. render_detached.sh tees each one
+#: onto render.log, so a scan of the whole file sees the previous attempt's
+#: frame counts, pass headers and — the dangerous one — its
+#: `FILM DELIVERY:` verdict. A waiter that reads those is answering a
+#: question about a render that is already over. The last header in the file
+#: is where this attempt begins; nothing above it is evidence.
+ATTEMPT_RE = re.compile(r"^===\s+attempt\s+(\S+)\s")
+
 def output_paths(project: str) -> list[Path]:
     """The files the render finishes with. Each appears at a pass boundary.
 
@@ -214,7 +224,7 @@ def log_state(log: Path) -> dict:
     runs once every thirty seconds, so a full scan costs milliseconds.
     """
     state = {"frames": None, "total": None, "pass": None, "verdict": None,
-             "last": ""}
+             "last": "", "attempt": None}
     try:
         with log.open(errors="replace") as fh:
             for row in fh:
@@ -222,6 +232,19 @@ def log_state(log: Path) -> dict:
                 if not row:
                     continue
                 state["last"] = row
+                found = ATTEMPT_RE.match(row)
+                if found:
+                    # A NEW ATTEMPT WIPES THE SLATE. Not just the frames: the
+                    # VERDICT too. 2026-11-07 the waiter attached to a live
+                    # render and reported it failed in 0 minutes, on a
+                    # render_status.json written 41 minutes before that render
+                    # started. The verdict in a cumulative log is the same
+                    # trap with a worse blast radius — it would have reported
+                    # a PASS for a film this attempt had not delivered.
+                    state.update(attempt=found.group(1), frames=None,
+                                 total=None, verdict=None)
+                    state["pass"] = None
+                    continue
                 found = FRAME_RE.search(row)
                 if found:
                     state["frames"] = int(found.group(1))
@@ -277,6 +300,30 @@ def describe(state: dict, cpu: float, written: int,
     return ", ".join(bits)
 
 
+def status_for(status: dict, attempt: str | None, running: int | None) -> dict:
+    """The status file, but only when it is about the attempt now in hand.
+
+    `render_detached.sh` writes render_status.json from its EXIT trap, so a
+    LIVE render cannot have written one: if the pid is alive, any status on
+    disk is a previous attempt's and the honest answer is "no status yet".
+    And when the render has ended, the file still has to name this attempt —
+    its `started` stamp against the last `=== attempt` header in the log.
+
+    This is the whole of the 14:30:56 defect. The waiter moved the old status
+    aside only in the branch where it STARTED the render; attaching to one
+    somebody else started skipped that line, so the first poll read exit 1
+    from 13:49 and failed a render that was 6,000 frames into its look pass.
+    """
+    if not status:
+        return {}
+    if running:
+        return {}
+    started = str(status.get("started") or "")
+    if attempt and started and started != attempt:
+        return {}
+    return status
+
+
 def outcome(project_dir: Path, log: Path, status: dict,
             verdict: str | None) -> tuple[str, int, str]:
     """(outcome, exit code, evidence), most authoritative source first.
@@ -327,24 +374,36 @@ def main() -> int:
 
     # Already done? This is the resume case and must be free.
     previous = read_json(status_path)
-    if previous.get("outcome") == "delivered" and delivered.exists():
+    # `and not alive(pidfile)`: a film can be delivered and BE RENDERED AGAIN
+    # — a re-render with --force, or a resume after a gate failure. Returning
+    # 0 on the old delivery would hand the runner a film the running render
+    # is in the middle of replacing.
+    if (previous.get("outcome") == "delivered" and delivered.exists()
+            and not alive(pidfile)):
         say(f"already delivered: {delivered.relative_to(ROOT)} "
             f"({delivered.stat().st_size / 1e6:.0f} MB) — nothing to render")
         return 0
+
+    def shelve_status() -> None:
+        """The old status belongs to the old attempt. Keep it — a previous
+        failure is evidence — but out of the way of this one."""
+        if status_path.exists():
+            status_path.replace(project / "render_status.prev.json")
+            say("kept the previous attempt's status as render_status.prev.json")
 
     running = alive(pidfile)
     if running:
         say(f"a render is already going (pid {running}) — waiting on it "
             f"rather than starting a second")
+        # It was NOT this waiter that started it, so nothing has cleared the
+        # last attempt's status. Do it here, or the first poll judges a live
+        # render on a dead one's exit code.
+        shelve_status()
     elif args.no_start:
         say("no render running and --no-start was given")
         return 1
     else:
-        # The old status belongs to the old attempt. Keep it — a previous
-        # failure is evidence — but out of the way.
-        if status_path.exists():
-            status_path.replace(project / "render_status.prev.json")
-            say("kept the previous attempt's status as render_status.prev.json")
+        shelve_status()
         cmd = [str(ROOT / "scripts" / "render_detached.sh"), args.project]
         if args.force:
             cmd.append("--force")
@@ -377,14 +436,15 @@ def main() -> int:
         # ── is it over? ──────────────────────────────────────────────────
         # render_film.py's verdict first: it is teed into the log the moment
         # the gates finish, and it is the thing that decided.
-        status = read_json(status_path)
+        status = status_for(read_json(status_path), state["attempt"], pid)
         if state["verdict"] or status or (announced and not pid):
             if not (state["verdict"] or status):
                 # The pid is gone and neither signal landed. Give the trap a
                 # moment to write, then judge on what is on disk.
                 time.sleep(min(POLL_SECONDS, 5))
-                status = read_json(status_path)
                 state = log_state(log)
+                status = status_for(read_json(status_path),
+                                    state["attempt"], alive(pidfile))
             name, code, why = outcome(project, log, status, state["verdict"])
             say(f"render finished after {waited / 60:.0f} min: {name} — {why}")
             extra = Path(str(status_path) + ".tail")

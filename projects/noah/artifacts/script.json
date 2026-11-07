@@ -1,0 +1,1373 @@
+{
+ "version": "1.0",
+ "title": "The Flood Story Before the Bible",
+ "total_duration_seconds": 1191.0,
+ "sections": [
+  {
+   "id": "cold_open",
+   "label": "Cold open",
+   "text": "[beat: exposition | quiet]\nHe sorted broken clay at the British Museum in the evenings. He had been apprenticed at fourteen to engrave banknotes. In eighteen seventy-two he read a tablet nobody had translated.\n\n[beat: exposition | tension]\nA man is warned that water is coming. He builds a boat. He sends out a dove, and it comes back: there is nowhere to land. On the third of December, George Smith read it to a room containing the prime minister.\n\n[beat: reveal | tension]\nMore than a dozen tablets carry part of this story. The earliest are a thousand years older than the Bible's oldest version.\n[air 2.5s]\n\n[beat: landing | quiet]\n[framing] Four files, then. [framing] None of them is closed.\n",
+   "start_seconds": 0.0,
+   "end_seconds": 43.3,
+   "paragraphs": [
+    {
+     "text": "He sorted broken clay at the British Museum in the evenings. He had been apprenticed at fourteen to engrave banknotes. In eighteen seventy-two he read a tablet nobody had translated.",
+     "claims": [
+      "c07",
+      "c06",
+      "c04",
+      "c03"
+     ],
+     "beat": "exposition",
+     "register": "quiet"
+    },
+    {
+     "text": "A man is warned that water is coming. He builds a boat. He sends out a dove, and it comes back: there is nowhere to land. On the third of December, George Smith read it to a room containing the prime minister.",
+     "claims": [
+      "c12",
+      "c05"
+     ],
+     "beat": "exposition",
+     "register": "tension"
+    },
+    {
+     "text": "More than a dozen tablets carry part of this story. The earliest are a thousand years older than the Bible's oldest version.",
+     "claims": [
+      "c01",
+      "c02",
+      "c21"
+     ],
+     "beat": "reveal",
+     "register": "tension"
+    },
+    {
+     "text": "[framing] Four files, then. [framing] None of them is closed.",
+     "claims": [],
+     "beat": "landing",
+     "register": "quiet"
+    }
+   ],
+   "speaker_directions": "Start cold, mid-thought, as if continuing a sentence said earlier. No greeting, no channel, no 'in this video'. The dove line is the only warm thing in the section and it is read plainly, not tenderly. Stop dead on 'closed'.",
+   "delivery_cues": {
+    "pace": "slow",
+    "energy": "low, level",
+    "emphasis_words": [
+     "banknotes",
+     "dove",
+     "dozen",
+     "thousand",
+     "closed"
+    ],
+    "pause_before_seconds": 0,
+    "pause_after_seconds": 2.5,
+    "delivery_note": "The reveal paragraph drops to about 130 wpm. The two framing sentences at the end are the slowest lines in the section at roughly 0.76 speed, and the second one is almost under the breath."
+   },
+   "enhancement_cues": [
+    {
+     "type": "broll",
+     "description": "Push-in on the Flood Tablet, K.3375, from Wikimedia. The frame starts tight enough that the object is unreadable and pulls out to the whole tablet by the end of the paragraph.",
+     "timestamp_seconds": 0
+    },
+    {
+     "type": "diagram",
+     "description": "document_reveal on a plate from Smith's Assyrian Discoveries, halftone treatment, locked frame.",
+     "timestamp_seconds": 14
+    },
+    {
+     "type": "stat_card",
+     "description": "evidence_card: 'MORE THAN A DOZEN TABLETS', with the Archaeology 2016 attribution in the lower-left zone.",
+     "timestamp_seconds": 30
+    }
+   ],
+   "pronunciation_guides": [],
+   "source_ref": "research_brief data_points c01-c07, c12, c21. Per-sentence attribution is in this section's paragraphs[].claims; this field covers nothing and is here only to name the range."
+  },
+  {
+   "id": "title_sequence",
+   "label": "Title sequence",
+   "text": "",
+   "start_seconds": 43.3,
+   "end_seconds": 50.3,
+   "speaker_directions": "Silent. No narration.",
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "n/a - no voice in this section",
+    "pause_before_seconds": 0,
+    "pause_after_seconds": 0,
+    "delivery_note": "Seven seconds of picture and sting, no words. Carries no beats and contributes nothing to the word count or the air budget; it is in the film's runtime and not in the gate's arithmetic."
+   },
+   "enhancement_cues": [
+    {
+     "type": "overlay",
+     "description": "title_sequence component: THE FLOOD STORY BEFORE THE BIBLE in Display over a treated hero still of the Flood Tablet, plus the channel mark. One accent event only - the ochre rule reaching full width - landing on the sting. No persistent chrome; the frame returns on the first scene of act 1, and its absence here is what makes the film read as having begun.",
+     "timestamp_seconds": 0
+    }
+   ],
+   "pronunciation_guides": [],
+   "source_ref": "playbook structure.title_sequence - styles/wak3up-documentary.yaml"
+  },
+  {
+   "id": "act1",
+   "label": "Act 1 — The story before the book",
+   "text": "[beat: exposition | doubt]\nThe problem is not that the two stories rhyme. It is how specific the rhyme is. A man is warned. He builds. And at the end of both, a bird goes out of a window, and the one that fails comes home.\n[air 2.5s]\n\n[beat: exposition | doubt]\nThat is one pair. Comparable flood stories are also told in Hinduism, in Zoroastrianism, in ancient Greece, and among the Cheyenne, the Blackfeet, the Hopi and the Ojibwe. The usual way to settle this is to pick the real one and call the rest echoes. We are going to do something duller, and date them.\n[air 2.5s]\n\n[beat: exposition | quiet]\nStart with the object, because an object can be dated. The tablet is in the British Museum and it has a number: K, three thousand three hundred and seventy-five. It is clay, about fifteen centimetres long and thirteen across, and the writing on it is Akkadian cuneiform. It was made in the seventh century BC. It was lifted out of the ruins of Nineveh by Hormuzd Rassam, who could not read a word of it.\n[air 2.5s]\n\n[beat: exposition | quiet]\nThe man who could was not a scholar. George Smith was born in Chelsea in eighteen forty, and the banknote engraving was his trade, not a stage he passed through. By eighteen sixty-one he was spending his evenings at the museum, sorting fragments. In eighteen seventy he was made Senior Assistant in the Assyriology department.\n[air 2.5s]\n\n[beat: exposition | tension]\nOn the third of December, eighteen seventy-two, he read his account of the Chaldean flood to the Society of Biblical Archaeology. The prime minister, William Ewart Gladstone, was in the room. Part of the story was missing, so he went to Nineveh and found the piece that completed it, on the seventh of May, eighteen seventy-three. Three years later the museum sent him back for the rest of the Library of Ashurbanipal, and he died of dysentery in Aleppo, aged thirty-six.\n[air 2.5s]\n\n[beat: exposition | doubt]\nWhat he had read is Tablet Eleven of the Epic of Gilgamesh, and the boat in it is not the shape anybody draws. The walls are laid out at a hundred and twenty cubits. The sides are the same length. There are six decks inside. It is a cube.\n[air 2.5s]\n\n[beat: exposition | doubt]\nThen the water stops. He sends out a dove, which comes back. Then a swallow, which also comes back. Then a raven, which finds something to eat and does not return. The boat has already grounded, on a mountain the tablet calls Nimush.\n[air 2.5s]\n\n[beat: exposition | doubt]\nThere is also what is not the same. In the Mesopotamian telling the gods send the water because people have become too loud. In Genesis the reason given is that people have become wicked. One survivor is rewarded with immortality and the other with a covenant. They are what each story is for.\n[air 2.5s]\n\n[beat: reveal | tension]\nBut Gilgamesh did not invent it either. Jeffrey Tigay argued that the flood was added to Tablet Eleven by an editor working from a late version of a different poem, with several lines copied across almost directly. Andrew George, citing him, puts it flatly: largely borrowed. The poem it came from is called Atrahasis, and the oldest known copy of Atrahasis carries a colophon naming the king it was written under. He ruled from sixteen forty-six to sixteen twenty-six BC.\n\n[beat: landing | quiet]\nSo the oldest version of the Flood is not the first version of the Flood. The man in the boat already has three names, and the trail does not stop at any of them.\n[air 4.0s]\n\n[beat: exposition | quiet]\nIn Akkadian he is Atrahasis, which means exceedingly wise. In Gilgamesh he is Utnapishtim. In Sumerian he is Ziusudra, and his tablet came out of Nippur in eighteen ninety-three, unrecognised until Arno Poebel read it in nineteen twelve. It dates to around sixteen hundred BC. In it the storm runs seven days and seven nights, and the man in the boat is the ruler of a city called Shuruppak.\n[air 2.5s]\n\n[beat: exposition | awe]\nThe third witness is in another language, and it has a fish in it. The earliest Hindu text to tell this story is the Shatapatha Brahmana, in which a small fish asks Manu to protect it from a larger one, and in return warns him when the flood will come. Build a ship, it says, and tie it to my horn. In the Mahabharata it also asks for the seven sages and the seeds of every kind, and tows him north. And in the Mesopotamian version the warning also comes from a water god, Ea, in a dream.\n[air 2.5s]\n\n[beat: transition | doubt]\nWhich leaves the version almost everybody knows. Scholars put the composition of Genesis at around the fifth century BCE, and some think its opening chapters later still. They also find two separate sources braided through the flood story, which is why it cannot hold its own numbers steady: the rain lasts forty days in one verse and a hundred and fifty in another, and the animals board in one pair of each and then in seven pairs of the clean ones. Numerous and often detailed parallels, the consensus runs, make the Genesis narrative dependent on the Mesopotamian epics.\n[air 2.5s]\n",
+   "start_seconds": 50.3,
+   "end_seconds": 414.6,
+   "paragraphs": [
+    {
+     "text": "The problem is not that the two stories rhyme. It is how specific the rhyme is. A man is warned. He builds. And at the end of both, a bird goes out of a window, and the one that fails comes home.",
+     "claims": [
+      "c12",
+      "c23"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "That is one pair. Comparable flood stories are also told in Hinduism, in Zoroastrianism, in ancient Greece, and among the Cheyenne, the Blackfeet, the Hopi and the Ojibwe. The usual way to settle this is to pick the real one and call the rest echoes. We are going to do something duller, and date them.",
+     "claims": [
+      "c25"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "Start with the object, because an object can be dated. The tablet is in the British Museum and it has a number: K, three thousand three hundred and seventy-five. It is clay, about fifteen centimetres long and thirteen across, and the writing on it is Akkadian cuneiform. It was made in the seventh century BC. It was lifted out of the ruins of Nineveh by Hormuzd Rassam, who could not read a word of it.",
+     "claims": [
+      "c02",
+      "c03"
+     ],
+     "beat": "exposition",
+     "register": "quiet"
+    },
+    {
+     "text": "The man who could was not a scholar. George Smith was born in Chelsea in eighteen forty, and the banknote engraving was his trade, not a stage he passed through. By eighteen sixty-one he was spending his evenings at the museum, sorting fragments. In eighteen seventy he was made Senior Assistant in the Assyriology department.",
+     "claims": [
+      "c06",
+      "c07"
+     ],
+     "beat": "exposition",
+     "register": "quiet"
+    },
+    {
+     "text": "On the third of December, eighteen seventy-two, he read his account of the Chaldean flood to the Society of Biblical Archaeology. The prime minister, William Ewart Gladstone, was in the room. Part of the story was missing, so he went to Nineveh and found the piece that completed it, on the seventh of May, eighteen seventy-three. Three years later the museum sent him back for the rest of the Library of Ashurbanipal, and he died of dysentery in Aleppo, aged thirty-six.",
+     "claims": [
+      "c05",
+      "c08",
+      "c09",
+      "c06"
+     ],
+     "beat": "exposition",
+     "register": "tension"
+    },
+    {
+     "text": "What he had read is Tablet Eleven of the Epic of Gilgamesh, and the boat in it is not the shape anybody draws. The walls are laid out at a hundred and twenty cubits. The sides are the same length. There are six decks inside. It is a cube.",
+     "claims": [
+      "c03",
+      "c11"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "Then the water stops. He sends out a dove, which comes back. Then a swallow, which also comes back. Then a raven, which finds something to eat and does not return. The boat has already grounded, on a mountain the tablet calls Nimush.",
+     "claims": [
+      "c12",
+      "c13"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "There is also what is not the same. In the Mesopotamian telling the gods send the water because people have become too loud. In Genesis the reason given is that people have become wicked. One survivor is rewarded with immortality and the other with a covenant. They are what each story is for.",
+     "claims": [
+      "c89"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "But Gilgamesh did not invent it either. Jeffrey Tigay argued that the flood was added to Tablet Eleven by an editor working from a late version of a different poem, with several lines copied across almost directly. Andrew George, citing him, puts it flatly: largely borrowed. The poem it came from is called Atrahasis, and the oldest known copy of Atrahasis carries a colophon naming the king it was written under. He ruled from sixteen forty-six to sixteen twenty-six BC.",
+     "claims": [
+      "c14",
+      "c15",
+      "c17"
+     ],
+     "beat": "reveal",
+     "register": "tension"
+    },
+    {
+     "text": "So the oldest version of the Flood is not the first version of the Flood. The man in the boat already has three names, and the trail does not stop at any of them.",
+     "claims": [
+      "c18"
+     ],
+     "beat": "landing",
+     "register": "quiet"
+    },
+    {
+     "text": "In Akkadian he is Atrahasis, which means exceedingly wise. In Gilgamesh he is Utnapishtim. In Sumerian he is Ziusudra, and his tablet came out of Nippur in eighteen ninety-three, unrecognised until Arno Poebel read it in nineteen twelve. It dates to around sixteen hundred BC. In it the storm runs seven days and seven nights, and the man in the boat is the ruler of a city called Shuruppak.",
+     "claims": [
+      "c18",
+      "c20"
+     ],
+     "beat": "exposition",
+     "register": "quiet"
+    },
+    {
+     "text": "The third witness is in another language, and it has a fish in it. The earliest Hindu text to tell this story is the Shatapatha Brahmana, in which a small fish asks Manu to protect it from a larger one, and in return warns him when the flood will come. Build a ship, it says, and tie it to my horn. In the Mahabharata it also asks for the seven sages and the seeds of every kind, and tows him north. And in the Mesopotamian version the warning also comes from a water god, Ea, in a dream.",
+     "claims": [
+      "c31",
+      "c32",
+      "c33",
+      "c35"
+     ],
+     "beat": "exposition",
+     "register": "awe"
+    },
+    {
+     "text": "Which leaves the version almost everybody knows. Scholars put the composition of Genesis at around the fifth century BCE, and some think its opening chapters later still. They also find two separate sources braided through the flood story, which is why it cannot hold its own numbers steady: the rain lasts forty days in one verse and a hundred and fifty in another, and the animals board in one pair of each and then in seven pairs of the clean ones. Numerous and often detailed parallels, the consensus runs, make the Genesis narrative dependent on the Mesopotamian epics.",
+     "claims": [
+      "c21",
+      "c22",
+      "c23"
+     ],
+     "beat": "transition",
+     "register": "doubt"
+    }
+   ],
+   "speaker_directions": "This act is an argument about dates, so the voice has to make dates interesting by treating them as evidence rather than as furniture. Every 'BC' is read deliberately. The reveal - that Gilgamesh did not invent it either - is the first time the film sounds surprised, and it is surprised quietly.",
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "low, with one lift at the colophon",
+    "emphasis_words": [
+     "copied",
+     "Atrahasis",
+     "colophon",
+     "older",
+     "fish",
+     "horn"
+    ],
+    "pause_before_seconds": 0,
+    "pause_after_seconds": 2.5,
+    "delivery_note": "Slow on the Ammi-Saduqa dates and stop fully at 'the first version' before the four-second gap. The Sanskrit passage is the warmest in the film; let it open out."
+   },
+   "enhancement_cues": [
+    {
+     "type": "diagram",
+     "description": "timeline: the texts against each other - Atrahasis colophon 1646-1626 BC, the Nippur tablet about 1600 BC, Gilgamesh's standard version 1300-1000 BC, K.3375 in the seventh century BC, Genesis about the fifth century BCE. The Manu texts are NOT on this frame: the brief records that no composition date is sourceable for them.",
+     "timestamp_seconds": 230
+    },
+    {
+     "type": "diagram",
+     "description": "evidence_card for Atrahasis - one tablet image plus the colophon reading. Atrahasis is supporting, not spine: one image and one card, and it does not carry an act.",
+     "timestamp_seconds": 250
+    },
+    {
+     "type": "broll",
+     "description": "Matsya paintings from Wikimedia, 37 catalogued files, under a slow drift.",
+     "timestamp_seconds": 500
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "Gilgamesh",
+     "phonetic": "GIL-ga-mesh"
+    },
+    {
+     "word": "Utnapishtim",
+     "phonetic": "oot-na-PISH-tim"
+    },
+    {
+     "word": "Atrahasis",
+     "phonetic": "a-tra-HA-sis"
+    },
+    {
+     "word": "Ammi-Saduqa",
+     "phonetic": "AM-mee sa-DOO-ka"
+    },
+    {
+     "word": "Ziusudra",
+     "phonetic": "zee-oo-SOO-dra"
+    },
+    {
+     "word": "Shuruppak",
+     "phonetic": "SHOO-rup-pak"
+    },
+    {
+     "word": "Nippur",
+     "phonetic": "nip-POOR"
+    },
+    {
+     "word": "Nimush",
+     "phonetic": "NEE-moosh"
+    },
+    {
+     "word": "Kouyunjik",
+     "phonetic": "koo-YOON-jik"
+    },
+    {
+     "word": "Shatapatha",
+     "phonetic": "sha-ta-PA-ta"
+    },
+    {
+     "word": "Brahmana",
+     "phonetic": "BRAH-ma-na"
+    },
+    {
+     "word": "Matsya",
+     "phonetic": "MAT-sya"
+    },
+    {
+     "word": "Rassam",
+     "phonetic": "ra-SAHM"
+    },
+    {
+     "word": "Poebel",
+     "phonetic": "PUH-bel"
+    },
+    {
+     "word": "Tigay",
+     "phonetic": "TIG-ay"
+    }
+   ],
+   "source_ref": "research_brief data_points c02-c35, c88-c89. Per-sentence attribution is in paragraphs[].claims."
+  },
+  {
+   "id": "act2",
+   "label": "Act 2 — The sea that came in",
+   "text": "[beat: exposition | doubt]\nA shared text explains the words. It does not explain the water. If something actually happened, the ground should know, and for one place it has been read very carefully. There is an alluvial layer at Shuruppak dated to about twenty-nine hundred BC, and it has been read as the trace of a real flood.\n[air 2.5s]\n\n[beat: exposition | quiet]\nThe strongest candidate is not in Mesopotamia at all. In nineteen ninety-seven, in the journal Marine Geology, William Ryan and Walter Pitman and their colleagues published a paper called An abrupt drowning of the Black Sea shelf. Their argument was that the Black Sea had been a freshwater lake, cut off and sitting well below the ocean, until the Mediterranean broke through the Bosporus and never left.\n[air 2.5s]\n\n[beat: exposition | tension]\nThe numbers are why anybody remembers the paper. The breach happened, on their reading, about seven thousand one hundred and fifty years ago. Water came through at something like fifty cubic kilometres a day. The Bosporus ran at full spate for at least three hundred days. And the sea rose from roughly eighty metres below today's level to about thirty, drowning more than a hundred thousand square kilometres of shelf.\n[air 2.5s]\n\n[beat: exposition | awe]\nThey also suggested what that might have done to the people on it: early farmers displaced, carrying their technique and perhaps their story into Europe. A team of marine archaeologists under Robert Ballard, reporting in two thousand, said they had found old shorelines a hundred metres down off the Turkish coast, with freshwater snail shells, drowned river valleys, worked timbers, and what they described as man-made structures.\n[air 2.5s]\n\n[beat: exposition | quiet]\nThe date has not held still, including for its own authors. The paper puts the flood around five thousand six hundred BC; a revision by the same group in two thousand and three moved it to about six thousand eight hundred. Others, on the same evidence, describe a transgression lasting between ten and two hundred years.\n[air 2.5s]\n\n[beat: exposition | doubt]\nThe place to test this is the sill, the ridge the water had to clear, because a sill can be measured. The modern Bosporus sill sits thirty-two to thirty-four metres below sea level, with three deeper ones at eighty to eighty-five. And in two thousand and one, reading the old coast of the Sakarya river, Görür and his colleagues put the lake at about eighteen metres below present sea level. Above the sill. Not below it.\n[air 2.5s]\n\n[beat: exposition | doubt]\nIf the lake was above the sill, the water was going the other way. That is the case Aksu and his colleagues have made repeatedly: persistent outflow from the Black Sea to the eastern Mediterranean through the Holocene, and water still leaving as late as fifteen thousand years ago. In twenty twenty-two, Aksu and Hiscott concluded there was not enough evidence for a flood at all, and pointed out that nobody has found any archaeological trace of people evacuating. Cysts in the sediment show no sign of a catastrophe. No drowned prehistoric settlement has ever turned up.\n[air 2.5s]\n\n[beat: reveal | resolution]\nAnd then there is the delta. Liviu Giosan's team cored the Danube and dated only paired bivalve shells, because a pair means the animal was alive where you found it. They put the Black Sea about thirty metres below present level at the reconnection, some nine thousand five hundred years ago, which is where Ryan and Pitman's flood ends, not where it begins. If this is true, Giosan said, it means the magnitude of the Black Sea flood was five or ten metres but not fifty to sixty. We don't see evidence, he said, for a catastrophic flood as others have described.\n\n[beat: landing | quiet]\nAnd a five-metre flood still drowns two thousand square kilometres. On the smaller reading, on his own figures, the sea still comes in.\n[air 4.0s]\n\n[beat: exposition | doubt]\nSuppose no flood anywhere is big enough. There are still explanations, and the oldest is not about water. The historian Adrienne Mayor has argued that these traditions may have begun as a reading of evidence: seashells and fish fossils, found inland, found on mountains, by people who drew the obvious conclusion.\n[air 2.5s]\n\n[beat: exposition | doubt]\nOthers put it later. Yi Samuel Chen argues the flood narrative was only added to the texts during the Old Babylonian period, which would make it a literary invention with a date rather than a memory with one. And then there is the long habit of blaming the sky. Edmond Halley in sixteen ninety-four, William Whiston in sixteen ninety-six, Pierre-Simon Laplace in seventeen ninety-six, Ignatius Donnelly in eighteen eighty-three. Bruce Masse has proposed an ocean impact around twenty-eight hundred and seven BC, on the grounds that fourteen flood myths mention a total eclipse.\n[air 2.5s]\n\n[beat: transition | doubt]\nEven the size of the original is argued over. Tigay reads the Atrahasis flood as a river flood, local, the kind Mesopotamia actually had, and other scholars read the same text as the end of the world. No agreed flood, then. No agreed cause, and no agreed size. There is one part of this story, though, that arrives with measurements on it.\n[air 2.5s]\n",
+   "start_seconds": 414.6,
+   "end_seconds": 771.2,
+   "paragraphs": [
+    {
+     "text": "A shared text explains the words. It does not explain the water. If something actually happened, the ground should know, and for one place it has been read very carefully. There is an alluvial layer at Shuruppak dated to about twenty-nine hundred BC, and it has been read as the trace of a real flood.",
+     "claims": [
+      "c27"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "The strongest candidate is not in Mesopotamia at all. In nineteen ninety-seven, in the journal Marine Geology, William Ryan and Walter Pitman and their colleagues published a paper called An abrupt drowning of the Black Sea shelf. Their argument was that the Black Sea had been a freshwater lake, cut off and sitting well below the ocean, until the Mediterranean broke through the Bosporus and never left.",
+     "claims": [
+      "c37",
+      "c38"
+     ],
+     "beat": "exposition",
+     "register": "quiet"
+    },
+    {
+     "text": "The numbers are why anybody remembers the paper. The breach happened, on their reading, about seven thousand one hundred and fifty years ago. Water came through at something like fifty cubic kilometres a day. The Bosporus ran at full spate for at least three hundred days. And the sea rose from roughly eighty metres below today's level to about thirty, drowning more than a hundred thousand square kilometres of shelf.",
+     "claims": [
+      "c38",
+      "c39",
+      "c41"
+     ],
+     "beat": "exposition",
+     "register": "tension"
+    },
+    {
+     "text": "They also suggested what that might have done to the people on it: early farmers displaced, carrying their technique and perhaps their story into Europe. A team of marine archaeologists under Robert Ballard, reporting in two thousand, said they had found old shorelines a hundred metres down off the Turkish coast, with freshwater snail shells, drowned river valleys, worked timbers, and what they described as man-made structures.",
+     "claims": [
+      "c42",
+      "c43"
+     ],
+     "beat": "exposition",
+     "register": "awe"
+    },
+    {
+     "text": "The date has not held still, including for its own authors. The paper puts the flood around five thousand six hundred BC; a revision by the same group in two thousand and three moved it to about six thousand eight hundred. Others, on the same evidence, describe a transgression lasting between ten and two hundred years.",
+     "claims": [
+      "c40",
+      "c44"
+     ],
+     "beat": "exposition",
+     "register": "quiet"
+    },
+    {
+     "text": "The place to test this is the sill, the ridge the water had to clear, because a sill can be measured. The modern Bosporus sill sits thirty-two to thirty-four metres below sea level, with three deeper ones at eighty to eighty-five. And in two thousand and one, reading the old coast of the Sakarya river, Görür and his colleagues put the lake at about eighteen metres below present sea level. Above the sill. Not below it.",
+     "claims": [
+      "c50",
+      "c49"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "If the lake was above the sill, the water was going the other way. That is the case Aksu and his colleagues have made repeatedly: persistent outflow from the Black Sea to the eastern Mediterranean through the Holocene, and water still leaving as late as fifteen thousand years ago. In twenty twenty-two, Aksu and Hiscott concluded there was not enough evidence for a flood at all, and pointed out that nobody has found any archaeological trace of people evacuating. Cysts in the sediment show no sign of a catastrophe. No drowned prehistoric settlement has ever turned up.",
+     "claims": [
+      "c51",
+      "c52",
+      "c53"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "And then there is the delta. Liviu Giosan's team cored the Danube and dated only paired bivalve shells, because a pair means the animal was alive where you found it. They put the Black Sea about thirty metres below present level at the reconnection, some nine thousand five hundred years ago, which is where Ryan and Pitman's flood ends, not where it begins. If this is true, Giosan said, it means the magnitude of the Black Sea flood was five or ten metres but not fifty to sixty. We don't see evidence, he said, for a catastrophic flood as others have described.",
+     "claims": [
+      "c45",
+      "c46",
+      "c47",
+      "c41",
+      "c37"
+     ],
+     "beat": "reveal",
+     "register": "resolution"
+    },
+    {
+     "text": "And a five-metre flood still drowns two thousand square kilometres. On the smaller reading, on his own figures, the sea still comes in.",
+     "claims": [
+      "c48"
+     ],
+     "beat": "landing",
+     "register": "quiet"
+    },
+    {
+     "text": "Suppose no flood anywhere is big enough. There are still explanations, and the oldest is not about water. The historian Adrienne Mayor has argued that these traditions may have begun as a reading of evidence: seashells and fish fossils, found inland, found on mountains, by people who drew the obvious conclusion.",
+     "claims": [
+      "c26"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "Others put it later. Yi Samuel Chen argues the flood narrative was only added to the texts during the Old Babylonian period, which would make it a literary invention with a date rather than a memory with one. And then there is the long habit of blaming the sky. Edmond Halley in sixteen ninety-four, William Whiston in sixteen ninety-six, Pierre-Simon Laplace in seventeen ninety-six, Ignatius Donnelly in eighteen eighty-three. Bruce Masse has proposed an ocean impact around twenty-eight hundred and seven BC, on the grounds that fourteen flood myths mention a total eclipse.",
+     "claims": [
+      "c28",
+      "c29",
+      "c30"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "Even the size of the original is argued over. Tigay reads the Atrahasis flood as a river flood, local, the kind Mesopotamia actually had, and other scholars read the same text as the end of the world. No agreed flood, then. No agreed cause, and no agreed size. There is one part of this story, though, that arrives with measurements on it.",
+     "claims": [
+      "c90"
+     ],
+     "beat": "transition",
+     "register": "doubt"
+    }
+   ],
+   "speaker_directions": "The act with the most numbers and the one most likely to tip into either register. Read Ryan and Pitman's case as if it were true, because that is what presenting a case at full strength means, and then read the rebuttal the same way. The reveal is the quietest line in the film: Giosan's quotation is read at the attribution rate, flat, with no vindication in it.",
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "level; the only rise is in the inflow figures and it falls again immediately",
+    "emphasis_words": [
+     "lake",
+     "breached",
+     "sill",
+     "fifty",
+     "three hundred",
+     "five",
+     "anyway"
+    ],
+    "pause_before_seconds": 0,
+    "pause_after_seconds": 2.5,
+    "delivery_note": "Drop to roughly 130 for every attribution clause - 'Ryan and Pitman argued', 'Giosan's team found', 'Aksu and Hiscott concluded'. The four-second gap lands after 'came in', and the voice must be fully stopped before it."
+   },
+   "enhancement_cues": [
+    {
+     "type": "diagram",
+     "description": "map: the Black Sea and the Bosporus from Sentinel/ISS, with the sill located. Terrain base, 50m coastline, ocean flooded with the palette and masked by the coastline the map already draws.",
+     "timestamp_seconds": 60
+    },
+    {
+     "type": "diagram",
+     "description": "cross_section_diagram: the Bosporus sill at 32 to 34 metres with the three deeper sills at 80 to 85, and the two proposed lake levels drawn against them - minus eighty, minus thirty, minus eighteen.",
+     "timestamp_seconds": 230
+    },
+    {
+     "type": "diagram",
+     "description": "document_reveal on the two papers: Marine Geology 138, 1997, and Quaternary Science Reviews 28, 2009. Halftone, locked frame.",
+     "timestamp_seconds": 300
+    },
+    {
+     "type": "stat_card",
+     "description": "evidence_card marked CONTESTED, both directions: 100,000 square kilometres against 5 to 10 metres, with both citations on screen.",
+     "timestamp_seconds": 320
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "Bosporus",
+     "phonetic": "BOS-po-rus"
+    },
+    {
+     "word": "Giosan",
+     "phonetic": "JOH-sahn"
+    },
+    {
+     "word": "Gorur",
+     "phonetic": "gur-URR"
+    },
+    {
+     "word": "Aksu",
+     "phonetic": "AK-soo"
+    },
+    {
+     "word": "Hiscott",
+     "phonetic": "HIS-cot"
+    },
+    {
+     "word": "Sakarya",
+     "phonetic": "sa-KAR-ya"
+    },
+    {
+     "word": "Shuruppak",
+     "phonetic": "SHOO-rup-pak"
+    },
+    {
+     "word": "Neolithic",
+     "phonetic": "nee-o-LITH-ic"
+    },
+    {
+     "word": "Laplace",
+     "phonetic": "la-PLAHSS"
+    },
+    {
+     "word": "Whiston",
+     "phonetic": "WIS-ton"
+    }
+   ],
+   "source_ref": "research_brief data_points c26-c30, c36-c53, c90. Per-sentence attribution is in paragraphs[].claims."
+  },
+  {
+   "id": "act3",
+   "label": "Act 3 — Three hundred cubits",
+   "text": "[beat: exposition | quiet]\nThe specification is the most checkable thing in the whole story. Three hundred cubits long, fifty wide, thirty high, three decks inside. In metres, about a hundred and thirty-four by twenty-two by thirteen. It is not a ship. It is a box with a roof.\n[air 2.5s]\n\n[beat: exposition | doubt]\nThe older boats are not that shape. Utnapishtim's is a cube, a hundred and twenty cubits on a side, six decks of seven compartments each divided into nine. Atrahasis is told to build something cube-shaped as well, and in another telling the boat is round: a quffa, a coracle, with one deck or two.\n[air 2.5s]\n\n[beat: exposition | doubt]\nIrving Finkel identified a tablet that gives measurements for an unusually large coracle, and a scale replica built from his reading was floated in Kerala, in India. The press accounts of its size disagree, so we are not giving you a number.\n[air 2.5s]\n\n[beat: reveal | awe]\nThree shapes. A cube, a bowl and a box. Now the deck area of each. Atrahasis, fourteen thousand four hundred square cubits. Utnapishtim, fourteen thousand four hundred. Noah, fifteen thousand. Three boats that look nothing like one another, and their floors are within about four per cent.\n\n[beat: landing | quiet]\nWhatever travelled between these stories, part of it was a size.\n[air 4.0s]\n\n[beat: exposition | quiet]\nIn Schagen, fifty kilometres north of Amsterdam, a Dutch building contractor named Johan Huibers spent eighteen months and a million euros building the Ark at half scale. Seventy metres long, nine and a half wide, thirteen high. He opened it to visitors in two thousand and seven. Then he built a full-sized one.\n[air 2.5s]\n\n[beat: exposition | doubt]\nThat took four years, eight helpers, four million euros, and a volume of timber equivalent to twelve thousand trees. It opened at Dordrecht in two thousand and twelve. And it is a hundred and nineteen metres long, thirty wide and twenty-three high, which in cubits is two hundred and sixty-six by sixty-six by fifty. Not three hundred by fifty by thirty. The most faithful Ark ever built is shorter, wider and taller than the one in the book.\n[air 2.5s]\n\n[beat: transition | doubt]\nThe half-scale one was sold to an artist in twenty ten, hit a moored coastguard vessel in Oslo harbour in twenty sixteen, and was impounded at Ipswich in twenty nineteen. And a boat that can be built is not a boat that has been found. Robert Moore's objection was never about carpentry: the boat and the flood as described, he wrote, would have been contingent upon physical impossibilities.\n[air 2.5s]\n",
+   "start_seconds": 771.2,
+   "end_seconds": 949.4,
+   "paragraphs": [
+    {
+     "text": "The specification is the most checkable thing in the whole story. Three hundred cubits long, fifty wide, thirty high, three decks inside. In metres, about a hundred and thirty-four by twenty-two by thirteen. It is not a ship. It is a box with a roof.",
+     "claims": [
+      "c54"
+     ],
+     "beat": "exposition",
+     "register": "quiet"
+    },
+    {
+     "text": "The older boats are not that shape. Utnapishtim's is a cube, a hundred and twenty cubits on a side, six decks of seven compartments each divided into nine. Atrahasis is told to build something cube-shaped as well, and in another telling the boat is round: a quffa, a coracle, with one deck or two.",
+     "claims": [
+      "c11",
+      "c19",
+      "c56"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "Irving Finkel identified a tablet that gives measurements for an unusually large coracle, and a scale replica built from his reading was floated in Kerala, in India. The press accounts of its size disagree, so we are not giving you a number.",
+     "claims": [
+      "c57"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "Three shapes. A cube, a bowl and a box. Now the deck area of each. Atrahasis, fourteen thousand four hundred square cubits. Utnapishtim, fourteen thousand four hundred. Noah, fifteen thousand. Three boats that look nothing like one another, and their floors are within about four per cent.",
+     "claims": [
+      "c55",
+      "c56"
+     ],
+     "beat": "reveal",
+     "register": "awe"
+    },
+    {
+     "text": "Whatever travelled between these stories, part of it was a size.",
+     "claims": [],
+     "beat": "landing",
+     "register": "quiet"
+    },
+    {
+     "text": "In Schagen, fifty kilometres north of Amsterdam, a Dutch building contractor named Johan Huibers spent eighteen months and a million euros building the Ark at half scale. Seventy metres long, nine and a half wide, thirteen high. He opened it to visitors in two thousand and seven. Then he built a full-sized one.",
+     "claims": [
+      "c61"
+     ],
+     "beat": "exposition",
+     "register": "quiet"
+    },
+    {
+     "text": "That took four years, eight helpers, four million euros, and a volume of timber equivalent to twelve thousand trees. It opened at Dordrecht in two thousand and twelve. And it is a hundred and nineteen metres long, thirty wide and twenty-three high, which in cubits is two hundred and sixty-six by sixty-six by fifty. Not three hundred by fifty by thirty. The most faithful Ark ever built is shorter, wider and taller than the one in the book.",
+     "claims": [
+      "c60",
+      "c59",
+      "c54"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "The half-scale one was sold to an artist in twenty ten, hit a moored coastguard vessel in Oslo harbour in twenty sixteen, and was impounded at Ipswich in twenty nineteen. And a boat that can be built is not a boat that has been found. Robert Moore's objection was never about carpentry: the boat and the flood as described, he wrote, would have been contingent upon physical impossibilities.",
+     "claims": [
+      "c62",
+      "c58"
+     ],
+     "beat": "transition",
+     "register": "doubt"
+    }
+   ],
+   "speaker_directions": "The driest act and the most concrete. Read the measurements as measurements: no awe, no nudge. The reveal is the only place in the film where the voice is allowed to sound as if it has noticed something, and what it has noticed is an arithmetic coincidence.",
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "dry, almost procedural, with one lift at the deck areas",
+    "emphasis_words": [
+     "cubits",
+     "cube",
+     "coracle",
+     "box",
+     "four",
+     "size",
+     "Dordrecht"
+    ],
+    "pause_before_seconds": 0,
+    "pause_after_seconds": 2.5,
+    "delivery_note": "The three deck figures are read as one phrase with no comma lift between them, then a full stop. The four-second gap lands after 'a size'."
+   },
+   "enhancement_cues": [
+    {
+     "type": "diagram",
+     "description": "cross_section_diagram: the three boats drawn to one scale - Utnapishtim's cube, the coracle, the Genesis box - with their deck areas labelled 14,400, 14,400 and 15,000 square cubits.",
+     "timestamp_seconds": 70
+    },
+    {
+     "type": "diagram",
+     "description": "scale_comparison: three hundred by fifty by thirty cubits against two hundred and sixty-six by sixty-six by fifty, which is what Dordrecht actually is. Both sets of figures on screen together.",
+     "timestamp_seconds": 150
+    },
+    {
+     "type": "broll",
+     "description": "The Ark van Noach at Dordrecht and Krimpen aan den IJssel - 11 Wikimedia files of a real wooden hull at full scale with people and houses beside it. The only asset in the bank that makes a cubit a size rather than a word.",
+     "timestamp_seconds": 120
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "cubits",
+     "phonetic": "KEW-bits"
+    },
+    {
+     "word": "quffa",
+     "phonetic": "KOO-fa"
+    },
+    {
+     "word": "coracle",
+     "phonetic": "KOR-a-kul"
+    },
+    {
+     "word": "Huibers",
+     "phonetic": "HOY-bers"
+    },
+    {
+     "word": "Dordrecht",
+     "phonetic": "DOR-drekht"
+    },
+    {
+     "word": "Schagen",
+     "phonetic": "SKHAH-khen"
+    },
+    {
+     "word": "Utnapishtim",
+     "phonetic": "oot-na-PISH-tim"
+    },
+    {
+     "word": "Atrahasis",
+     "phonetic": "a-tra-HA-sis"
+    },
+    {
+     "word": "Finkel",
+     "phonetic": "FIN-kel"
+    },
+    {
+     "word": "Kerala",
+     "phonetic": "KEH-ra-la"
+    }
+   ],
+   "source_ref": "research_brief data_points c11, c19, c54-c62. Per-sentence attribution is in paragraphs[].claims."
+  },
+  {
+   "id": "act4",
+   "label": "Act 4 — Everybody keeps finding it",
+   "text": "[beat: exposition | awe]\nTwenty-nine kilometres south of the summit of Mount Ararat, beside a village called Üzengili, there is a ridge shaped like a boat. It is a hundred and sixty-four metres long, at about two thousand metres of altitude.\n[air 2.5s]\n\n[beat: exposition | quiet]\nA Turkish army captain, İlhan Durupınar, spotted it in October nineteen fifty-nine on an air force photograph taken during a NATO mapping flight.\n[air 2.5s]\n\n[beat: exposition | tension]\nFrom nineteen seventy-seven it was promoted by Ron Wyatt, and it has never stopped being news. The most recent round: a research team reported that nearly thirty soil and rock samples were analysed at Istanbul Technical University, dated to between three and a half and five thousand years old, and found to contain clay and marine material. Marine material, on a mountainside.\n[air 2.5s]\n\n[beat: exposition | doubt]\nThat is the claim at its strongest. This is what it rests on: a press announcement at second hand, no published study, no data to inspect. Nobody outside the team can check it.\n[air 2.5s]\n\n[beat: exposition | doubt]\nThe site has been examined before. In September nineteen sixty an expedition dug and dynamited for two days, found soil and rocks, and told the press the formation was a freak of nature and not man-made. In nineteen ninety-six a paper in the Journal of Geoscience Education concluded it is a natural rock structure: the ribs and deck beams are andesite and basalt boulders, the iron bracket is weathered volcanic mineral, and the boat shape is folded sediment that then eroded.\n[air 2.5s]\n\n[beat: reveal | doubt]\nThe second name on that paper is David Fasold, who had spent years promoting the site. He went back in nineteen ninety-four with the geologist Ian Plimer and concluded it was not a boat. Lorence Collins puts the physical case in a sentence: no fossilised wood, and no trace of carbon, wood or reed, has ever been found there. A state geologist reported the same in June twenty twenty-five.\n\n[beat: landing | quiet]\nAnd it keeps being announced anyway. That is the part worth explaining.\n[air 4.0s]\n\n[beat: exposition | tension]\nThe mountain itself is five thousand one hundred and thirty-seven metres high. Fernand Navarra's wood from it was oak. Five institutions dated the samples he brought back in nineteen fifty-five to between twelve hundred and seventeen hundred years old.\n[air 2.5s]\n\n[beat: exposition | tension]\nThere is also the anomaly, a shape in the snowfields near the summit, first photographed in nineteen forty-nine on a US Air Force reconnaissance flight. The frames were classified secret; six were released under freedom of information in nineteen ninety-five. In April twenty ten a ministry announced a wooden structure on Ararat, carbon-dated, they said, to four thousand eight hundred years before the present. The sharpest objection came from inside their own camp: Andrew Snelling pointed out that their report showed a single test on a single sample.\n[air 2.5s]\n\n[beat: transition | doubt]\nAnd underneath the whole search there is a translation problem. Genesis does not name this mountain. It says the ark came to rest on the mountains of Ararat, and Ararat is the Hebrew name for the kingdom the Assyrians called Urartu. Historians and biblical scholars generally read it as a region. The searching has gone on, then, on the strength of a place name the size of a country.\n[air 2.5s]\n",
+   "start_seconds": 949.4,
+   "end_seconds": 1178.6,
+   "paragraphs": [
+    {
+     "text": "Twenty-nine kilometres south of the summit of Mount Ararat, beside a village called Üzengili, there is a ridge shaped like a boat. It is a hundred and sixty-four metres long, at about two thousand metres of altitude.",
+     "claims": [
+      "c63"
+     ],
+     "beat": "exposition",
+     "register": "awe"
+    },
+    {
+     "text": "A Turkish army captain, İlhan Durupınar, spotted it in October nineteen fifty-nine on an air force photograph taken during a NATO mapping flight.",
+     "claims": [
+      "c65"
+     ],
+     "beat": "exposition",
+     "register": "quiet"
+    },
+    {
+     "text": "From nineteen seventy-seven it was promoted by Ron Wyatt, and it has never stopped being news. The most recent round: a research team reported that nearly thirty soil and rock samples were analysed at Istanbul Technical University, dated to between three and a half and five thousand years old, and found to contain clay and marine material. Marine material, on a mountainside.",
+     "claims": [
+      "c67",
+      "c74"
+     ],
+     "beat": "exposition",
+     "register": "tension"
+    },
+    {
+     "text": "That is the claim at its strongest. This is what it rests on: a press announcement at second hand, no published study, no data to inspect. Nobody outside the team can check it.",
+     "claims": [
+      "c74"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "The site has been examined before. In September nineteen sixty an expedition dug and dynamited for two days, found soil and rocks, and told the press the formation was a freak of nature and not man-made. In nineteen ninety-six a paper in the Journal of Geoscience Education concluded it is a natural rock structure: the ribs and deck beams are andesite and basalt boulders, the iron bracket is weathered volcanic mineral, and the boat shape is folded sediment that then eroded.",
+     "claims": [
+      "c66",
+      "c68",
+      "c69"
+     ],
+     "beat": "exposition",
+     "register": "doubt"
+    },
+    {
+     "text": "The second name on that paper is David Fasold, who had spent years promoting the site. He went back in nineteen ninety-four with the geologist Ian Plimer and concluded it was not a boat. Lorence Collins puts the physical case in a sentence: no fossilised wood, and no trace of carbon, wood or reed, has ever been found there. A state geologist reported the same in June twenty twenty-five.",
+     "claims": [
+      "c71",
+      "c70",
+      "c72",
+      "c68"
+     ],
+     "beat": "reveal",
+     "register": "doubt"
+    },
+    {
+     "text": "And it keeps being announced anyway. That is the part worth explaining.",
+     "claims": [],
+     "beat": "landing",
+     "register": "quiet"
+    },
+    {
+     "text": "The mountain itself is five thousand one hundred and thirty-seven metres high. Fernand Navarra's wood from it was oak. Five institutions dated the samples he brought back in nineteen fifty-five to between twelve hundred and seventeen hundred years old.",
+     "claims": [
+      "c75",
+      "c78"
+     ],
+     "beat": "exposition",
+     "register": "tension"
+    },
+    {
+     "text": "There is also the anomaly, a shape in the snowfields near the summit, first photographed in nineteen forty-nine on a US Air Force reconnaissance flight. The frames were classified secret; six were released under freedom of information in nineteen ninety-five. In April twenty ten a ministry announced a wooden structure on Ararat, carbon-dated, they said, to four thousand eight hundred years before the present. The sharpest objection came from inside their own camp: Andrew Snelling pointed out that their report showed a single test on a single sample.",
+     "claims": [
+      "c81",
+      "c82",
+      "c84",
+      "c85"
+     ],
+     "beat": "exposition",
+     "register": "tension"
+    },
+    {
+     "text": "And underneath the whole search there is a translation problem. Genesis does not name this mountain. It says the ark came to rest on the mountains of Ararat, and Ararat is the Hebrew name for the kingdom the Assyrians called Urartu. Historians and biblical scholars generally read it as a region. The searching has gone on, then, on the strength of a place name the size of a country.",
+     "claims": [
+      "c76"
+     ],
+     "beat": "transition",
+     "register": "doubt"
+    }
+   ],
+   "speaker_directions": "The act that can most easily become a debunk, so the rule is absolute: every claim is stated at its own strength before anything is said against it, and nothing in the voice signals which way the paragraph is going. The Fasold line is the hardest in the film to read without a note of triumph. It takes none.",
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "low and falling; this is where the film drops",
+    "emphasis_words": [
+     "boat-shaped",
+     "marine",
+     "dynamite",
+     "freak",
+     "went back",
+     "wood",
+     "kingdom"
+    ],
+    "pause_before_seconds": 0,
+    "pause_after_seconds": 2.5,
+    "delivery_note": "The sample results are read at full weight, not sceptically. 'A freak of nature' is read as a quotation, with the attribution audible. The four-second gap lands after 'announced again'."
+   },
+   "enhancement_cues": [
+    {
+     "type": "broll",
+     "description": "Durupinar from the ground and from the access road - 13 usable Wikimedia photographs. The act's argument is a pair of cuts: frames where the boat shape reads, then frames where it dissolves into the hillside.",
+     "timestamp_seconds": 0
+    },
+    {
+     "type": "overlay",
+     "description": "map: located at 39.44064, 44.23481 (Wikidata Q1267546), Durupinar against Greater Ararat 29 kilometres north. OPTIONAL overhead from Sentinel-2 / NASA Worldview true colour, used ONCE to show the outline. NOT the hero.",
+     "timestamp_seconds": 20
+    },
+    {
+     "type": "diagram",
+     "description": "document_reveal on the September 1960 news release - 'a freak of nature and not man-made' - and on the 1996 Journal of Geoscience Education paper. Halftone, locked frames.",
+     "timestamp_seconds": 160
+    },
+    {
+     "type": "stat_card",
+     "description": "evidence_card marked CONTESTED: the sample claim as reported, with what it rests on stated on the same card - a press announcement, no primary study, no published data.",
+     "timestamp_seconds": 130
+    },
+    {
+     "type": "diagram",
+     "description": "cross_section_diagram: folded sediment, and where the supposed ribs and iron brackets sit in it.",
+     "timestamp_seconds": 200
+    },
+    {
+     "type": "broll",
+     "description": "The 1949 US Air Force reconnaissance frame of the anomaly, released under FOIA in 1995, under a locked halftone treatment.",
+     "timestamp_seconds": 420
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "Durupinar",
+     "phonetic": "doo-roo-PUH-nar"
+    },
+    {
+     "word": "Uzengili",
+     "phonetic": "oo-ZEN-gi-li"
+    },
+    {
+     "word": "Dogubayazit",
+     "phonetic": "doh-oo-ba-ya-ZUT"
+    },
+    {
+     "word": "Agri",
+     "phonetic": "AH-ree"
+    },
+    {
+     "word": "Ararat",
+     "phonetic": "ARR-a-rat"
+    },
+    {
+     "word": "Urartu",
+     "phonetic": "oo-RAR-too"
+    },
+    {
+     "word": "Navarra",
+     "phonetic": "na-VAR-ra"
+    },
+    {
+     "word": "Fasold",
+     "phonetic": "FAY-sold"
+    },
+    {
+     "word": "Wyatt",
+     "phonetic": "WY-at"
+    },
+    {
+     "word": "Plimer",
+     "phonetic": "PLY-mer"
+    },
+    {
+     "word": "Atabey",
+     "phonetic": "AH-ta-bay"
+    },
+    {
+     "word": "Parrot",
+     "phonetic": "PA-rot"
+    },
+    {
+     "word": "Abovian",
+     "phonetic": "a-BOH-vee-an"
+    },
+    {
+     "word": "Snelling",
+     "phonetic": "SNEL-ing"
+    }
+   ],
+   "source_ref": "research_brief data_points c63-c87. Per-sentence attribution is in paragraphs[].claims."
+  },
+  {
+   "id": "outro",
+   "label": "Outro",
+   "text": "[beat: landing | resolution]\nFour files, and the one we closed is the one nobody was arguing about. If that was worth your evening, a like and a subscribe is how the next one happens.\n",
+   "start_seconds": 1178.6,
+   "end_seconds": 1191.0,
+   "paragraphs": [
+    {
+     "text": "Four files, and the one we closed is the one nobody was arguing about. If that was worth your evening, a like and a subscribe is how the next one happens.",
+     "claims": [],
+     "beat": "landing",
+     "register": "resolution"
+    }
+   ],
+   "speaker_directions": "Two sentences. The first is a landing line and the second is the ask. Nothing essential here, and nothing in the right third or the bottom fifth of the frame.",
+   "delivery_cues": {
+    "pace": "slow",
+    "energy": "low, warm on the second sentence only",
+    "emphasis_words": [
+     "open",
+     "spent"
+    ],
+    "pause_before_seconds": 1.5,
+    "pause_after_seconds": 0,
+    "delivery_note": "Sentence one at 0.76. Sentence two at the body speed, 0.87. The like/subscribe animation is cued to the word timings the synthesiser returns, not to an aligner run afterwards, so the press lands on the syllable."
+   },
+   "enhancement_cues": [
+    {
+     "type": "animation",
+     "description": "outro_cta component: an animated like and subscribe in the design system's line style, no platform marks and no platform colours - the activation colour is the film's ochre. Right third and bottom fifth left clear for YouTube's End Screen.",
+     "timestamp_seconds": 0
+    }
+   ],
+   "pronunciation_guides": [],
+   "source_ref": "Exempt from the fact gate by section type (playbook fact_gate.exempt_sections: [outro]). It asserts nothing about the world."
+  }
+ ],
+ "voice_performance": {
+  "performance_intent": "A researcher reading from notes at night, working through four open files. Grave, curious, unsentimental. The voice never sells and never sneers: when a claim belongs to somebody, the attribution is read at the same weight as the claim, because an attributed claim read at speed sounds like an asserted one.",
+  "pacing_profile": "contemplative",
+  "energy_curve": "Flat and low by design. The only lifts are the four act reveals, and each is made by SLOWING rather than by rising. Act 2's reveal is the quietest line in the film and act 4's is the flattest.",
+  "pause_policy": "Air is written, not performed. Every silence in this film is an [air N.Ns] marker in the section text at 1.5, 2.5 or 4.0 seconds, synthesised as a real gap and measured in the mix against what was planned. The synthesiser is not asked to decide where a pause goes, because on run #1 it left thirteen seconds of silence in twenty minutes when the policy was prose.",
+  "sample_section_id": "act2",
+  "provider_notes": {
+   "route": "kokoro-82m, voice bm_george, through the hyperframes CLI. Word timings come from create_timed on synthesis; the caption track is built from forced alignment against this text.",
+   "speed": "0.89 for the body. Drop to about 0.76 on a landing line and on the outro's first sentence.",
+   "reveals": "Roughly 130 wpm against the 150 baseline, and the voice stops at the end of the paragraph rather than running into the air.",
+   "attributions": "Read at the reveal rate, not the body rate: 'Ryan and Pitman argued', 'Giosan's team found', 'proponents say'. The clause is the thing that keeps the film out of the sermon register and it has to be audible.",
+   "numerals": "Everything is spelled out in this text and must be read as written. 'Fourteen thousand four hundred' is three words to the voice and one figure to the viewer.",
+   "foreign_names": "See each section's pronunciation_guides. Durupinar, Utnapishtim, Atrahasis, Ziusudra, Shuruppak, Ammi-Saduqa, Shatapatha and Giosan are all reliably mangled."
+  }
+ },
+ "metadata": {
+  "project_id": "noah",
+  "pipeline": "narrated-documentary",
+  "playbook": "wak3up-documentary",
+  "generation_mode": "outline_first_then_act_by_act",
+  "never_generated_in_one_call": true,
+  "outline_path": "projects/noah/artifacts/script_outline.json",
+  "assembled_by": "projects/noah/assemble_script.py",
+  "section_sources": {
+   "cold_open": "projects/noah/artifacts/sections/cold_open.txt",
+   "act1": "projects/noah/artifacts/sections/act1.txt",
+   "act2": "projects/noah/artifacts/sections/act2.txt",
+   "act3": "projects/noah/artifacts/sections/act3.txt",
+   "act4": "projects/noah/artifacts/sections/act4.txt",
+   "outro": "projects/noah/artifacts/sections/outro.txt"
+  },
+  "claim_sources": {
+   "cold_open": "projects/noah/artifacts/sections/cold_open.claims.json",
+   "act1": "projects/noah/artifacts/sections/act1.claims.json",
+   "act2": "projects/noah/artifacts/sections/act2.claims.json",
+   "act3": "projects/noah/artifacts/sections/act3.claims.json",
+   "act4": "projects/noah/artifacts/sections/act4.claims.json",
+   "outro": "projects/noah/artifacts/sections/outro.claims.json"
+  },
+  "claim_ledger_source": "projects/noah/artifacts/research_brief.json - 90 entries, c01 to c90, every one with a source_url",
+  "passes": [
+   {
+    "pass": 1,
+    "produced": "script_outline.json",
+    "context": "proposal_packet act structure + the 90-entry claim ledger",
+    "note": "Beats, claim spend and a word budget per act. No prose. The arithmetic was checked here, before any sentence was written."
+   },
+   {
+    "pass": 2,
+    "produced": "sections/cold_open.txt",
+    "context": "outline only",
+    "checked": "check_claims --section cold_open: PASS"
+   },
+   {
+    "pass": 3,
+    "produced": "sections/act1.txt",
+    "context": "outline + cold_open text + act 1's assigned claim ids",
+    "checked": "check_claims --section act1: PASS"
+   },
+   {
+    "pass": 4,
+    "produced": "sections/act2.txt",
+    "context": "outline + act1 text + act 2's assigned claim ids",
+    "checked": "check_claims --section act2: PASS"
+   },
+   {
+    "pass": 5,
+    "produced": "sections/act3.txt",
+    "context": "outline + act2 text + act 3's assigned claim ids",
+    "checked": "check_claims --section act3: PASS"
+   },
+   {
+    "pass": 6,
+    "produced": "sections/act4.txt",
+    "context": "outline + act3 text + act 4's assigned claim ids",
+    "checked": "check_claims --section act4: PASS"
+   },
+   {
+    "pass": 7,
+    "produced": "sections/outro.txt",
+    "context": "outline + act4 text",
+    "checked": "exempt from the fact gate by section type"
+   }
+  ],
+  "citation_binding": {
+   "coverage": "per_sentence, via each section's paragraphs[].claims",
+   "section_level_covers_nothing": "A section's source_ref names the range its paragraphs draw on and attributes no sentence. The gate still resolves every id in it.",
+   "checked_after_each_act": "scripts/check_claims.py --project noah --section <act>, run before the next act was written",
+   "no_invented_ids": "projects/noah/assemble_script.py refuses a claim id that is not in the research brief, and asserts that the number of claim rows equals the number of paragraphs of text. An invented id, or an attribution that has drifted out of alignment by one, cannot reach this artifact through the path it was built on.",
+   "measured": "176 sentences, 118 carrying a date, a number, a proper noun or a quotation, 0 uncovered. 90-claim ledger, 0 cited ids that do not resolve."
+  },
+  "padding_checks": [
+   {
+    "act": "act1",
+    "new_information": "That the Mesopotamian version is itself borrowed - Tablet XI's flood was taken from Atrahasis, whose oldest copy is dated by a colophon to a king who ruled 1646 to 1626 BC - and that the same story exists in Sanskrit with a fish in place of a god.",
+    "no_restatement": "The cold open's dove and the 1872 reading are called back in one clause each, never re-explained. The apprenticeship line was REWRITTEN during trimming for exactly this reason: it originally repeated the cold open's 'apprenticed at fourteen to engrave banknotes' as a whole sentence, and now reads 'the banknote engraving was his trade, not a stage he passed through', which is a new point about the man rather than the same fact twice.",
+    "earned_length": "Twenty per cent shorter loses the third witness. The Manu material is what turns the act from a two-text comparison into a question about transmission, and it is the only passage in the film that is not Mesopotamian or biblical.",
+    "ledger_density": "832 words, 24 claims - one per 35 words, against the playbook's floor of one per 150."
+   },
+   {
+    "act": "act2",
+    "new_information": "That there is a dated, published, falsifiable candidate for a real flood, and that it has been argued down by fifty metres without being argued away: the smaller reading still drowns two thousand square kilometres.",
+    "no_restatement": "Shuruppak returns from act 1 as a single clause - the city whose ruler was the flood hero now has an alluvial layer under it - and is not re-introduced.",
+    "earned_length": "Twenty per cent shorter loses either the rebuttals or the non-flood explanations. Cutting the rebuttals would leave the hypothesis standing unopposed, which the register forbids; cutting Mayor, Chen and the comet men would leave the act implying that a flood is the only available explanation.",
+    "ledger_density": "823 words, 23 claims - one per 36 words."
+   },
+   {
+    "act": "act3",
+    "new_information": "That three boats of three different shapes have deck areas within about four per cent of each other, and that the most faithful full-scale build is not the shape Genesis gives.",
+    "no_restatement": "The cube from act 1 returns as one line inside the comparison, where it is doing new work: there it was evidence of borrowing, here it is one of three floor areas.",
+    "earned_length": "This is the shortest act at 399 words and it is short on purpose. The Ark's dimensions are one specification, three comparisons and one build; padding it to match act 2 would be the restatement this check exists to catch. The proposal recorded the same judgement before a word was written.",
+    "ledger_density": "399 words, 11 claims - one per 36 words."
+   },
+   {
+    "act": "act4",
+    "new_information": "That the site's own promoter co-signed the paper against it, that the sharpest objection to the strongest Ararat claim came from inside the camp that wanted it to be true, and that Genesis names a kingdom rather than a peak.",
+    "no_restatement": "Nothing from acts 1 to 3 recurs. The act's only backward reference is structural - the film's fourth open file - and it is in the outro, which is exempt.",
+    "earned_length": "Twenty per cent shorter loses either the believers' best evidence or the geological reading, and losing either one turns the act into the register the playbook forbids.",
+    "ledger_density": "513 words, 17 claims - one per 30 words."
+   }
+  ],
+  "act_budget_rebalance": {
+   "proposed": {
+    "cold_open": 98,
+    "act1": 700,
+    "act2": 720,
+    "act3": 450,
+    "act4": 600,
+    "outro": 28
+   },
+   "delivered": {
+    "cold_open": 102,
+    "act1": 832,
+    "act2": 823,
+    "act3": 399,
+    "act4": 513,
+    "outro": 32
+   },
+   "why": "Acts 1 and 2 ran long in draft and acts 3 and 4 were cut to pay for them, inside a fixed 2,500-2,700 word band. The reason is in the material rather than in the writing: act 1 carries four text traditions and act 2 carries two published positions with their figures, while act 3 is a single specification and act 4 is one site plus one mountain. Recorded rather than quietly absorbed, because the proposal stated different numbers and the difference is a real editorial judgement.",
+   "what_was_cut_to_pay_for_it": [
+    "act1: Smith's Assyrian Discoveries (c10), the Levant transmission date (c24), and the Bhagavata Purana (c34)",
+    "act2: Oettinger on the Yima story (c36)",
+    "act4: the 1948 shepherd account (c64, the one anecdotal entry in the ledger), the 1829 first ascent (c77), the 4,484-year letter (c79), Irwin's 1984 sample (c80), the IKONOS imagery (c83), the 2011 jurisdiction (c73), and Price's allegation with the Turkish investigation (c86, c87)"
+   ],
+   "note": "Every id above remains in the ledger with its source. A claim that is not spent is not a defect; a sentence without one is."
+  },
+  "register_compliance": {
+   "both_sides_at_strength": [
+    "act2 gives Ryan and Pitman four paragraphs before a word is said against them, including the figures that make the case vivid - fifty cubic kilometres a day, three hundred days, a hundred thousand square kilometres.",
+    "act4 states the Durupinar sample result at full strength and in its own terms, then says what it rests on in a separate paragraph rather than undercutting it in the same breath.",
+    "The strongest objection to the 2010 Ararat claim in the film is Andrew Snelling's, which is an objection from inside the camp that wanted the claim to be true."
+   ],
+   "no_sermon_no_debunk": "No sentence in the film tells the viewer what to conclude about the Flood. The two places the register is most at risk - the Fasold recantation and the sample caveat - are written flat, with the attribution carrying the weight instead of the adjective.",
+   "contested_narrated_as_contested": "Every one of the 14 contested ledger entries that is spent appears with its dispute attached: the Black Sea hypothesis against Gorur, Aksu, Hiscott and Giosan; the sample claim against what it rests on; the 2010 claim against Snelling.",
+   "attribution_forms_used": [
+    "Ryan and Pitman's argument was",
+    "Tigay argued",
+    "Andrew George, citing him, puts it flatly",
+    "Giosan said",
+    "Aksu and Hiscott concluded",
+    "Adrienne Mayor has argued",
+    "Yi Samuel Chen argues",
+    "Local accounts say",
+    "a research team reported",
+    "the consensus runs"
+   ],
+   "open_ending": "The film ends on the translation problem - Genesis names a region, not a peak - and does not resolve it. The outro says plainly that the one file closed is the one nobody was arguing about."
+  },
+  "structure_compliance": {
+   "act_count": 4,
+   "act_count_band": [
+    4,
+    5
+   ],
+   "cold_open_seconds": 43.3,
+   "cold_open_ceiling_seconds": 46,
+   "cold_open_carries_hook": "The 1872 reading and the thousand-year gap - the hook claim c01, which is the one claim in the ledger carrying two independent sources.",
+   "cold_open_plants_and_does_not_answer": true,
+   "title_sequence": "7.0s, silent, immediately after the cold open. No beats, no words, outside the gate's arithmetic.",
+   "mystery_first_act_shape": "Every act opens on the unexplained: act 1 on the specificity of the parallel, act 2 on what a shared text cannot explain, act 3 on a specification nobody can test by argument, act 4 on a boat-shaped ridge.",
+   "ending_mode": "open_question",
+   "outro_seconds": 12.8,
+   "outro_target_seconds": 10,
+   "outro_note": "Over the 10s target at the gate's 150 wpm arithmetic, as run #2's was. Recorded rather than fudged: hitting 10s needs either shorter copy or a speed faster than the body rate, which reads rushed exactly where the ask lands."
+  },
+  "framing_sentences": {
+   "count": 2,
+   "pct_of_sentences": 1.14,
+   "ceiling_pct": 5.0,
+   "sentences": [
+    "Four files, then.",
+    "None of them is closed."
+   ],
+   "why_marked": "Both count or signpost the FILM's own structure - its four acts - rather than saying anything about the world. Neither carries a proper noun, a number of ten or more, or a date, so both are skipped. The marker is authored here and never inferred: the gate cannot tell 'four files', meaning the film's four acts, from 'four tablets', which would be a fact.",
+   "note": "The outro's 'Four files' is in an exempt section and is not marked, so it is not counted here."
+  },
+  "angle": {
+   "set_by": "owner, 2026-10-26",
+   "statement": "A mystery-first investigation of the Flood story AS AN ARTEFACT: why the same story exists across cultures.",
+   "note": "Not derived and not the script stage's to choose. It overrides what the Shorts titles suggest, because a picker cannot know what a previous film argued or what this one is for.",
+   "spine_order_delivered": [
+    "act1 - the same story in older cultures: Gilgamesh tablet XI read by George Smith in 1872, Atrahasis, the Manu flood",
+    "act2 - the Black Sea deluge hypothesis (Ryan & Pitman, 1997) and its critics",
+    "act3 - the Ark's stated dimensions and the Dutch full-scale build",
+    "act4 - Durupinar and the Ararat expeditions: the claims, their best evidence, and the geological reading"
+   ],
+   "atrahasis_handling": "SUPPORTING, not spine, exactly as commissioned. Its colophon is load-bearing for act 1's chronology, so the claim stays; visually it is one tablet image plus one authored evidence card, and it carries no act."
+  },
+  "title_rationale": "The default candidate, kept at 32 characters. The three alternatives were tested and rejected: 'Everybody Keeps Finding Noah's Ark' describes act 4 only and carries the debunk register in its own voice - 'everybody keeps' is a sentence about people being wrong, and the film is not; 'Four Cultures, One Flood Story' describes act 1 only and resolves the question in the title, which is the one thing a mystery-first film may not do; 'The Flood That Predates the Bible' is the default with a weaker verb. The owner's exemplars 'The Flood Before the Bible' and 'They Keep Finding the Ark' are VOICE EXAMPLES at 26 and 25 characters and are not usable as titles under the 30-45 rule.",
+  "gate_commands_run": [
+   {
+    "name": "check_claims",
+    "command": ".venv/bin/python scripts/check_claims.py --project noah --section <act>",
+    "when": "after each act, before the next was written",
+    "result": "PASS for cold_open, act1, act2, act3, act4"
+   },
+   {
+    "name": "script_beats",
+    "command": ".venv/bin/python lib/script_beats.py projects/noah/artifacts/script.json --plan projects/noah/artifacts/narration_plan.json",
+    "blocking": true,
+    "result": "PASS - 48 beats, 2695 words, 1078.0s speech, 106.0s air (9.0%), 1184.0s total, 40 gaps, longest 4.0s",
+    "wrote": "projects/noah/artifacts/narration_plan.json"
+   },
+   {
+    "name": "fact_coverage",
+    "command": ".venv/bin/python lib/verify_fact_coverage.py --project noah --backend spacy --report projects/noah/artifacts/fact_coverage.md",
+    "blocking": true,
+    "result": "PASS - 176 sentences, 118 need a claim, 0 uncovered, 0 cited ids that do not resolve, framing 1.14% of a 5% ceiling",
+    "report": "projects/noah/artifacts/fact_coverage.md"
+   }
+  ],
+  "style_frames": {
+   "rendered": 8,
+   "path": "projects/noah/renders/style/",
+   "manifest": "projects/noah/renders/style/frames.json",
+   "props": "projects/noah/style_frame_props.json",
+   "rendered_by": "projects/noah/render_style_frames.py",
+   "families": [
+    "title_sequence",
+    "act_title_card",
+    "map_route",
+    "timeline",
+    "schematic",
+    "document_reveal",
+    "evidence_card",
+    "scale_comparison"
+   ],
+   "why": "The playbook's reference_strategy: one reference frame per scene family before an act is assembled. They go to the human with the script, because a reply of 'ok' has to be an informed one."
+  },
+  "review": {
+   "rounds": 2,
+   "verdict": "pass",
+   "review_focus_checked": [
+    "Outline was written and approved before any act prose - script_outline.json, pass 1, no prose in it",
+    "Each act drafted with the outline plus the previous act as context, never the whole script in one call - see passes[]",
+    "Every act introduces new information - named per act in padding_checks[].new_information",
+    "No date, name or figure appears that is absent from the claim ledger - 0 uncovered sentences, 0 unresolved ids",
+    "Word count within the band - 2,695 against 2,500-2,700",
+    "Cold open lands under 46 seconds and carries the hook - 43.3s",
+    "Ending is an open question, not a summary",
+    "Speaker directions and delivery cues present for TTS on every section"
+   ],
+   "findings": [
+    {
+     "severity": "critical",
+     "finding": "FOUND AND FIXED IN ROUND 1. Act 1's opening biography repeated the cold open's 'apprenticed at fourteen to engrave banknotes' as a whole sentence - the exact restatement the padding check forbids, three minutes after the viewer heard it.",
+     "action": "Rewritten to 'the banknote engraving was his trade, not a stage he passed through', which makes a new point about the man instead of repeating a fact about him."
+    },
+    {
+     "severity": "critical",
+     "finding": "FOUND AND FIXED IN ROUND 1. The first assembly came in at 2,750 words, fifty over the hard ceiling, which would have failed lib/script_beats.py.",
+     "action": "Trimmed to 2,695 by cutting seven ledger spends rather than by compressing every paragraph evenly - see act_budget_rebalance.what_was_cut_to_pay_for_it. The alternative, shaving a word from each sentence, would have damaged the register everywhere instead of removing material in one place."
+    },
+    {
+     "severity": "suggestion",
+     "finding": "The outro measures 12.8s against the playbook's 10s target.",
+     "action": "Recorded, not fudged, on the same grounds as run #2's 11.1s: the copy at the approved speeds is what it is, and hitting 10s means reading the ask faster than the body rate."
+    },
+    {
+     "severity": "nitpick",
+     "finding": "Act 1 spends 24 of the ledger's 90 entries and act 3 spends 11. The spread tracks the material rather than the structure.",
+     "action": "Accepted and recorded in act_budget_rebalance. The proposal predicted the same shape before any prose existed."
+    }
+   ]
+  },
+  "repo_changes_made_during_this_stage": [
+   {
+    "file": "schemas/artifacts/research_brief.schema.json",
+    "change": "data_points[] now accepts id, kind, confidence, contested, notes and supports. All optional; nothing previously valid becomes invalid.",
+    "why": "lib/verify_fact_coverage.ledger() keys on point['id'] and falls back to a POSITIONAL guess without it - the guess that let easter-island cite fifty-four ids against a fifteen-claim ledger. The owner's instruction for this run requires an explicit id on every data point, and the schema forbade one. Logged as decision d-011."
+   },
+   {
+    "file": "schemas/artifacts/script.schema.json",
+    "change": "sections[] now accepts paragraphs[] ({text, claims, beat, register}) and a section-level claims[].",
+    "why": "claims_for() reads section['paragraphs'][i]['claims'] and that is the only attribution the gate treats as covering a sentence. The schema had nowhere to put it. Logged as decision d-011."
+   },
+   {
+    "file": "scripts/check_claims.py",
+    "change": "Now honours the [framing] marker exactly as lib/verify_fact_coverage.py does, and reports framing counts.",
+    "why": "Its docstring says it runs 'the same two checks the gate makes, scoped to one act', and it diverged on precisely the feature the owner added on 2026-10-26: it flagged every framing sentence the gate was always going to skip. A per-act check that disagrees with the gate sends the writer to repair a line that was never broken. A marker is still not a licence - a framing sentence carrying a proper noun, a number of ten or more, or a date is now reported with the word that blocked it."
+   }
+  ],
+  "word_counts": {
+   "cold_open": 102,
+   "title_sequence": 0,
+   "act1": 832,
+   "act2": 819,
+   "act3": 398,
+   "act4": 513,
+   "outro": 31
+  },
+  "air_seconds": {
+   "cold_open": 2.5,
+   "title_sequence": 0,
+   "act1": 31.5,
+   "act2": 29.0,
+   "act3": 19.0,
+   "act4": 24.0,
+   "outro": 0.0
+  },
+  "claim_map": {
+   "cold_open": [
+    "c01",
+    "c02",
+    "c03",
+    "c04",
+    "c05",
+    "c06",
+    "c07",
+    "c12",
+    "c21"
+   ],
+   "title_sequence": [],
+   "act1": [
+    "c02",
+    "c03",
+    "c05",
+    "c06",
+    "c07",
+    "c08",
+    "c09",
+    "c11",
+    "c12",
+    "c13",
+    "c14",
+    "c15",
+    "c17",
+    "c18",
+    "c20",
+    "c21",
+    "c22",
+    "c23",
+    "c25",
+    "c31",
+    "c32",
+    "c33",
+    "c35",
+    "c89"
+   ],
+   "act2": [
+    "c26",
+    "c27",
+    "c28",
+    "c29",
+    "c30",
+    "c37",
+    "c38",
+    "c39",
+    "c40",
+    "c41",
+    "c42",
+    "c43",
+    "c44",
+    "c45",
+    "c46",
+    "c47",
+    "c48",
+    "c49",
+    "c50",
+    "c51",
+    "c52",
+    "c53",
+    "c90"
+   ],
+   "act3": [
+    "c11",
+    "c19",
+    "c54",
+    "c55",
+    "c56",
+    "c57",
+    "c58",
+    "c59",
+    "c60",
+    "c61",
+    "c62"
+   ],
+   "act4": [
+    "c63",
+    "c65",
+    "c66",
+    "c67",
+    "c68",
+    "c69",
+    "c70",
+    "c71",
+    "c72",
+    "c74",
+    "c75",
+    "c76",
+    "c78",
+    "c81",
+    "c82",
+    "c84",
+    "c85"
+   ],
+   "outro": []
+  },
+  "measured": {
+   "beats": 48,
+   "words": 2695,
+   "wpm": 150,
+   "speech_seconds": 1078.0,
+   "planned_air_seconds": 106.0,
+   "total_seconds": 1184.0,
+   "air_pct_of_total": 9.0,
+   "air_gaps": 40,
+   "longest_air_s": 4.0,
+   "beats_by_type": {
+    "reveal": 5,
+    "exposition": 33,
+    "landing": 6,
+    "transition": 4
+   }
+  },
+  "duration_accounting": {
+   "gate_total_seconds": 1184.0,
+   "title_sequence_seconds": 7.0,
+   "film_runtime_seconds": 1191.0,
+   "note": "The gate's arithmetic is speech plus planned air and excludes the silent title sequence, which carries no beats. The film's runtime is the gate total plus those seven seconds."
+  }
+ }
+}

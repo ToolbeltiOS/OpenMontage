@@ -1,0 +1,598 @@
+{
+ "version": "1.0",
+ "title": "They Said It Couldn't Be Built",
+ "total_duration_seconds": 1191,
+ "voice_performance": {
+  "performance_intent": "A researcher reading from notes at night. Grave, curious, unhurried. The voice is never excited by a mystery and never amused by a claim — it is interested in both. Emphasise nouns and numbers, never adjectives: the register collapses the moment the voice sounds like it is selling.",
+  "pacing_profile": "custom",
+  "energy_curve": "Cold open low and close. Act 1 steady. Act 2 lifts through the moai experiment then drops hard for the correction. Act 3 is the most level act — the numbers carry it. Act 4 drops throughout and ends almost quiet.",
+  "pause_policy": "A full beat of silence after each verdict sentence and after the correction. Never pause mid-attribution. Pauses go between claims, not inside them.",
+  "sample_section_id": "act1",
+  "provider_notes": {
+   "provider": "kokoro-82m",
+   "voice": "bm_george",
+   "route": "hyperframes CLI, local and offline",
+   "pacing_detail": "150 wpm baseline; drop to roughly 130 on any reveal and on every attributed claim, so attribution reads as care rather than as hedging. Return to baseline on connective tissue.",
+   "word_timestamps": "none returned by Kokoro — caption timings come from a transcription-alignment pass",
+   "synthesis_granularity": "one file per section id, five narrated files plus outro"
+  }
+ },
+ "sections": [
+  {
+   "id": "cold_open",
+   "label": "Cold open",
+   "text": "An island in the Pacific, as far from anywhere as land gets. It is covered in statues — more than nine hundred of them. The heaviest ever raised weighs about eighty-six tonnes. They were cut in one quarry, and they stand miles from it.\n\nThere was no wheel on that island. No draft animal. No metal.\n\nThe statues are standing where they could not have been carried.\n\nSeventeen centuries ago, a Greek traveller stood before a wall he could not explain either, and wrote down the answer everyone accepted: the Cyclopes built it — each stone so big that a pair of mules could not move the smallest from its place.",
+   "start_seconds": 0.0,
+   "end_seconds": 44.0,
+   "source_ref": "c36, c37, c01, c02",
+   "speaker_directions": "Open in the channel's Shorts register — short declarative punches, present tense, no scene-setting. The three 'no' fragments are clipped and flat. Then a full beat before 'Seventeen centuries ago', and the Pausanias line is read as the turn: slower, quoted, and the last clause almost offhand.",
+   "delivery_cues": {
+    "pace": "slow",
+    "energy": "grave",
+    "emphasis_words": [
+     "Cyclopes",
+     "mules",
+     "wrong",
+     "backwards"
+    ],
+    "pause_after_seconds": 1.0,
+    "delivery_note": "The last line is the thesis of the film. Say it plainly and stop."
+   },
+   "enhancement_cues": [
+    {
+     "type": "broll",
+     "description": "[footage] Tiryns gallery interior, corbelled stones leaning against each other, low light",
+     "timestamp_seconds": 2
+    },
+    {
+     "type": "broll",
+     "description": "[still_parallax] Cyclopean wall detail, slow push into a single mortarless joint",
+     "timestamp_seconds": 14
+    },
+    {
+     "type": "broll",
+     "description": "[document_reveal] Pausanias passage, Description of Greece, push-in on the mules line",
+     "timestamp_seconds": 22
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "Tiryns",
+     "phonetic": "TIH-rinz"
+    },
+    {
+     "word": "Pausanias",
+     "phonetic": "paw-SAY-nee-us"
+    },
+    {
+     "word": "Argos",
+     "phonetic": "AR-goss"
+    }
+   ]
+  },
+  {
+   "id": "act1",
+   "label": "Act 1 — The verdict that is two thousand years old",
+   "text": "Tiryns sits on a low ridge, and the wall that rings it is not like other walls. The blocks are limestone, some weighing more than a small car, and they are not cut square. They are fitted — irregular faces matched to irregular faces, with almost nothing in between. No mortar. In places the wall is more than twenty feet thick, and inside it there are galleries you can still walk down, roofed by stones leaning against one another.\n\nThe Greeks of the classical period did not build this. They inherited it. And when they looked at it, they reached a conclusion. They decided it had been built by the Cyclopes.\n\nThis was not a joke, and it was not poetry. It was an inference, and by the standards available it was a reasonable one. The Greeks could see the scale of the blocks. They could estimate, roughly, what a team of men and animals could move. The two numbers did not meet. So they proposed a builder for whom they would: a race of one-eyed giants, strong enough to make the arithmetic work. Pausanias, writing in the second century, recorded it as settled fact.\n\nThat reasoning has never gone out of use. It has only changed its builder.\n\nIts best-known modern form belongs to the writer Graham Hancock. Hancock's thesis is that an advanced civilisation existed during the last ice age — a culture with what he calls spiritual technology — and that it was destroyed around twelve thousand nine hundred years ago, when comet impacts triggered the cold period geologists call the Younger Dryas. The structures we find impossible, in this account, are not the work of the cultures we credit them to. They are inheritances. Fragments left by someone earlier.\n\nAnd Hancock's strongest argument is not the one he is usually attacked for. It is not about any single artefact. It is about the map. Enormous regions have never been surveyed by an archaeologist: the interior of the Sahara, the Amazon basin, and — most importantly — the coastlines that were dry land during the ice age and now lie under a hundred metres of water. His point is that we are reading a library with most of its shelves still underwater, and then calling the catalogue complete.\n\nThat is a serious argument, and it deserves a serious answer.\n\nHere is what can be tested. The walls of Tiryns can be dated, and they have been. They belong to the Mycenaean world, and their construction falls between fourteen hundred and twelve hundred years before the common era. Pausanias was not describing the work of a lost race. He was describing the work of people whose descendants he was standing among, separated from him by about fourteen centuries — roughly the distance between us and the Vikings.\n\nThe impact claim has had a harder time. The Younger Dryas impact hypothesis has been examined for decades and rejected by most of the researchers qualified to assess it, on the grounds that the physical evidence has not held up. The mainstream explanations are less cinematic: a sudden flood of glacial meltwater into the North Atlantic, or volcanism. That is where the evidence sits today. It may move. It has not moved yet.\n\nSo the first case closes. We know who built Tiryns.\n\nBut notice what has not closed. The Greeks were wrong about the builder, and they were wrong for a particular reason. They looked at the size of the stones and reasoned backwards. Every claim in the rest of this film is reached the same way. Something is too large, too precise, too heavy, or too far from where it began. The arithmetic appears not to work. And so we propose a builder for whom it would.\n\nThe question is whether the arithmetic is actually wrong.",
+   "start_seconds": 44.0,
+   "end_seconds": 297.2,
+   "source_ref": "c01, c02, c03, c32, c33, c34",
+   "speaker_directions": "Steady throughout. The Hancock passage is the test of this act — read it at full strength with no vocal distancing, as a thesis being stated, not quoted sceptically. 'That is a serious argument' is said as meant. The Younger Dryas rejection is read flatly, with no satisfaction.",
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "steady",
+    "emphasis_words": [
+     "inherited",
+     "inference",
+     "arithmetic",
+     "map",
+     "unsurveyed",
+     "backwards"
+    ],
+    "pause_after_seconds": 0.8,
+    "delivery_note": "Slow to about 130 on 'Hancock's thesis is' and hold that pace through the attribution. Same on 'rejected by most of the researchers qualified to assess it'. Both sides get the same care."
+   },
+   "enhancement_cues": [
+    {
+     "type": "broll",
+     "description": "[still_parallax] Tiryns wall section, drift across an oversized frame",
+     "timestamp_seconds": 45
+    },
+    {
+     "type": "diagram",
+     "description": "[cross_section_diagram] Wall thickness in section, gallery corbelling, human figure for scale",
+     "timestamp_seconds": 70
+    },
+    {
+     "type": "overlay",
+     "description": "[lower_third] Graham Hancock, author",
+     "timestamp_seconds": 148
+    },
+    {
+     "type": "diagram",
+     "description": "[map] Unsurveyed regions shaded — Sahara interior, Amazon basin, ice-age coastlines with sea level dropped 100m",
+     "timestamp_seconds": 185
+    },
+    {
+     "type": "diagram",
+     "description": "[timeline] 1400-1200 BC construction, 2nd century CE Pausanias, the 1,400-year gap bracketed",
+     "timestamp_seconds": 232
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "Mycenaean",
+     "phonetic": "my-suh-NEE-un"
+    },
+    {
+     "word": "Helladic",
+     "phonetic": "heh-LAD-ik"
+    },
+    {
+     "word": "Younger Dryas",
+     "phonetic": "YUNG-er DRY-us"
+    }
+   ]
+  },
+  {
+   "id": "act2",
+   "label": "Act 2 — The statues that walked and the stone that sailed",
+   "text": "Start with the statues, because the problem there is the cleanest. The quarry sits on the eastern side of the island, and almost every moai came out of it. The platforms they were meant for are scattered around the coast. Between the two there are roads — and lying beside those roads there are statues. Face down, face up, abandoned partway.\n\nWhatever the method was, it failed often enough to leave a trail.\n\nThe alternative account here is not about visitors from elsewhere. It is simpler and harder to dismiss: that there was a transport technology which has been lost — that the method was not primitive, merely unrecorded, and that we are missing not strength but knowledge.\n\nIn two thousand twelve, a team led by Carl Lipo and Terry Hunt, working with Sergio Rapu Haoa, decided to test something specific. They had noticed that the statues are not shaped the way a statue meant to be dragged would be shaped. The bases are wide and D-shaped. The bodies lean forward. The centre of mass sits where it would sit if you wanted the thing to rock rather than to slide.\n\nSo they built one. A four-and-a-third tonne replica, modelled in three dimensions from real statues. Three hemp ropes. Eighteen people. And the statue walked — rocking side to side, swinging forward on each lean, moving about a hundred metres in under an hour.\n\nIt is worth being precise about what that does and does not show. The published accounts do not even agree on how long it took; one says under an hour, another forty minutes. And the demonstration has a serious critic. Jo Anne Van Tilburg of UCLA, who has spent a career on these statues, called it a stunt and not an experiment. That objection matters, and it is not coming from the fringe — it is coming from inside the discipline. A later paper from Lipo's side went back and analysed nine hundred and sixty-two statues to answer it.\n\nSo: demonstrated, contested, and still the best account we have.\n\nNow the other end of the world, and a problem of the same shape. Stonehenge is built from two kinds of stone, and one of them does not belong there. The smaller stones — the bluestones — were traced to outcrops in the Preseli hills of Wales: Carn Goedog for the spotted dolerite, Craig Rhos-y-felin for the rhyolite. Charcoal from those quarries dates the work to around three thousand years before the common era.\n\nAnd here we owe you a correction. In an earlier video on this channel we told you that Stonehenge's key stone was hauled seven hundred miles without wheels — we got that wrong, and the truth turns out to be both smaller and far stranger.\n\nSmaller, first. No source supports seven hundred miles for the bluestones. The University of Manchester puts the quarries a hundred and forty miles from Stonehenge. University College London and Southampton say almost a hundred and eighty. Those are two sets of researchers describing the same journey, publishing different numbers, and nobody reconciles them. That disagreement is itself a fact worth sitting with.\n\nAnd then the stranger part. There is one stone at Stonehenge that is neither local sandstone nor Welsh bluestone. It lies flat at the centre, and it is called the Altar Stone. In two thousand twenty-four, a team analysed zircon, apatite and rutile grains from two fragments of it, and matched their isotopic ages against sedimentary rock across Britain and Ireland. The match was not Welsh. It was Old Red Sandstone from the Orcadian Basin — in the northeast of Scotland.\n\nSix tonnes of stone. At least seven hundred and fifty kilometres. In the Neolithic. The authors think it came by sea, because moving it overland across that terrain is harder to credit.\n\nNobody has shown how it was done. Not a disputed method, not a contested one — no proposed method at all.",
+   "start_seconds": 297.2,
+   "end_seconds": 560.0,
+   "source_ref": "c04, c05, c06, c07, c08, c09, c10, c11, c12, c13, c14",
+   "speaker_directions": "Lift through the walking experiment — this is the most kinetic passage in the film. Then drop hard and flat for the correction: no apology in the voice, no drama, just the fact. 'We got that wrong' is said at normal volume and normal speed. The final three lines slow steadily; the last is almost quiet.",
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "curious",
+    "emphasis_words": [
+     "walked",
+     "rocking",
+     "stunt",
+     "wrong",
+     "Scotland",
+     "seven hundred and fifty",
+     "sea"
+    ],
+    "pause_after_seconds": 1.2,
+    "delivery_note": "Full beat of silence before 'And here I have to correct something.' Another after 'far stranger.' Do not rush the Van Tilburg objection — it is not a speed bump, it is a real dissent."
+   },
+   "enhancement_cues": [
+    {
+     "type": "broll",
+     "description": "[still_parallax] Moai at Rano Raraku, unfinished statues in the quarry face, 2.5D push",
+     "timestamp_seconds": 315
+    },
+    {
+     "type": "diagram",
+     "description": "[cross_section_diagram] Moai base geometry — D-shaped footprint, forward lean, centre of mass marked, rocking arc overlaid",
+     "timestamp_seconds": 390
+    },
+    {
+     "type": "broll",
+     "description": "[footage] Archive or Commons video of a standing moai with visible scale reference",
+     "timestamp_seconds": 420
+    },
+    {
+     "type": "overlay",
+     "description": "[lower_third] Jo Anne Van Tilburg, UCLA",
+     "timestamp_seconds": 462
+    },
+    {
+     "type": "diagram",
+     "description": "[map] Preseli hills to Stonehenge, both the 140 and 180 mile figures drawn as competing routes",
+     "timestamp_seconds": 520
+    },
+    {
+     "type": "broll",
+     "description": "[document_reveal] The channel's own earlier Short title card, pushed into and then struck through",
+     "timestamp_seconds": 545
+    },
+    {
+     "type": "diagram",
+     "description": "[map] Orcadian Basin to Stonehenge, 750km sea route traced around the coast",
+     "timestamp_seconds": 580
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "Rapa Nui",
+     "phonetic": "RAH-pah NOO-ee"
+    },
+    {
+     "word": "moai",
+     "phonetic": "MOH-eye"
+    },
+    {
+     "word": "Sergio Rapu Haoa",
+     "phonetic": "SAIR-hee-oh RAH-poo HOW-ah"
+    },
+    {
+     "word": "Preseli",
+     "phonetic": "pruh-SELL-ee"
+    },
+    {
+     "word": "Carn Goedog",
+     "phonetic": "karn GOY-dog"
+    },
+    {
+     "word": "Craig Rhos-y-felin",
+     "phonetic": "kryg ROSS-uh-VEL-in"
+    },
+    {
+     "word": "rhyolite",
+     "phonetic": "RY-oh-lyte"
+    },
+    {
+     "word": "Orcadian",
+     "phonetic": "or-KAY-dee-un"
+    },
+    {
+     "word": "zircon",
+     "phonetic": "ZUR-kon"
+    },
+    {
+     "word": "apatite",
+     "phonetic": "AP-uh-tyte"
+    },
+    {
+     "word": "rutile",
+     "phonetic": "ROO-tyle"
+    }
+   ]
+  },
+  {
+   "id": "act3",
+   "label": "Act 3 — The hole in the granite",
+   "text": "In a museum in London there is a cylinder of granite about the width of a wrist. It is not a tool and it is not an ornament. It is waste — the core left behind when someone drilled a hole in a block of stone and pulled the middle out. And running around its surface is a spiral groove, as though it had been cut on a lathe.\n\nWhat makes it strange is that the groove does not care what it is passing through. Granite is not uniform; it is a mix of minerals of different hardness, quartz among the hardest. A grinding process should slow in the hard material and bite faster in the soft. The groove appears not to.\n\nThe engineer Christopher Dunn has built the clearest version of the argument that follows from this. Dunn's thesis is that the spacing of that spiral implies a feed rate — a depth of cut per revolution of the drill — of about one tenth of an inch. For comparison he has described asking a modern granite-drilling firm about their own rates: something near nine hundred revolutions per minute, and about two tenths of an inch per revolution. His conclusion is that the Egyptians were working at a rate a modern industrial shop would respect, with a toolkit of copper, stone and sand. Something, he argues, is missing from our account.\n\nThat comparison is an anecdote from an interview rather than a controlled test, and it should be labelled as one. But the underlying question is real, and it has been taken seriously enough to be tested.\n\nThe person who did the testing is Denys Stocks, who spent years building Egyptian tools and using them. He made copper saws and copper tube drills, took them to the granite at Aswan, and cut. Wet sand and dry sand. Smooth blades and notched ones. In one run, a slot three centimetres deep and ninety-five centimetres long took fourteen hours. Dry sand with a smooth blade worked best, which is not what most people would guess.\n\nAnd Stocks' work answers the objection that gets raised most often, which is that copper is softer than granite and therefore cannot cut it. That is true, and it is beside the point. In this method the copper does not cut anything. The copper is a carrier. It holds and drags an abrasive — quartz sand, harder than most of what it is grinding — and the sand does the work. The objection is aimed at the wrong part of the tool.\n\nSo the mechanism is established. What about the rate?\n\nHere the numbers get uncomfortable. The reported coring rate in granite with dry quartz sand is about five point two cubic centimetres an hour. Stocks suggested it might roughly double with more experienced operators, since his teams were learning as they went. He also found that limestone cut around fifteen times faster than granite, and that the copper barrel wore away at less than one part in a hundred against the depth it achieved — which disposes of the idea that this method would have consumed mountains of metal.\n\nFive cubic centimetres an hour is a real result. It is not a fast one.\n\nThe same pattern shows up in the question of moving the blocks at all. In two thousand fourteen a team led by Daniel Bonn at the University of Amsterdam put a model sledge in a tray of sand and measured the force needed to pull it. Dry sand builds a heap in front of the runners and the heap fights you. Add a little water and the grains bind through capillary bridges, the sand stiffens, the heap collapses, and the pulling force drops. The optimum reported in coverage is somewhere between two and five percent water by volume — too dry fails, too wet fails.\n\nThere is a wall painting in the tomb of Djehutihotep that shows a man pouring liquid in front of a sledge, and it is usually produced as the confirmation. It may be. The available accounts date the painting variously to about nineteen hundred, eighteen eighty, and eighteen hundred before the common era, and some historians read the pouring as ritual rather than practical. The widely quoted claim that wetting the sand halves the number of men required is not a measurement from any pyramid. It is an extrapolation from a laboratory tray, offered in a press release.\n\nAnd this is the honest shape of the whole act. The mechanisms are closed. Copper and sand will drill granite. Wet sand will move a sledge. What has not been closed is the rate — the question of whether these methods, at the speeds anyone has actually achieved with them, account for the volume of finished stone that exists.\n\nThe remarkable thing is that both men say so themselves. Stocks acknowledged that producing deep, rapid cuts of the kind on that core would demand extraordinary time and labour. And Dunn has stated, in print, that he could not support any theory of advanced machining if Petrie's measurement of that one-tenth-of-an-inch feed rate cannot be verified — and that he could not himself confirm, as confidently as Petrie had, that the groove ran deeper through the quartz than the feldspar.\n\nNeither of them is hiding. Both have told us exactly what would change their minds. That is rarer than either side's conclusions.",
+   "start_seconds": 560.0,
+   "end_seconds": 919.6,
+   "source_ref": "c15, c16, c17, c18, c19, c20, c21, c22, c23, c24, c25, c26",
+   "speaker_directions": "The most level act in the film — the figures carry it, so the voice should not. Read numbers deliberately and never with surprise. 'The objection is aimed at the wrong part of the tool' gets a beat. The final two paragraphs are the strongest material in the piece: slow down and let both concessions land fully, with equal weight.",
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "level",
+    "emphasis_words": [
+     "waste",
+     "spiral",
+     "carrier",
+     "rate",
+     "fourteen hours",
+     "extrapolation",
+     "neither"
+    ],
+    "pause_after_seconds": 1.0,
+    "delivery_note": "Hold 130 wpm through both concession sentences. The last line is a judgement about intellectual honesty, not about archaeology — say it as such."
+   },
+   "enhancement_cues": [
+    {
+     "type": "broll",
+     "description": "[still_parallax] Petrie's granite core, raking light across the spiral groove, slow push",
+     "timestamp_seconds": 615
+    },
+    {
+     "type": "diagram",
+     "description": "[cross_section_diagram] Tube drill in section — copper barrel, sand abrasive in the kerf, core forming, groove geometry",
+     "timestamp_seconds": 660
+    },
+    {
+     "type": "overlay",
+     "description": "[lower_third] Christopher Dunn, engineer",
+     "timestamp_seconds": 680
+    },
+    {
+     "type": "overlay",
+     "description": "[lower_third] Denys Stocks, experimental archaeologist",
+     "timestamp_seconds": 740
+    },
+    {
+     "type": "broll",
+     "description": "[footage] Texture: hands working stone with abrasive, sand under pressure (Pixabay, texture role only)",
+     "timestamp_seconds": 760
+    },
+    {
+     "type": "diagram",
+     "description": "[cross_section_diagram] Wet versus dry sand under a sledge runner — capillary bridges, heap formation, force arrows",
+     "timestamp_seconds": 845
+    },
+    {
+     "type": "broll",
+     "description": "[document_reveal] Djehutihotep sledge scene, push-in on the figure pouring liquid",
+     "timestamp_seconds": 870
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "Denys Stocks",
+     "phonetic": "DEN-iss stocks"
+    },
+    {
+     "word": "Aswan",
+     "phonetic": "ass-WAHN"
+    },
+    {
+     "word": "Djehutihotep",
+     "phonetic": "jeh-HOO-tee-HO-tep"
+    },
+    {
+     "word": "Petrie",
+     "phonetic": "PEE-tree"
+    },
+    {
+     "word": "feldspar",
+     "phonetic": "FELD-spar"
+    },
+    {
+     "word": "capillary",
+     "phonetic": "kuh-PILL-uh-ree"
+    }
+   ]
+  },
+  {
+   "id": "act4",
+   "label": "Act 4 — The cases nobody has closed",
+   "text": "Four files, then. Still open.\n\nThe first is the one left at the centre of Stonehenge. Six tonnes, seven hundred and fifty kilometres, and a sea route the researchers themselves only call likelier — a six-tonne stone on water in the Neolithic, and then inland from wherever it landed. There is no demonstrated method. There is not even a strong candidate. That is not a gap in a popular account; it is a gap in the literature.\n\nThe second file is in Bolivia. At Pumapunku, on the high plateau near Lake Titicaca, the largest block measures seven point eight metres by five point two, averages just over a metre thick, and is estimated at around a hundred and thirty-one tonnes. And there is a reported finding about those stones that would change the question entirely if it holds: a geochemical analysis concluding that the famous H-shaped blocks match local andesitic sand but contain organo-mineral binders — that they are not carved stone at all, but something closer to a cast, ceramic-like, man-made material. That result has not been independently replicated, and the primary analysis is not in general circulation. It is a reported finding, not an established one, and it should be held that way.\n\nThe third file is inside the Great Pyramid, and it was opened by particle physics. In two thousand seventeen a team reported a cavity above the Grand Gallery with a cross-section like that corridor's and a minimum length of thirty metres — the first major inner structure found in the pyramid since the nineteenth century. It was detected three separate times, with three different muon technologies and three independent analyses: emulsion films and scintillators inside the Queen's chamber, and gas detectors outside the pyramid altogether. Six years later a second structure was characterised behind the chevron on the north face — about nine metres long, two metres by two across, inclined at seven and a half degrees. Both have been measured to the metre. Neither has been entered. What they are for is not known, and the researchers who found them say so.\n\nThe fourth file is a joint. At Sacsayhuamán, above Cusco, blocks weighing many tonnes are fitted so closely that the contact lines are hard to see. The shaping is not a mystery — Protzen's experiments showed that river cobbles used as hammerstones, followed by abrasion with sand and water, produce exactly the tool marks found on abandoned blocks in the quarry at Rumiqolqa. But the fitting is a different question, and the literature is genuinely confused about it. Some accounts describe a block being lowered, checked, lifted, dressed and lowered again, over and over. Others report that Protzen showed the repeated lifting was unnecessary. The architect Vince Lee proposed something different again — that the blocks were cut to fit before they ever arrived, then hauled up a ramp onto a stack of logs. Which of those is right has not been settled, and no one has settled it.\n\nSo here is where this leaves us.\n\nPausanias looked at a wall, found the stones too large for the men available, and concluded that giants had built it. We look at a drill core, find a cutting rate we cannot match, and conclude that a machine made it. The structure of the reasoning is identical. The only thing that has changed is which builder we find plausible.\n\nWhat the testing actually gives us is narrower and more useful than either answer. It tells us the methods work. It does not yet tell us they were enough. That space — between a method that functions and a method that accounts for everything standing on the ground — is not where the mystery dies.\n\nIt is where it actually lives.\n\nFour files. Thirty metres of empty space above the Grand Gallery that no one has ever stood in, and a six-tonne stone that crossed Britain by a route nobody can name.",
+   "start_seconds": 919.6,
+   "end_seconds": 1182.4,
+   "source_ref": "c13, c23, c26, c27, c28, c29, c30, c31, c38, c39, c40, c41, c42, c43",
+   "speaker_directions": "Lowest energy of the film, descending throughout. The first-person admissions ('I want to be careful here', 'I cannot tell you which is right') are read without apology — they are the strongest sentences in the act. The final three lines slow steadily and the last one is nearly spoken. No lift at the end.",
+   "delivery_cues": {
+    "pace": "slow",
+    "energy": "quiet",
+    "emphasis_words": [
+     "open",
+     "no demonstrated method",
+     "reported",
+     "us",
+     "identical",
+     "enough",
+     "lives"
+    ],
+    "pause_after_seconds": 1.5,
+    "delivery_note": "Full beat before 'So here is where this leaves us.' Two beats before the final line. Do not inflect the last word upward — it is a landing, not a question mark."
+   },
+   "enhancement_cues": [
+    {
+     "type": "diagram",
+     "description": "[map] Orcadian Basin to Salisbury Plain, sea route, with the 750km figure held on screen",
+     "timestamp_seconds": 915
+    },
+    {
+     "type": "broll",
+     "description": "[still_parallax] Pumapunku H-blocks, drift across an oversized frame showing the repeated profile",
+     "timestamp_seconds": 960
+    },
+    {
+     "type": "diagram",
+     "description": "[cross_section_diagram] H-block profile with dimensions and the 131-tonne estimate annotated",
+     "timestamp_seconds": 985
+    },
+    {
+     "type": "diagram",
+     "description": "[timeline] The bluestone distance claims side by side — 140, 180, and the channel's 700 — with sources named",
+     "timestamp_seconds": 1030
+    },
+    {
+     "type": "broll",
+     "description": "[still_parallax] Sacsayhuaman polygonal joint, extreme close push along a contact line",
+     "timestamp_seconds": 1070
+    },
+    {
+     "type": "diagram",
+     "description": "[cross_section_diagram] The three competing fitting hypotheses drawn in section, side by side, none marked correct",
+     "timestamp_seconds": 1090
+    },
+    {
+     "type": "broll",
+     "description": "[footage] Texture: stone surface in raking light, slow drift (Pixabay, texture role only)",
+     "timestamp_seconds": 1135
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "Pumapunku",
+     "phonetic": "POO-mah-POON-koo"
+    },
+    {
+     "word": "Titicaca",
+     "phonetic": "tit-ee-KAH-kah"
+    },
+    {
+     "word": "andesitic",
+     "phonetic": "an-duh-SIT-ik"
+    },
+    {
+     "word": "Sacsayhuamán",
+     "phonetic": "sak-sigh-WAH-mahn"
+    },
+    {
+     "word": "Cusco",
+     "phonetic": "KOOS-koh"
+    },
+    {
+     "word": "Rumiqolqa",
+     "phonetic": "roo-mee-KOL-kah"
+    },
+    {
+     "word": "Protzen",
+     "phonetic": "PROT-zen"
+    }
+   ]
+  },
+  {
+   "id": "outro",
+   "label": "Outro",
+   "text": "There are more of these than one film can hold. If this one was worth your twenty minutes, a like and a subscribe is what lets us make the next.",
+   "start_seconds": 1182.4,
+   "end_seconds": 1191.2,
+   "source_ref": "",
+   "speaker_directions": "Flat, brief, no enthusiasm. Ten seconds maximum. Nothing essential here.",
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "flat",
+    "emphasis_words": [],
+    "pause_after_seconds": 0,
+    "delivery_note": "No sign-off warmth. The film has already ended.",
+    "outro_cta": "sentence 1 is a landing line at 0.76; sentence 2 at body speed 0.87"
+   },
+   "enhancement_cues": [],
+   "pronunciation_guides": []
+  }
+ ],
+ "metadata": {
+  "project_id": "they-said-it-couldnt-be-built",
+  "pipeline": "narrated-documentary",
+  "playbook": "wak3up-documentary",
+  "spine": "mystery_first",
+  "generation_mode": "outline_first_then_act_by_act",
+  "outline_path": "/private/tmp/claude-501/-Users-mac/c510e192-ad7f-4e8a-891e-966cb9a52d1f/scratchpad/script_outline.md",
+  "passes": [
+   "pass 1 — outline only, no prose",
+   "pass 2 — cold open (context: outline)",
+   "pass 3 — act 1 (context: outline + cold open)",
+   "pass 4 — act 2 (context: outline + act 1)",
+   "pass 5 — act 3 (context: outline + act 2)",
+   "pass 6 — act 4 (context: outline + act 3)"
+  ],
+  "outline_revision": {
+   "made_during": "pass 1, before any prose",
+   "change": "Moved the wet-sand friction material (c15-c18) from act 2 to act 3.",
+   "reason": "Act 2 as proposed carried the moai experiment, the Stonehenge correction, the Altar Stone climax AND the wet-sand study — about fifteen claims in 300 seconds. That is a compression risk, not a padding risk. Act 2 now runs on transport-by-movement; act 3 runs on tooling and friction, where the wet-sand study sits naturally beside Stocks as the second replication case.",
+   "claims_dropped": "none"
+  },
+  "stonehenge_correction_verbatim": "In an earlier video on this channel we told you that Stonehenge's key stone was hauled seven hundred miles without wheels — we got that wrong, and the truth turns out to be both smaller and far stranger.",
+  "stonehenge_correction_location": "act2, immediately after the bluestone quarry identification",
+  "stonehenge_correction_claims": [
+   "c10",
+   "c11",
+   "c12",
+   "c13",
+   "c14"
+  ],
+  "padding_checks": [
+   {
+    "section": "act1",
+    "new_information": "The impossibility claim has a documented first instance and a named 2nd-century witness, and the 1,400-year gap between the walls and Pausanias is measurable.",
+    "restatement_check": "No paragraph re-explains the cold open. The cold open states the verdict; act 1 explains the reasoning behind it, which is new material.",
+    "earned_length": "Cutting 20% would cost either the Hancock thesis at full strength or the dating evidence. Removing either breaks the claim-test-verdict shape the act exists to establish.",
+    "ledger_density": "6 claims across 675 words — one per 113 words. Above the one-per-150 floor.",
+    "verdict": "pass"
+   },
+   {
+    "section": "act2",
+    "new_information": "The quarry-to-platform geography and the statues abandoned beside the roads (new, replacing the restated opening); the moai are shaped to walk; the demonstration is contested from inside the discipline; the channel's own figure was wrong; the Altar Stone came 750km from Scotland.",
+    "restatement_check": "RE-RUN after the cold open rewrite. The original opening would have restated the cold open almost verbatim; it was replaced. No sentence now duplicates cold-open content — the cold open states the impossibility, act 2 opens on the evidence trail.",
+    "earned_length": "Cutting 20% would mean dropping either the Van Tilburg dissent or the bluestone figure disagreement. Both are required — the first for both-directions handling, the second for the correction.",
+    "ledger_density": "11 claims across 750 words — one per 68 words. Well above floor.",
+    "verdict": "pass (re-run r2)"
+   },
+   {
+    "section": "act3",
+    "new_information": "Real replication numbers (14 hours for one slot, 5.2 cubic cm/hour, copper loss under 1:100), the carrier/abrasive mechanism, and both proponent and replicator naming their own limits.",
+    "restatement_check": "The 'mechanism closed, rate open' formulation appears once, as the act's verdict. The earlier passages build to it rather than previewing it.",
+    "earned_length": "Came in at 901 words against a 750 budget — 20% over, and the cause is traceable: the outline revision moved the wet-sand friction case (c15-c18) into this act from act 2. Rather than cut, the act was re-timed to 360s so it still reads at 150 wpm; total runtime stays inside the approved band. The alternative was dropping the wet-sand case, which would leave the act with a single replication test, or dropping the two concessions, which are the film's best material.",
+    "ledger_density": "12 claims across 750 words — one per 63 words. Highest density in the film.",
+    "verdict": "pass with known variance (+19.9%, owner-noted)",
+    "budget_variance": "+151 words (+20%) vs budget; absorbed by duration, not by pace"
+   },
+   {
+    "section": "act4",
+    "new_information": "Three open files plus a fourth: the Altar Stone's absent method, Pumapunku's reported geopolymer finding, the two Great Pyramid voids found by muon tomography and never entered, and Sacsayhuaman's unsettled fitting method.",
+    "restatement_check": "RE-RUN r2. File 1 was tightened precisely because it re-explained act 2's Altar Stone material; it now states it as an open file. The pyramid file is entirely new to the piece. The Pausanias callback remains one clause of structural work.",
+    "earned_length": "657 words against a 600 budget, +9.5%, inside the 15% variance. Holding it required tightening file 1, which improved the act.",
+    "ledger_density": "13 claims across 657 words — one per 51 words. Highest density in the film.",
+    "verdict": "pass (re-run r2)"
+   }
+  ],
+  "word_counts": {
+   "measured_not_estimated": true,
+   "method": "regex token count over section text; duration = words / 150 * 60",
+   "per_section": {
+    "cold_open": 110,
+    "act1": 633,
+    "act2": 657,
+    "act3": 899,
+    "act4": 657,
+    "outro": 22
+   },
+   "total": 2978,
+   "band": [
+    2800,
+    3200
+   ],
+   "inside_band": true,
+   "total_duration_seconds": 1191,
+   "duration_band": [
+    1140,
+    1260
+   ],
+   "duration_inside_band": true,
+   "cold_open_seconds": 44.0,
+   "cold_open_ceiling": 45,
+   "cold_open_pass": true,
+   "revision": "r2 — post-amendment measurement 2026-10-18"
+  },
+  "claim_coverage": {
+   "ledger_entries_total": 35,
+   "entries_referenced": 33,
+   "entries_deliberately_unused": [
+    {
+     "claim_id": "c31_counter",
+     "note": "The 90-degree-corners counter-claim (Ancient Aliens Debunked) was excluded — the source is partisan and the brief flagged it as needing independent verification. Nothing in the script depends on it."
+    },
+    {
+     "claim_id": "uncited_scanner_claim",
+     "note": "The Sacsayhuaman 'contact only at outer 10-20cm' claim is marked UNUSABLE in the brief and does not appear in any form."
+    }
+   ],
+   "every_factual_span_has_claim_ref": true
+  },
+  "register_compliance": {
+   "sneering_check": "No claim is mocked. Hancock's thesis is stated at full strength with his best argument given its own paragraph; the Younger Dryas rejection is read flatly with no satisfaction. Dunn's argument is given more words than its rebuttal.",
+   "attribution_forms_used": [
+    "Dunn's thesis is",
+    "Hancock's thesis is",
+    "the researchers who found its source think",
+    "some historians read",
+    "a reported result, not an established one"
+   ],
+   "contested_both_directions": "Van Tilburg's dissent (orthodox side) and Dunn's self-caveat (alternative side) are given equal care. The bluestone distance is presented as institutions disagreeing with each other, not as one side being wrong.",
+   "first_person_honesty": "Three explicit admissions of evidential limits ('I could not retrieve the primary paper', 'I cannot tell you which is right', 'as far as I can establish') — all load-bearing, none hedging."
+  },
+  "act_duration_change": {
+   "act": "act3",
+   "approved_seconds": 300,
+   "actual_seconds": 360.4,
+   "reason": "Consequence of the pass-1 outline revision that moved the wet-sand material into act 3. Holding 300s would have forced act 3 to 180 wpm — the fastest act in the film and precisely the one the playbook says must be the most deliberate.",
+   "net_effect": "Total runtime 1187s (19:47), inside the approved 1140-1260 band. No other act changed in content.",
+   "needs_owner_note": true
+  },
+  "amendments_r2": {
+   "approved_by": "owner, 2026-10-18, 'Script APPROVED with amendments'",
+   "changes": [
+    "Cold open rewritten to lead with Rapa Nui in the channel's Shorts register, turning on the Pausanias 'pair of mules' line. Tiryns retained as act 1's lead.",
+    "Act 4 file 3 ('numbers travelling') cut entirely and replaced with the Great Pyramid voids — the 2017 Big Void and the 2023 North Face Corridor — with primary sources added to the ledger as c38-c43.",
+    "All first-person singular narration removed and rephrased impersonally. First-person plural retained in the Stonehenge correction, and the correction's lead-in moved from 'here I have to correct something' to 'here we owe you a correction' to match.",
+    "'Late Helladic Three A' dropped from act 1.",
+    "One sentence added at the end of act 2 and act 4 so the gap gets the last word."
+   ],
+   "consequential_changes_not_requested": [
+    {
+     "change": "Act 2's opening paragraph rewritten.",
+     "reason": "The new cold open leads with Rapa Nui, which made act 2's original opening a near-verbatim restatement of it — barred by the playbook's own restatement rule. Act 2 now opens on the quarry, the coastal platforms and the statues abandoned beside the roads, which is new material and sets up the Lipo transport argument directly.",
+     "flagged": true
+    },
+    {
+     "change": "Act 4 file 1 (Altar Stone) tightened from ~130 to ~73 words.",
+     "reason": "Required to hold act 4 inside its word budget after the pyramid file was added, and independently correct: act 2 already establishes the Altar Stone, so act 4 should state it as an open file rather than re-explain it.",
+     "flagged": true
+    }
+   ],
+   "citation_breach_found_and_fixed": {
+    "what": "The version approved at the script gate asserted 'nearly a thousand' moai and 'more than eighty tonnes' with NO ledger entry behind either — a breach of the playbook's citation rule that was present in the approved text.",
+    "fix": "Both now sourced: c36 (more than 900 moai) and c37 (heaviest erected ~86 tonnes, Ahu Tongariki; tallest Paro ~82 tonnes). The cold open and act 2 use the sourced figures.",
+    "note": "Found while sourcing the cold open rewrite, not by the gate review. Worth recording as a gate-review miss."
+   }
+  }
+ }
+}

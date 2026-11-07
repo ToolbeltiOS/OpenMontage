@@ -29,16 +29,35 @@ ROOT = Path(__file__).resolve().parents[2]
 PROJECT = "easter-island"
 ART = ROOT / "projects" / PROJECT / "artifacts"
 
+#: Every artifact this module reads. The guard used to name only
+#: listing.json while the helpers read render_props.json and script.json, so
+#: in a worktree that had the listing and not the rest these tests ERRORED
+#: with FileNotFoundError instead of skipping — which is how three of them
+#: were red in the runner worktree and green in the checkout they were
+#: written in.
+NEEDS = ("listing.json", "edit_decisions.json", "script.json")
+
 pytestmark = pytest.mark.skipif(
-    not (ART / "listing.json").exists(),
-    reason="no listing built for this project yet")
+    not all((ART / name).exists() for name in NEEDS),
+    reason=f"{PROJECT} is missing one of {', '.join(NEEDS)}")
 
 
 def used_stems() -> set[str]:
-    """Every asset the cut list points at, by filename stem."""
-    props = json.loads((ART / "render_props.json").read_text())
+    """Every asset the cut list points at, by filename stem.
+
+    From edit_decisions.json, THE DECISION, and not from render_props.json,
+    which .gitignore deliberately does not track because it is rebuilt from
+    edit_decisions on every render. Reading the derived file made this module
+    pass only where a render had happened to leave one behind.
+
+    The two agree on all 84 of this film's assets. They differ in spelling
+    only: build_render_props points a cut at the `_1080` proxy, and the
+    comparison below already strips a trailing `_<digits>` because a crop
+    carries one too.
+    """
+    edit = json.loads((ART / "edit_decisions.json").read_text())
     out = set()
-    for cut in props["cuts"]:
+    for cut in edit["cuts"]:
         for value in cut.values():
             if isinstance(value, str) and ("/assets/" in value or "/proxies/" in value):
                 out.add(Path(value).stem)

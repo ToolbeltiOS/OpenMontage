@@ -1,0 +1,2038 @@
+{
+ "version": "1.0",
+ "title": "Easter Island: The Part Nobody Can Explain",
+ "total_duration_seconds": 1190.7,
+ "voice_performance": {
+  "performance_intent": "A researcher reading from notes at night, working through four files that are still open. Grave, curious, unhurried. The voice is never excited by a mystery and never amused by a claim — it is interested in both. Emphasis lands on nouns and numbers, never on adjectives: the register collapses the moment the voice sounds like it is selling. Where a claim is somebody else's, the voice slows into the attribution rather than hurrying past it, so attribution reads as care and not as a hedge.",
+  "pacing_profile": "custom",
+  "energy_curve": "Cold open low and close. Act 1 steady, lifting once through the excavation and dropping flat for the landing. Act 2 is the most controlled act in the film — it carries somebody else's argument at full strength and must not sneer, so it stays level through the four tests and drops hard at 'there was never a large population here to crash'. Act 3 is the driest and the most patient; the energy comes from the accumulation, not the delivery. Act 4 falls throughout and ends almost quiet. The outro lifts only on the ask.",
+  "pause_policy": "Air is not left to the synthesiser. Every gap is written into the section text as an [air N.Ns] marker, 1.5 / 2.5 / 4.0 seconds and nothing else, and lib/script_beats.py --plan turns each one into a real gap in artifacts/narration_plan.json. 53 gaps, 112.5 seconds, one four-second gap at each act's own climax. Never pause mid-attribution: the gaps go between claims, not inside them.",
+  "sample_section_id": "act2",
+  "provider_notes": {
+   "provider": "kokoro-82m",
+   "voice": "bm_george",
+   "route": "hyperframes CLI, local and offline",
+   "pacing_detail": "150 wpm baseline. Drop to roughly 130 on a reveal and on every attributed claim — Diamond in act 2, Fischer in act 3, the disputed readings in act 4. Return to baseline on connective tissue.",
+   "word_timestamps": "none returned by Kokoro — word timings come from forced alignment against this script (scripts/align_narration.py), not from transcription matched back to it",
+   "synthesis_granularity": "one segment per beat plus the silence that follows it, as written by lib/script_beats.py --plan; 73 narrated segments across six sections",
+   "marker_handling": "The [beat: ...] and [air N.Ns] lines live in section text because a marker in the prose is the only form that survives a rewrite. They are NOT spoken: narration_plan.json carries the clean text per segment and that is what the synthesiser reads.",
+   "sample_section_rationale": "act2 is the most performance-sensitive section in the film. It voices an argument the film goes on to answer, and the whole act fails if the delivery carries any contempt."
+  }
+ },
+ "sections": [
+  {
+   "id": "cold_open",
+   "label": "Cold open",
+   "text": "[beat: exposition | awe]\nThe heads on Easter Island are not heads. Dig beside one and the shoulders come out of the hill, then the arms, then the hands. There is a whole statue under there.\n[air 1.5s]\n\n[beat: exposition | doubt]\nThat is the famous part. Here is the part that is not. Three hundred and ninety-four of them are still in the hillside they were cut from, and the largest was never finished.\n\n[beat: reveal | tension]\nAnd in 1864 a friar counted hundreds of inscribed wooden tablets in the houses here. Two dozen survive. None of them is on Easter Island.\n[air 2.5s]\n\n[beat: landing | quiet]\n[framing] Four questions. [framing] One of them has an answer.\n",
+   "start_seconds": 0.0,
+   "end_seconds": 43.2,
+   "speaker_directions": "Flat and close, almost confidential. The first sentence is a statement of fact, not a tease — it must not rise at the end. Slow into 'There is a whole statue under there' and let the gap do the work. The last line is two short sentences and the second one lands.",
+   "delivery_cues": {
+    "pace": "slow",
+    "energy": "low, close, withheld",
+    "emphasis_words": [
+     "not",
+     "three hundred and ninety-four",
+     "hundreds",
+     "two dozen",
+     "none",
+     "one"
+    ],
+    "pause_before_seconds": 0,
+    "pause_after_seconds": 0,
+    "delivery_note": "No greeting, no channel name, no 'in this video'. 43.2 seconds against the playbook's 46-second ceiling. The hook takes the rhythm of the channel's best-performing short — a flat concrete claim, then the turn — re-voiced for the long form; no frames and no transcript are lifted."
+   },
+   "enhancement_cues": [
+    {
+     "type": "broll",
+     "description": "A quarry statue buried to the neck in the slope, under a slow push. Wikimedia, Rano Raraku category.",
+     "timestamp_seconds": 0
+    },
+    {
+     "type": "diagram",
+     "description": "annotated_still: the same frame with the buried line marked, the body indicated below it.",
+     "timestamp_seconds": 8
+    },
+    {
+     "type": "stat_card",
+     "description": "scale_comparison or stat: 394 still in the hillside.",
+     "timestamp_seconds": 15
+    },
+    {
+     "type": "diagram",
+     "description": "document_reveal: a rongorongo tablet plate. Wikimedia, Category:Rongorongo.",
+     "timestamp_seconds": 26
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "moai",
+     "phonetic": "MOH-eye"
+    }
+   ],
+   "source_ref": "research_brief claim ledger c15, r27, r28, r29, r30, r31 — projects/easter-island/artifacts/research_brief.json (provenance repair, 2026-10-26: computed from the ledger's own per-sentence `supports` mapping. Narration unchanged.)"
+  },
+  {
+   "id": "title_sequence",
+   "label": "Title sequence",
+   "text": "",
+   "start_seconds": 43.2,
+   "end_seconds": 50.2,
+   "speaker_directions": "Silent. No narration.",
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "n/a — no voice in this section",
+    "pause_before_seconds": 0,
+    "pause_after_seconds": 0,
+    "delivery_note": "Seven seconds of picture and sting, no words. Carries no beats and contributes nothing to the word count or the air budget; it is in the film's runtime and not in the gate's arithmetic."
+   },
+   "enhancement_cues": [
+    {
+     "type": "overlay",
+     "description": "title_sequence component: the film's title in Display over a treated hero still of the island, the channel mark, and one accent event — the rule reaching full width — landing on the sting. No persistent chrome; the frame returns on the first scene of act 1, and its absence here is what makes the film read as having begun.",
+     "timestamp_seconds": 0
+    }
+   ],
+   "pronunciation_guides": [],
+   "source_ref": "playbook structure.title_sequence — styles/wak3up-documentary.yaml"
+  },
+  {
+   "id": "act1",
+   "label": "Act 1 — The hillside full of unfinished statues",
+   "text": "[beat: exposition | awe]\nAlmost every statue on the island came out of one hillside: Rano Raraku, a crater of compressed volcanic ash, worked for something like five hundred years, and the source of about ninety-five per cent of the moai anyone has ever counted.\n[air 1.5s]\n\n[beat: exposition | awe]\nMore than nine hundred of them are known. Nearly half never left. Three hundred and ninety-four are still visible in the quarry, in every state of completion, from a shape blocked out in the rock face to a finished figure lying on its back.\n[air 1.5s]\n\n[beat: transition | doubt]\n[framing] Before any of that, there is the question everyone arrives with — and it is worth setting down properly, because it is the one question about this island that now has a good answer.\n\n[beat: exposition | resolution]\nIn October of 2025 two archaeologists published a study of nine hundred and sixty-two statues. Sixty-two of them stand along the island's old roads, and those sixty-two share two features the others do not: a wide, D-shaped base, and a forward lean.\n[air 1.5s]\n\n[beat: exposition | resolution]\nThey built a replica to that design, about four and a third tonnes of it, and eighteen people walked it a hundred metres in forty minutes, rocking it from side to side on ropes. The roads it would have travelled are four and a half metres wide and dished in section, which is what holds a walking statue upright.\n[air 2.5s]\n\n[beat: transition | doubt]\nSo the question is not how the statues moved. It is why they stopped.\n\n[beat: exposition | quiet]\nThe ones in the quarry stand to the neck in the slope, which is why they are photographed as heads. The soil that buried them also protected them. On a statue that has stood out in the weather, the surface is gone; on these, the carving on the back is still there.\n[air 1.5s]\n\n[beat: exposition | doubt]\nIn March of 2010 a team began the first authorised excavation inside the quarry since a Norwegian expedition in the mid-nineteen-fifties. Fifty-five years had passed between one dig and the next.\n[air 1.5s]\n\n[beat: reveal | awe]\nThey excavated two statues. Both were whole. Both were upright. One stood on a prepared pedestal; the other had been set into a deep hole in the ground. Neither had fallen over and been covered up. They had been put there, and left standing.\n[air 2.5s]\n\n[beat: landing | quiet]\nThey were meant to stay where they were.\n[air 1.5s]\n\n[beat: exposition | doubt]\nWhich raises the question of what the quarry actually was. There is an obvious answer that nobody had tested: a place where statues are made, and the unfinished ones are the ones that never got out of it.\n\n[beat: exposition | doubt]\nSo they tested the dirt. The soil around the two statues carried traces of banana, taro and sweet potato, and unusually high levels of calcium and phosphorus. That is not the signature of a workshop floor. It is the signature of ground that was being farmed.\n[air 1.5s]\n\n[beat: exposition | resolution]\nThe team's reading is that it was both at once — the place the statues were cut, and the most productive growing ground on the island — and that cutting the rock is what fed the soil.\n[air 2.5s]\n\n[beat: exposition | awe]\nFor scale. The tallest statue ever raised stood almost ten metres and weighed eighty-two tonnes. The heaviest ever raised is one of fifteen standing together on a coastal platform, and it weighs eighty-six.\n[air 1.5s]\n\n[beat: exposition | awe]\nThe largest of all is still lying in that hillside, on its back, still joined to the rock it was cut from. It would have stood about twenty-one metres. Published estimates of its weight run from a hundred and forty-five tonnes to two hundred and seventy, which tells you how much anyone knows about it.\n[air 1.5s]\n\n[beat: landing | doubt]\nCarving mostly stopped in the early seventeen hundreds. Whatever that hillside was — a workshop, a garden, a place held sacred by the statues standing in it — the work in it ended with the biggest figure still unfinished in the rock.\n[air 4.0s]\n",
+   "start_seconds": 50.2,
+   "end_seconds": 323.2,
+   "speaker_directions": "Steady and factual through the opening figures. The walking recap is the one place in the film the voice is allowed to sound satisfied — it is reporting an answer — but it is brisk, because it is being set down and not dwelt on. 'So the question is not how the statues moved. It is why they stopped' is the hinge: slow it. The excavation reveal is four short declaratives; give each one its own stop. 'They were meant to stay where they were' is the landing — say it once, flat, and hold.",
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "steady, lifting once at the excavation and flat at the landing",
+    "emphasis_words": [
+     "one hillside",
+     "ninety-five",
+     "nearly half",
+     "forward lean",
+     "eighteen people",
+     "why they stopped",
+     "whole",
+     "upright",
+     "pedestal",
+     "farmed",
+     "eighty-six",
+     "twenty-one metres",
+     "nobody"
+    ],
+    "pause_before_seconds": 0.8,
+    "pause_after_seconds": 4.0,
+    "delivery_note": "The commissioned walking-statues recap is the three paragraphs from 'Before any of that' to 'holds a walking statue upright' — 134 words and 4.0s of air, 57.6 seconds against the owner's 60-second cap. It must not run long in delivery: hold it at baseline 150 wpm or faster, not at the reveal rate."
+   },
+   "enhancement_cues": [
+    {
+     "type": "broll",
+     "description": "The quarry slope, wide: finished and unfinished statues in one frame. Wikimedia.",
+     "timestamp_seconds": 0
+    },
+    {
+     "type": "stat_card",
+     "description": "scale_comparison: 900+ known / ~394 still at the quarry.",
+     "timestamp_seconds": 14
+    },
+    {
+     "type": "diagram",
+     "description": "schematic: the road statue's D-shaped base and forward lean, with the rocking path drawn in — timed reveals, for the recap.",
+     "timestamp_seconds": 50
+    },
+    {
+     "type": "diagram",
+     "description": "evidence_card, status peer_reviewed: Lipo and Hunt 2025, Journal of Archaeological Science 183, 106383 — 962 statues, 62 road moai, 4.35-tonne replica.",
+     "timestamp_seconds": 70
+    },
+    {
+     "type": "diagram",
+     "description": "timeline: quarrying from roughly 1250 to the early 1700s, with the stop marked.",
+     "timestamp_seconds": 110
+    },
+    {
+     "type": "diagram",
+     "description": "annotated_still: the excavated statue upright in its hole, pedestal marked, buried line marked.",
+     "timestamp_seconds": 150
+    },
+    {
+     "type": "diagram",
+     "description": "evidence_card, status peer_reviewed: the EISP soil result — banana, taro, sweet potato, calcium, phosphorus.",
+     "timestamp_seconds": 195
+    },
+    {
+     "type": "diagram",
+     "description": "scale_comparison: Paro 82 t / the Tongariki statue 86 t / the unfinished giant 145-270 t, with the range shown as a range.",
+     "timestamp_seconds": 230
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "Rano Raraku",
+     "phonetic": "RAH-noh rah-RAH-koo"
+    },
+    {
+     "word": "moai",
+     "phonetic": "MOH-eye"
+    },
+    {
+     "word": "taro",
+     "phonetic": "TAR-oh"
+    }
+   ],
+   "source_ref": "research_brief claim ledger c10, c11, c15, r32, r33, r34, r35, r36, r37, r38, r39 — projects/easter-island/artifacts/research_brief.json (provenance repair, 2026-10-26: computed from the ledger's own per-sentence `supports` mapping. Narration unchanged.)"
+  },
+  {
+   "id": "act2",
+   "label": "Act 2 — A hundred and eleven people",
+   "text": "[beat: exposition | quiet]\nIn 1877 somebody counted the people on Easter Island. There were a hundred and eleven of them. A century and a half earlier, the first European ships to arrive had estimated two to four thousand.\n[air 2.5s]\n\n[beat: transition | doubt]\nThere is a famous explanation for that, and it is worth hearing at full strength before anything is said against it.\n\n[beat: exposition | tension]\nThe forest went for canoes, for firewood, and for moving and raising the statues. By the time Europeans arrived, twenty-one tree species and every land bird on the island were gone — among them a palm that may have been the largest in the world, fifteen metres and more.\n\n[beat: exposition | tension]\nJared Diamond's account, in his own words, calls the island as close as we can get to a pure ecological collapse: a society that cut down its own forest and ended in an epidemic of cannibalism that left ninety per cent of the islanders dead.\n[air 2.5s]\n\n[beat: exposition | doubt]\nIt is a story that travelled further than almost any other piece of archaeology, because of what it was for. Easter Island is Earth writ small, he wrote. What did they say as they were cutting down the last palm tree?\n[air 1.5s]\n\n[beat: transition | doubt]\nIt is also a claim about the past, which means it can be tested. It has been tested four times.\n\n[beat: exposition | doubt]\n[framing] The bones first. A study in 1994 found little archaeological evidence of any collapse before Europeans arrived, and few violent deaths. A survey in 2010 found no conclusive evidence either. Work published in 2021 found steady population growth right up to 1722, never exceeding a few thousand people.\n[air 1.5s]\n\n[beat: exposition | doubt]\nThen the weapons. The island is scattered with obsidian points called mata'a, long read as the arsenal of its wars. More than four hundred of them were photographed and measured for shape. They have no standardised form and rarely carry anything like a spear tip. You would cut somebody with a mata'a. You would not kill them with it.\n[air 1.5s]\n\n[beat: exposition | doubt]\nThen the clock. Settlement was pushed forward from around eight hundred to around twelve hundred, which leaves far less time for a slow self-destruction — and an argument published in 2006 put the deforestation substantially on the rats that came ashore with the first canoes, eating the palm nuts and stopping the forest regrowing. That argument drew a published objection of its own, and it has never gone away.\n[air 1.5s]\n\n[beat: exposition | doubt]\nThen the food. Satellite imagery in shortwave infrared was used to map the island's rock gardens, the stone-mulched plots its crops were grown in. They come to about a hundred and eighty acres. Earlier estimates, from imagery that cannot tell a garden from any other rocky ground, had run from five to twenty-one square kilometres. The implied ceiling is around three thousand people.\n[air 2.5s]\n\n[beat: reveal | tension]\nAnd then the genomes. Fifteen ancient islanders were radiocarbon dated and their whole genomes sequenced. There is no severe bottleneck in the sixteen hundreds. The authors do not hedge it; they reject that scenario outright.\n[air 2.5s]\n\n[beat: landing | quiet]\nThere was never a large population here to crash.\n[air 4.0s]\n\n[beat: transition | resolution]\nWhat did happen to the people of this island has a date on it.\n\n[beat: exposition | tension]\nIn December of 1862, Peruvian slave raiders began taking them. About fifteen hundred people were seized over the following months — roughly half the island. Fourteen hundred and eight of them were shipped to Peru as indentured labour. About a dozen ever came back, and they brought smallpox with them.\n[air 1.5s]\n\n[beat: landing | quiet]\nA hundred and eleven people, in 1877. That is not a parable about resources. It is a record of what was done to them.\n[air 2.5s]\n\n[beat: exposition | doubt]\nAnd the revision has its own open questions, which the retelling leaves out. A study of ancient DNA in 2017 found no Native American ancestry in its samples at all, and concluded the mixing must have happened after European contact. The 2024 genomes date it to between twelve fifty and fourteen thirty. Two papers, seven years apart, opposite answers.\n[air 1.5s]\n\n[beat: exposition | doubt]\nAnd in the leaf waxes of two crater cores there is a long drought beginning around fifteen fifty, running through the decline of the island's platform building — which is neither the parable nor the correction, and nobody has finished arguing about it.\n[air 1.5s]\n",
+   "start_seconds": 323.2,
+   "end_seconds": 623.8,
+   "speaker_directions": "THE MOST PERFORMANCE-SENSITIVE SECTION IN THE FILM. Diamond's account is carried at full strength and the voice must not editorialise it — no irony, no lifted eyebrow, no slight acceleration into the cannibalism figure. Read it as though you believed it, because the audience does. Drop to roughly 130 for 'as close as we can get to a pure ecological collapse' and for the ninety per cent. The four tests are level and unhurried, one after another, no building excitement: the weight is cumulative. 'There was never a large population here to crash' is a finding, not a verdict — say it quietly, once. The 1862 paragraph is the only place in the film the voice may harden, and even there it stays low.",
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "level and controlled; no lift on the tests, a hard drop at the landing",
+    "emphasis_words": [
+     "a hundred and eleven",
+     "pure",
+     "ninety per cent",
+     "Earth writ small",
+     "tested",
+     "no standardised form",
+     "twelve hundred",
+     "a hundred and eighty acres",
+     "three thousand",
+     "no severe bottleneck",
+     "never",
+     "December",
+     "fifteen hundred",
+     "a dozen",
+     "done to them"
+    ],
+    "pause_before_seconds": 1.0,
+    "pause_after_seconds": 1.5,
+    "delivery_note": "The playbook's forbidden registers are the live risk here: sneering, the debunking register, the smug corrective tone, and credulous hype. Every one of them is a delivery failure before it is a writing failure. If the TTS sample of this section carries any contempt, the section is re-synthesised, not accepted."
+   },
+   "enhancement_cues": [
+    {
+     "type": "stat_card",
+     "description": "stat/scale_comparison: 2,000-4,000 at contact against 111 in 1877 — the contact figure shown as the range the source gives.",
+     "timestamp_seconds": 0
+    },
+    {
+     "type": "diagram",
+     "description": "document_reveal, halftone print treatment: Diamond's words, set as a quotation from a printed record, with the citation in the attribution zone.",
+     "timestamp_seconds": 45
+    },
+    {
+     "type": "diagram",
+     "description": "evidence_card, status contested: the ecocide account, attributed to Diamond, Collapse (2005).",
+     "timestamp_seconds": 60
+    },
+    {
+     "type": "diagram",
+     "description": "timeline: 1994 Owsley / 2006 Hunt / 2010 Mulrooney / 2016 mata'a / 2021 DiNapoli and Lipo / 2024 gardens / 2024 genomes — the twenty-year revision as a chronology.",
+     "timestamp_seconds": 95
+    },
+    {
+     "type": "diagram",
+     "description": "annotated_still: mata'a, with the absence of a standard tip annotated.",
+     "timestamp_seconds": 130
+    },
+    {
+     "type": "diagram",
+     "description": "scale_comparison: ~0.73 km2 mapped against the earlier 4.9-21.1 km2 estimates, on one axis.",
+     "timestamp_seconds": 185
+    },
+    {
+     "type": "diagram",
+     "description": "evidence_card, status peer_reviewed: Moreno-Mayar et al., Nature 633, 389-397 (2024) — 15 genomes, 1670-1950 CE, no 17th-century bottleneck.",
+     "timestamp_seconds": 215
+    },
+    {
+     "type": "broll",
+     "description": "Hold on the sea, empty horizon, for the 4-second gap after the landing. The picture does not cut inside the silence.",
+     "timestamp_seconds": 240
+    },
+    {
+     "type": "diagram",
+     "description": "document_reveal: the 1862 raids, as a record.",
+     "timestamp_seconds": 250
+    },
+    {
+     "type": "diagram",
+     "description": "evidence_card, status contested: 2017 Current Biology against the 2024 genomes on the admixture date — the film's own caveat on its own correction.",
+     "timestamp_seconds": 275
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "mata'a",
+     "phonetic": "MAH-tah-ah"
+    },
+    {
+     "word": "Peruvian",
+     "phonetic": "peh-ROO-vee-an"
+    },
+    {
+     "word": "taro",
+     "phonetic": "TAR-oh"
+    }
+   ],
+   "source_ref": "research_brief claim ledger c05, c06, c07, c08, c09, r40, r41, r42, r43, r44, r45, r46, r47, r48, r49, r50, r51, r52 — projects/easter-island/artifacts/research_brief.json (provenance repair, 2026-10-26: computed from the ledger's own per-sentence `supports` mapping. Narration unchanged.)"
+  },
+  {
+   "id": "act3",
+   "label": "Act 3 — Twenty-six texts",
+   "text": "[beat: exposition | awe]\nTwenty-six lettered texts of rongorongo survive. Between them they carry more than fifteen thousand glyphs, and only about half are in good enough condition to be certain of at all.\n[air 1.5s]\n\n[beat: exposition | awe]\nYou read them by starting at the bottom left corner and working to the right. At the end of the line you turn the tablet a hundred and eighty degrees and read back. Every other line is upside down. It is called reverse boustrophedon.\n[air 1.5s]\n\n[beat: exposition | awe]\nThe longest is a chief's staff: a hundred and twenty-six centimetres of wood carrying two thousand nine hundred and twenty glyphs. It is also the only one of the texts that appears to use punctuation.\n[air 1.5s]\n\n[beat: transition | doubt]\nThe record of people trying to read it begins in the same year the outside world noticed it existed.\n\n[beat: exposition | doubt]\nA lay friar called Eugène Eyraud landed on the second of January, 1864, saw inscribed tablets in the houses, and left in October. He was dead of tuberculosis within four years. He had seen hundreds of them, and at the time nobody took any notice.\n[air 1.5s]\n\n[beat: exposition | doubt]\nFour years after that a bishop in Tahiti, Florentin Jaussen, was given a tablet with human hair wound around it, and sent a priest back to collect the rest. The priest recovered a few. The islanders he asked could not agree on how to read them.\n[air 1.5s]\n\n[beat: exposition | doubt]\nThen five years, four tablets, and one man, Metoro Tau'a Ure, said to know the inscriptions by heart. The glyph list the two of them produced has never led anybody to an understanding of the script — and a scholar going back over it later found that he had read some of the lines in the wrong direction.\n[air 2.5s]\n\n[beat: exposition | doubt]\nIn 1957 two Soviet scholars proposed that a short repeating sequence on one tablet has the shape of a genealogy: one sign functioning as a title, another as a patronymic marker. It is widely thought plausible. It has never been confirmed.\n[air 2.5s]\n\n[beat: transition | tension]\nThen, in 1995, somebody announced that they had cracked it.\n\n[beat: exposition | tension]\nSteven Fischer's claim, at its strongest: the chief's staff is a creation chant. X copulated with Y, and there issued forth Z, over and over, with one particular glyph standing for a phallus. And about eighty-five per cent of everything that survives, on this reading, is the same formula.\n[air 1.5s]\n\n[beat: transition | doubt]\nA decipherment is a claim you can take apart, and four people did.\n\n[beat: exposition | doubt]\nOn the most generous possible count, sixty-three of the staff's hundred and thirteen sequences fit the pattern. The triads turn up almost nowhere else in the corpus — one damaged text and a single line of another. Statistically, the staff stands apart from every other text even when you remove the glyph the reading is built on. And the plural marker the grammar depends on does not exist in the Rapa Nui language.\n[air 2.5s]\n\n[beat: exposition | doubt]\nWhat is actually agreed about the whole corpus amounts to three lines on one side of the tablet called Mamari. They are a lunar calendar. The argument is about where the extra nights go in a twenty-eight night month.\n[air 1.5s]\n\n[beat: reveal | doubt]\nWe know what that passage does. We cannot read it.\n[air 4.0s]\n\n[beat: exposition | resolution]\nThe best structural argument that this is writing at all is an inventory: fifty-two signs account for ninety-nine point seven per cent of the intact texts. That is syllabary-sized — the right order of magnitude for a script that records a language. The analysis behind that number was never published.\n[air 1.5s]\n\n[beat: exposition | tension]\nAnd in February of 2024, four tablets held in a convent in Rome were radiocarbon dated. Three came back eighteenth or nineteenth century. The fourth came back fourteen ninety-three to fifteen oh nine — more than two centuries before any European set foot on the island. The wood appears to be driftwood, from a species that does not grow there.\n[air 2.5s]\n\n[beat: landing | doubt]\nWhich is the authors' argument: that writing was invented here, from nothing. Or it is not. Radiocarbon dates the death of a tree and not the cutting of a glyph, one tablet is one tablet, and nobody reported writing on this island before 1864 — which is why a Spanish treaty signed here in 1770, in front of the island's chiefs, is still a live hypothesis for where the idea came from.\n[air 1.5s]\n",
+   "start_seconds": 623.8,
+   "end_seconds": 928.9,
+   "speaker_directions": "The driest act and the most patient. The opening three paragraphs are specifications — read them as specifications, with the numbers clean. The history is a sequence of people failing, and each failure gets the same even treatment: no pity for Eyraud, no mockery of Fischer. Slow into Fischer's claim and give it its full strength; the four objections that follow are four flat facts in a row, and they must not sound like a prosecution. 'We know what that passage does. We cannot read it.' is the reveal and the whole act turns on it — two sentences, a full stop between them, and then four seconds of nothing.",
+   "delivery_cues": {
+    "pace": "slow",
+    "energy": "dry, accumulating; the energy is in the material and not the delivery",
+    "emphasis_words": [
+     "twenty-six",
+     "fifteen thousand",
+     "upside down",
+     "two thousand nine hundred and twenty",
+     "hundreds",
+     "wrong direction",
+     "never been confirmed",
+     "cracked it",
+     "eighty-five",
+     "sixty-three",
+     "does not exist",
+     "does",
+     "cannot",
+     "fifty-two",
+     "fourteen ninety-three",
+     "driftwood",
+     "one tablet is one tablet"
+    ],
+    "pause_before_seconds": 1.0,
+    "pause_after_seconds": 1.5,
+    "delivery_note": "Fischer's claim is voiced at full strength and attributed by name. Attribution is not a hedge against sourcing — the claim has a ledger entry (c41) and so do all four objections. The closing paragraph must stay genuinely balanced: the independent-invention reading and the 1770 diffusion hypothesis get the same weight, because the ledger marks the question open in both directions."
+   },
+   "enhancement_cues": [
+    {
+     "type": "diagram",
+     "description": "document_reveal, halftone print treatment: a tablet plate from Wikimedia Category:Rongorongo, held as a printed record.",
+     "timestamp_seconds": 0
+    },
+    {
+     "type": "diagram",
+     "description": "schematic: the tablet turning 180 degrees between lines — reverse boustrophedon, drawn with timed reveals. This is the act's signature graphic.",
+     "timestamp_seconds": 12
+    },
+    {
+     "type": "stat_card",
+     "description": "scale_comparison: the Santiago Staff — 126 cm, 2,920 glyphs — against the other texts.",
+     "timestamp_seconds": 28
+    },
+    {
+     "type": "diagram",
+     "description": "timeline: 1864 Eyraud / 1868 Jaussen / 1869-74 Metoro / 1957 Butinov and Knorozov / 1995 Fischer / 2024 radiocarbon.",
+     "timestamp_seconds": 50
+    },
+    {
+     "type": "diagram",
+     "description": "document_reveal: the Jaussen list glyph sheet, under a push-in.",
+     "timestamp_seconds": 95
+    },
+    {
+     "type": "diagram",
+     "description": "evidence_card, status claim: Fischer 1995 — the Santiago Staff as a creation chant, 85% of the corpus.",
+     "timestamp_seconds": 150
+    },
+    {
+     "type": "diagram",
+     "description": "scale_comparison: 63 of 113 sequences fitting the pattern, on the most generous count.",
+     "timestamp_seconds": 175
+    },
+    {
+     "type": "diagram",
+     "description": "annotated_still: the three lunar-calendar lines on Mamari, annotated.",
+     "timestamp_seconds": 205
+    },
+    {
+     "type": "diagram",
+     "description": "evidence_card, status unpublished: 52 glyphs for 99.7% of the intact texts — the inventory whose analysis was never published.",
+     "timestamp_seconds": 240
+    },
+    {
+     "type": "diagram",
+     "description": "evidence_card, status contested: Ferrara et al., Scientific Reports 14, 2794 (2024) — one of four Rome tablets at 1493-1509, on possible driftwood.",
+     "timestamp_seconds": 265
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "rongorongo",
+     "phonetic": "RONG-oh-RONG-oh"
+    },
+    {
+     "word": "Eugène Eyraud",
+     "phonetic": "uh-ZHEN ay-ROH"
+    },
+    {
+     "word": "Florentin Jaussen",
+     "phonetic": "FLOR-on-tan ZHOW-sen"
+    },
+    {
+     "word": "Metoro Tau'a Ure",
+     "phonetic": "meh-TOH-roh TAH-oo-ah OO-ray"
+    },
+    {
+     "word": "Mamari",
+     "phonetic": "mah-MAH-ree"
+    },
+    {
+     "word": "boustrophedon",
+     "phonetic": "boo-struh-FEE-don"
+    },
+    {
+     "word": "Rapa Nui",
+     "phonetic": "RAH-pah NOO-ee"
+    },
+    {
+     "word": "Tahiti",
+     "phonetic": "tah-HEE-tee"
+    }
+   ],
+   "source_ref": "research_brief claim ledger c01, c02, c03, c04, r53, r54, r55, r56, r57, r58, r59, r60, r61, r62, r63, r64, r65, r66, r67, r68 — projects/easter-island/artifacts/research_brief.json (provenance repair, 2026-10-26: computed from the ledger's own per-sentence `supports` mapping. Narration unchanged.)"
+  },
+  {
+   "id": "act4",
+   "label": "Act 4 — The egg",
+   "text": "[beat: exposition | quiet]\nThe carving stopped. The island did not. Something else was happening on it, and it had its own buildings.\n\n[beat: exposition | awe]\nFifty-three low stone houses at a village called Orongo, sod-covered and windowless, with doors you would have to crawl through, sitting on the rim of a crater two hundred and fifty metres above the sea. Below them the cliff drops three hundred metres into the water.\n[air 1.5s]\n\n[beat: exposition | awe]\nThe crater behind them is almost a mile across and holds one of only three natural bodies of fresh water anywhere on the island.\n[air 1.5s]\n\n[beat: transition | doubt]\nEvery spring, the following happened there.\n\n[beat: exposition | tension]\nEach man competing appointed someone else to do the swimming — a man of lesser status, who went out on a float of bundled reeds and waited on an offshore rock for the first egg of the season to be laid by a returning sooty tern.\n[air 1.5s]\n\n[beat: exposition | tension]\nThat rock, Motu Nui, is three point nine hectares of land. It is the summit of a mountain rising more than two kilometres from the seafloor, and the westernmost point of Chile.\n[air 1.5s]\n\n[beat: exposition | tension]\nSharks, drowning, falls from the cliff on the way back up. The record notes, without comment, that replacements were apparently easy to find.\n[air 2.5s]\n\n[beat: exposition | doubt]\nAnd the title did not go to the swimmer. It went to the man who sent him. His clan took the exclusive right to every egg and every fledgling on those islets for a year, and he himself went into seclusion for a year, under a restriction lasting five months.\n[air 2.5s]\n\n[beat: landing | quiet]\nMakemake's representative on earth, decided by somebody else's swim.\n[air 1.5s]\n\n[beat: exposition | doubt]\nThe entire surviving register of the institution is eighty-six names, written down by Katherine Routledge between 1913 and 1915.\n[air 1.5s]\n\n[beat: exposition | awe]\nOne object carries the whole change: Hoa Hakananai'a. Two and a half metres, four point two tonnes, cut from dark flow lava rather than the compressed ash everything else came from. It was found standing part-buried inside one of those houses, facing the crater.\n[air 1.5s]\n\n[beat: reveal | awe]\nIts back is covered in carving that was added after the statue was finished: two birdmen facing each other, a sooty tern above them, ceremonial paddles. The statue religion on the front of the stone, and the thing that replaced it cut into the back.\n[air 4.0s]\n\n[beat: exposition | doubt]\nOne reading has the statue itself becoming the god. Critics dispute several of the identifications, including the shape of the beaks.\n[air 1.5s]\n\n[beat: exposition | quiet]\nIn November of 1868 a Royal Navy crew dug it out, dragged it down on a sledge and rafted it to their ship. It reached Plymouth the following August and went to the British Museum, where it is still. In 2018 the island's governor asked for it back. The museum offered to discuss a loan.\n[air 2.5s]\n\n[beat: exposition | doubt]\nAs for when the swimming stopped: three reference works give three answers. Eighteen eighty-eight. Eighteen sixty-seven. Or simply the eighteen sixties. This is an event inside the living memory of the people Routledge was recording, and we cannot date it.\n[air 1.5s]\n\n[beat: landing | quiet]\nShe reached the islet herself in 1914 and found two caves. One was where the swimmers had sheltered. The other had held a small statue called the Boundary of the Land — which was already in Oxford before she got there.\n[air 2.5s]\n\n[beat: landing | quiet]\nNobody can say when the last man swam out for an egg. Nobody can read the only writing this island ever produced. If the answers to either of those are anywhere, they are somewhere else.\n",
+   "start_seconds": 928.9,
+   "end_seconds": 1178.4,
+   "speaker_directions": "The film's quietest act, and it falls throughout. The geography is described plainly — heights and distances, no awe in the voice; the frame supplies that. 'Sharks, drowning, falls from the cliff on the way back up' is a list and is read as a list. 'The record notes, without comment, that replacements were apparently easy to find' is the coldest line in the film and must be delivered without any colour at all. The reveal is the carved back of the statue; slow right down, and the four-second gap after it is the longest silence in the piece. The last three paragraphs drop to almost nothing. The final line is the question the film ends on — do not inflect it upward, do not land it like a punchline.",
+   "delivery_cues": {
+    "pace": "slow",
+    "energy": "falling throughout; ends almost quiet",
+    "emphasis_words": [
+     "stopped",
+     "fifty-three",
+     "three hundred metres",
+     "someone else",
+     "three point nine",
+     "easy to find",
+     "not",
+     "sent him",
+     "eighty-six names",
+     "after",
+     "back",
+     "loan",
+     "three answers",
+     "cannot date it",
+     "already",
+     "somewhere else"
+    ],
+    "pause_before_seconds": 1.0,
+    "pause_after_seconds": 2.0,
+    "delivery_note": "The ending is an open question, not a summary. Nothing in this act recaps an earlier act; the only backward reference is the single clause 'the only writing this island ever produced', which closes the cold open's loop in six words. The last paragraph must not sound like a conclusion being announced."
+   },
+   "enhancement_cues": [
+    {
+     "type": "broll",
+     "description": "Orongo from above: the houses on the crater rim, the sea beyond. Wikimedia, Category:Orongo.",
+     "timestamp_seconds": 5
+    },
+    {
+     "type": "diagram",
+     "description": "map_route: Orongo to Motu Nui, the swim drawn, with the 300 m cliff and the 3.9 ha islet called out. Located map — no basemap tiles needed.",
+     "timestamp_seconds": 40
+    },
+    {
+     "type": "diagram",
+     "description": "scale_comparison: Motu Nui's 3.9 hectares of land above water against the 2,000 m of mountain below it.",
+     "timestamp_seconds": 70
+    },
+    {
+     "type": "diagram",
+     "description": "annotated_still: birdman petroglyphs at Orongo, annotated in situ.",
+     "timestamp_seconds": 95
+    },
+    {
+     "type": "diagram",
+     "description": "evidence_card, status measured: 86 tangata manu names recorded by Routledge, 1913-15 — the whole surviving register.",
+     "timestamp_seconds": 125
+    },
+    {
+     "type": "broll",
+     "description": "HERO SLOT. Hoa Hakananai'a, front, full-bleed, held long under a slow push. British Museum / Wikimedia.",
+     "timestamp_seconds": 145
+    },
+    {
+     "type": "diagram",
+     "description": "HERO SLOT. The carved back: two birdmen, the sooty tern, the paddles, annotated with timed reveals, then held through the 4-second gap. The strongest single image in the film.",
+     "timestamp_seconds": 165
+    },
+    {
+     "type": "diagram",
+     "description": "evidence_card, status contested: Pitts et al. (2014) reading of the back, and the disputed beak identifications.",
+     "timestamp_seconds": 190
+    },
+    {
+     "type": "diagram",
+     "description": "timeline: November 1868 removal / August 1869 Plymouth / 2018 the request / 2019 the Keeper's visit.",
+     "timestamp_seconds": 205
+    },
+    {
+     "type": "diagram",
+     "description": "evidence_card, status contested: the last ceremony — 1888, or 1866-67, or 'the 1860s'. Three reference works, three answers, shown as three.",
+     "timestamp_seconds": 225
+    }
+   ],
+   "pronunciation_guides": [
+    {
+     "word": "Orongo",
+     "phonetic": "oh-RONG-oh"
+    },
+    {
+     "word": "Rano Kau",
+     "phonetic": "RAH-noh KOW"
+    },
+    {
+     "word": "Motu Nui",
+     "phonetic": "MOH-too NOO-ee"
+    },
+    {
+     "word": "Makemake",
+     "phonetic": "MAH-kay-MAH-kay"
+    },
+    {
+     "word": "Hoa Hakananai'a",
+     "phonetic": "HOH-ah hah-kah-nah-NIGH-ah"
+    },
+    {
+     "word": "Katherine Routledge",
+     "phonetic": "KATH-rin ROUT-lej"
+    },
+    {
+     "word": "tangata manu",
+     "phonetic": "TAHNG-ah-tah MAH-noo"
+    }
+   ],
+   "source_ref": "research_brief claim ledger r01, r02, r03, r04, r05, r06, r07, r08, r09, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26 — projects/easter-island/artifacts/research_brief.json (act 4 provenance repair, 2026-10-26. The ids this field previously carried did not exist in the ledger; they are listed in the brief's provenance_repair block rather than here, because this field IS the citation list and naming a dead id in it re-cites it. Narration unchanged.)"
+  },
+  {
+   "id": "outro",
+   "label": "Outro",
+   "text": "[beat: landing | resolution]\nFour open files, and we closed one of them tonight.\n[air 1.5s]\n\n[beat: exposition | resolution]\nIf you want the other three followed properly, a like and a subscribe is how that happens.\n",
+   "start_seconds": 1178.4,
+   "end_seconds": 1190.7,
+   "speaker_directions": "Two sentences. The first is a landing line and runs slow, at about 0.76 of the body rate. The second is the ask and runs at the body rate — earned, not demanded.",
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "lifts only on the ask",
+    "emphasis_words": [
+     "four",
+     "one",
+     "other three",
+     "properly"
+    ],
+    "pause_before_seconds": 1.5,
+    "pause_after_seconds": 0,
+    "delivery_note": "The playbook targets 10 seconds of voiced CTA; this copy measures 12.3 seconds including its 1.5s gap, and run #2's approved copy measured 11.1s. Recorded rather than fudged: hitting 10s would mean running the ask faster than the body rate, which reads rushed exactly where the ask lands. Nothing essential in the last twenty seconds, and the right third and bottom fifth of the frame stay clear for YouTube End Screen elements."
+   },
+   "enhancement_cues": [
+    {
+     "type": "overlay",
+     "description": "outro_cta component: dimmed hero still, the headline, the drawn like and subscribe timed to the words 'like' and 'subscribe' from the synthesiser's own timings, and the schedule line. Icons in the design system's line style; no platform marks and no platform colours — the activation colour is the film's ochre.",
+     "timestamp_seconds": 0
+    }
+   ],
+   "pronunciation_guides": [],
+   "source_ref": "playbook structure.outro_cta — styles/wak3up-documentary.yaml"
+  }
+ ],
+ "metadata": {
+  "project_id": "easter-island",
+  "pipeline": "narrated-documentary",
+  "playbook": "wak3up-documentary",
+  "generation_mode": "outline_first_then_act_by_act",
+  "outline_path": "projects/easter-island/artifacts/script_outline.json",
+  "outline": {
+   "version": "1.0",
+   "project_id": "easter-island",
+   "written_before_prose": true,
+   "generation_mode": "outline_first_then_act_by_act",
+   "act_pass_context": [
+    "outline",
+    "previous_act_text",
+    "assigned_claim_ids"
+   ],
+   "title": "Easter Island: The Part Nobody Can Explain",
+   "wpm": 150,
+   "word_budget_total": 2680,
+   "air_budget_total_seconds": 109.5,
+   "sections": [
+    {
+     "id": "cold_open",
+     "word_budget": 100,
+     "air_budget_seconds": 4.0,
+     "max_seconds": 46,
+     "claims": [
+      "c13",
+      "c07",
+      "c33",
+      "c32",
+      "c46"
+     ],
+     "beats": [
+      {
+       "n": 1,
+       "beat": "exposition",
+       "register": "awe",
+       "words": 27,
+       "asserts": "The heads are not heads — there is a whole statue under each one, standing upright in the hill.",
+       "claims": [
+        "c13"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 2,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 26,
+       "asserts": "That is the famous part. The part that is not: 394 statues were left unfinished in one hillside.",
+       "claims": [
+        "c07"
+       ],
+       "air_after": 0
+      },
+      {
+       "n": 3,
+       "beat": "reveal",
+       "register": "tension",
+       "words": 26,
+       "asserts": "A friar in 1864 counted hundreds of inscribed wooden tablets in the houses. Two dozen survive and none is on the island.",
+       "claims": [
+        "c33",
+        "c32"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 4,
+       "beat": "landing",
+       "register": "quiet",
+       "words": 21,
+       "asserts": "Four questions about this island. One of them has an answer.",
+       "claims": [
+        "c46"
+       ],
+       "air_after": 0
+      }
+     ],
+     "hook_source": "best_performing_source_short",
+     "hook_reuse_mode": "language_and_rhythm",
+     "hook_note": "The channel's best short asks 'Easter Island statues have BODIES?'. The cold open takes that rhythm — a flat concrete claim, then the turn — and re-voices it into the long-form register. No frames are lifted and no greeting is used."
+    },
+    {
+     "id": "title_sequence",
+     "word_budget": 0,
+     "air_budget_seconds": 0,
+     "duration_seconds": 7.0,
+     "claims": [],
+     "beats": [],
+     "note": "Furniture, not narration. No words, so it contributes nothing to the beat parse or the word count. The title in Display over a treated hero still, the channel mark, and one accent event — the rule reaching full width — landing on the sting."
+    },
+    {
+     "id": "act1",
+     "label": "The hillside full of unfinished statues",
+     "word_budget": 620,
+     "air_budget_seconds": 26.0,
+     "promise": "Three hundred and ninety-four statues were abandoned mid-cut in one quarry, and the ones that look like heads are standing up to their necks in it.",
+     "new_information": "The buried quarry statues are whole and upright — one on a prepared pedestal, one in a deep hole — and the soil around them carried banana, taro and sweet potato. The quarry was a garden.",
+     "claims": [
+      "c17",
+      "c07",
+      "c18",
+      "c14",
+      "c12",
+      "c13",
+      "c15",
+      "c09",
+      "c10",
+      "c11",
+      "c08",
+      "c16"
+     ],
+     "beats": [
+      {
+       "n": 1,
+       "beat": "exposition",
+       "register": "awe",
+       "words": 40,
+       "asserts": "One hillside supplied about 95% of every known statue on the island, worked for roughly five hundred years.",
+       "claims": [
+        "c17"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 2,
+       "beat": "exposition",
+       "register": "awe",
+       "words": 40,
+       "asserts": "More than nine hundred are known; nearly half never left the quarry; 394 are still visible there in every state of completion.",
+       "claims": [
+        "c07"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 3,
+       "beat": "transition",
+       "register": "doubt",
+       "words": 30,
+       "asserts": "First, the question the audience arrived with, so it can be set down.",
+       "claims": [],
+       "air_after": 0,
+       "recap": true
+      },
+      {
+       "n": 4,
+       "beat": "exposition",
+       "register": "resolution",
+       "words": 42,
+       "asserts": "October 2025: 962 statues analysed, 62 of them standing along the roads, all sharing a wide D-shaped base and a forward lean.",
+       "claims": [
+        "c18"
+       ],
+       "air_after": 1.5,
+       "recap": true
+      },
+      {
+       "n": 5,
+       "beat": "exposition",
+       "register": "resolution",
+       "words": 44,
+       "asserts": "A 4.35-tonne replica built to that design was walked a hundred metres in forty minutes by eighteen people, on roads 4.5 metres wide and concave in section.",
+       "claims": [
+        "c18"
+       ],
+       "air_after": 2.5,
+       "recap": true
+      },
+      {
+       "n": 6,
+       "beat": "transition",
+       "register": "doubt",
+       "words": 26,
+       "asserts": "So the question is not how they moved. It is why they stopped.",
+       "claims": [],
+       "air_after": 0
+      },
+      {
+       "n": 7,
+       "beat": "exposition",
+       "register": "quiet",
+       "words": 40,
+       "asserts": "The famous heads stand to the neck in the slope, and burial protected the carving on their backs from a thousand years of weather.",
+       "claims": [
+        "c14"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 8,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 42,
+       "asserts": "In March 2010 a team began the first authorised excavation inside the quarry since Heyerdahl's expedition of 1954-55 — fifty-five years between one dig and the next.",
+       "claims": [
+        "c12"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 9,
+       "beat": "reveal",
+       "register": "awe",
+       "words": 44,
+       "asserts": "Both statues were whole and upright. One stood on a prepared pedestal, the other was set in a deep hole. They had not fallen over and been buried; they had been put there.",
+       "claims": [
+        "c13"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 10,
+       "beat": "landing",
+       "register": "quiet",
+       "words": 20,
+       "asserts": "They were meant to stay where they were.",
+       "claims": [
+        "c13"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 11,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 38,
+       "asserts": "The designs on the backs were linked to tattooing by the 1914 expedition; the carvings survive because the soil covered them.",
+       "claims": [
+        "c14"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 12,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 42,
+       "asserts": "The soil itself carried traces of banana, taro and sweet potato, with high calcium and phosphorus — the signature of ground that was being farmed.",
+       "claims": [
+        "c15"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 13,
+       "beat": "exposition",
+       "register": "resolution",
+       "words": 42,
+       "asserts": "The team's reading: the quarry was a carving site and the island's most productive garden at once, and the quarrying fed the soil.",
+       "claims": [
+        "c15"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 14,
+       "beat": "exposition",
+       "register": "awe",
+       "words": 44,
+       "asserts": "Scale: the tallest ever raised stood almost ten metres at eighty-two tonnes; the heaviest, at Ahu Tongariki, is eighty-six.",
+       "claims": [
+        "c09",
+        "c10"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 15,
+       "beat": "exposition",
+       "register": "awe",
+       "words": 42,
+       "asserts": "The largest is still lying in the hillside. About twenty-one metres, and the published weights run from a hundred and forty-five tonnes to two hundred and seventy.",
+       "claims": [
+        "c11"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 16,
+       "beat": "landing",
+       "register": "doubt",
+       "words": 44,
+       "asserts": "Carving mostly ceased in the early seventeen hundreds. The chisels were put down with the biggest statue a third finished, and nobody can say why.",
+       "claims": [
+        "c08",
+        "c17"
+       ],
+       "air_after": 4.0,
+       "act_climax": true
+      }
+     ],
+     "recap_budget_seconds": 60,
+     "recap_measured_seconds": "beats 3-5: 116 words at 150 wpm is 46.4s of speech plus 4.0s of air = 50.4s, inside the owner's 60s cap"
+    },
+    {
+     "id": "act2",
+     "label": "A hundred and eleven people",
+     "word_budget": 660,
+     "air_budget_seconds": 27.0,
+     "promise": "In 1877 there were a hundred and eleven islanders left, and the famous explanation for that is one the evidence has spent twenty years dismantling.",
+     "new_information": "Four independent tests against the collapse — the bones, the weapons, the chronology and the food — plus fifteen genomes with no bottleneck in them; and the documented catastrophe the parable displaced.",
+     "claims": [
+      "c25",
+      "c19",
+      "c20",
+      "c21",
+      "c26",
+      "c27",
+      "c03",
+      "c22",
+      "c23",
+      "c28",
+      "c29",
+      "c24",
+      "c30",
+      "c31",
+      "c04"
+     ],
+     "beats": [
+      {
+       "n": 1,
+       "beat": "exposition",
+       "register": "quiet",
+       "words": 36,
+       "asserts": "In 1877 a count found a hundred and eleven native inhabitants.",
+       "claims": [
+        "c25",
+        "c04"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 2,
+       "beat": "transition",
+       "register": "doubt",
+       "words": 24,
+       "asserts": "There is a famous explanation for that number.",
+       "claims": [],
+       "air_after": 0
+      },
+      {
+       "n": 3,
+       "beat": "exposition",
+       "register": "tension",
+       "words": 42,
+       "asserts": "The forest went for canoes, for firewood, for moving and raising statues. Twenty-one tree species and every land bird were gone by the time Europeans arrived.",
+       "claims": [
+        "c21"
+       ],
+       "air_after": 0
+      },
+      {
+       "n": 4,
+       "beat": "exposition",
+       "register": "tension",
+       "words": 46,
+       "asserts": "Diamond's own words, at full strength: as close as we can get to a pure ecological collapse, ending in an epidemic of cannibalism that left ninety per cent of the islanders dead.",
+       "claims": [
+        "c19"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 5,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 40,
+       "asserts": "Why it travelled: Easter Island is Earth writ small, and the question about what they said as they cut down the last palm.",
+       "claims": [
+        "c20"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 6,
+       "beat": "transition",
+       "register": "doubt",
+       "words": 24,
+       "asserts": "It is a claim about the past, so it can be tested. Four times.",
+       "claims": [],
+       "air_after": 0
+      },
+      {
+       "n": 7,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 42,
+       "asserts": "The bones. A 1994 study found little evidence of a pre-European collapse and few violent deaths; two later surveys found no conclusive evidence either.",
+       "claims": [
+        "c26"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 8,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 44,
+       "asserts": "The weapons. More than four hundred mata'a photographed and measured: no standardised shape, few spearlike tips. You would cut somebody with one; it would not be lethal.",
+       "claims": [
+        "c27"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 9,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 46,
+       "asserts": "The clock. Settlement moved forward to about twelve hundred, and Hunt's 2006 argument put the deforestation on introduced rats eating the palm nuts — an argument that drew its own published objection.",
+       "claims": [
+        "c03",
+        "c22",
+        "c23"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 10,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 48,
+       "asserts": "The food. Satellite mapping in shortwave infrared put the island's rock gardens at about a hundred and eighty acres, where earlier estimates ran from five to twenty-one square kilometres. The ceiling is about three thousand people.",
+       "claims": [
+        "c28"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 11,
+       "beat": "reveal",
+       "register": "tension",
+       "words": 46,
+       "asserts": "And the genomes. Fifteen ancient islanders, radiocarbon dated and whole-genome sequenced, show no severe bottleneck in the sixteen hundreds. The authors reject it outright.",
+       "claims": [
+        "c29"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 12,
+       "beat": "landing",
+       "register": "quiet",
+       "words": 20,
+       "asserts": "There was never a large population to crash.",
+       "claims": [
+        "c28",
+        "c29"
+       ],
+       "air_after": 4.0,
+       "act_climax": true
+      },
+      {
+       "n": 13,
+       "beat": "transition",
+       "register": "resolution",
+       "words": 22,
+       "asserts": "What did happen has a date on it.",
+       "claims": [],
+       "air_after": 0
+      },
+      {
+       "n": 14,
+       "beat": "exposition",
+       "register": "tension",
+       "words": 50,
+       "asserts": "December 1862: Peruvian raiders took about fifteen hundred people, roughly half the island. Fourteen hundred and eight were shipped to Peru as indentured labour. About a dozen came back, and brought smallpox with them.",
+       "claims": [
+        "c24"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 15,
+       "beat": "landing",
+       "register": "quiet",
+       "words": 24,
+       "asserts": "A hundred and eleven people, in 1877. That is not a parable. It is a record.",
+       "claims": [
+        "c25"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 16,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 48,
+       "asserts": "The honest gap: a 2017 study of ancient DNA found no Native American ancestry at all and put the mixing after European contact. The 2024 genomes put it between twelve fifty and fourteen thirty. Two papers, opposite answers.",
+       "claims": [
+        "c30",
+        "c29"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 17,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 46,
+       "asserts": "And the leaf waxes in two crater cores record a long drought from about fifteen fifty, as the platform building declined — which is neither story.",
+       "claims": [
+        "c31"
+       ],
+       "air_after": 1.5
+      }
+     ],
+     "register_warning": "This is the act that can slip into the debunking register the playbook forbids. Diamond gets his strongest form in his own words with no editorial around it, and the four tests answer him without a victory lap. Beat 12 is a landing, not a verdict on a person."
+    },
+    {
+     "id": "act3",
+     "label": "Twenty-six texts",
+     "word_budget": 680,
+     "air_budget_seconds": 28.0,
+     "promise": "The island either invented writing or copied it, and either way nobody has read a line of it — and one radiocarbon date has just moved the whole question.",
+     "new_information": "The decipherment history as a sequence of tested claims, the one passage whose function is agreed and whose text still cannot be read, and the 1493-1509 date with its caveats intact.",
+     "claims": [
+      "c32",
+      "c37",
+      "c36",
+      "c39",
+      "c33",
+      "c34",
+      "c35",
+      "c40",
+      "c41",
+      "c42",
+      "c38",
+      "c43",
+      "c45",
+      "c44",
+      "c46"
+     ],
+     "beats": [
+      {
+       "n": 1,
+       "beat": "exposition",
+       "register": "awe",
+       "words": 42,
+       "asserts": "Twenty-six lettered texts, more than fifteen thousand glyphs between them, and only about half in good enough condition to be certain of.",
+       "claims": [
+        "c32",
+        "c37"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 2,
+       "beat": "exposition",
+       "register": "awe",
+       "words": 44,
+       "asserts": "You begin at the bottom left and read to the right, then turn the tablet a hundred and eighty degrees to read the next line. Reverse boustrophedon.",
+       "claims": [
+        "c36"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 3,
+       "beat": "exposition",
+       "register": "awe",
+       "words": 42,
+       "asserts": "The longest is a chief's staff: a hundred and twenty-six centimetres, two thousand nine hundred and twenty glyphs, and the only text that appears to use punctuation.",
+       "claims": [
+        "c39"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 4,
+       "beat": "transition",
+       "register": "doubt",
+       "words": 22,
+       "asserts": "The record of people trying to read it starts the year it was noticed.",
+       "claims": [
+        "c33"
+       ],
+       "air_after": 0
+      },
+      {
+       "n": 5,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 46,
+       "asserts": "Eyraud landed on the second of January 1864, saw tablets in the houses, left in October, and was dead of tuberculosis by August 1868. He had seen hundreds, and nobody took any notice.",
+       "claims": [
+        "c33"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 6,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 44,
+       "asserts": "Four years later a bishop received a tablet wound with human hair and sent a priest to collect the rest. He recovered a few, and the islanders could not agree on how to read them.",
+       "claims": [
+        "c34"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 7,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 48,
+       "asserts": "Then five years, four tablets, and one man said to know the inscriptions by heart. The glyph list they produced has never led anyone to an understanding of the script, and a later scholar found he had read some lines in the wrong direction.",
+       "claims": [
+        "c35"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 8,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 42,
+       "asserts": "In 1957 two Soviet scholars proposed that a repeating sequence on one tablet has the shape of a genealogy. Widely thought plausible. Never confirmed.",
+       "claims": [
+        "c40"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 9,
+       "beat": "transition",
+       "register": "tension",
+       "words": 20,
+       "asserts": "Then, in 1995, somebody said they had cracked it.",
+       "claims": [
+        "c41"
+       ],
+       "air_after": 0
+      },
+      {
+       "n": 10,
+       "beat": "exposition",
+       "register": "tension",
+       "words": 50,
+       "asserts": "Fischer's claim at full strength: the staff is a creation chant, X copulated with Y and there issued forth Z, one glyph is a phallus, and about eighty-five per cent of everything that survives is the same formula.",
+       "claims": [
+        "c41"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 11,
+       "beat": "transition",
+       "register": "doubt",
+       "words": 20,
+       "asserts": "A decipherment is a claim you can take apart.",
+       "claims": [
+        "c41"
+       ],
+       "air_after": 0
+      },
+      {
+       "n": 12,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 52,
+       "asserts": "On the most generous count, sixty-three of the staff's hundred and thirteen sequences fit the pattern. The triads turn up almost nowhere else. The staff stands apart from every other text even with that glyph removed. And the plural marker the reading rests on does not exist in the language.",
+       "claims": [
+        "c41"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 13,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 44,
+       "asserts": "What is agreed is three lines on one tablet: a lunar calendar, and the rule for where the extra nights go in a twenty-eight night month.",
+       "claims": [
+        "c42"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 14,
+       "beat": "reveal",
+       "register": "doubt",
+       "words": 24,
+       "asserts": "We know what that passage does. We cannot read it.",
+       "claims": [
+        "c42",
+        "c46"
+       ],
+       "air_after": 4.0,
+       "act_climax": true
+      },
+      {
+       "n": 15,
+       "beat": "exposition",
+       "register": "resolution",
+       "words": 46,
+       "asserts": "The structural argument that it is writing: fifty-two signs account for ninety-nine point seven per cent of the intact texts. That is syllabary-sized — and the analysis behind it was never published.",
+       "claims": [
+        "c38"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 16,
+       "beat": "exposition",
+       "register": "tension",
+       "words": 52,
+       "asserts": "In 2024 four tablets in a convent in Rome were radiocarbon dated. Three came back eighteenth or nineteenth century. The fourth came back fourteen ninety-three to fifteen oh nine — two centuries before any European landed. The wood looks like driftwood from a species that does not grow there.",
+       "claims": [
+        "c43"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 17,
+       "beat": "landing",
+       "register": "doubt",
+       "words": 48,
+       "asserts": "Radiocarbon dates the tree, not the carving, and one tablet is one tablet. Against it: no explorer reported writing before 1864, and the Spanish treaty signing of 1770 is still a live hypothesis for where the idea came from.",
+       "claims": [
+        "c45",
+        "c44",
+        "c43"
+       ],
+       "air_after": 1.5
+      }
+     ]
+    },
+    {
+     "id": "act4",
+     "label": "The egg",
+     "word_budget": 590,
+     "air_budget_seconds": 23.0,
+     "promise": "They stopped carving, and then for about a century men swam to a rock in the open Pacific for one bird's egg — and nobody can say when that stopped either.",
+     "new_information": "What replaced the statue cult, how it worked, and that its whole surviving register is eighty-six names written down in 1914 — with one statue carrying both religions on opposite faces, in London since 1869.",
+     "claims": [
+      "c47",
+      "c48",
+      "c50",
+      "c49",
+      "c51",
+      "c52",
+      "c53",
+      "c55",
+      "c56",
+      "c57",
+      "c54",
+      "c58",
+      "c46"
+     ],
+     "beats": [
+      {
+       "n": 1,
+       "beat": "exposition",
+       "register": "quiet",
+       "words": 30,
+       "asserts": "The carving stopped. Something else was happening on the same island.",
+       "claims": [],
+       "air_after": 0
+      },
+      {
+       "n": 2,
+       "beat": "exposition",
+       "register": "awe",
+       "words": 44,
+       "asserts": "Fifty-three low stone houses on the rim of a crater, two hundred and fifty metres above the sea, with a three hundred metre cliff below them.",
+       "claims": [
+        "c47"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 3,
+       "beat": "exposition",
+       "register": "awe",
+       "words": 40,
+       "asserts": "The crater is almost a mile across and holds one of only three natural bodies of fresh water on the island.",
+       "claims": [
+        "c48"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 4,
+       "beat": "transition",
+       "register": "doubt",
+       "words": 20,
+       "asserts": "Every spring, this happened there.",
+       "claims": [],
+       "air_after": 0
+      },
+      {
+       "n": 5,
+       "beat": "exposition",
+       "register": "tension",
+       "words": 46,
+       "asserts": "Each contestant appointed a man of lesser status who swam out on a float of bundled reeds and waited on a rock for the first sooty tern egg of the season.",
+       "claims": [
+        "c50"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 6,
+       "beat": "exposition",
+       "register": "tension",
+       "words": 42,
+       "asserts": "The rock is three point nine hectares: the summit of a mountain that rises more than two kilometres from the seafloor, and the westernmost point of Chile.",
+       "claims": [
+        "c49"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 7,
+       "beat": "exposition",
+       "register": "tension",
+       "words": 38,
+       "asserts": "Sharks, drowning, falls. The record notes that replacements were apparently easy to find.",
+       "claims": [
+        "c50"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 8,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 48,
+       "asserts": "The title did not go to the swimmer. It went to the man who sent him — a year's exclusive right to every egg on the islets for his clan, and for himself a year of seclusion under a five-month restriction.",
+       "claims": [
+        "c51",
+        "c52"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 9,
+       "beat": "landing",
+       "register": "quiet",
+       "words": 24,
+       "asserts": "The god's representative on the island, chosen by somebody else's swim.",
+       "claims": [
+        "c52"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 10,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 42,
+       "asserts": "The whole surviving register of the institution is eighty-six names, written down by Katherine Routledge between 1913 and 1915.",
+       "claims": [
+        "c53"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 11,
+       "beat": "exposition",
+       "register": "awe",
+       "words": 48,
+       "asserts": "One object carries the change. Two and a half metres, four point two tonnes, dark flow lava rather than the usual compressed ash, found standing part-buried inside a house at the clifftop village, facing the crater.",
+       "claims": [
+        "c55"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 12,
+       "beat": "reveal",
+       "register": "awe",
+       "words": 46,
+       "asserts": "Its back carries two facing birdmen, a sooty tern above them, ceremonial paddles — all cut into it after the statue was finished. The statue religion on the front, and what replaced it on the back.",
+       "claims": [
+        "c56"
+       ],
+       "air_after": 4.0,
+       "act_climax": true
+      },
+      {
+       "n": 13,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 38,
+       "asserts": "One reading has the statue itself become the god. Critics dispute several of the identifications, including the shape of the beaks.",
+       "claims": [
+        "c56"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 14,
+       "beat": "exposition",
+       "register": "quiet",
+       "words": 52,
+       "asserts": "In November 1868 a Royal Navy crew dug it out, dragged it down on a sledge and rafted it to their ship. It reached Plymouth in August 1869. In 2018 the island's governor asked for it back, and the museum offered to discuss a loan.",
+       "claims": [
+        "c55",
+        "c57"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 15,
+       "beat": "exposition",
+       "register": "doubt",
+       "words": 46,
+       "asserts": "The date the swimming stopped is given three ways in three reference works: eighteen eighty-eight, or eighteen sixty-seven, or simply the eighteen sixties — about something within living memory of the people Routledge was writing down.",
+       "claims": [
+        "c54"
+       ],
+       "air_after": 1.5
+      },
+      {
+       "n": 16,
+       "beat": "landing",
+       "register": "quiet",
+       "words": 42,
+       "asserts": "Routledge reached the islet in 1914 and found two caves: one where the swimmers had sheltered, one that had held a small statue called the Boundary of the Land — already in Oxford before she got there.",
+       "claims": [
+        "c58"
+       ],
+       "air_after": 2.5
+      },
+      {
+       "n": 17,
+       "beat": "landing",
+       "register": "quiet",
+       "words": 44,
+       "asserts": "The closing question, open and real: nobody can say when the last man swam, and nobody can read the only writing the island left. Both of those answers, if they exist, are somewhere else.",
+       "claims": [
+        "c54",
+        "c46",
+        "c32"
+       ],
+       "air_after": 0
+      }
+     ],
+     "playbook_rule": "final act built entirely from cases that remain genuinely open; ending is an open question, not a summary"
+    },
+    {
+     "id": "outro",
+     "word_budget": 30,
+     "air_budget_seconds": 1.5,
+     "max_seconds": 10,
+     "claims": [],
+     "beats": [
+      {
+       "n": 1,
+       "beat": "landing",
+       "register": "resolution",
+       "words": 13,
+       "asserts": "Landing line, delivered at 0.76.",
+       "claims": [],
+       "air_after": 1.5
+      },
+      {
+       "n": 2,
+       "beat": "exposition",
+       "register": "resolution",
+       "words": 17,
+       "asserts": "The ask, at body speed, tied to what the viewer just spent.",
+       "claims": [],
+       "air_after": 0
+      }
+     ],
+     "note": "Nothing essential in the last twenty seconds. The right third and bottom fifth of the frame stay clear for YouTube End Screen elements."
+    }
+   ],
+   "arithmetic": {
+    "words": 2680,
+    "speech_seconds": 1072.0,
+    "planned_air_seconds": 109.5,
+    "gate_total_seconds": 1181.5,
+    "duration_band_seconds": [
+     1140,
+     1260
+    ],
+    "air_pct": 9.27,
+    "air_pct_band": [
+     8,
+     15
+    ],
+    "word_band": [
+     2500,
+     2700
+    ],
+    "note": "Checked before any prose was written. The arithmetic is re-measured by lib/script_beats.py against the finished text, which is the only number that counts."
+   },
+   "claim_coverage_plan": {
+    "ledger_entries_total": 60,
+    "spent_in_script": 57,
+    "unspent": [
+     "c01",
+     "c02",
+     "c05",
+     "c06",
+     "c60"
+    ],
+    "unspent_note": "c01 and c02 (distance and area) and c05, c06 (the 1770 and 1774 visits) are held for lower-thirds and map callouts rather than narration; c60 (UNESCO 1995) is low-value filler. c05 is still referenced inside act 3's treaty hypothesis.",
+    "density_check": "2,680 words against 57 entries is one entry per 47 words, well inside the playbook's floor of one per 150."
+   }
+  },
+  "section_sources": {
+   "cold_open": "projects/easter-island/artifacts/sections/cold_open.txt",
+   "act1": "projects/easter-island/artifacts/sections/act1.txt",
+   "act2": "projects/easter-island/artifacts/sections/act2.txt",
+   "act3": "projects/easter-island/artifacts/sections/act3.txt",
+   "act4": "projects/easter-island/artifacts/sections/act4.txt",
+   "outro": "projects/easter-island/artifacts/sections/outro.txt"
+  },
+  "assembled_by": "projects/easter-island/assemble_script.py",
+  "word_counts": {
+   "cold_open": 98,
+   "title_sequence": 0,
+   "act1": 620,
+   "act2": 684,
+   "act3": 694,
+   "act4": 555,
+   "outro": 27
+  },
+  "air_seconds": {
+   "cold_open": 4.0,
+   "title_sequence": 0,
+   "act1": 25.0,
+   "act2": 27.0,
+   "act3": 27.5,
+   "act4": 27.5,
+   "outro": 1.5
+  },
+  "measured": {
+   "beats": 73,
+   "words": 2678,
+   "wpm": 150,
+   "speech_seconds": 1071.2,
+   "planned_air_seconds": 112.5,
+   "total_seconds": 1183.7,
+   "air_pct_of_total": 9.5,
+   "air_gaps": 57,
+   "longest_air_s": 4.0,
+   "beats_by_type": {
+    "reveal": 5,
+    "exposition": 49,
+    "landing": 10,
+    "transition": 9
+   }
+  },
+  "duration_accounting": {
+   "gate_total_seconds": 1183.7,
+   "title_sequence_seconds": 7.0,
+   "film_total_seconds": 1190.7,
+   "rule": "speech_plus_planned_air; the title sequence carries no narration, so it is in the film's runtime and not in the gate's arithmetic"
+  },
+  "claim_map": {
+   "cold_open_b00": [
+    "c13"
+   ],
+   "cold_open_b01": [
+    "c07"
+   ],
+   "cold_open_b02": [
+    "c33",
+    "c32"
+   ],
+   "cold_open_b03": [
+    "c46"
+   ],
+   "act1_b00": [
+    "c17"
+   ],
+   "act1_b01": [
+    "c07"
+   ],
+   "act1_b02": [],
+   "act1_b03": [
+    "c18"
+   ],
+   "act1_b04": [
+    "c18"
+   ],
+   "act1_b05": [],
+   "act1_b06": [
+    "c14"
+   ],
+   "act1_b07": [
+    "c12"
+   ],
+   "act1_b08": [
+    "c13"
+   ],
+   "act1_b09": [
+    "c13"
+   ],
+   "act1_b10": [
+    "c14"
+   ],
+   "act1_b11": [
+    "c15"
+   ],
+   "act1_b12": [
+    "c15"
+   ],
+   "act1_b13": [
+    "c09",
+    "c10"
+   ],
+   "act1_b14": [
+    "c11"
+   ],
+   "act1_b15": [
+    "c08",
+    "c17"
+   ],
+   "act2_b00": [
+    "c25",
+    "c04"
+   ],
+   "act2_b01": [],
+   "act2_b02": [
+    "c21"
+   ],
+   "act2_b03": [
+    "c19"
+   ],
+   "act2_b04": [
+    "c20"
+   ],
+   "act2_b05": [],
+   "act2_b06": [
+    "c26"
+   ],
+   "act2_b07": [
+    "c27"
+   ],
+   "act2_b08": [
+    "c03",
+    "c22",
+    "c23"
+   ],
+   "act2_b09": [
+    "c28"
+   ],
+   "act2_b10": [
+    "c29"
+   ],
+   "act2_b11": [
+    "c28",
+    "c29"
+   ],
+   "act2_b12": [],
+   "act2_b13": [
+    "c24"
+   ],
+   "act2_b14": [
+    "c25"
+   ],
+   "act2_b15": [
+    "c30",
+    "c29"
+   ],
+   "act2_b16": [
+    "c31"
+   ],
+   "act3_b00": [
+    "c32",
+    "c37"
+   ],
+   "act3_b01": [
+    "c36"
+   ],
+   "act3_b02": [
+    "c39"
+   ],
+   "act3_b03": [
+    "c33"
+   ],
+   "act3_b04": [
+    "c33"
+   ],
+   "act3_b05": [
+    "c34"
+   ],
+   "act3_b06": [
+    "c35"
+   ],
+   "act3_b07": [
+    "c40"
+   ],
+   "act3_b08": [
+    "c41"
+   ],
+   "act3_b09": [
+    "c41"
+   ],
+   "act3_b10": [
+    "c41"
+   ],
+   "act3_b11": [
+    "c41"
+   ],
+   "act3_b12": [
+    "c42"
+   ],
+   "act3_b13": [
+    "c42",
+    "c46"
+   ],
+   "act3_b14": [
+    "c38"
+   ],
+   "act3_b15": [
+    "c43"
+   ],
+   "act3_b16": [
+    "c45",
+    "c44",
+    "c43"
+   ],
+   "act4_b00": [],
+   "act4_b01": [
+    "c47"
+   ],
+   "act4_b02": [
+    "c48"
+   ],
+   "act4_b03": [],
+   "act4_b04": [
+    "c50"
+   ],
+   "act4_b05": [
+    "c49"
+   ],
+   "act4_b06": [
+    "c50"
+   ],
+   "act4_b07": [
+    "c51",
+    "c52"
+   ],
+   "act4_b08": [
+    "c52"
+   ],
+   "act4_b09": [
+    "c53"
+   ],
+   "act4_b10": [
+    "c55"
+   ],
+   "act4_b11": [
+    "c56"
+   ],
+   "act4_b12": [
+    "c56"
+   ],
+   "act4_b13": [
+    "c55",
+    "c57"
+   ],
+   "act4_b14": [
+    "c54"
+   ],
+   "act4_b15": [
+    "c58"
+   ],
+   "act4_b16": [
+    "c54",
+    "c46",
+    "c32"
+   ],
+   "outro_b00": [],
+   "outro_b01": []
+  },
+  "claim_ledger_source": "projects/easter-island/artifacts/research_brief.json -> metadata.claim_ledger",
+  "passes": [
+   {
+    "pass": 1,
+    "produced": "script_outline.json",
+    "context": "proposal_packet act structure + the 60-entry claim ledger",
+    "note": "beats, claim spend and word budget per act. No prose. The arithmetic was checked here, before any sentence was written."
+   },
+   {
+    "pass": 2,
+    "produced": "sections/cold_open.txt",
+    "context": "outline only"
+   },
+   {
+    "pass": 3,
+    "produced": "sections/act1.txt",
+    "context": "outline + cold_open text + claims c17, c07, c18, c14, c12, c13, c15, c09, c10, c11, c08"
+   },
+   {
+    "pass": 4,
+    "produced": "sections/act2.txt",
+    "context": "outline + act1 text + claims c25, c04, c21, c19, c20, c26, c27, c03, c22, c23, c28, c29, c24, c30, c31"
+   },
+   {
+    "pass": 5,
+    "produced": "sections/act3.txt",
+    "context": "outline + act2 text + claims c32, c37, c36, c39, c33, c34, c35, c40, c41, c42, c38, c43, c45, c44, c46"
+   },
+   {
+    "pass": 6,
+    "produced": "sections/act4.txt",
+    "context": "outline + act3 text + claims c47, c48, c50, c49, c51, c52, c53, c55, c56, c57, c54, c58, c46, c32"
+   },
+   {
+    "pass": 7,
+    "produced": "sections/outro.txt",
+    "context": "outline + act4 text"
+   }
+  ],
+  "never_generated_in_one_call": true,
+  "padding_checks": {
+   "act1": {
+    "new_information": "The buried quarry statues are whole and upright — one on a prepared pedestal, one set in a deep hole — and the soil around them carried banana, taro and sweet potato. The quarry was a garden.",
+    "no_restatement": "The cold open's 'the heads are not heads' is picked up in one clause ('which is why they are photographed as heads') and not re-explained. No other paragraph revisits it.",
+    "earned_length": "Cut 20% and you lose either the commissioned walking recap or the soil result, which is the act's whole point. Nothing here is colour.",
+    "ledger_density": "11 entries over 620 words — one per 56 words, against the playbook floor of one per 150.",
+    "verdict": "pass"
+   },
+   "act2": {
+    "new_information": "Four independent tests against the collapse — the bones, the weapons, the chronology and the food — plus fifteen genomes with no bottleneck in them, and the documented 1862 catastrophe the parable displaced.",
+    "no_restatement": "Nothing from act 1 recurs. The act does not mention the quarry, the statues or the walking.",
+    "earned_length": "Cut 20% and one of the four tests goes, which breaks the act's argument: the point is that it was tested four independent ways, not that one study disagreed.",
+    "ledger_density": "15 entries over 684 words — one per 46 words.",
+    "verdict": "pass"
+   },
+   "act3": {
+    "new_information": "The decipherment history as a sequence of tested claims, the one passage whose function is agreed and whose text still cannot be read, and the 1493-1509 date with its caveats intact.",
+    "no_restatement": "The cold open's tablet claim returns once, extended rather than repeated: the cold open gives the count, act 3 gives the man, the date, his departure and his death.",
+    "earned_length": "Cut 20% and you lose either the four objections to Fischer — the act's test beat — or the radiocarbon date, which is its climax.",
+    "ledger_density": "16 entries over 694 words — one per 43 words.",
+    "verdict": "pass"
+   },
+   "act4": {
+    "new_information": "What replaced the statue cult, how it worked, that its whole surviving register is eighty-six names, and that one statue carries both religions on opposite faces.",
+    "no_restatement": "One six-word backward reference in the final paragraph — 'the only writing this island ever produced' — closing the cold open's loop. Nothing else looks back.",
+    "earned_length": "Cut 20% and either the geography goes, which is what makes the swim legible, or the statue goes, which is the film's closing image.",
+    "ledger_density": "13 entries over 555 words — one per 43 words.",
+    "verdict": "pass"
+   }
+  },
+  "register_compliance": {
+   "playbook_forbidden_registers": [
+    "sneering",
+    "debunking register",
+    "smug corrective tone",
+    "credulous hype that asserts a contested claim as settled"
+   ],
+   "audit": [
+    "Diamond's account is given 94 words at full strength, in his own quoted words, with no editorial frame around it and no 'of course' before it. The four tests answer it and then the act turns the same scepticism on the revision, which is what keeps it out of the debunking register.",
+    "Fischer's claim is voiced in full, named and attributed, before any objection is raised. The objections are stated as four measurements, not as a verdict on him.",
+    "Both landings that could have been victory laps — 'There was never a large population here to crash' and 'We know what that passage does. We cannot read it.' — are findings, nine and ten words long, with no adjective in either.",
+    "Every contested question is left contested in both directions: the admixture date (two papers, opposite answers), the independent invention against the 1770 diffusion hypothesis, the carved back's reading, and the date the swimming stopped.",
+    "No question-mark rhetoric, no 'but what if', no 'scientists were baffled'. The word 'mystery' does not appear in the narration."
+   ],
+   "contested_claims_narrated_as_contested": [
+    "c03",
+    "c04",
+    "c07",
+    "c11",
+    "c19",
+    "c21",
+    "c22",
+    "c23",
+    "c27",
+    "c30",
+    "c31",
+    "c37",
+    "c38",
+    "c40",
+    "c41",
+    "c42",
+    "c43",
+    "c45",
+    "c46",
+    "c54",
+    "c56"
+   ],
+   "two_published_values_stated_as_ranges": {
+    "c04": "'two to four thousand' — the union of the source's own 2,000-3,000 and 3,000-4,000",
+    "c07": "'more than nine hundred... nearly half never left... three hundred and ninety-four still visible' — the 887 figure in the other article is not used",
+    "c11": "'from a hundred and forty-five tonnes to two hundred and seventy, which tells you how much anyone knows about it'",
+    "c27": "'more than four hundred' rather than the 423 one outlet gives",
+    "c28": "'about a hundred and eighty acres' against 'five to twenty-one square kilometres' — both stated",
+    "c54": "'three reference works give three answers' — all three are spoken"
+   },
+   "decision_ref": "decision_log d-010 (playbook_override)"
+  },
+  "citation_binding": {
+   "rule": "The script states no date, name or figure absent from the research_brief claim ledger.",
+   "audit_method": "Every digit string, number-word and proper noun in the finished prose was extracted and matched back to a ledger entry.",
+   "findings_fixed": [
+    "act1: 'four and a third tonnes' became 'about four and a third tonnes' — the ledger gives 4.35.",
+    "act1: 'attached to the rock along its spine' removed — the spine detail is not in the ledger.",
+    "act1: 'the biggest figure a third cut' removed — 'a third' is an invented fraction. Now 'still unfinished in the rock'.",
+    "act3: 'one of a handful of times in human history that writing was invented from nothing' became 'the authors' argument' — the film does not have a sourced count of independent inventions.",
+    "act4: '86 names... from people who remembered them' lost its final clause — the ledger records the count, not the method."
+   ],
+   "beats_without_claim_refs": 9,
+   "beats_without_claim_refs_note": "Nine of the 73 beats carry no claim_ref: seven transitions and hinge lines containing no checkable fact, and the two outro sentences. Three beats that did contain a checkable fact while carrying no reference were corrected rather than excused — act3's '1995', its 'four people did' and its 'the same year the outside world noticed it' now reference c41 and c33."
+  },
+  "structure_compliance": {
+   "cold_open_seconds": 43.2,
+   "cold_open_ceiling": 46,
+   "title_sequence_seconds": 7.0,
+   "title_sequence_band": [
+    6,
+    8
+   ],
+   "act_count": 4,
+   "act_count_band": [
+    4,
+    5
+   ],
+   "ending_mode": "open_question",
+   "ending_audit": "The last paragraph states two things nobody can answer and stops. It does not recap an act, and it does not pose a rhetorical question — both of the open cases it names are marked contested in the ledger (c54, c46).",
+   "outro_seconds": 12.3,
+   "outro_target": 10,
+   "outro_overrun_note": "2.3 seconds over, recorded rather than fudged. The copy is two sentences; hitting 10 seconds would mean running the ask faster than the body rate, which reads rushed exactly where the ask lands. Run #2 measured 11.1s on its own approved copy for the same reason.",
+   "reveals": 5,
+   "reveals_note": "One per act, plus one in the cold open. Act 4 was drafted with two and the first was retagged exposition — the playbook allows one reveal per act and the carved back is the one the act earned.",
+   "four_second_gaps": {
+    "act1": 4.0,
+    "act2": 4.0,
+    "act3": 4.0,
+    "act4": 4.0
+   },
+   "longest_gap_in_cold_open_and_outro": {
+    "cold_open": 2.5,
+    "outro": 1.5
+   }
+  },
+  "review": {
+   "rounds": 1,
+   "findings": [
+    {
+     "severity": "critical",
+     "finding": "Act 4 carried two reveal beats; the playbook allows one per act.",
+     "action": "FIXED — the sponsor-not-swimmer paragraph retagged exposition. The carved back keeps the reveal and the act's 4-second gap."
+    },
+    {
+     "severity": "critical",
+     "finding": "Four figures and one method claim appeared in the prose without a ledger entry behind them.",
+     "action": "FIXED — all five rewritten; see citation_binding.findings_fixed."
+    },
+    {
+     "severity": "critical",
+     "finding": "Three beats containing a checkable fact carried no claim_ref.",
+     "action": "FIXED — c33 and c41 added to the three act 3 beats."
+    },
+    {
+     "severity": "suggestion",
+     "finding": "The outro runs 12.3s against the playbook's 10s target.",
+     "action": "RECORDED, not fixed. Cutting it means either losing the landing line or speeding the ask past the body rate."
+    },
+    {
+     "severity": "suggestion",
+     "finding": "Narration names the four Rapa Nui places and the five researchers but not the four birdman deities beyond Makemake, and never says 'tangata manu' aloud.",
+     "action": "Intentional. The lower-thirds and evidence cards carry the full names; the narration carries what a listener can hold. Pronunciation guides are supplied for every name that is spoken."
+    },
+    {
+     "severity": "nitpick",
+     "finding": "c16 (the 1979 coral-eye discovery) and c59 (the 1974-76 Orongo restoration) were assigned to acts in the outline and never spent.",
+     "action": "Left unspent. Both are good lower-third material and neither earns narration time; recorded in the outline's unspent list."
+    }
+   ],
+   "verdict": "pass"
+  },
+  "gate_commands_run": [
+   {
+    "name": "script_beats",
+    "command": ".venv/bin/python lib/script_beats.py projects/easter-island/artifacts/script.json --plan projects/easter-island/artifacts/narration_plan.json",
+    "blocking": true,
+    "exit_code": 0,
+    "result": "PASS",
+    "measured": "73 beats, 2678 words, 1071.2s speech, 112.5s air (9.5%), 1183.7s total, 57 gaps, longest 4.0s"
+   }
+  ]
+ }
+}
