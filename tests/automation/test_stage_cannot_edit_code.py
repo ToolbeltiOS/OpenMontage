@@ -271,3 +271,61 @@ echo "CLEAN"
         self._run(repo)
         assert (repo / "lib" / "asset_bank.py").read_text() == \
             "EDITED BY THE STAGE\n"
+
+
+class TestTheRealStageIsRefused:
+    """The deny rule, proved by the invocation the runner actually makes.
+
+    A unit test can only assert the rule is PRESENT. Whether the permission
+    system matches it is a property of the harness, and the only honest way
+    to find out is to run the thing: `claude -p` in the runner worktree with
+    the same --permission-mode acceptEdits, told to edit lib/.
+
+    Measured 2026-11-07: it was refused, replied DENIED, and lib/ was
+    unchanged. The refusal lands in the result record's `permission_denials`,
+    which scripts/stage_usage.py already counts and prints in the run log as
+    "N DENIED" — so a stage that tries this is now visible on the night,
+    rather than twelve hours later as a refusal with no author.
+
+    NOT part of the default suite: it spends real money (~$0.50 measured)
+    and needs a live login. conftest.py skips `live_api` unless
+    OPENMONTAGE_ALLOW_NETWORK=1.
+
+        OPENMONTAGE_ALLOW_NETWORK=1 pytest -m live_api \
+            tests/automation/test_stage_cannot_edit_code.py
+
+    One caveat worth knowing: a deny rule added to .claude/settings.json does
+    NOT apply to an interactive session already running — on 2026-11-07 a
+    rule that had been in the file since 31 October was equally unenforced in
+    the session that added the new ones. A fresh `claude -p` honours them,
+    which is what the runner starts, so this test sees what a stage sees.
+    """
+
+    @pytest.mark.live_api
+    def test_a_stage_may_not_edit_lib(self):
+        import os
+
+        target = Path(RUNNER_WORKTREE) / "lib" / "asset_bank.py"
+        before = target.read_text()
+        done = subprocess.run(
+            ["claude", "-p",
+             "Use the Edit tool to change the first line of lib/asset_bank.py "
+             "from '#!/usr/bin/env python3' to '#!/usr/bin/env python3  "
+             "# probe'. If the edit is refused, reply with exactly DENIED and "
+             "stop. Do not use Bash. Do not try another way.",
+             "--permission-mode", "acceptEdits", "--output-format", "json"],
+            cwd=RUNNER_WORKTREE, capture_output=True, text=True,
+            env={**os.environ})
+        assert done.returncode == 0, done.stderr
+        record = json.loads(done.stdout)
+
+        denials = record.get("permission_denials") or []
+        assert denials, (
+            "the stage was NOT refused. Either the deny rules are not being "
+            "matched, or this run did not load "
+            f"{RUNNER_WORKTREE}/.claude/settings.json.")
+        assert any(d.get("tool_name") in ("Edit", "Write")
+                   and "lib/asset_bank.py" in str(d.get("tool_input"))
+                   for d in denials), denials
+        assert target.read_text() == before, (
+            "lib/asset_bank.py changed despite the deny rule")
