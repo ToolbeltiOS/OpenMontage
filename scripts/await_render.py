@@ -176,33 +176,66 @@ def alive(pidfile: Path) -> int | None:
     return pid
 
 
-def group_cpu(pid: int | None) -> float:
-    """Total %CPU of the render's process group.
+def tree_cpu(pid: int | None) -> float:
+    """Total %CPU of the render's whole PROCESS TREE, by ppid.
 
-    The render is a tree — bash, python, npm, node, and a dozen headless
-    Chrome processes — and the work happens in the leaves. The session
-    leader's own CPU is nearly zero, so asking about IT would make a healthy
-    render look idle. The group is what is busy.
+    The render is a tree — bash, python, npm, node, the compositor and half a
+    dozen headless Chrome renderers — and the work happens in the leaves. The
+    session leader's own CPU is nearly zero, so asking about IT would make a
+    healthy render look idle.
+
+    THIS SUMMED ONE PROCESS GROUP AND WENT INERT THE SAME DAY IT WAS WRITTEN.
+    On 2026-11-07 `run_watched` began launching Remotion with
+    `start_new_session=True`, so that a stalled pass could be reaped with
+    `killpg` without the signal reaching the run — which put the renderer in
+    a process group of its OWN. Measured on the live king-tut look pass, 82%
+    through and burning five cores:
+
+        group_cpu(10914)  ->   0.4 %
+        tree under 10914  -> 304.5 % over 15 procs
+        process groups in that tree: [10914, 11184, 11209]
+
+    So the fix for one defect made a liveness signal read zero on a perfectly
+    healthy render. Not fatal — the stall rule needs ALL FOUR signals flat and
+    the other three were moving — but a signal that is always zero is an inert
+    guard, and this project has shipped four of those.
+
+    A ppid walk does not care how the tree is grouped, sessioned or
+    re-exec'd, which is the property worth having: the next reason the
+    grouping changes will not be announced either.
     """
     if not pid:
         return 0.0
     try:
-        out = subprocess.run(["ps", "-ax", "-o", "pgid=,%cpu="],
+        out = subprocess.run(["ps", "-ax", "-o", "pid=,ppid=,%cpu="],
                              capture_output=True, text=True, timeout=15).stdout
     except (OSError, subprocess.SubprocessError):
         return 0.0
-    total = 0.0
+    kids: dict[int, list[int]] = {}
+    cpu: dict[int, float] = {}
     for line in out.splitlines():
         parts = line.split()
-        if len(parts) != 2:
+        if len(parts) != 3:
             continue
         try:
-            if int(parts[0]) == pid:
-                total += float(parts[1])
+            child, parent, percent = int(parts[0]), int(parts[1]), float(parts[2])
         except ValueError:
             continue
+        kids.setdefault(parent, []).append(child)
+        cpu[child] = percent
+    total, seen, stack = 0.0, set(), [pid]
+    while stack:
+        node = stack.pop()
+        if node in seen:
+            continue
+        seen.add(node)
+        total += cpu.get(node, 0.0)
+        stack += kids.get(node, ())
     return round(total, 1)
 
+
+#: The name the log line and the stall rule read.
+group_cpu = tree_cpu
 
 def tail(path: Path, lines: int = 1) -> str:
     try:

@@ -484,3 +484,93 @@ class TestEvidenceBelongsToOneAttempt:
             "1. plate\n")
         state = mod.log_state(log)
         assert state["frames"] is None and state["total"] is None
+
+
+class TestTheCpuSignalSeesTheWholeTree:
+    """A liveness signal that reads zero on a healthy render is not a signal.
+
+    `group_cpu` summed one process GROUP, and went inert the same day it was
+    written: `run_watched` started launching Remotion with
+    `start_new_session=True` — so a stalled pass could be reaped with killpg
+    without the signal reaching the run — and that put the renderer in a group
+    of its own. Measured on the live king-tut look pass, 82% in and burning
+    five cores:
+
+        group_cpu(10914)  ->   0.4 %
+        tree under 10914  -> 304.5 % over 15 procs
+        process groups:      [10914, 11184, 11209]
+
+    The stall rule needs all four signals flat, so nothing broke. It was the
+    fourth inert guard this project has shipped, which is three more than the
+    budget.
+    """
+
+    @staticmethod
+    def _mod():
+        import importlib
+        import sys
+        sys.path.insert(0, str(ROOT / "scripts"))
+        return importlib.import_module("await_render")
+
+    def test_work_in_a_child_process_group_is_counted(self):
+        """The control: the burner is deliberately NOT in the parent's group.
+
+        `start_new_session=True` on the grandchild is the thing that made the
+        old signal read zero, so the test puts it there on purpose.
+        """
+        mod = self._mod()
+        parent = subprocess.Popen(
+            [sys.executable, "-c",
+             "import subprocess, sys, time\n"
+             "kid = subprocess.Popen([sys.executable, '-c',\n"
+             "    'import time\\nend = time.time() + 20\\n"
+             "while time.time() < end: pass'], start_new_session=True)\n"
+             "print(kid.pid, flush=True)\n"
+             "time.sleep(20)\n"
+             "kid.kill()"],
+            stdout=subprocess.PIPE, text=True)
+        try:
+            burner = int(parent.stdout.readline().strip())
+            # ps %cpu is a decaying average; give the burner a moment to earn
+            # one rather than asserting on its first scheduling quantum.
+            time.sleep(2.5)
+
+            groups = subprocess.run(
+                ["ps", "-o", "pgid=", "-p", f"{parent.pid},{burner}"],
+                capture_output=True, text=True).stdout.split()
+            assert len({g for g in groups if g}) == 2, (
+                f"the burner shares the parent's process group ({groups}), so "
+                f"this test cannot tell a tree walk from a group sum")
+
+            seen = mod.tree_cpu(parent.pid)
+            assert seen > 20, (
+                f"tree_cpu saw {seen}% of a process tree with a busy loop in "
+                f"it — the CPU signal is inert again")
+            assert mod.group_cpu is mod.tree_cpu, (
+                "group_cpu must be the tree walk: the stall rule and the "
+                "10-minute log line both read that name")
+        finally:
+            try:
+                parent.kill()
+                parent.wait(timeout=5)
+            except (OSError, subprocess.SubprocessError):
+                pass
+            subprocess.run(["kill", "-9", str(burner)], capture_output=True)
+
+    def test_an_idle_tree_reads_about_zero(self):
+        """And it must not report busy for a sleeping render, or a stall can
+        never be detected at all."""
+        mod = self._mod()
+        proc = subprocess.Popen([sys.executable, "-c",
+                                 "import time; time.sleep(20)"],
+                                start_new_session=True)
+        try:
+            time.sleep(1.5)
+            assert mod.tree_cpu(proc.pid) < 5
+        finally:
+            proc.kill()
+            proc.wait(timeout=5)
+
+    def test_no_pid_is_no_cpu(self):
+        assert self._mod().tree_cpu(None) == 0.0
+        assert self._mod().tree_cpu(0) == 0.0

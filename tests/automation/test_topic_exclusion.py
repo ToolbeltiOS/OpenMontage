@@ -389,14 +389,107 @@ class TestTheRealStateOnThisMachine:
             f"{shared_state.published_path()} is the authority; a copy in a "
             f"worktree is the 2026-11-06 bug waiting to be read.")
 
-    def test_the_noah_project_is_visible_from_the_runner_tree(self):
-        """projects/noah exists only in the development worktree. A check
-        scoped to the runner's own tree sees nothing — which is why
-        project_slugs asks git for every worktree."""
+    def test_the_noah_project_is_visible_from_here(self):
+        """The 2026-11-06 regression: the picker must see Noah's directory
+        from whatever tree it is running in, or it offers him again."""
         slugs = project_slugs(ROOT)
         assert "noah" in slugs, (
             f"projects/noah not found from {ROOT}; searched "
             f"{len(slugs)} project directories")
-        assert not (ROOT / "projects" / "noah").exists(), (
-            "projects/noah now exists in the runner tree too, so this test "
-            "no longer proves the cross-worktree search works")
+
+    def test_a_project_only_another_worktree_has_is_still_found(self):
+        """The cross-worktree search, controlled on what this machine has.
+
+        This assertion used to read
+
+            assert not (ROOT / "projects" / "noah").exists()
+
+        and it broke on 2026-11-07, when Noah's licence records were added to
+        .gitignore's allow-list and `projects/noah` appeared in every
+        worktree. The property was never broken; the control was keyed on one
+        particular film happening to be absent locally, which is not a fact
+        about the search. So it asks for ANY slug the local tree does not
+        have, and `TestTheSearchSpansWorktrees` below guards the property
+        without needing the machine to supply one.
+        """
+        local = {entry.name for entry in (ROOT / "projects").iterdir()
+                 if entry.is_dir() and not entry.name.startswith(".")} \
+            if (ROOT / "projects").is_dir() else set()
+        slugs = project_slugs(ROOT)
+        elsewhere = {slug: path for slug, path in slugs.items()
+                     if slug not in local}
+        if not elsewhere:
+            pytest.skip(
+                f"every project this machine has is also in {ROOT.name}, so "
+                f"there is nothing here that only another worktree holds. "
+                f"TestTheSearchSpansWorktrees covers the property.")
+        for slug, path in elsewhere.items():
+            assert ROOT not in path.parents, (
+                f"{slug} was reported at {path}, which is inside {ROOT} — "
+                f"then it was never a cross-worktree find")
+
+
+class TestTheSearchSpansWorktrees:
+    """The property itself, built rather than borrowed from the machine.
+
+    `TestTheRealStateOnThisMachine` was the ONLY coverage of the
+    cross-worktree search, and its control was an accident of which films
+    happened to be checked out where. The moment that accident changed the
+    test went red while the code was fine. This one constructs the situation:
+    a slug that exists in the second worktree and nowhere else.
+    """
+
+    def test_a_slug_in_the_second_worktree_is_found_from_the_first(
+            self, tmp_path, monkeypatch):
+        import already_covered
+
+        here, there = tmp_path / "here", tmp_path / "there"
+        (here / "projects" / "mine").mkdir(parents=True)
+        (there / "projects" / "theirs").mkdir(parents=True)
+        monkeypatch.setattr(already_covered, "worktree_roots",
+                            lambda repo: [here, there])
+
+        slugs = already_covered.project_slugs(here)
+        assert set(slugs) == {"mine", "theirs"}
+        assert slugs["theirs"] == there / "projects" / "theirs", (
+            "the slug was found, but not in the worktree that has it")
+
+    def test_the_first_worktree_wins_a_slug_two_of_them_have(
+            self, tmp_path, monkeypatch):
+        """`setdefault`, asserted: a duplicate must not shadow the first.
+
+        Which matters because the picker uses the PATH to read the project,
+        and two worktrees on different branches hold different films under
+        the same slug.
+        """
+        import already_covered
+
+        here, there = tmp_path / "here", tmp_path / "there"
+        for root in (here, there):
+            (root / "projects" / "shared").mkdir(parents=True)
+        monkeypatch.setattr(already_covered, "worktree_roots",
+                            lambda repo: [here, there])
+
+        slugs = already_covered.project_slugs(here)
+        assert slugs["shared"] == here / "projects" / "shared"
+
+    def test_a_worktree_with_no_projects_directory_is_skipped_not_fatal(
+            self, tmp_path, monkeypatch):
+        import already_covered
+
+        here, bare = tmp_path / "here", tmp_path / "bare"
+        (here / "projects" / "mine").mkdir(parents=True)
+        bare.mkdir()
+        monkeypatch.setattr(already_covered, "worktree_roots",
+                            lambda repo: [here, bare])
+        assert set(already_covered.project_slugs(here)) == {"mine"}
+
+    def test_a_dotfile_is_not_a_project(self, tmp_path, monkeypatch):
+        import already_covered
+
+        here = tmp_path / "here"
+        (here / "projects" / ".DS_Store_dir").mkdir(parents=True)
+        (here / "projects" / "real").mkdir(parents=True)
+        monkeypatch.setattr(already_covered, "worktree_roots",
+                            lambda repo: [here])
+        assert set(already_covered.project_slugs(here)) == {"real"}
