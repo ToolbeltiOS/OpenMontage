@@ -45,18 +45,15 @@ ALWAYS = ("identity", "taste_profile", "quality_rules")
 #: neither routed to a stage nor listed here — so a rule cannot be added to
 #: the playbook and quietly read by nobody, which is this repository's most
 #: frequent defect: a gate written, reviewed, and never wired to a consumer.
-UNREAD = {
-    "overrides": (
-        "`max_deviation_ratio: 0.15`. Declared in "
-        "schemas/styles/playbook.schema.json, set in the playbook, and read "
-        "by NOTHING — found 2026-11-07 by the orphan check on its first run. "
-        "That makes four: the texture gate, the camera props, the "
-        "illustrations gate, and now this. It is not routed to a stage "
-        "because what a 15% deviation ratio should govern, and which stage "
-        "should enforce it, is the owner's decision and not a guess to bury "
-        "in a digest script."
-    ),
-}
+#:
+#: EMPTY, AND THAT IS THE POINT. It held one entry for a few hours on
+#: 2026-11-07: `overrides.max_deviation_ratio: 0.15`, which the playbook set,
+#: the playbook schema declared, and nothing read — nor did anything ever
+#: read its sibling `scene_overrides`. The owner's ruling was to delete the
+#: section from both files rather than invent a consumer for it, so there is
+#: now no dead setting to excuse. A future entry here should be rare and
+#: should read as a question somebody still owes an answer to.
+UNREAD: dict[str, str] = {}
 
 STAGE_SECTIONS = {
     "research": ("sources", "content_stance", "fact_gate"),

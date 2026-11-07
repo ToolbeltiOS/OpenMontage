@@ -605,47 +605,6 @@
           "type": "boolean"
         }
       }
-    },
-    "overrides": {
-      "description": "Per-scene palette or rule exceptions. Up to 20% of scenes may intentionally deviate from the playbook for creative impact.",
-      "type": "object",
-      "properties": {
-        "max_deviation_ratio": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 0.5,
-          "default": 0.2,
-          "description": "Maximum fraction of scenes that may deviate from playbook defaults"
-        },
-        "scene_overrides": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": [
-              "scene_id",
-              "reason"
-            ],
-            "properties": {
-              "scene_id": {
-                "type": "string"
-              },
-              "reason": {
-                "type": "string",
-                "description": "Why this scene deviates from the playbook"
-              },
-              "color_override": {
-                "type": "object"
-              },
-              "typography_override": {
-                "type": "object"
-              },
-              "motion_override": {
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
     }
   },
   "$defs": {

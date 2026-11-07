@@ -1467,5 +1467,3 @@ color_rules:
   contrast_validation: true
   colorblind_safe: true
 
-overrides:
-  max_deviation_ratio: 0.15
