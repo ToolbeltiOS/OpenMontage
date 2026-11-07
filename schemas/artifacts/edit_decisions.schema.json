@@ -9,12 +9,16 @@
     "version": { "type": "string", "const": "1.0" },
     "cuts": {
       "type": "array",
+      "_why_source_is_not_required": "A cut in an authored-scene pipeline has no source file: it names a component in remotion-composer/component-contract.json and DRAWS its picture. The narrated-documentary films run 60% of their cuts that way. `source` was required here because every pipeline that had exercised this schema cut from footage.",
+      "_why_additional_properties": "An authored cut carries its component's props FLAT beside `type` - that is the shape remotion-composer/src/Explainer.tsx reads and lib/build_render_props.py passes through - and those props are open-ended: a schematic's layers, a timeline's events, a map_route's markers. They are NOT unchecked. lib/buildability.py validates every one against the component contract, which is stricter than an enumeration here could be: it checks required props, required keys on every array item, and enum ranges per component. Enumerating them a second time in this file would be a copy that drifts.",
+      "_found_by": "The king-tut run, which is the first to CHECKPOINT the edit stage. Two delivered films carried authored cuts past this schema without it ever being applied to them.",
       "items": {
         "type": "object",
-        "required": ["id", "source", "in_seconds", "out_seconds"],
+        "required": ["id", "in_seconds", "out_seconds"],
         "properties": {
           "id": { "type": "string" },
-          "source": { "type": "string", "description": "Source file path or asset-manifest ID" },
+          "type": { "type": "string", "description": "For an AUTHORED cut: the component in remotion-composer/component-contract.json that draws it. Mutually exclusive with `source` in practice - a cut is either sourced or drawn." },
+          "source": { "type": "string", "description": "Source file path or asset-manifest ID. Absent on an authored cut." },
           "in_seconds": { "type": "number", "minimum": 0 },
           "out_seconds": { "type": "number", "minimum": 0 },
           "speed": { "type": "number", "minimum": 0.1, "default": 1.0 },
@@ -110,7 +114,7 @@
           },
           "lead_reason": { "type": "string" }
         },
-        "additionalProperties": false
+        "additionalProperties": true
       }
     },
     "overlays": {
@@ -277,6 +281,11 @@
         "average": { "type": "number" },
         "verdict": { "type": "string", "enum": ["strong", "acceptable", "revise", "fail"] }
       }
+    },
+    "total_duration_seconds": {
+      "type": "number",
+      "minimum": 0,
+      "description": "The finished timeline's length. REQUIRED BY pipeline_defs/narrated-documentary.yaml, whose edit stage lists 'total_duration_seconds matches the sum of cut durations' as a success criterion and 'Timeline duration within 10% of the script duration' beside it - and both delivered films carry it. It was absent from this schema, which forbids unknown top-level keys, so the one artifact the manifest asks to be checked could not be written as a checkpoint at all."
     },
     "metadata": { "type": "object" }
   },

@@ -3,6 +3,7 @@ import { AbsoluteFill, Easing, interpolate, useCurrentFrame, useVideoConfig } fr
 import { SYS, TYPE, TRACK, EXPO_OUT, EXPO_IN_OUT, LAYOUT } from "../design/system";
 import { Plate, Graded, FrameLayer } from "../design/Frame";
 import { T } from "../design/Type";
+import { resolveAsset } from "../lib/resolveAsset";
 
 export interface TitleSequenceProps {
   /** the film's title, as it is published */
@@ -90,7 +91,17 @@ export const TitleSequence: React.FC<TitleSequenceProps> = ({
             <Graded strength={1.15}>
               <AbsoluteFill
                 style={{
-                  backgroundImage: `url(${image})`,
+                  // resolveAsset, not the raw string. Every other scene in
+                  // the system resolves its plate; this one embedded the
+                  // path straight into a CSS url(), so a public-relative
+                  // path resolved against the document rather than against
+                  // the static root and the still silently did not load.
+                  // The card still rendered — type, rule, channel mark, the
+                  // sting — over a lit void, which is indistinguishable
+                  // from the no-image branch. Nothing had ever passed this
+                  // prop: the only delivered film's title cut carries no
+                  // `image` at all.
+                  backgroundImage: `url(${resolveAsset(image)})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   filter: "brightness(0.52) saturate(0.62)",

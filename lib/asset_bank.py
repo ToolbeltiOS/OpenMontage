@@ -94,12 +94,40 @@ def category_files(category: str, descend: bool = True) -> list[str]:
     return titles
 
 
+def _imageinfo_batch(batch: list[str]) -> dict:
+    """One imageinfo call, splitting the batch if the URI is too long.
+
+    The titles go into a GET query string, and Commons filenames are not
+    short: "Category:Valley of the Kings" holds names like
+    "Egypte_louxor_vallee_des_rois_tombe_de_ramses_IV_KV2_couloir...jpg", and
+    forty of them exceeded the server's URI limit. The whole batch raised 414,
+    which aborted the SUBJECT - 639 files listed, 0 described, nothing banked,
+    and the only sign was one line in a log full of rejections.
+
+    A fixed smaller batch would be slower for every subject to protect the few
+    with long names, so the batch splits only when it has to, and recurses in
+    case half is still too long.
+    """
+    try:
+        return api({"action": "query", "titles": "|".join(batch),
+                    "prop": "imageinfo",
+                    "iiprop": "url|size|extmetadata|mime"})
+    except urllib.error.HTTPError as e:
+        if e.code != 414 or len(batch) <= 1:
+            raise
+        mid = len(batch) // 2
+        print(f"    414 on {len(batch)} titles; splitting", flush=True)
+        left = _imageinfo_batch(batch[:mid])
+        right = _imageinfo_batch(batch[mid:])
+        merged = {"query": {"pages": (left.get("query", {}).get("pages", [])
+                                      + right.get("query", {}).get("pages", []))}}
+        return merged
+
+
 def imageinfo(titles: list[str]) -> list[dict]:
     out = []
     for i in range(0, len(titles), 40):
-        d = api({"action": "query", "titles": "|".join(titles[i:i + 40]),
-                 "prop": "imageinfo",
-                 "iiprop": "url|size|extmetadata|mime"})
+        d = _imageinfo_batch(titles[i:i + 40])
         for pg in d.get("query", {}).get("pages", []):
             ii = (pg.get("imageinfo") or [{}])[0]
             if not ii.get("url"):

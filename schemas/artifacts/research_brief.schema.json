@@ -103,9 +103,44 @@
         "type": "object",
         "required": ["claim", "source_url", "credibility"],
         "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[cr][0-9]{1,3}$",
+            "description": "THE CLAIM LEDGER ID the script cites, e.g. 'c07'. `c` for a research-stage claim, `r` for one added by a provenance repair. Was absent from this schema while lib/verify_fact_coverage.py read it as the primary key, so every citation fell back to a POSITIONAL reading of this array — which is how easter-island came to cite c03-c58 against a fifteen-entry ledger and have it look like provenance."
+          },
           "claim": { "type": "string", "description": "The specific fact, statistic, or data point" },
           "source_url": { "type": "string", "format": "uri" },
           "source_name": { "type": "string", "description": "e.g., 'Stack Overflow 2025 Developer Survey'" },
+          "kind": {
+            "type": "string",
+            "enum": ["date", "name", "figure", "quote", "event", "claim"],
+            "description": "What the script gate checks for. Dates, names and figures are exactly the spans that may not be stated without a ledger entry."
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["established", "probable", "contested"],
+            "description": "How firm the claim is. `contested` is not a defect — but it must be narrated AS contested."
+          },
+          "contested": {
+            "type": "boolean",
+            "description": "True when the question is genuinely disputed. The playbook forbids narrating either side as settled when this is set."
+          },
+          "sources": {
+            "type": "array",
+            "items": { "type": "string", "format": "uri" },
+            "description": "Additional corroborating URLs. The playbook requires TWO for a surprising figure or a hook claim; source_url stays the primary."
+          },
+          "notes": { "type": "string", "description": "Caveats, rival readings, what the figure does NOT say" },
+          "supports": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Narration sentences this claim attributes, verbatim. Per-sentence attribution held in the LEDGER, so an already-delivered film can be attributed without its script being edited. Read by lib/verify_fact_coverage.sentence_index."
+          },
+          "repairs_sentence": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "As `supports`, but written by a provenance repair after delivery."
+          },
           "credibility": {
             "type": "string",
             "enum": ["primary_source", "secondary_source", "anecdotal"],
@@ -239,6 +274,21 @@
       "type": "string",
       "description": "One paragraph: the single most important insight from this research and why it matters for the video"
     },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["looked_for", "why_it_matters"],
+        "properties": {
+          "looked_for": { "type": "string", "description": "What was searched for and could not be sourced" },
+          "why_it_matters": { "type": "string", "description": "Which angle it would have carried, or which sentence can now never be written" },
+          "closest_available": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "description": "First-class output, required by the narrated-documentary research-director: things looked for and not found. They tell the proposal which angles are unsafe and tell the script which sentences may never be written."
+    },
+    "provenance_repair": { "type": "object", "description": "Record of a post-delivery attribution repair, if one was run" },
     "metadata": { "type": "object" }
   },
   "additionalProperties": false

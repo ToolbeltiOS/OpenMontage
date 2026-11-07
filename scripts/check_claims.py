@@ -38,8 +38,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "lib"))
 
 from verify_fact_coverage import (  # noqa: E402
-    _norm_sentence, cited_anywhere, claims_for, exempt_sections, ledger,
-    paragraphs, sentence_index, sentences, triggers)
+    _norm_sentence, cited_anywhere, claims_for, exempt_sections,
+    framing_disqualifiers, ledger, paragraphs, sentence_index,
+    sentences_marked, triggers)
 
 
 def check_section(section: dict, book: dict, by_sentence: dict,
@@ -58,12 +59,33 @@ def check_section(section: dict, book: dict, by_sentence: dict,
     for cited in no_url:
         problems.append(f"cites {cited!r}, which has no source_url.")
 
-    needing = uncovered = 0
+    needing = uncovered = framing = 0
     for index, para in enumerate(paragraphs(section.get("text") or "")):
         ids, _ = claims_for(section, index)
-        for sentence in sentences(para):
+        # `sentences_marked`, not `sentences`: this script is advertised as
+        # the gate's two checks scoped to one act, and the gate honours
+        # `[framing]`. Reading the paragraph with `sentences()` strips the
+        # marker along with every other production marker, so a structural
+        # sentence — "Four cases, and only one of them is closed" — came back
+        # as an uncovered fact. The only ways to satisfy that are to invent a
+        # citation for a sentence that makes no claim, or to delete the
+        # sentence: both are worse than the thing being checked for, and the
+        # gate would have passed either way. Found by running this against a
+        # script the gate passes.
+        for sentence, is_framing in sentences_marked(para):
             if not triggers(sentence, backend):
                 continue
+            blocked = (framing_disqualifiers(sentence, backend)
+                       if is_framing else {})
+            if is_framing:
+                framing += 1
+                if not blocked:
+                    continue
+                problems.append(
+                    f"p{index}: {sentence[:80]!r} is marked [framing] but "
+                    + ", ".join(f"{k} {v}" for k, v in blocked.items())
+                    + " — the marker says what a sentence is FOR, not that "
+                      "it makes no claim.")
             needing += 1
             own = by_sentence.get(_norm_sentence(sentence), [])
             usable = [c for c in (own or ids)
@@ -77,6 +99,7 @@ def check_section(section: dict, book: dict, by_sentence: dict,
     return problems, {"id": section.get("id"), "cites": len(cited_anywhere(section)),
                       "unknown": len(unknown), "without_url": len(no_url),
                       "sentences_needing_a_claim": needing,
+                      "framing": framing,
                       "uncovered": uncovered}
 
 
@@ -109,7 +132,7 @@ def main() -> int:
         problems, m = check_section(section, book, by_sentence, args.backend)
         print(f"{sid}: cites {m['cites']} claim(s), {m['unknown']} unknown, "
               f"{m['sentences_needing_a_claim']} sentences need a claim, "
-              f"{m['uncovered']} uncovered")
+              f"{m['uncovered']} uncovered, {m['framing']} framing")
         for p in problems[:20]:
             print("  -", p)
         if len(problems) > 20:

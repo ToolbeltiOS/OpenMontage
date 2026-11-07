@@ -346,6 +346,22 @@ export interface Cut {
   backgroundColor?: string;
   cardBackgroundColor?: string; // Inner card surface (comparison); defaults to theme.surfaceColor
   backgroundImage?: string; // AI-generated or stock image rendered behind the component
+  /**
+   * The plate, under the name `component-contract.json` uses.
+   *
+   * The contract declares the plate prop as `image` — required on
+   * `annotated_still`, optional on `title_sequence` and `document_reveal` —
+   * and this renderer read only `backgroundImage`. `lib/buildability.py`
+   * validates a scene plan against the CONTRACT, so a slot written exactly
+   * as the contract specifies passes the buildability gate and then renders
+   * with no picture: an annotated_still falls through its `&& cut.image`
+   * guard to a text card, and a title_sequence draws its type over a lit
+   * void, which is indistinguishable from the no-image branch.
+   *
+   * Both names are accepted rather than either being renamed: the delivered
+   * films' props carry `backgroundImage` and must keep working.
+   */
+  image?: string;
   backgroundVideo?: string; // Video clip rendered behind the component (takes priority over backgroundImage)
   backgroundVideoStart?: number; // Seek position in seconds for background video (default 0)
   backgroundOverlay?: number; // Opacity of dark overlay on backgroundImage/backgroundVideo (0-1, default 0.55)
@@ -798,8 +814,13 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
     source: cut.sourceLine,
   };
 
-  if (cut.type === "annotated_still" && cut.backgroundImage) {
-    return (<AnnotatedStill image={cut.backgroundImage} parallax={cut.parallax}
+  // The contract calls the plate `image`; the delivered films call it
+  // `backgroundImage`. Accept both, preferring the older name so nothing
+  // already on disk changes behaviour.
+  const plate = cut.backgroundImage ?? cut.image;
+
+  if (cut.type === "annotated_still" && plate) {
+    return (<AnnotatedStill image={plate} parallax={cut.parallax}
       parallaxFrom={cut.parallaxFrom} parallaxTo={cut.parallaxTo}
       driftFrom={cut.driftFrom} driftTo={cut.driftTo}
       annotations={cut.annotations} measurement={cut.measurement}
@@ -821,7 +842,7 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
   }
   if (cut.type === "document_reveal" && cut.lines) {
     return (<DocumentReveal headline={cut.headline} lines={cut.lines} source={cut.sourceLine}
-      image={cut.backgroundImage} paper={cut.paper} light_sweep={cut.light_sweep}
+      image={plate} paper={cut.paper} light_sweep={cut.light_sweep}
       sweep_at={cut.sweep_at} caption={cut.caption} kicker={cut.kicker}
       actNumber={cut.actNumber} actTitle={cut.actTitle} sceneIndex={cut.sceneIndex}
       coords={cut.coords} />);
@@ -838,7 +859,7 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
   }
   if (cut.type === "title_sequence" && cut.title) {
     return (<TitleSequence title={cut.title} channel={cut.channel}
-      kicker={cut.kicker} image={cut.backgroundImage} sting_at={cut.sting_at}
+      kicker={cut.kicker} image={plate} sting_at={cut.sting_at}
       fade_in={cut.fade_in} fade_out={cut.fade_out} />);
   }
   if (cut.type === "before_after" && cut.before && cut.after) {
