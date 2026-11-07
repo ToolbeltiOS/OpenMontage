@@ -34,6 +34,13 @@
         <key>REPO</key><string>/Users/mac/Developer/wak3up-docs/OpenMontage</string>
         <key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/mac/.local/bin</string>
         <key>HOME</key><string>/Users/mac</string>
+        <!-- The published ledger and the topic-pick history. OUTSIDE EVERY
+             WORKTREE, because tracked in git it was one copy per branch:
+             Noah was published from `asset-library` on 2026-11-02 and the
+             runner, reading `automation`, picked Noah again on 2026-11-06.
+             lib/shared_state.py defaults to this same path; it is named here
+             so the dependency is visible in the agent that depends on it. -->
+        <key>WAK3UP_DOCS_STATE</key><string>/Users/mac/Developer/wak3up-docs/state</string>
     </dict>
 
     <!-- If the Mac was asleep at the scheduled minute, run on wake. A
