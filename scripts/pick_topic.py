@@ -28,6 +28,13 @@ So this asks them in order and refuses to skip the second.
 They run in that order because each is slower than the last, and counting
 assets for a phrase that is not a thing is a slow way to learn nothing.
 
+    0. HAVE WE MADE IT ALREADY. Asked first and three ways, because on
+       2026-11-06 it was asked one way and got the wrong answer: the
+       published ledger (now shared across every worktree, not tracked per
+       branch), whether `projects/<slug>/` exists in ANY worktree, and
+       whether the channel already has a long-form upload on the subject.
+       See lib/shared_state.py and lib/already_covered.py.
+
 NO DEPRIORITISATION. The channel's niche is conspiracy, mystery, archaeology,
 space and religion, and the ranking is by measured performance within it. A
 subject is not demoted for being the channel's subject.
@@ -165,12 +172,25 @@ def cluster(ledger: list[dict[str, Any]], min_age_days: float = MIN_AGE_DAYS
     return clusters
 
 
-def already_made(published_path: Path) -> set[str]:
-    """Entities the channel has already made a documentary about."""
-    if not published_path.exists():
-        return set()
+def already_made(published_path: Path | None = None) -> set[str]:
+    """Entities the channel has already made a documentary about.
+
+    THE LEDGER IS NOT IN THE REPOSITORY. It used to be
+    `artifacts/published.json`, tracked in git, which meant one copy per
+    branch — and on 2026-11-06 this function was handed the `automation`
+    copy, which did not have the Noah film in it because Noah was published
+    out of the `asset-library` worktree four days earlier. The subject came
+    back as fresh and was picked again.
+
+    It now lives outside every worktree; see lib/shared_state.py. A missing
+    or damaged ledger RAISES rather than reading as "nothing published yet",
+    because those two answers are opposite and the second one re-makes
+    every film the channel has.
+    """
+    import shared_state
+
     done: set[str] = set()
-    for film in (json.loads(published_path.read_text()).get("films") or []):
+    for film in shared_state.published_films(published_path):
         done.update(name.lower() for name in (film.get("entities") or []))
         done.update(entities_in(film.get("title", "")))
     return {name.lower() for name in done}
@@ -536,9 +556,14 @@ def main() -> int:
                     help="how many sub-entities to take out of a container")
     ap.add_argument("--skip-depth", action="store_true",
                     help="rank only; do not count assets")
+    ap.add_argument("--skip-youtube", action="store_true",
+                    help="do not ask the channel what it has already "
+                         "published (offline runs and tests)")
     args = ap.parse_args()
 
-    published = Path(args.published) if args.published else ROOT / "artifacts" / "published.json"
+    # `published` stays None unless overridden, so the shared ledger is read
+    # from its one location rather than from a path this script guessed.
+    published = Path(args.published) if args.published else None
     blacklist = Path(args.blacklist) if args.blacklist else ROOT / "artifacts" / "topic_blacklist.txt"
 
     ledger = (json.loads(Path(args.ledger_json).read_text())
@@ -548,11 +573,66 @@ def main() -> int:
     clusters = cluster(ledger)
     print(f"clusters: {len(clusters)} entities named by two or more")
 
+    import shared_state
+    from already_covered import (channel_films, covered_subjects,
+                                 project_slugs, why_ineligible)
+
     done, banned = already_made(published), blacklisted(blacklist)
-    fresh = [c for c in clusters
-             if c["entity"].lower() not in done and c["entity"].lower() not in banned]
-    print(f"after skipping {len(clusters) - len(fresh)} already made or blacklisted: "
-          f"{len(fresh)}")
+    print(f"ledger: {shared_state.published_path()} "
+          f"({len(shared_state.published_films(published))} films)")
+
+    # Two more ways to be already-made, neither of which reads the ledger.
+    # See lib/already_covered.py for why one file was never enough.
+    # Searched across every worktree, not just this one: projects/noah has
+    # never existed in the automation tree, so a search scoped to the
+    # caller's tree would have missed Noah exactly as the ledger did.
+    from already_covered import worktree_roots
+
+    trees = worktree_roots(ROOT)
+    projects = project_slugs(ROOT)
+    print(f"projects: {len(projects)} distinct slug(s) across "
+          f"{len(trees)} worktree(s) ({', '.join(t.name for t in trees)})")
+
+    covered: dict[str, list[str]] = {}
+    youtube_check: dict[str, Any] = {"ok": False}
+    if args.skip_youtube:
+        youtube_check = {"ok": False, "skipped": True}
+        print("youtube: skipped (--skip-youtube)")
+    else:
+        try:
+            films = channel_films()
+            covered = covered_subjects(films)
+            youtube_check = {"ok": True, "long_form_uploads": len(films),
+                             "subjects": len(covered),
+                             "video_ids": [f["video_id"] for f in films]}
+            print(f"youtube: {len(films)} long-form uploads naming "
+                  f"{len(covered)} subjects")
+        except Exception as error:
+            # FAIL OPEN, LOUDLY. This is the second line of defence; the
+            # ledger is the first and it is now shared and seeded. Stopping
+            # the week's film because YouTube was unreachable would trade a
+            # rare duplicate for a guaranteed missed Friday. The warning is
+            # printed AND recorded in the output, so a run that picked
+            # without this check can be told apart afterwards from one that
+            # passed it.
+            youtube_check = {"ok": False, "error": str(error)[:300]}
+            print(f"youtube: CHECK DID NOT RUN — {str(error)[:200]}")
+            print("         the ledger and the project directories are still "
+                  "being honoured; this run is not covered by the "
+                  "channel-side check")
+
+    fresh, excluded = [], []
+    for candidate in clusters:
+        reason = why_ineligible(candidate["entity"], made=done, banned=banned,
+                                projects=projects, covered=covered)
+        if reason is None:
+            fresh.append(candidate)
+        else:
+            excluded.append({"entity": candidate["entity"], "why": reason})
+    print(f"after skipping {len(excluded)} already made, blacklisted, "
+          f"already a project or already on the channel: {len(fresh)}")
+    for row in excluded[:12]:
+        print(f"   skip: {row['entity'][:34]:34s} {row['why']}")
 
     # Is it a thing, and is it FILM-SIZED? Cheap, and it removes most of what
     # clustering invents.
@@ -638,8 +718,41 @@ def main() -> int:
         "clusters_considered": len(fresh),
         "min_assets_per_entity": MIN_ASSETS_PER_ENTITY,
         "entities_checked": ENTITIES_CHECKED,
+        # What the exclusions were, and whether the channel-side check ran.
+        # A brief that was chosen while the YouTube check was down is a
+        # different object from one that passed it, and the difference has
+        # to survive into the file or nobody can tell them apart later.
+        "published_ledger": str(shared_state.published_path()),
+        "youtube_check": youtube_check,
+        "excluded": excluded,
         "briefs": briefs,
     }, indent=1) + "\n")
+
+    # The pick history, outside every branch. A RECORD, NOT A GATE — see
+    # lib/shared_state.py. It exists because "what did the picker choose on
+    # which commit in which tree" was unanswerable while this bug was being
+    # diagnosed, and the answer had to be reconstructed from a stale
+    # topic_briefs.json that the next run would have overwritten.
+    if briefs:
+        from already_covered import slug_of
+
+        try:
+            shared_state.record_pick(
+                briefs[0]["entity"], slug_of(briefs[0]["entity"]),
+                repo=str(ROOT),
+                branch=subprocess.run(
+                    ["git", "-C", str(ROOT), "rev-parse", "--abbrev-ref", "HEAD"],
+                    capture_output=True, text=True).stdout.strip() or None,
+                head=subprocess.run(
+                    ["git", "-C", str(ROOT), "rev-parse", "--short", "HEAD"],
+                    capture_output=True, text=True).stdout.strip() or None,
+                median_views=briefs[0].get("median_views"),
+                runners_up=[b["entity"] for b in briefs[1:]],
+                youtube_check_ok=bool(youtube_check.get("ok")),
+                ledger_films=len(shared_state.published_films(published)))
+        except Exception as error:
+            # A history that cannot be written must not stop a film.
+            print(f"   (pick history not recorded: {str(error)[:120]})")
     written = [write_brief(b, ROOT / "reports" / "briefs") for b in briefs
                if b.get("angle")]
     print(f"\n{len(briefs)} briefs -> {out.relative_to(ROOT)}")

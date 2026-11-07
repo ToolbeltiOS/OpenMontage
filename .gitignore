@@ -149,3 +149,17 @@ reports/critic/
 logs/
 artifacts/metrics/
 *.lock
+
+# THE PUBLISHED LEDGER IS NOT IN THE REPOSITORY.
+#
+# It was tracked here, which gave it one copy per branch. Noah was published
+# out of the `asset-library` worktree on 2026-11-02 and appended to that
+# branch's copy; the runner, pinned to `automation`, read its own copy — which
+# ended at Easter Island — and picked Noah again on 2026-11-06.
+#
+# The channel has one past, so the ledger has one file, outside every
+# worktree: ~/Developer/wak3up-docs/state/published.json (lib/shared_state.py,
+# overridable with WAK3UP_DOCS_STATE). This line is here so that a copy
+# written into a tree by an older script, or by hand, cannot be committed back
+# into a branch and become a second answer.
+artifacts/published.json

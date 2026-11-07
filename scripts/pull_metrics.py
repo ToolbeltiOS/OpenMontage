@@ -176,11 +176,13 @@ def main() -> int:
         print("scope: yt-analytics.readonly present")
         return 0
 
-    ledger_path = ROOT / "artifacts" / "published.json"
-    if not ledger_path.exists():
-        print("nothing published yet")
-        return 0
-    films = json.loads(ledger_path.read_text()).get("films") or []
+    # The shared ledger, outside every worktree — see lib/shared_state.py.
+    # This reader may use allow_missing: it reports on films that exist and
+    # has nothing to decide, so "no ledger" and "no films" really are the
+    # same answer here. The picker is the caller for which they are not.
+    import shared_state
+
+    films = shared_state.published_films(allow_missing=True)
     if not films:
         print("nothing published yet")
         return 0
