@@ -133,9 +133,148 @@ def test_the_scan_finds_the_text_it_is_supposed_to():
 
 
 def test_the_short_form_library_is_deliberately_out_of_scope():
-    """It renders flat, outside any LayerScope, and always has."""
+    """It renders flat, outside any LayerScope, and always has.
+
+    `StatCard.tsx` used to be the example here, and that is the assertion
+    that let king-tut ship a plate with 119 legible words in it: the file
+    was out of scope because it imported nothing from `design/`, and the
+    test wrote that exclusion down as deliberate. It was never deliberate.
+    The documentary composition dispatches `cut.type === "stat_card"` to it,
+    so the moment an edit used that cut type the component was in the film —
+    and the only thing that had to change for the exclusion to become a bug
+    was a scene plan, in a different repository directory, months later.
+
+    The example is now a file the film genuinely cannot reach.
+    """
     outside = [p.name for p in SRC.rglob("*.tsx")
                if not SKIP_DIRS & set(p.relative_to(SRC).parts)
                and not in_documentary_tree(p)]
-    assert "StatCard.tsx" in outside and "LyricOverlay.tsx" in outside
+    assert "LyricOverlay.tsx" in outside
     assert "Explainer.tsx" not in outside
+    assert "StatCard.tsx" not in outside and "TextCard.tsx" not in outside
+
+
+# ---------------------------------------------------------------------------
+# Which components the film can actually reach
+# ---------------------------------------------------------------------------
+
+#: Components the documentary composition dispatches a `cut.type` to, which
+#: are NOT yet marked for the two-pass split.
+#:
+#: Every one of these is the king-tut bug waiting for a scene plan to pick
+#: it: reachable from `Explainer`, painting words, carrying no `om-type`. The
+#: list is not permission. It is the record of which cut types no film has
+#: used yet, and `test_no_film_uses_an_unmarked_cut_type` fails the moment
+#: one does — at edit time, before three hours of rendering.
+UNMARKED_CUT_TYPES = {
+    # Paints no text at all today — but it is not in the scan, so nothing
+    # would notice if it started to. Listed rather than special-cased.
+    "anime_scene": "AnimeScene.tsx",
+    "comparison": "ComparisonCard.tsx",
+    "hero_title": "HeroTitle.tsx",
+    "kpi_grid": "KPIGrid.tsx",
+    "progress_bar": "ProgressBar.tsx",
+    "screenshot_scene": "ScreenshotScene.tsx",
+    "terminal_scene": "TerminalScene.tsx",
+}
+
+
+def dispatched_cut_types() -> set[str]:
+    """Every `cut.type` the documentary composition renders."""
+    source = without_comments((SRC / "Explainer.tsx").read_text())
+    return set(re.findall(r'cut\.type === "([a-z_]+)"', source))
+
+
+def used_cut_types() -> dict[str, list[str]]:
+    """Every `cut.type` any project's edit has actually asked for.
+
+    ACROSS EVERY WORKTREE, because `projects/` is gitignored and each tree
+    holds different films: the runner has king-tut, this one does not, and a
+    check that read only its own directory would have passed on the very
+    film it exists to catch.
+    """
+    import json
+    import sys
+    repo = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(repo / "lib"))
+    from already_covered import worktree_roots
+
+    out: dict[str, list[str]] = {}
+    seen: set[str] = set()
+    for root in worktree_roots(repo):
+        for edit in sorted((root / "projects").glob("*/artifacts/edit_decisions.json")):
+            film = edit.parent.parent.name
+            if film in seen:
+                continue            # the same film, checked out twice
+            seen.add(film)
+            try:
+                cuts = json.loads(edit.read_text()).get("cuts") or []
+            except (ValueError, OSError):
+                continue
+            for cut in cuts:
+                kind = cut.get("type")
+                if kind:
+                    out.setdefault(kind, []).append(film)
+    return out
+
+
+def test_no_film_uses_an_unmarked_cut_type():
+    """The control for king-tut, at the only moment it is cheap.
+
+    king-tut's scene plan chose `text_card` and `stat_card` — seven cuts
+    each, and the first film ever to use either. Nothing noticed until the
+    delivery gates read the finished plate, two renders and most of a day
+    later. This reads the edit instead.
+    """
+    used = used_cut_types()
+    caught = {kind: (UNMARKED_CUT_TYPES[kind], sorted(set(films)))
+              for kind, films in used.items() if kind in UNMARKED_CUT_TYPES}
+    assert not caught, (
+        "these films use a cut type whose component paints words with no "
+        "TYPE_CLASS, so the words will be baked into the plate, grained, and "
+        "will drift with the picture: " + "; ".join(
+            f"{kind} -> {component} ({', '.join(films)})"
+            for kind, (component, films) in sorted(caught.items())))
+
+
+def test_the_unmarked_list_names_only_components_that_are_really_unmarked():
+    """A quarantine list that goes stale stops meaning anything.
+
+    If someone marks `HeroTitle` and leaves it listed here, the list claims a
+    gap that is closed and the next reader trusts it less.
+    """
+    scanned = {p.name for p in tsx_files()}
+    stale = sorted(name for name in UNMARKED_CUT_TYPES.values()
+                   if name in scanned)
+    assert not stale, (
+        "these are marked and scanned now; take them off UNMARKED_CUT_TYPES: "
+        + ", ".join(stale))
+
+
+def test_every_dispatched_cut_type_is_accounted_for():
+    """Either the component is scanned, or it is on the list with a name.
+
+    A cut type that is neither is the state king-tut shipped in: nobody had
+    decided anything about it, so nothing could fail.
+    """
+    scanned = {p.name for p in tsx_files()}
+    # Which file a cut type renders is read from the dispatch itself, so a
+    # new scene type cannot be added without this test seeing it.
+    source = without_comments((SRC / "Explainer.tsx").read_text())
+    unaccounted = []
+    for kind in sorted(dispatched_cut_types()):
+        if kind in UNMARKED_CUT_TYPES:
+            continue
+        # The first component tag after the branch opens. Not `[^;]*?`: the
+        # `outro_cta` branch builds its props in several statements before
+        # it returns, and a semicolon stopped the search short of the tag.
+        start = source.find(f'cut.type === "{kind}"')
+        window = source[start:start + 1600] if start >= 0 else ""
+        m = re.search(r"<([A-Z][\w]*)", window)
+        component = f"{m.group(1)}.tsx" if m else None
+        if component is None or component not in scanned:
+            unaccounted.append(f"{kind} -> {component or 'unknown component'}")
+    assert not unaccounted, (
+        "these cut types render through a component the type-class scan "
+        "never reads, and they are not on UNMARKED_CUT_TYPES either: "
+        + ", ".join(unaccounted))

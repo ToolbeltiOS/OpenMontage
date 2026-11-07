@@ -533,12 +533,23 @@ CONCURRENCY = max(1, (os.cpu_count() or 4) // 2)
 
 
 def render_plate(props: Path, dest: Path, count: int,
-                 cuts: list[dict[str, Any]] | None = None) -> None:
+                 cuts: list[dict[str, Any]] | None = None,
+                 frames: tuple[int, int] | None = None) -> None:
+    """The picture, with the type laid out but not inked.
+
+    `frames` renders a RANGE of the same composition instead of all of it,
+    for `scripts/repatch_plate.py`: a change that touches eighteen cuts out
+    of a hundred and sixty-one has no business re-rendering the other
+    hundred and forty-three. The composition is identical either way — a
+    cut's animation is driven by its `<Sequence>`, so frame 14,087 renders
+    the same whether it is reached from frame 0 or asked for directly.
+    """
     dest.parent.mkdir(parents=True, exist_ok=True)
+    first, last = frames if frames else (0, count - 1)
     run_watched(["npx", "remotion", "render", ENTRY, "Explainer", str(dest),
-                 f"--props={props}", f"--frames=0-{count - 1}", "--gl=angle",
+                 f"--props={props}", f"--frames={first}-{last}", "--gl=angle",
                  f"--concurrency={CONCURRENCY}"],
-                COMPOSER, "plate", count, cuts, output=dest)
+                COMPOSER, "plate", last - first + 1, cuts, output=dest)
 
 
 def extract_frames(picture: Path, frames_dir: Path, count: int) -> None:
@@ -638,9 +649,15 @@ def remux(dest: Path, mix: Path) -> None:
 
 
 def gates(dest: Path, picture: Path, cuts: list[dict[str, Any]],
-          expected_lufs: float | None, fps: int = FPS
+          expected_lufs: float | None, fps: int = FPS,
+          type_layer: Path | None = None
           ) -> tuple[list[str], dict[str, Any]]:
-    """Every blocking check, on the file that is about to be delivered."""
+    """Every blocking check, on the file that is about to be delivered.
+
+    `type_layer` is handed to type lock so that a reading is bound to our
+    type by where it is rather than by its text; see that gate's docstring
+    for the film it failed without it.
+    """
     sys.path.insert(0, str(ROOT / "lib"))
     from verify_delivery_audio import check as check_audio
     from verify_frame_motion import check as check_motion
@@ -653,7 +670,8 @@ def gates(dest: Path, picture: Path, cuts: list[dict[str, Any]],
         "frame motion": check_motion(str(dest), fps),
         "frame order": check_order(str(dest), cuts, str(picture), fps),
         "plate purity": plate_is_clean(str(picture), cuts),
-        "type lock": check_type(str(dest), cuts, fps),
+        "type lock": check_type(str(dest), cuts, fps,
+                                str(type_layer) if type_layer else None),
         "delivery audio": check_audio(str(dest), expected_lufs),
     }.items():
         results[name] = measured
@@ -717,8 +735,9 @@ def report(title: str, dest: Path, picture: Path, count: int, seconds: float,
         f"plate pass | {verdict('plate purity')} |",
         f"| type lock | {type_lock['scenes_sampled']} text-bearing scenes "
         f"sampled a second apart, {type_lock['scenes_with_movement']} with a "
-        f"word in a different place, worst {type_lock['worst_shift_px']}px | "
-        f"{verdict('type lock')} |",
+        f"word in a different place, worst {type_lock['worst_shift_px']}px, "
+        f"readings bound to our type by {type_lock.get('bound_by', 'cut text')}"
+        f" | {verdict('type lock')} |",
         f"| frame count | {results.get('frame count', {}).get('delivered')} "
         f"delivered of {results.get('frame count', {}).get('asked')} asked "
         f"({results.get('frame count', {}).get('seconds_missing')}s missing) | "

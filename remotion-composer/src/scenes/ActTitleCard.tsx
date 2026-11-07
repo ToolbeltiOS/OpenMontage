@@ -78,7 +78,17 @@ export const ActTitleCard: React.FC<ActTitleCardProps> = ({
               />
             </Graded>
           ) : (
-            <Plate />
+            /*
+             * `sweep`, for the same reason every other flat-plate scene has
+             * it. Without an image this Plate is two very soft radial
+             * gradients, and the 1.02 -> 1.07 breath above is a transform on
+             * something with almost no contrast in it: `Plate`'s own
+             * docstring measures that at about a hundredth of a grey level,
+             * under the floor the freeze check uses. Measured on king-tut,
+             * all four act cards held a frozen picture for 5.3 to 6.4
+             * seconds of a 6.0 to 6.6 second card.
+             */
+            <Plate sweep />
           )}
         </AbsoluteFill>
 

@@ -220,10 +220,31 @@ def _too_much_skipped(skipped: list[str], cuts: list[dict[str, Any]],
 
 
 def check(film: str, cuts: list[dict[str, Any]] | None = None,
-          fps: float = 30.0) -> tuple[list[str], dict[str, Any]]:
+          fps: float = 30.0, type_layer: str | None = None
+          ) -> tuple[list[str], dict[str, Any]]:
+    """`type_layer` is the type pass, and it is how a reading is bound to us.
+
+    WITHOUT IT a reading is matched to the cut BY ITS TEXT, which is a trap a
+    common word springs. King-tut's act 4 is titled "WHAT IS STILL ON THE
+    OTHER SIDE", so 'the' is a word the chrome puts on screen; two of its
+    cuts are photographs of the KV 62 visitor placard, which is a page of
+    printed English. Every 'the' on that placard was admitted as our type and
+    measured, and every one of them travelled, because the cut asks for a
+    2.6%/s push and the picture is obeying it. The film failed for doing what
+    its own edit told it to, while the chrome it was failed over was still to
+    half a pixel.
+
+    The type pass settles it without a heuristic: it is OUR TYPE AND NOTHING
+    ELSE, so a box found in it is ours by construction and a word printed in
+    a photograph cannot be. The shift is still measured in the delivered
+    file, inside those boxes, because that is the file that ships.
+    """
     import cv2
 
     cuts = cuts or []
+    type_pass = Path(type_layer) if type_layer else None
+    if type_pass is not None and not type_pass.exists():
+        type_pass = None
     problems: list[str] = []
     samples = []
     skipped: list[str] = []
@@ -242,17 +263,26 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
             if first_png is None:
                 skipped.append(cut.get("id"))
                 continue                   # the film ends before this cut does
-            boxes = words(first_png)
             # Our type, and only ours. The pictures in an archival film are
             # maps and documents covered in print, and on a cut authored to
             # push or pull that print MUST travel — c081's map moved 39px in
             # a second because the camera asked it to. Reading it as type
-            # that drifted fails a film for obeying its own edit. A word the
-            # cut put on screen, chrome included, is still measured, so the
-            # move this gate exists for is still caught.
-            ours = authored_words(cut, chrome=True)
-            boxes = [b for b in boxes
-                     if measurable(b["text"]) and _normalise(b["text"]) in ours]
+            # that drifted fails a film for obeying its own edit.
+            if type_pass is not None:
+                type_png = frame_at(str(type_pass), t0, tmpdir / f"t{n}.png")
+                if type_png is None:
+                    skipped.append(cut.get("id"))
+                    continue           # the type pass ends before this cut does
+                boxes = [b for b in words(type_png) if measurable(b["text"])]
+                bound = "type pass"
+            else:
+                # No type pass to ask. A word the cut put on screen, chrome
+                # included, is measured; see this function's docstring for
+                # what that costs on a film whose pictures carry print.
+                ours = authored_words(cut, chrome=True)
+                boxes = [b for b in words(first_png)
+                         if measurable(b["text"]) and _normalise(b["text"]) in ours]
+                bound = "cut text"
             if len(boxes) < MIN_WORDS:
                 continue                   # not a text-bearing scene
             second_png = frame_at(film, t0 + SAMPLE_GAP_S, tmpdir / f"b{n}.png")
@@ -290,6 +320,7 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
                 "worst_shift_px": round(worst, 3),
                 "median_shift_px": round(float(np.median(sizes)), 3) if sizes else 0.0,
                 "declared": bool(cut.get("text_move")),
+                "bound_by": bound,
             })
             if moved and not cut.get("text_move"):
                 shown = "; ".join(f"{b['text']!r} by {dx:+.2f},{dy:+.2f}px"
@@ -301,6 +332,7 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
 
     problems += _too_much_skipped(skipped, cuts, "type lock")
     measured = {
+        "bound_by": "type pass" if type_pass is not None else "cut text",
         "scenes_sampled": len(samples),
         "scenes_with_movement": sum(1 for s in samples if s["moved"]),
         "worst_shift_px": round(max((s["worst_shift_px"] for s in samples),
@@ -485,6 +517,10 @@ def main() -> int:
     ap.add_argument("--fps", type=float, default=30.0)
     ap.add_argument("--plate", action="store_true",
                     help="read the film as a PLATE pass: it must contain no type")
+    ap.add_argument("--type-layer",
+                    help="the type pass. Given one, a reading is bound to our "
+                         "type by WHERE IT IS rather than by matching its text "
+                         "against the cut, which a common word defeats")
     args = ap.parse_args()
     blob = json.loads(Path(args.cuts).read_text())
     cuts = blob["cuts"] if isinstance(blob, dict) else blob
@@ -495,7 +531,7 @@ def main() -> int:
             print("  -", p)
         print("PLATE PURITY:", "PASS" if not problems else "FAIL")
         return 0 if not problems else 1
-    problems, measured = check(args.film, cuts, args.fps)
+    problems, measured = check(args.film, cuts, args.fps, args.type_layer)
     print(f"{measured['scenes_sampled']} text-bearing scenes sampled a second "
           f"apart, {measured['scenes_with_movement']} with any word moving, "
           f"worst {measured['worst_shift_px']}px")

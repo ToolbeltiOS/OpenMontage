@@ -331,3 +331,141 @@ class TestWhatTypeLockMeasures:
         problems, measured = vtl.check(str(film), CUTS)
         assert problems, "type that drifts a pixel a second is no longer caught"
         assert measured["scenes_with_movement"] == 1
+
+
+# ---------------------------------------------------------------------------
+# Binding a reading to our type
+# ---------------------------------------------------------------------------
+
+#: The act title king-tut's act 4 actually carries. 'THE' is in it, and that
+#: single fact is what failed the film.
+ACT_TITLE = "WHAT IS STILL ON THE OTHER SIDE"
+
+#: Prose of the kind a photographed placard carries. Every line holds 'the',
+#: so every line collides with a word the chrome puts on screen.
+PLACARD = [
+    "It took Howard Carter and the",
+    "patron five years to find the",
+    "tomb, and then ten more for the",
+    "work of clearing the chambers",
+]
+
+
+def placard_frame(index: int, picture_dx: float = 0.0, chrome_dx: float = 0.0):
+    """A photographed page of print, under the film's own chrome.
+
+    The picture is a placard covered in English prose and the cut pushes on
+    it, so the print travels — which is the edit being obeyed. The chrome sits
+    on top and does not move, which is the type lock being obeyed.
+    """
+    from PIL import Image, ImageDraw, ImageFont
+
+    w, h = 960, 540
+    im = Image.new("L", (w, h), 20)
+    dr = ImageDraw.Draw(im)
+    try:
+        font = ImageFont.truetype(
+            "/System/Library/Fonts/Supplemental/Arial.ttf", 30)
+        small = ImageFont.truetype(
+            "/System/Library/Fonts/Supplemental/Arial.ttf", 22)
+    except OSError:                        # pragma: no cover - platform default
+        font = small = ImageFont.load_default()
+    # the placard: a bright page with dark print, travelling with the camera
+    px = int(round(picture_dx))
+    dr.rectangle([120 + px, 130, 860 + px, 430], fill=205)
+    for i, line in enumerate(PLACARD):
+        dr.text((145 + px, 150 + i * 66), line, fill=35, font=font)
+    # the chrome: our type, over everything, nailed down
+    cx = int(round(chrome_dx))
+    dr.text((40 + cx, 30), ACT_TITLE, fill=238, font=small)
+    return np.asarray(im)
+
+
+def type_only_frame(chrome_dx: float = 0.0):
+    """The type pass: our type over nothing. No placard, no picture at all."""
+    from PIL import Image, ImageDraw, ImageFont
+
+    im = Image.new("L", (960, 540), 0)
+    dr = ImageDraw.Draw(im)
+    try:
+        small = ImageFont.truetype(
+            "/System/Library/Fonts/Supplemental/Arial.ttf", 22)
+    except OSError:                        # pragma: no cover - platform default
+        small = ImageFont.load_default()
+    dr.text((40 + int(round(chrome_dx)), 30), ACT_TITLE, fill=238, font=small)
+    return np.asarray(im)
+
+
+#: The cut those frames are a render of: a sourced still with a push, whose
+#: only authored words are the chrome's.
+PLACARD_CUT = [{"id": "c131", "in_seconds": 0.0, "out_seconds": 4.0,
+                "actNumber": "04", "actTitle": ACT_TITLE,
+                "sceneIndex": "S 013", "treatment": "still",
+                "source": "/proxies/wm_271206889.jpg",
+                "sourceLine": "wikimedia · CC BY-SA 4.0",
+                "camera": {"move": "push", "speed_pct_per_second": 2.6}}]
+
+
+class TestAReadingIsBoundToTheTypeThatPaintedIt:
+    """king-tut, cuts c131 and c141.
+
+    The gate failed a film whose type was still to half a pixel. Its act is
+    titled "WHAT IS STILL ON THE OTHER SIDE", so 'the' is a word the chrome
+    puts on screen; two of its cuts are photographs of the KV 62 visitor
+    placard, which is a page of printed English. Matching readings to the cut
+    BY TEXT admitted every 'the' on that placard as our type, and all of them
+    travelled, because the cut asks for a 2.6%/s push.
+
+    Measured on the delivered film: the seven chrome words moved 0.00 to
+    0.52px; the fifteen placard 'the's moved 1.0 to 15.1px. The gate reported
+    the placard.
+    """
+
+    def test_the_placard_fails_the_film_when_there_is_no_type_pass(self, tmp_path):
+        """The control. This is king-tut's verdict, reproduced."""
+        film = render(tmp_path / "placard.mp4",
+                      [placard_frame(i, picture_dx=i * 6.0 / 30) for i in range(N)])
+        problems, measured = vtl.check(str(film), PLACARD_CUT)
+        assert problems, "the false positive did not reproduce"
+        assert "move within a second" in problems[0]
+        assert measured["bound_by"] == "cut text"
+
+    def test_the_type_pass_clears_it(self, tmp_path):
+        """Same film, same cut, same moving print — and the type pass to ask."""
+        film = render(tmp_path / "placard2.mp4",
+                      [placard_frame(i, picture_dx=i * 6.0 / 30) for i in range(N)])
+        type_pass = render(tmp_path / "type2.mov",
+                           [type_only_frame() for _ in range(N)])
+        problems, measured = vtl.check(str(film), PLACARD_CUT,
+                                       type_layer=str(type_pass))
+        assert problems == [], problems
+        assert measured["bound_by"] == "type pass"
+        assert measured["scenes_sampled"] == 1
+        assert measured["worst_shift_px"] < vtl.SHIFT_TOLERANCE_PX
+
+    def test_type_that_really_drifts_is_still_caught_through_the_type_pass(
+            self, tmp_path):
+        """The other control, and the one that matters.
+
+        A binding that cannot fail anything is not a binding. Here the CHROME
+        moves — our type, the thing the gate exists for — while the placard
+        holds still, which is the exact inverse of the cut above.
+        """
+        film = render(tmp_path / "shaken.mp4",
+                      [placard_frame(i, chrome_dx=i * 4.0 / 30) for i in range(N)])
+        type_pass = render(tmp_path / "typeshaken.mov",
+                           [type_only_frame(chrome_dx=i * 4.0 / 30) for i in range(N)])
+        problems, measured = vtl.check(str(film), PLACARD_CUT,
+                                       type_layer=str(type_pass))
+        assert problems, "drifting chrome went unreported through the type pass"
+        assert measured["worst_shift_px"] > vtl.SHIFT_TOLERANCE_PX
+
+    def test_a_type_pass_that_is_not_there_falls_back_rather_than_crashing(
+            self, tmp_path):
+        """The CLI and the older call sites pass nothing, and must still work."""
+        film = render(tmp_path / "fallback.mp4",
+                      [placard_frame(i) for i in range(N)])
+        problems, measured = vtl.check(str(film), PLACARD_CUT,
+                                       type_layer=str(tmp_path / "missing.mov"))
+        assert measured["bound_by"] == "cut text"
+        assert isinstance(problems, list)
