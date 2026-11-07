@@ -403,15 +403,24 @@ def main() -> int:
     }
     (artifacts / "publish.json").write_text(json.dumps(record, indent=1) + "\n")
 
-    ledger_path = ROOT / "artifacts" / "published.json"
-    ledger = json.loads(ledger_path.read_text()) if ledger_path.exists() else {"films": []}
-    ledger["films"].append({
+    # THE LEDGER IS NOT IN THE REPOSITORY. It was `artifacts/published.json`,
+    # tracked in git, so it forked per branch: Noah was published from the
+    # `asset-library` worktree on 2026-11-02 and appended to that branch's
+    # copy, and the runner — pinned to `automation` — picked Noah again four
+    # days later because its own copy ended at Easter Island.
+    #
+    # One ledger, outside every worktree, written under a lock and replaced
+    # atomically, idempotent on video_id so a retried publish cannot make the
+    # channel's own history disagree about how many films exist.
+    import shared_state
+
+    ledger_path = shared_state.append_film({
         "project": args.project, "video_id": video_id, "title": listing["title"],
         "url": url,
         "published": (now if publish_at is None else publish_at).date().isoformat(),
         "entities": listing.get("entities", []),
     })
-    ledger_path.write_text(json.dumps(ledger, indent=1) + "\n")
+    print(f"ledger: {ledger_path}")
 
     import telegram
     telegram.send(

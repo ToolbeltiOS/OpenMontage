@@ -23,8 +23,14 @@ ROOT = Path(os.environ.get("REPO", ".")).resolve()
 sys.path.insert(0, str(ROOT / "lib"))
 import telegram
 
-ledger = ROOT / "artifacts" / "published.json"
-films = json.loads(ledger.read_text()).get("films", []) if ledger.exists() else []
+# The shared ledger, outside every worktree — see lib/shared_state.py. The
+# tripwire reads it with allow_missing because a missing ledger must PAGE,
+# which is what an empty films list does three lines down, rather than raise
+# inside a Sunday-noon cron nobody is watching.
+import shared_state
+
+ledger = shared_state.published_path()
+films = shared_state.published_films(allow_missing=True)
 cutoff = (datetime.now(timezone.utc) - timedelta(days=3)).date()
 
 recent = [f for f in films
@@ -41,7 +47,7 @@ if logs:
     tail = "\n".join(logs[-1].read_text().splitlines()[-6:])
 telegram.send(
     "<b>Tripwire: no film this week</b>\n"
-    f"Nothing in published.json since {cutoff}. "
+    f"Nothing in {ledger} since {cutoff}. "
     f"The Friday run either never started or died without saying so.\n\n"
     + (f"<pre>{tail[:900]}</pre>" if tail else "No run log at all."))
 print("TRIPWIRE: nothing published")
