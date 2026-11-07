@@ -11,6 +11,8 @@ import plistlib
 import re
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 RUNNER = ROOT / "scripts" / "run_weekly.sh"
 PLIST = ROOT / "launchd" / "com.wak3up.docs.weekly.plist"
@@ -22,6 +24,44 @@ class TestTheAgentCanActuallyFire:
         d = plistlib.loads(PLIST.read_bytes())
         program = Path(d["ProgramArguments"][-1])
         assert program.exists(), f"launchd points at {program}, which is not there"
+
+    @pytest.mark.parametrize("plist", sorted(
+        (ROOT / "launchd").glob("com.wak3up.docs.*.plist")),
+        ids=lambda p: p.stem)
+    def test_EVERY_agent_runs_something_that_exists(self, plist):
+        """This test existed for the weekly agent only, and the other two
+        were broken in exactly the way it was written to catch.
+
+        Measured 2026-11-06: the metrics agent pointed at
+        `OpenMontage/9:scripts/pull_metrics.py` and the tripwire at
+        `OpenMontage/12:scripts/weekly_tripwire.sh` — the same stray
+        "<line number>:" paste as the original "22:" defect. `launchctl
+        list` had them at exit 2 and exit 127. The tripwire is the thing
+        that pages when no film gets made, and it had never once run.
+
+        Parametrised over the directory rather than three named constants,
+        so a fourth agent is covered the day it is added.
+        """
+        d = plistlib.loads(plist.read_bytes())
+        program = Path(d["ProgramArguments"][-1])
+        assert program.exists(), (
+            f"{plist.name} points at {program}, which is not there — the "
+            f"agent will exit 127 every time it fires and say nothing")
+
+    @pytest.mark.parametrize("plist", sorted(
+        (ROOT / "launchd").glob("com.wak3up.docs.*.plist")),
+        ids=lambda p: p.stem)
+    def test_every_agent_names_the_shared_state_directory(self, plist):
+        """All three touch the published ledger — the picker reads it, the
+        publisher appends to it, the metrics puller walks it and the tripwire
+        asks whether it grew this week. It lives outside every worktree
+        precisely because a per-branch copy is what made the runner re-pick
+        Noah, so the agents say where it is rather than inheriting a guess.
+        """
+        d = plistlib.loads(plist.read_bytes())
+        state = d["EnvironmentVariables"].get("WAK3UP_DOCS_STATE")
+        assert state == "/Users/mac/Developer/wak3up-docs/state", (
+            f"{plist.name} does not name WAK3UP_DOCS_STATE (got {state!r})")
 
     def test_it_fires_friday_at_nineteen_hundred(self):
         """Weekday 5 is Friday. It said Weekday 0 — Sunday — under a comment
