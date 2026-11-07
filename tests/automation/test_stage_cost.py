@@ -31,6 +31,7 @@ real failure actually has.
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 from datetime import datetime, timedelta
@@ -267,3 +268,131 @@ class TestAHealthyStageStillReadsNormally:
         assert row["cache_read_tokens"] == 500000
         assert row["turns"] == 12
         assert "ERROR" not in su.line(row)
+
+
+class TestAWeeklyCapIsNotSleptOn:
+    """Owner's ruling, 2026-11-07.
+
+    Measured before the fix: EVERY weekly-shaped message fell through to the
+    one-hour default, because `RESET_RE` wanted a digit straight after
+    "resets" and got a day name — so even "resets Monday 4:00am
+    (America/Toronto)", which carries a perfectly good clock, parsed as "no
+    reset time in the message". With MAX_RESUMES at 6 that turned a weekly
+    exhaustion into six pointless hourly retries and then "giving up": the
+    worst of the three available behaviours, and on a subscription with no
+    API key there is nothing to fall back to.
+
+    So a weekly cap is its own kind, it fails immediately, and the runner
+    Telegrams the reset time and stops.
+    """
+
+    @pytest.mark.parametrize("message", [
+        "You've hit your weekly limit · resets Monday",
+        "You've hit your weekly limit · resets Monday 4:00am (America/Toronto)",
+        "You've hit your weekly limit · resets Nov 11 at 2am",
+        "Weekly limit reached",
+        "You've hit your 7-day limit",
+        "You have reached the limit for this week",
+    ])
+    def test_a_weekly_cap_is_its_own_kind(self, message, tmp_path):
+        path = tmp_path / "r.json"
+        path.write_text(json.dumps({"is_error": True, "result": message}))
+        assert ul.classify([path])[0] == "weekly_limit", message
+
+    def test_a_five_hour_cap_is_still_slept_on(self, tmp_path):
+        """The discrimination is the whole point."""
+        path = tmp_path / "r.json"
+        path.write_text(json.dumps(THE_RENDER_THAT_COST_212))
+        assert ul.classify([path])[0] == "usage_limit"
+
+    def test_a_weekly_cap_wins_when_both_sentences_appear(self, tmp_path):
+        """One message can carry both; the weekly one is why it cannot go on."""
+        path = tmp_path / "r.json"
+        path.write_text(json.dumps({"is_error": True, "result":
+            "You've hit your 5-hour limit · resets 2:20am. You've also hit "
+            "your weekly limit · resets Monday"}))
+        assert ul.classify([path])[0] == "weekly_limit"
+
+    def test_it_offers_no_seconds_to_sleep_for(self, tmp_path):
+        """A caller that finds SECONDS= will sleep. There must not be one."""
+        path = tmp_path / "r.json"
+        path.write_text(json.dumps({"is_error": True, "result":
+            "You've hit your weekly limit · resets Monday 4:00am"}))
+        done = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "usage_limit.py"),
+             "--classify", str(path)], capture_output=True, text=True)
+        assert "KIND=weekly_limit" in done.stdout
+        assert "SECONDS=" not in done.stdout, done.stdout
+        assert "RESETS=resets Monday 4:00am" in done.stdout
+
+    def test_the_plain_form_says_do_not_sleep(self, tmp_path):
+        """exit 1 — the same answer a fault gets, because both mean stop."""
+        path = tmp_path / "r.json"
+        path.write_text(json.dumps({"is_error": True, "result":
+            "You've hit your weekly limit · resets Monday"}))
+        done = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "usage_limit.py"),
+             str(path)], capture_output=True, text=True)
+        assert done.returncode == 1
+
+    def test_the_runner_fails_without_sleeping(self):
+        runner = (ROOT / "scripts" / "run_weekly.sh").read_text()
+        block = runner[runner.index('if [[ "$kind" == "weekly_limit" ]]'):]
+        block = block[:block.index("\n    fi")]
+        # A `sleep` COMMAND, not the word: the branch's own notification
+        # says "not sleeping", and matching the substring made the prose
+        # fail the test it was describing.
+        invocations = [line for line in block.splitlines()
+                       if re.match(r"\s*sleep\b", line)]
+        assert not invocations, (
+            "a weekly cap must not be slept on: " + repr(invocations))
+        assert "RESETS=" in block, "the notification must name the reset time"
+        assert "kickstart" in block, (
+            "and must say how to pick the film back up — every finished "
+            "stage is checkpointed, so nothing is lost")
+
+
+class TestADayNameNoLongerBlocksTheClock:
+    """"resets Monday 4:00am" parsed as no time at all."""
+
+    FROZEN = datetime(2026, 11, 7, 23, 33, 55, tzinfo=TORONTO)
+
+    @pytest.mark.parametrize("message", [
+        "resets Monday 4:00am (America/Toronto)",
+        "resets on Wednesday at 09:30 (America/Toronto)",
+        "resets Nov 11 at 2am",
+        "resets 11 Nov at 2am",
+        "resets tomorrow 1am",
+        "resets 2026-11-11 at 3pm",
+        "resets 11/11 at 3pm",
+        "resets at 3:30pm",
+        "resets 09:00",
+    ])
+    def test_the_clock_is_found(self, message):
+        seconds, source = ul.seconds_until_reset(message, now=self.FROZEN)
+        assert source != "no reset time in the message", message
+        assert 0 < seconds <= ul.MAX_WAIT_SECONDS
+
+    @pytest.mark.parametrize("message", [
+        "resets Monday",
+        "resets soon",
+        "resets when your plan renews",
+    ])
+    def test_a_message_with_no_clock_still_falls_back(self, message):
+        seconds, source = ul.seconds_until_reset(message, now=self.FROZEN)
+        assert source == "no reset time in the message"
+        assert seconds == ul.DEFAULT_WAIT_SECONDS
+
+    def test_the_day_is_reported_but_not_used_in_the_arithmetic(self):
+        """Documented, because it would otherwise be a silent surprise.
+
+        A day that is genuinely days away is a WEEKLY cap, which is never
+        slept on, and MAX_WAIT_SECONDS bounds the error at six hours either
+        way.
+        """
+        seconds, _ = ul.seconds_until_reset(
+            "resets Monday 4:00am (America/Toronto)", now=self.FROZEN)
+        # Saturday 23:33 -> the NEXT 4:00am, which is Sunday's.
+        assert seconds < 6 * 3600
+        assert ul.reset_phrase("resets Monday 4:00am (America/Toronto)") == \
+            "resets Monday 4:00am (America/Toronto)"

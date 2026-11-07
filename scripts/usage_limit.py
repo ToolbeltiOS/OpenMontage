@@ -41,8 +41,9 @@ became a dead week.
       exit 1  -> not a usage limit; the caller should fail the stage
 
     scripts/usage_limit.py --classify <file> [<file> ...]
-      always exit 0, prints KIND=ok|usage_limit|max_turns|error
-      plus SECONDS=/RESETS= when the kind is usage_limit
+      always exit 0, prints
+      KIND=ok|usage_limit|weekly_limit|max_turns|error
+      plus SECONDS= and RESETS= for usage_limit, RESETS= for weekly_limit
 """
 from __future__ import annotations
 
@@ -78,11 +79,41 @@ LIMIT_PATTERNS = (
     r"\b\d+\s*-?\s*hours?\s+limit\b",
 )
 
-#: "resets 12am (America/Toronto)", "resets at 3:30pm", "resets 09:00"
+#: A weekly cap is NOT slept on. Measured 2026-11-07: every weekly-shaped
+#: message fell through to the one-hour default, so a weekly exhaustion
+#: became six pointless hourly retries and then "giving up" — the worst of
+#: the three options. Owner's ruling: fail immediately, Telegram the reset
+#: time, stop. A Friday run blocked until Monday cannot make Monday's film
+#: anyway, and there is no API key to fall back to on a subscription.
+WEEKLY_PATTERNS = (
+    r"\bweekly limit\b",
+    r"\b7[- ]day limit\b",
+    r"\bweekly[- ]limit[- ](?:reached|exceeded)\b",
+    r"\blimit for (?:the|this) week\b",
+)
+
+#: A day name or a date sitting between "resets" and the clock time.
+#: "resets Monday 4:00am (America/Toronto)" parsed as NO TIME AT ALL,
+#: because the hour group expected a digit straight after "resets" and got
+#: "Monday" — so even a weekly message that carried a usable clock lost it.
+_DAY = r"(?:mon|tue|tues|wed|wednes|thu|thur|thurs|fri|sat|satur|sun)(?:day)?"
+_MONTH = (r"(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)"
+          r"(?:uary|ruary|ch|il|e|y|ust|ember|ober|tember|ober)?")
+_WHEN = (rf"(?:(?:on\s+)?(?:{_DAY}|{_MONTH}\s+\d{{1,2}}|\d{{1,2}}\s+{_MONTH}"
+         rf"|\d{{4}}-\d{{2}}-\d{{2}}|\d{{1,2}}/\d{{1,2}}|tomorrow|today)"
+         rf"\s*,?\s*)?")
+
+#: "resets 12am (America/Toronto)", "resets at 3:30pm", "resets 09:00",
+#: "resets Monday 4:00am (America/Toronto)", "resets on Nov 11 at 2am"
 RESET_RE = re.compile(
-    r"resets?\s+(?:at\s+)?(\d{1,2})(?::(\d{2}))?\s*([ap]m)?"
-    r"(?:\s*\(([A-Za-z_]+/[A-Za-z_]+)\))?",
+    rf"resets?\s+(?:at\s+)?{_WHEN}(?:at\s+)?(\d{{1,2}})(?::(\d{{2}}))?"
+    r"\s*([ap]m)?(?:\s*\(([A-Za-z_]+/[A-Za-z_]+)\))?",
     re.I)
+
+#: Whatever the message says about when it comes back, verbatim, for the
+#: notification. Stops at a separator so a one-line message does not drag
+#: its whole tail into a Telegram.
+RESET_PHRASE_RE = re.compile(r"resets?\s+([^·|\n]{1,60})", re.I)
 
 #: With no time in the message, wait this long. Long enough that a retry is
 #: not a hot loop, short enough that an hour-long window is not wasted.
@@ -165,6 +196,17 @@ def is_usage_limit(text: str) -> bool:
     return any(re.search(p, text, re.I) for p in LIMIT_PATTERNS)
 
 
+def is_weekly_limit(text: str) -> bool:
+    """A cap measured in days, not hours. Never slept on."""
+    return any(re.search(p, text, re.I) for p in WEEKLY_PATTERNS)
+
+
+def reset_phrase(text: str) -> str:
+    """What the message says about coming back, for a human to read."""
+    found = RESET_PHRASE_RE.search(text or "")
+    return f"resets {found.group(1).strip()}" if found else ""
+
+
 def seconds_until_reset(text: str, now: datetime | None = None) -> tuple[int, str]:
     """How long to wait, and the human text it came from.
 
@@ -172,6 +214,16 @@ def seconds_until_reset(text: str, now: datetime | None = None) -> tuple[int, st
     the one case worth being careful about: at 23:30 a message saying
     "resets 12am" means thirty minutes away, not twenty-three and a half
     hours ago.
+
+    THE DAY IS SKIPPED, NOT HONOURED. "resets Monday 4:00am" on a Saturday
+    returns the next 4:00am, not Monday's — the day name is matched so that
+    it stops blocking the clock, and it is reported verbatim by
+    `reset_phrase` for the notification, but no arithmetic is done with it.
+    Two things make that safe rather than sloppy: MAX_WAIT_SECONDS bounds
+    any error at six hours, and a cap that is genuinely days away is a
+    WEEKLY cap, which `classify` returns as `weekly_limit` and which is
+    never slept on at all. If a five-hour window ever starts naming a day
+    that is not today or tomorrow, this is the line to fix.
     """
     match = RESET_RE.search(text)
     if not match:
@@ -219,6 +271,10 @@ def classify(paths: list[Path]) -> tuple[str, str]:
     blobs = [blob_of(p) for p in paths]
     text = "\n".join(text_of(p) for p in paths)
 
+    # A weekly cap outranks the five-hour one: both sentences can appear in
+    # one message, and the weekly one is the reason the run cannot continue.
+    if is_weekly_limit(text):
+        return "weekly_limit", text
     if any(structured_limit(b) for b in blobs) or is_usage_limit(text):
         return "usage_limit", text
     if any(structured_max_turns(b) for b in blobs):
@@ -246,8 +302,14 @@ def main() -> int:
         if kind == "usage_limit":
             print(f"SECONDS={seconds}")
             print(f"RESETS={source}")
+        elif kind == "weekly_limit":
+            # No SECONDS on purpose: there is nothing for the caller to
+            # sleep for. The phrase is for the notification.
+            print(f"RESETS={reset_phrase(text) or 'no reset time in the message'}")
         return 0
 
+    # The plain form answers one question — "sleep on this?" — so a weekly
+    # cap answers no, the same as a fault.
     if kind != "usage_limit":
         return 1
     print(f"SECONDS={seconds}")

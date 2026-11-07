@@ -375,6 +375,28 @@ claude_stage() {
                   "$base.json" "$base.err" 2>/dev/null || echo KIND=error)"
     kind="$(printf '%s' "$classified" | sed -n 's/^KIND=//p')"
 
+    # A WEEKLY CAP IS NOT SLEPT ON. Owner's ruling, 2026-11-07: a Friday run
+    # blocked until Monday cannot make Monday's film anyway, and six hourly
+    # retries — which is what the old one-hour fallback produced for every
+    # weekly-shaped message — is the worst of the three options. There is no
+    # API key to fall back to on a subscription, so the honest move is to
+    # say when it comes back and stop.
+    if [[ "$kind" == "weekly_limit" ]]; then
+      resets="$(printf '%s' "$classified" | sed -n 's/^RESETS=//p')"
+      say "$name: WEEKLY usage limit ($resets) — failing now, not sleeping"
+      notify "<b>weekly usage limit — the run has stopped</b>
+stage: $name
+$resets
+
+Not slept on: a weekly cap is days, not hours, and a run that waits that
+long cannot make the week's film anyway. Nothing is lost — every finished
+stage is checkpointed, so re-firing after the reset picks this film up where
+it stopped:
+
+<code>launchctl kickstart -k gui/$(id -u)/com.wak3up.docs.weekly</code>"
+      return 10
+    fi
+
     if [[ "$kind" == "max_turns" ]]; then
       say "$name: hit the ${cap}-turn cap — FAILING, not resuming"
       notify "<b>stage hit its turn cap</b>
