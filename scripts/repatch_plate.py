@@ -79,7 +79,8 @@ def ranges_for(cuts: list[dict[str, Any]], wanted: set[str], by: str,
     return merged
 
 
-def stills_from(segment: Path, frames_dir: Path, first: int) -> None:
+def stills_from(segment: Path, frames_dir: Path, first: int,
+                skip: int = 0) -> None:
     """Write a rendered range over the stills it replaces.
 
     `-start_number` is the still's own number, and the stills are one-based:
@@ -87,8 +88,15 @@ def stills_from(segment: Path, frames_dir: Path, first: int) -> None:
     the wrong seconds of the film, which no gate would catch — frame order
     correlates the delivered file against the plate, and both would have
     moved together.
+
+    `skip` drops the lead-in frames `render_plate` renders in front of the
+    range so that the first frame the caller asked for is not the first frame
+    the renderer painted. They are dropped HERE rather than trimmed from the
+    segment, so the frame that lands on `first` is the frame the renderer
+    produced for `first` and nothing has been re-encoded in between.
     """
-    run(["ffmpeg", "-v", "error", "-y", "-i", str(segment),
+    select = ["-vf", rf"select='gte(n\,{skip})'", "-vsync", "0"] if skip else []
+    run(["ffmpeg", "-v", "error", "-y", "-i", str(segment), *select,
          "-q:v", "2", "-start_number", str(first + 1),
          str(frames_dir / "f_%05d.jpg")])
 
@@ -102,20 +110,60 @@ def stills_from(segment: Path, frames_dir: Path, first: int) -> None:
 #: so they are not compared to anything.
 SEAM_WINDOW = PAD
 
-#: A seam is aligned when matching at no shift beats matching at one frame
-#: either way by this factor.
+#: A frame of padding is wrong when its difference from the frame it
+#: overwrote stands this far above the rest of its own window.
 #:
-#: Relative, not absolute, because the absolute number depends on the picture:
-#: a seam in a slow dissolve differs from one in a hard cut. Measured on a
-#: deliberately mis-spliced range, shifting by one frame reads 20 to 400 times
-#: the aligned difference; on an aligned one the ratio is under 0.05 in the
-#: other direction. There is no overlap anywhere near 4.
-SEAM_MARGIN = 4.0
+#: MEASURED, and the first version of this was measured on the wrong thing.
+#: It compared the window as a whole at shifts of -1, 0 and +1 and demanded
+#: that no shift win by 4x, which is what synthetic noise does. Real film at
+#: 30fps does not: a documentary cut drifting at 1.2%/s barely changes
+#: between consecutive frames, so a one-frame shift barely changes the
+#: difference either. On king-tut's own seams that rule fired on 10 of 36,
+#: nine of them correct — and the one real defect it found, it found for the
+#: wrong reason.
+#:
+#: Per frame against its own window is far sharper, because the thing being
+#: looked for is one frame that does not belong:
+#:
+#:     head padding of 1548-1747, per-frame difference from the plate
+#:         frame 1548   6.2876      <- the defect
+#:         frame 1549   0.1552
+#:         frame 1550   0.0848
+#:         frames 1551-1557  0.0776 down to 0.0000
+#:
+#:     tail padding of the same range, all correct
+#:         frames 1738-1747  0.0004, 0.0316, 0.1676 ... up to 0.4744
+#:
+#: A bad frame is 200x its window's median; the worst correct frame in any
+#: window on this film is 1.7x. Six is nowhere near either.
+SEAM_OUTLIER = 6.0
 
-#: The frame-order gate's own floor, applied to the seam window: the new
-#: plate's motion profile against the old one's, where the two are supposed
-#: to be the same film.
-MIN_SEAM_CORRELATION = 0.95
+#: The smallest per-frame difference worth calling a defect.
+#:
+#: Without it the outlier rule has no floor: a window whose frames all agree
+#: to 0.0001 would fail on one frame at 0.002, which is two encodes being
+#: two encodes. The worst CORRECT per-frame difference measured anywhere on
+#: this film's 36 seams is 0.78 and the defect read 6.29.
+SEAM_FLOOR = 1.0
+
+#: And a ceiling on the window's MEDIAN, because a window where every frame
+#: is equally wrong has no outlier in it.
+#:
+#: The worst correct per-frame difference measured anywhere on this film's
+#: 36 seams is 0.78, on a bright detailed photograph where the two encodes
+#: disagree most. The defect read 6.29. 2.0 sits between them with more than
+#: twice the headroom either way.
+SEAM_CEILING = 2.0
+
+#: The shift test is kept, because an offset that moved a WHOLE window would
+#: pass both rules above: every frame would be wrong by the same amount, so
+#: there would be no outlier, and on slow content no frame need exceed the
+#: ceiling. What it asserts is only that the best match is at no shift —
+#: not by how much, which is the part that was not measurable.
+#:
+#: Measured over all 36 seams of this patch: 35 put their minimum at 0, and
+#: the one that did not was the defect above.
+SEAM_SHIFTS = (-2, -1, 0, 1, 2)
 
 
 def _stills(frames_dir: Path, first: int, last: int):
@@ -133,8 +181,8 @@ def _stills(frames_dir: Path, first: int, last: int):
     return np.stack(out)
 
 
-def seam_alignment(before, after) -> dict[str, float]:
-    """Does the patched run sit where the run it replaced sat?
+def seam_alignment(before, after) -> dict[str, Any]:
+    """Does the patched run sit where the run it replaced sat, frame for frame?
 
     A ONE-FRAME OFFSET IS THE DEFECT A SPLICE CAN INTRODUCE AND A RE-RENDER
     CANNOT. `-start_number` is off by one, or a range is rendered from a-1,
@@ -142,10 +190,15 @@ def seam_alignment(before, after) -> dict[str, float]:
     passes, because the delivered film and the plate were patched from the
     same wrong place and agree with each other perfectly.
 
-    So the patched frames are compared with the ORIGINAL frames they
-    overwrote, at three shifts. These are padding frames — a neighbouring
-    cut, untouched by the change — so at the right shift they are the same
-    picture and the difference collapses.
+    A SINGLE WRONG FRAME IS THE OTHER ONE, and it is the one that actually
+    happened — the first frame a range render paints, before its backdrop
+    image has loaded. Nothing downstream would report it either: one frame
+    in 36,803, inside a fade, is not a freeze and not a dropped frame.
+
+    So the padding is compared with the frames it overwrote twice over: each
+    frame against its own window, which finds the one that does not belong,
+    and the window against itself at five shifts, which finds a run that
+    moved.
     """
     import numpy as np
 
@@ -160,19 +213,15 @@ def seam_alignment(before, after) -> dict[str, float]:
             return float("inf")
         return float(np.abs(a - b).mean())
 
-    aligned = mad(0)
-    off = min(mad(-1), mad(1))
-    # The frame-order gate's measure, on the window where the two renders are
-    # supposed to be the same film.
-    corr = 1.0
-    if len(before) > 2:
-        d_before = np.abs(np.diff(before, axis=0)).mean(axis=(1, 2))
-        d_after = np.abs(np.diff(after, axis=0)).mean(axis=(1, 2))
-        if d_before.std() > 1e-6 and d_after.std() > 1e-6:
-            corr = float(np.corrcoef(d_before, d_after)[0, 1])
-    return {"aligned": aligned, "shifted": off,
-            "margin": float("inf") if aligned <= 0 else off / aligned,
-            "correlation": corr}
+    per_frame = np.abs(before - after).mean(axis=(1, 2))
+    median = float(np.median(per_frame))
+    worst = int(np.argmax(per_frame))
+    curve = {s: mad(s) for s in SEAM_SHIFTS}
+    best = min(curve, key=lambda k: curve[k])
+    return {"per_frame": [round(float(v), 4) for v in per_frame],
+            "median": median, "worst": float(per_frame[worst]),
+            "worst_at": worst, "best_shift": best,
+            "curve": {k: round(v, 4) for k, v in curve.items()}}
 
 
 def check_seams(seams: list[dict[str, Any]]) -> list[str]:
@@ -180,21 +229,31 @@ def check_seams(seams: list[dict[str, Any]]) -> list[str]:
     problems = []
     for seam in seams:
         m = seam["measured"]
+        where = f"{seam['range']} {seam['edge']}"
         print(f"   seam {seam['edge']:>4} of {seam['range']}: "
-              f"aligned {m['aligned']:.4f}, one frame off {m['shifted']:.4f} "
-              f"({m['margin']:.1f}x), motion correlation {m['correlation']:.4f}")
-        if m["margin"] < SEAM_MARGIN:
+              f"worst frame {m['worst']:.4f} (median {m['median']:.4f}), "
+              f"best shift {m['best_shift']:+d}")
+        if m["median"] > SEAM_CEILING:
             problems.append(
-                f"{seam['range']} {seam['edge']}: the patched frames match "
-                f"the frames they replaced {m['aligned']:.4f} at no shift and "
-                f"{m['shifted']:.4f} one frame either way — only "
-                f"{m['margin']:.1f}x better, under {SEAM_MARGIN}x. A splice "
-                f"that landed one frame out looks exactly like this.")
-        if m["correlation"] < MIN_SEAM_CORRELATION:
+                f"{where}: every frame of the padding differs from the frame "
+                f"it overwrote, by {m['median']:.4f} at the median against a "
+                f"ceiling of {SEAM_CEILING}. The padding is a cut this change "
+                f"does not touch, so the whole window has to come back the "
+                f"same.")
+        allowed = max(SEAM_FLOOR, SEAM_OUTLIER * m["median"])
+        if m["worst"] > allowed:
             problems.append(
-                f"{seam['range']} {seam['edge']}: the motion profile across "
-                f"the seam correlates {m['correlation']:.4f} with the plate it "
-                f"replaced (floor {MIN_SEAM_CORRELATION})")
+                f"{where}: frame {m['worst_at']} of the padding differs from "
+                f"the frame it overwrote by {m['worst']:.4f}, against a "
+                f"median of {m['median']:.4f} across the window and a ceiling "
+                f"of {allowed:.4f}. The padding is a cut this change does not "
+                f"touch, so it has to come back the same.")
+        if m["best_shift"] != 0:
+            problems.append(
+                f"{where}: the patched frames match the frames they replaced "
+                f"best at a shift of {m['best_shift']:+d}, not at 0 "
+                f"({m['curve']}). A splice that landed in the wrong place "
+                f"looks exactly like this.")
     return problems
 
 
@@ -277,8 +336,8 @@ def main() -> int:
         before_head = _stills(frames_dir, a, a + head - 1) if head > 1 else None
         before_tail = _stills(frames_dir, b - head + 1, b) if head > 1 else None
 
-        render_plate(props, segment, count, cuts, frames=(a, b))
-        stills_from(segment, frames_dir, a)
+        rendered_from = render_plate(props, segment, count, cuts, frames=(a, b))
+        stills_from(segment, frames_dir, a, skip=a - rendered_from)
         segment.unlink()
 
         if before_head is not None:
@@ -309,10 +368,9 @@ def main() -> int:
     if not ok:
         raise SystemExit(f"the rebuilt plate does not verify: {why}")
     print(f"   plate: {why}")
-    print(f"   {len(seams)} seams aligned, "
-          f"worst margin {min(s['measured']['margin'] for s in seams):.1f}x, "
-          f"lowest correlation "
-          f"{min(s['measured']['correlation'] for s in seams):.4f}")
+    print(f"   {len(seams)} seams aligned, worst frame "
+          f"{max(s['measured']['worst'] for s in seams):.4f}, "
+          f"every one of them matching best at no shift")
     return 0
 
 

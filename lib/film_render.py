@@ -532,9 +532,21 @@ def props_for_layer(props_path: Path, mode: str, work: Path,
 CONCURRENCY = max(1, (os.cpu_count() or 4) // 2)
 
 
+#: Frames rendered in front of a requested range and thrown away.
+#:
+#: Two, where one was measured — see `render_plate`. The frame after the bad
+#: one already matched the full render to 0.1552 and the one after that to
+#: 0.0848, so the warm-up is over within a frame; the second is there because
+#: the cause is inferred rather than proven, and a frame costs a quarter of a
+#: second. `repatch_plate.py` checks every frame it writes against the frame
+#: it overwrote, so if this is ever not enough, the splice fails rather than
+#: ships.
+LEAD_IN = 2
+
+
 def render_plate(props: Path, dest: Path, count: int,
                  cuts: list[dict[str, Any]] | None = None,
-                 frames: tuple[int, int] | None = None) -> None:
+                 frames: tuple[int, int] | None = None) -> int:
     """The picture, with the type laid out but not inked.
 
     `frames` renders a RANGE of the same composition instead of all of it,
@@ -543,13 +555,36 @@ def render_plate(props: Path, dest: Path, count: int,
     hundred and forty-three. The composition is identical either way — a
     cut's animation is driven by its `<Sequence>`, so frame 14,087 renders
     the same whether it is reached from frame 0 or asked for directly.
+
+    EXCEPT FOR THE FIRST FRAME, WHICH IS NOT THE SAME. Measured on king-tut,
+    `--frames=1548-1747` against the full render of the same 200 frames:
+
+        frame 1548   mean absolute difference  6.2876
+        frame 1549                             0.1552
+        frame 1550                             0.0848
+        frames 1551-1557                       0.0776 down to 0.0000
+
+    One frame, wrong by two orders of magnitude more than its neighbours.
+    1548 is inside a title sequence whose backdrop is a JPEG, and it comes
+    back 5.5 grey levels darker — the frame was painted before the image
+    was. A full render reaches 1548 twenty-six hundred frames after that
+    image first appeared, so it has never been visible there.
+
+    The range is therefore rendered with `LEAD_IN` frames in front of it,
+    and THE FIRST FRAME ACTUALLY RENDERED IS RETURNED so the caller can
+    throw them away. Rendering a frame to discard it is the cheapest
+    possible fix and it does not care WHY the frame is wrong, which matters:
+    this was found by measurement and its cause is inferred, not proven.
     """
     dest.parent.mkdir(parents=True, exist_ok=True)
     first, last = frames if frames else (0, count - 1)
+    if frames:
+        first = max(0, first - LEAD_IN)
     run_watched(["npx", "remotion", "render", ENTRY, "Explainer", str(dest),
                  f"--props={props}", f"--frames={first}-{last}", "--gl=angle",
                  f"--concurrency={CONCURRENCY}"],
                 COMPOSER, "plate", last - first + 1, cuts, output=dest)
+    return first
 
 
 def extract_frames(picture: Path, frames_dir: Path, count: int) -> None:

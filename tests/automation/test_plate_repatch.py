@@ -66,44 +66,98 @@ def run(n: int, shift: int = 0, seed: int = 7):
 
 
 class TestASeamIsCheckedAgainstWhatItOverwrote:
+    """Two defects, two measurements.
+
+    The first version of this class got its calibration from synthetic noise
+    and was wrong about real film — see `SEAM_OUTLIER`. The numbers below are
+    king-tut's own, from the patch that found the lead-in frame.
+    """
+
     def test_an_aligned_patch_reads_as_aligned(self):
-        before = run(10)
+        before = run(14)
         after = before.copy()           # a re-render of the same frames
         m = rp.seam_alignment(before, after)
-        assert m["aligned"] == pytest.approx(0.0, abs=1e-6)
-        assert m["margin"] > rp.SEAM_MARGIN
-        assert m["correlation"] > rp.MIN_SEAM_CORRELATION
-
-    def test_a_patch_one_frame_out_is_caught(self):
-        """The control. Correct pictures, wrong index — and nothing else
-        in the pipeline can see it."""
-        before = run(10)
-        after = run(10, shift=1)        # the same film, one frame late
-        m = rp.seam_alignment(before, after)
-        assert m["margin"] < rp.SEAM_MARGIN, m
-        assert rp.check_seams(
-            [{"range": "0-9", "edge": "head", "measured": m}])
-
-    def test_a_patch_one_frame_early_is_caught_too(self):
-        before = run(10)
-        after = run(10, shift=-1)
-        m = rp.seam_alignment(before, after)
-        assert m["margin"] < rp.SEAM_MARGIN, m
-
-    def test_an_aligned_patch_passes_the_check(self):
-        before = run(10)
-        m = rp.seam_alignment(before, before.copy())
-        assert rp.check_seams([{"range": "0-9", "edge": "head",
+        assert m["worst"] == pytest.approx(0.0, abs=1e-6)
+        assert m["best_shift"] == 0
+        assert rp.check_seams([{"range": "0-13", "edge": "head",
                                 "measured": m}]) == []
 
     def test_a_re_render_that_differs_slightly_is_still_aligned(self):
-        """Encoding is not bit-exact, and the check must not demand that."""
-        before = run(10)
-        after = before + np.random.default_rng(3).normal(0, 0.6, before.shape)
+        """Two encodes of the same frames are not bit-identical, and the
+        check must not demand that. The worst correct per-frame difference
+        measured on this film's 36 seams was 0.78."""
+        before = run(14)
+        after = before + np.random.default_rng(3).normal(0, 0.7, before.shape)
         m = rp.seam_alignment(before, after.astype("float32"))
-        assert m["margin"] > rp.SEAM_MARGIN
-        assert rp.check_seams([{"range": "0-9", "edge": "head",
+        assert m["worst"] < rp.SEAM_CEILING
+        assert rp.check_seams([{"range": "0-13", "edge": "head",
                                 "measured": m}]) == []
+
+    def test_one_bad_frame_in_an_otherwise_good_window_is_caught(self):
+        """THE DEFECT THAT HAPPENED.
+
+        `--frames=1548-1747` came back with frame 1548 differing from the
+        full render by 6.2876 while 1549 differed by 0.1552 and the rest by
+        less. One frame in 36,803, inside a fade — not a freeze, not a
+        dropped frame, and invisible to every delivery gate.
+        """
+        before = run(14)
+        after = before.copy()
+        after[0] += 7.0                 # the first frame, and only it
+        m = rp.seam_alignment(before, after)
+        assert m["worst_at"] == 0
+        assert m["worst"] > rp.SEAM_OUTLIER * m["median"]
+        problems = rp.check_seams([{"range": "1548-1747", "edge": "head",
+                                    "measured": m}])
+        assert problems and "does not touch" in problems[0]
+
+    def test_a_window_that_is_wrong_all_through_is_caught_too(self):
+        """No outlier, because every frame is equally wrong. The ceiling is
+        what catches this one."""
+        before = run(14)
+        after = before + 3.0
+        m = rp.seam_alignment(before, after)
+        assert m["median"] > rp.SEAM_CEILING
+        assert m["worst"] < rp.SEAM_OUTLIER * m["median"], (
+            "this case has to be caught by the ceiling, not the outlier rule")
+        assert rp.check_seams([{"range": "0-13", "edge": "head",
+                                "measured": m}])
+
+    def test_a_patch_one_frame_out_is_caught(self):
+        """The other control: correct pictures, wrong index."""
+        before = run(14)
+        after = run(14, shift=1)
+        m = rp.seam_alignment(before, after)
+        assert m["best_shift"] != 0, m["curve"]
+        problems = rp.check_seams([{"range": "0-13", "edge": "head",
+                                    "measured": m}])
+        assert any("wrong place" in p for p in problems)
+
+    def test_a_patch_one_frame_early_is_caught_too(self):
+        before = run(14)
+        after = run(14, shift=-1)
+        m = rp.seam_alignment(before, after)
+        assert m["best_shift"] != 0, m["curve"]
+
+    def test_the_real_seams_of_king_tut_would_pass(self):
+        """Regression on the calibration itself.
+
+        These are measured windows from the patch: the per-frame differences
+        of a correct head seam (near-black, barely moving) and a correct tail
+        seam (a bright photograph, where two encodes disagree most). The rule
+        that fired on nine correct seams would fail here.
+        """
+        for label, frames in (
+            ("1548-1747 tail", [0.0004, 0.0316, 0.1676, 0.3044, 0.2582,
+                                0.2632, 0.3635, 0.3984, 0.3925, 0.4744]),
+            ("18155-18354 head", [0.0429] * 10),
+        ):
+            per_frame = np.array(frames, dtype="float32")
+            m = {"per_frame": list(per_frame), "median": float(np.median(per_frame)),
+                 "worst": float(per_frame.max()), "worst_at": int(per_frame.argmax()),
+                 "best_shift": 0, "curve": {}}
+            assert rp.check_seams([{"range": label, "edge": "head",
+                                    "measured": m}]) == [], label
 
 
 class TestTheRangesCoverTheCutsAndNothingElse:
@@ -193,11 +247,31 @@ class TestTheRendererIsAskedForTheRangeAndNothingMore:
                                  36803, None, **kwargs)
         return seen
 
-    def test_a_range_renders_only_that_range(self, monkeypatch):
+    def test_a_range_renders_that_range_and_a_lead_in(self, monkeypatch):
+        """`LEAD_IN` frames in front, because the first frame a range render
+        paints can be wrong — king-tut's 1548 came back 6.2876 from the full
+        render while 1549 came back 0.1552."""
+        import film_render
         seen = self._command(monkeypatch, frames=(14087, 14331))
-        assert "--frames=14087-14331" in seen["cmd"]
-        assert seen["count"] == 245, (
+        lead = film_render.LEAD_IN
+        assert f"--frames={14087 - lead}-14331" in seen["cmd"]
+        assert seen["count"] == 245 + lead, (
             "the watchdog counts the frames of THIS render, not the film's")
+
+    def test_the_caller_is_told_where_the_lead_in_ends(self, monkeypatch):
+        """Otherwise the discarded frames get written over good stills."""
+        import film_render
+        import sys
+        sys.path.insert(0, str(ROOT / "lib"))
+        monkeypatch.setattr(film_render, "run_watched",
+                            lambda *a, **k: None)
+        first = film_render.render_plate(Path("p.json"), Path("/tmp/x/o.mp4"),
+                                         36803, None, frames=(14087, 14331))
+        assert first == 14087 - film_render.LEAD_IN
+
+    def test_a_range_at_the_very_start_cannot_lead_in_past_zero(self, monkeypatch):
+        seen = self._command(monkeypatch, frames=(0, 99))
+        assert "--frames=0-99" in seen["cmd"]
 
     def test_no_range_still_renders_the_whole_film(self, monkeypatch):
         seen = self._command(monkeypatch)
