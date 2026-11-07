@@ -4,6 +4,7 @@ import { SYS, TYPE, TRACK, EXPO_OUT, EXPO_IN_OUT, LAYOUT } from "../design/syste
 import { Plate, Graded, FrameLayer } from "../design/Frame";
 import { T } from "../design/Type";
 import { resolveAsset } from "../lib/resolveAsset";
+import { useBackdrop } from "../design/useBackdrop";
 
 export interface TitleSequenceProps {
   /** the film's title, as it is published */
@@ -47,6 +48,7 @@ export const TitleSequence: React.FC<TitleSequenceProps> = ({
   fade_out = 0.9,
 }) => {
   const frame = useCurrentFrame();
+  useBackdrop(image ? resolveAsset(image) : undefined);
   const { fps, durationInFrames } = useVideoConfig();
   const t = frame / fps;
 

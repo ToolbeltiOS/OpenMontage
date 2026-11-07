@@ -3,6 +3,7 @@ import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig, Easing } fr
 import { SYS, TYPE, TRACK, EXPO_OUT, EXPO_IN_OUT, LAYOUT, stagger } from "../design/system";
 import { Plate, Graded, FrameLayer } from "../design/Frame";
 import { T } from "../design/Type";
+import { useBackdrop } from "../design/useBackdrop";
 
 export interface ActTitleCardProps {
   /** Roman or arabic, as written: "ACT II" */
@@ -34,6 +35,7 @@ export const ActTitleCard: React.FC<ActTitleCardProps> = ({
   fade_out = 1.0,
 }) => {
   const frame = useCurrentFrame();
+  useBackdrop(image);
   const { fps, durationInFrames } = useVideoConfig();
 
   const inP = interpolate(frame, [0, fade_in * fps], [0, 1], {

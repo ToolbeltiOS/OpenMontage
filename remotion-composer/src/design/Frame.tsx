@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig, random, Easing } from "remotion";
 import { SYS, TYPE, TRACK, GRADE, EXPO_OUT, LAYOUT, SHADOW, gradeForAct } from "./system";
 import { TYPE_CLASS } from "./layers";
+import { useBackdrop } from "./useBackdrop";
 
 export interface DataStripProps {
   /** top-left: act number + act title */
@@ -403,7 +404,10 @@ export const Plate: React.FC<{
   children?: React.ReactNode;
   /** the slow light sweep; on wherever the scene's sustaining move is on */
   sweep?: boolean;
-}> = ({ image, children, sweep }) => (
+}> = ({ image, children, sweep }) => {
+  // A CSS backdrop does not hold the frame; see `useBackdrop`.
+  useBackdrop(image);
+  return (
   <AbsoluteFill style={{ backgroundColor: SYS.bg }}>
     {image ? (
       <AbsoluteFill
@@ -427,7 +431,8 @@ export const Plate: React.FC<{
     {sweep ? <PlateSweep /> : null}
     {children}
   </AbsoluteFill>
-);
+  );
+};
 
 export const PlateSweep: React.FC = () => {
   const frame = useCurrentFrame();
