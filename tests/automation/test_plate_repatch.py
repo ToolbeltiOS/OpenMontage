@@ -184,6 +184,38 @@ class TestTheRangesCoverTheCutsAndNothingElse:
         assert got[0][0] == 0, "padded off the front of the film"
         assert got[-1][1] == self.TOTAL - 1, "padded off the end of the film"
 
+    def test_only_the_cuts_own_frames_are_written(self):
+        """The padding is a witness, not a target.
+
+        c006's first frames came back different between two renders of the
+        same range at different concurrencies — a CSS `backgroundImage` does
+        not hold a frame until it decodes. c006 is not a cut this change
+        touches, so the patch must not replace its frames with a second
+        render of them.
+        """
+        spans = rp.spans_for(self.CUTS, {"text_card"}, "type")
+        assert spans == [(300, 509)]
+        ranges = rp.ranges_for(self.CUTS, {"text_card"}, "type", self.TOTAL, pad=10)
+        a, b, _ = ranges[0]
+        assert a < spans[0][0] and b > spans[0][1], (
+            "the rendered range has to be wider than the written span")
+
+    def test_two_cuts_in_one_range_each_keep_their_own_span(self):
+        spans = rp.spans_for(self.CUTS, {"stat_card"}, "type")
+        assert spans == [(720, 899), (900, 1079)]
+        assert sum(b - a + 1 for a, b in spans) == 360
+
+    def test_a_written_span_never_reaches_into_a_neighbour(self):
+        for first, last in rp.spans_for(self.CUTS, {"text_card", "stat_card"},
+                                        "type"):
+            for cut in self.CUTS:
+                if cut["type"] in ("text_card", "stat_card"):
+                    continue
+                a = round(cut["in_seconds"] * 30)
+                b = a + round((cut["out_seconds"] - cut["in_seconds"]) * 30) - 1
+                assert last < a or first > b, (
+                    f"span {first}-{last} overlaps {cut['id']}")
+
     def test_naming_nothing_that_matches_gives_no_ranges(self):
         assert rp.ranges_for(self.CUTS, {"schematic"}, "type", self.TOTAL) == []
 

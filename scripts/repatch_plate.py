@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -77,6 +78,38 @@ def ranges_for(cuts: list[dict[str, Any]], wanted: set[str], by: str,
         else:
             merged.append((a, b, [cid]))
     return merged
+
+
+def spans_for(cuts: list[dict[str, Any]], wanted: set[str], by: str
+              ) -> list[tuple[int, int]]:
+    """The frames a changed cut OWNS — its padding is not one of them.
+
+    The padding is rendered, because it is the only witness that the splice
+    landed where it should. It is never WRITTEN, because a frame outside the
+    cuts this change touches has no business being replaced by a second
+    render of itself:
+
+        TitleSequence paints its backdrop with a CSS `backgroundImage:
+        url(...)`, which — unlike Remotion's `<Img>` — does not hold the
+        frame until the image decodes. Measured on c006, whose first frame
+        is 1384: a render of 1384-1560 at concurrency 4 matched the plate on
+        all 177 frames (max 0.2555), and the same range at concurrency 1 came
+        back wrong on 1385, 1386 and 1387 (2.518, 4.226, 5.428). Same props,
+        same composition, same machine, different timing.
+
+    None of the eighteen cuts this change touches carries an image at all —
+    they are flat colour and procedural plate — so the race cannot reach a
+    frame that gets written. Leaving the padding alone keeps it that way.
+    """
+    out = []
+    for cut in cuts:
+        key = cut.get("id") if by == "id" else cut.get("type")
+        if key not in wanted:
+            continue
+        start = round(float(cut["in_seconds"]) * FPS)
+        length = round((float(cut["out_seconds"]) - float(cut["in_seconds"])) * FPS)
+        out.append((start, start + length - 1))
+    return sorted(out)
 
 
 def stills_from(segment: Path, frames_dir: Path, first: int,
@@ -164,6 +197,14 @@ SEAM_CEILING = 2.0
 #: Measured over all 36 seams of this patch: 35 put their minimum at 0, and
 #: the one that did not was the defect above.
 SEAM_SHIFTS = (-2, -1, 0, 1, 2)
+
+#: How many times a range may be rendered before the splice is abandoned.
+#:
+#: The witness frames can fail for a reason that is not the splice: the
+#: composition has an asset race (see `spans_for`) and a neighbouring cut can
+#: come back different through no fault of this patch. Retrying is the honest
+#: response to a race; retrying forever is not.
+ATTEMPTS = 3
 
 
 def _stills(frames_dir: Path, first: int, last: int):
@@ -323,44 +364,65 @@ def main() -> int:
         raise SystemExit(f"the plate is not whole ({why})")
 
     props = props_for_layer(props_path, "plate", work, args.project)
+    spans = spans_for(cuts, types or ids, "type" if types else "id")
+    written = sum(b - a + 1 for a, b in spans)
+    print(f"   {written} frames will be written; the rest of each range is "
+          f"rendered as a witness and left alone")
     seams: list[dict[str, Any]] = []
     for a, b, who in merged:
-        segment = work / f"patch_{a:05d}_{b:05d}.mp4"
         label = f"{a}-{b}"
-        print(f"   rendering {label} ({','.join(who)})")
-        # The frames about to be overwritten, kept so the splice can be
-        # checked against them. Only the padding windows: they are a
-        # neighbouring cut this change does not touch, so the patch must
-        # reproduce them exactly, at exactly the same indices.
         head = min(SEAM_WINDOW, (b - a + 1) // 2)
-        before_head = _stills(frames_dir, a, a + head - 1) if head > 1 else None
-        before_tail = _stills(frames_dir, b - head + 1, b) if head > 1 else None
+        before_head = _stills(frames_dir, a, a + head - 1)
+        before_tail = _stills(frames_dir, b - head + 1, b)
+        staging = work / f"patch_{a:05d}_{b:05d}"
 
-        rendered_from = render_plate(props, segment, count, cuts, frames=(a, b))
-        stills_from(segment, frames_dir, a, skip=a - rendered_from)
-        segment.unlink()
+        for attempt in range(1, ATTEMPTS + 1):
+            segment = work / f"patch_{a:05d}_{b:05d}.mp4"
+            if staging.exists():
+                shutil.rmtree(staging)
+            staging.mkdir(parents=True)
+            print(f"   rendering {label} ({','.join(who)})"
+                  + (f", attempt {attempt}" if attempt > 1 else ""))
+            rendered_from = render_plate(props, segment, count, cuts, frames=(a, b))
+            stills_from(segment, staging, a, skip=a - rendered_from)
+            segment.unlink()
+            measured = [
+                {"range": label, "edge": "head", "measured": seam_alignment(
+                    before_head, _stills(staging, a, a + head - 1))},
+                {"range": label, "edge": "tail", "measured": seam_alignment(
+                    before_tail, _stills(staging, b - head + 1, b))},
+            ]
+            problems = check_seams(measured)
+            if not problems:
+                break
+            for problem in problems:
+                print("   SEAM FAIL:", problem)
+            if attempt == ATTEMPTS:
+                shutil.rmtree(staging, ignore_errors=True)
+                raise SystemExit(
+                    f"{label} did not splice cleanly in {ATTEMPTS} attempts. "
+                    f"Nothing has been written: the stills and the plate are "
+                    f"as they were.")
+            print(f"   {label}: retrying — the witness frames did not come "
+                  f"back the same")
 
-        if before_head is not None:
-            seams.append({"range": label, "edge": "head", "measured":
-                          seam_alignment(before_head,
-                                         _stills(frames_dir, a, a + head - 1))})
-            seams.append({"range": label, "edge": "tail", "measured":
-                          seam_alignment(before_tail,
-                                         _stills(frames_dir, b - head + 1, b))})
+        # Only now, and only the frames the changed cuts own.
+        moved = 0
+        for first, last in spans:
+            if first > b or last < a:
+                continue
+            for n in range(max(first, a), min(last, b) + 1):
+                name = f"f_{n + 1:05d}.jpg"
+                shutil.copyfile(staging / name, frames_dir / name)
+                moved += 1
+        shutil.rmtree(staging)
+        print(f"   {label}: {moved} frames written, seams clean")
+        seams += measured
 
     # ----- the splice, checked before anything is built on top of it -----
     ok, why = verified_stills(frames_dir, count)
     if not ok:
         raise SystemExit(f"the stills are no longer whole after patching: {why}")
-    print(f"   checking {len(seams)} seams")
-    problems = check_seams(seams)
-    if problems:
-        for problem in problems:
-            print("   SEAM FAIL:", problem)
-        raise SystemExit(
-            "the splice is not aligned. The stills directory now holds a "
-            "patch that cannot be trusted; re-extract it from the plate "
-            "(which is untouched) before trying again.")
 
     print("   rebuilding the plate from the stills")
     rebuild_plate(frames_dir, picture, count)
