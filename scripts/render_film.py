@@ -31,7 +31,8 @@ sys.path.insert(0, str(ROOT / "lib"))
 
 from film_render import (COMPOSER, FPS, act_spans, deliver, extract_frames,  # noqa: E402
                          frame_count, gates, props_for_layer, remux,
-                         render_look, render_plate, render_type, report)
+                         render_look, render_plate, render_type, report, verified_stills,
+                         verified_video)
 
 
 def main() -> int:
@@ -45,6 +46,11 @@ def main() -> int:
                     help="defaults to the project's artifacts/render_props.json")
     ap.add_argument("--force", action="store_true",
                     help="overwrite the output if it already exists")
+    ap.add_argument("--redo", default="",
+                    help="comma-separated passes to render again even though "
+                         "their output verifies: plate, frames, look, type. "
+                         "A pass whose output holds the frames the edit asks "
+                         "for is reused by default — see verified_video.")
     ap.add_argument("--skip-picture", action="store_true",
                     help="reuse the existing plate render and frame sequence")
     ap.add_argument("--gates-only", action="store_true",
@@ -60,6 +66,11 @@ def main() -> int:
                          "copies the stream it is given and cannot put back "
                          "what is not in it")
     args = ap.parse_args()
+
+    redo = {w.strip() for w in args.redo.split(",") if w.strip()}
+    unknown = redo - {"plate", "frames", "look", "type"}
+    if unknown:
+        raise SystemExit(f"--redo names no such pass: {', '.join(sorted(unknown))}")
 
     project = ROOT / "projects" / args.project
     props_path = Path(args.props) if args.props else project / "artifacts" / "render_props.json"
@@ -94,6 +105,24 @@ def main() -> int:
             f"accident — run #1 is published. Pass --force if that is really "
             f"what you want, or --out to deliver somewhere else.")
 
+    def reuse(name: str, path: Path, stills: bool = False) -> bool:
+        """Is this pass already done? Printed either way, never guessed.
+
+        A reused pass prints WHAT WAS CHECKED, because "reusing plate.mp4"
+        with no number beside it is how a half-written file gets inherited by
+        four more passes and a gate report.
+        """
+        if name in redo:
+            print(f"   {name}: re-rendering, --redo says so")
+            return False
+        ok, why = (verified_stills(path, count) if stills
+                   else verified_video(path, count))
+        if ok:
+            print(f"   {name}: reusing {path.name} — {why}")
+        elif why != "missing":
+            print(f"   {name}: re-rendering — {why}")
+        return ok
+
     spans = act_spans(cuts)
     print(f"{args.project}: {len(cuts)} cuts, {seconds:.1f}s, {count} frames, "
           f"{len(spans)} act spans, mix {mix.name}")
@@ -107,18 +136,24 @@ def main() -> int:
     elif not args.gates_only:
         if not args.skip_picture:
             print("1. plate")
-            render_plate(props_for_layer(props_path, "plate", work, args.project),
-                         picture, count, cuts)
+            if not reuse("plate", picture):
+                render_plate(props_for_layer(props_path, "plate", work,
+                                             args.project),
+                             picture, count, cuts)
             print("2. frames")
-            extract_frames(picture, frames_dir, count)
+            if not reuse("frames", frames_dir, stills=True):
+                extract_frames(picture, frames_dir, count)
         print("3. look pass")
-        render_look(frames_dir, look, count,
-                    act=spans[0]["act"] if spans else "act1", acts=spans,
-                    cuts=cuts)
+        if not reuse("look", look):
+            render_look(frames_dir, look, count,
+                        act=spans[0]["act"] if spans else "act1", acts=spans,
+                        cuts=cuts)
         if not args.skip_picture:
             print("4. type")
-            render_type(props_for_layer(props_path, "type", work, args.project),
-                        type_layer, count, cuts)
+            if not reuse("type", type_layer):
+                render_type(props_for_layer(props_path, "type", work,
+                                            args.project),
+                            type_layer, count, cuts)
         print("5. deliver")
         deliver(look, type_layer, mix, dest)
 
