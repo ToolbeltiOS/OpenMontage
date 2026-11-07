@@ -92,10 +92,17 @@ class TestEveryClaudeStageIsResumable:
         # `claude -p` in its header, and a sentence about a call is not one.
         stripped = [re.sub(r'"[^"]*"', '""', l) for l in lines]
         stripped = ["" if l.lstrip().startswith("#") else l for l in stripped]
+        # `claude -p "$prompt"` became `claude "${args[@]}"` when the turn
+        # cap arrived, because --max-turns is only passed when there is one.
+        # So this matches the COMMAND, not one spelling of its arguments —
+        # and `claude_stage` does not match, since the name has no space
+        # after "claude".
         calls = [i for i, l in enumerate(stripped)
-                 if re.search(r"(^|\s|\|)claude\s+-p\b", l)]
+                 if re.search(r"(^|\s|\|)claude\s", l)]
         assert len(calls) == 1, (
-            f"{len(calls)} places run `claude -p`; only claude_stage() may")
+            f"{len(calls)} places run `claude`; only claude_stage() may — a "
+            f"second invocation is a stage that cannot be capped, slept on "
+            f"or re-entered")
 
         # and that one call is inside claude_stage()
         start = next(i for i, l in enumerate(lines) if l.startswith("claude_stage()"))
@@ -236,14 +243,14 @@ class TestSmokeMode:
     def test_it_stops_at_the_gate_and_exits_zero(self):
         body = RUNNER.read_text()
         block = body[body.index("# ── 3. the human"):]
-        block = block[:block.index("# ── 4. the render")]
+        block = block[:block.index("# ── 4.")]
         assert "smoke run reached the gate" in block
         assert "exit 0" in block
 
     def test_it_stops_before_the_render_and_the_publish(self):
         body = RUNNER.read_text()
         smoke_exit = body.index('say "done (smoke)"')
-        assert smoke_exit < body.index("# ── 4. the render")
+        assert smoke_exit < body.index("# ── 4.")
         assert smoke_exit < body.index("# ── 5. publish")
 
     def test_it_still_takes_the_lock_and_rotates_the_logs(self):

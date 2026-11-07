@@ -99,8 +99,24 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--project", required=True)
     ap.add_argument("--json", action="store_true")
+    # So a shell can ask about one stage without parsing JSON. The runner
+    # skips a finished stage rather than paying a model to be told by this
+    # script's own output that there was nothing to do: re-entering a
+    # finished stage cost 1,222 turns once.
+    ap.add_argument("--is-done", metavar="STAGE",
+                    help="print nothing; exit 0 if that stage is finished, "
+                         "1 if it is not, 64 if there is no such stage")
     args = ap.parse_args()
     st = state(args.project)
+
+    if args.is_done:
+        known = {row["stage"] for row in st["stages"]}
+        if args.is_done not in known:
+            print(f"no stage {args.is_done!r} in {PIPELINE_TYPE}; "
+                  f"have {', '.join(sorted(known))}", file=sys.stderr)
+            return 64
+        return 0 if args.is_done in st["completed"] else 1
+
     print(json.dumps(st, indent=1) if args.json else render(st))
     return 0
 

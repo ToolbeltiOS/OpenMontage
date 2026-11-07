@@ -218,14 +218,34 @@ class TestNoahIsNotEligible:
 class TestAFreshSubjectStillGetsThrough:
     """A defence that excludes everything is not a defence, it is an outage."""
 
-    def test_king_tut_survives_all_three(self, ledger):
+    def test_a_fresh_subject_survives_all_three(self, ledger):
+        """The defences must not exclude everything.
+
+        That is the failure mode worth guarding: three checks that each look
+        reasonable and between them leave no eligible topic, which surfaces
+        as "no eligible topic" and reads like a ranking bug.
+
+        THE EXAMPLE USED TO BE KING TUT, and this test failed on
+        2026-11-07 because it had stopped being true: the 2026-11-06 run
+        made a King Tut film, `projects/king-tut` appeared, and the
+        project-directory defence began excluding it — correctly. A subject
+        stops being fresh the moment the pipeline touches it, so the example
+        is pinned here and the project list is supplied, rather than read off
+        whatever this machine happens to have made this week.
+        """
         from already_covered import channel_films
         from pick_topic import already_made
 
         covered = covered_subjects(channel_films(the_real_channel()))
         assert why_ineligible(
-            "King Tut", made=already_made(), banned=set(),
-            projects=project_slugs(ROOT), covered=covered) is None
+            "Antikythera Mechanism", made=already_made(), banned=set(),
+            projects={}, covered=covered) is None
+
+    def test_and_king_tut_is_now_correctly_excluded_by_its_directory(self):
+        """The other half of the same fact, asserted rather than implied."""
+        reason = why_ineligible("King Tut", made=set(), banned=set(),
+                                projects=project_slugs(ROOT), covered={})
+        assert reason and "project" in reason.lower(), reason
 
     def test_the_shorts_are_not_treated_as_coverage(self):
         """THE TRAP. The picker's candidates are read off the channel's own

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Did this `claude -p` stage stop because the usage limit was reached?
+"""Why did this `claude -p` stage stop — a usage limit, a turn cap, or a fault?
 
 WHY THIS EXISTS
 ---------------
@@ -17,9 +17,32 @@ must NOT be slept on and retried six times; that buries the reason under six
 more logs, which is the same mistake the runner already refuses to make with
 renders.
 
+WHY IT STOPPED WORKING
+----------------------
+On 2026-11-06 the render stage stopped with
+
+    You've hit your 5-hour limit · resets 2:20am (America/Toronto)
+
+and this script said "not a usage limit", so the runner failed the run
+instead of sleeping 167 minutes and going back in. The reset time was
+sitting in the message and parsed correctly. Every pattern missed for one
+reason: they all assumed the word `session`, `usage` or `rate` sat directly
+against `limit`, and the window is named after its LENGTH now. The JSON also
+said `"api_error": "usage_limit_reached"` in as many words — with
+underscores, which `[- ]` does not match.
+
+So the STRUCTURED FIELDS ARE READ FIRST and the prose is the fallback. A
+sentence is a thing a vendor rewords; `api_error` is a thing a vendor
+changes deliberately. Reading the sentence first is how a 167-minute pause
+became a dead week.
+
     scripts/usage_limit.py <file> [<file> ...]
       exit 0  -> a usage limit. prints SECONDS=<n> and RESETS=<text>
       exit 1  -> not a usage limit; the caller should fail the stage
+
+    scripts/usage_limit.py --classify <file> [<file> ...]
+      always exit 0, prints KIND=ok|usage_limit|max_turns|error
+      plus SECONDS=/RESETS= when the kind is usage_limit
 """
 from __future__ import annotations
 
@@ -31,15 +54,28 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-#: What the limit actually says. Matched case-insensitively against both the
-#: JSON result and whatever landed on stderr, because which one carries it
-#: depends on how far the CLI got before it stopped.
+#: `api_error` values that mean "come back later", not "this is broken".
+LIMIT_ERRORS = {"usage_limit_reached", "rate_limit_error", "rate_limit_exceeded"}
+
+#: What the limit actually says, when all we have is prose. Matched
+#: case-insensitively against both the JSON result and whatever landed on
+#: stderr, because which one carries it depends on how far the CLI got.
+#:
+#: The first pattern is deliberately loose about what sits between "your"
+#: and "limit": that slot has held `session`, `5-hour` and `weekly`, and the
+#: next word for it has not been invented yet. Everything it could wrongly
+#: match ("hit your stride limit"?) is not a sentence anything emits, and the
+#: cost of being wrong in this direction is one hour of a Friday night, while
+#: the cost of being wrong in the other is the week's film.
 LIMIT_PATTERNS = (
-    r"hit your (?:session|usage|rate) limit",
+    r"hit your\b[^.\n]{0,40}?\blimit\b",
+    r"reached your\b[^.\n]{0,40}?\blimit\b",
+    r"\busage[-_ ]limit[-_ ](?:reached|exceeded)\b",
     r"(?:session|usage|rate)[- ]limit (?:reached|exceeded)",
     r"you(?:'| ha)ve (?:reached|hit) your limit",
     r"out of (?:credits|usage)",
     r"\bupgrade to increase your usage limit\b",
+    r"\b\d+\s*-?\s*hours?\s+limit\b",
 )
 
 #: "resets 12am (America/Toronto)", "resets at 3:30pm", "resets 09:00"
@@ -60,6 +96,15 @@ MAX_WAIT_SECONDS = 6 * 60 * 60
 GRACE_SECONDS = 60
 
 
+def blob_of(path: Path) -> dict:
+    """The parsed result record, or {} if this file is not one."""
+    try:
+        parsed = json.loads(path.read_text(errors="replace"))
+    except (OSError, ValueError, TypeError):
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
 def text_of(path: Path) -> str:
     """Everything legible in the file, JSON result included."""
     try:
@@ -67,16 +112,53 @@ def text_of(path: Path) -> str:
     except OSError:
         return ""
     parts = [raw]
-    try:
-        blob = json.loads(raw)
-    except (ValueError, TypeError):
-        return raw
-    if isinstance(blob, dict):
-        for key in ("result", "error", "message", "subtype", "api_error_status"):
-            value = blob.get(key)
-            if isinstance(value, str):
-                parts.append(value)
+    blob = blob_of(path)
+    for key in ("result", "error", "message", "subtype", "api_error",
+                "terminal_reason"):
+        value = blob.get(key)
+        if isinstance(value, str):
+            parts.append(value)
     return "\n".join(parts)
+
+
+def structured_limit(blob: dict) -> bool:
+    """Does the result record SAY it was a usage limit, in a field?
+
+    Preferred over the prose for the reason in the module docstring. A bare
+    429 is not enough on its own — it is also what a burst of requests gets
+    — so the status has to come with an error name or a limit sentence.
+    """
+    if not blob:
+        return False
+    if str(blob.get("api_error") or "") in LIMIT_ERRORS:
+        return True
+    if blob.get("api_error_status") == 429:
+        name = str(blob.get("api_error") or "")
+        if "limit" in name.lower():
+            return True
+        result = blob.get("result")
+        if isinstance(result, str) and is_usage_limit(result):
+            return True
+    return False
+
+
+def structured_max_turns(blob: dict) -> bool:
+    """Did the stage stop because it ran out of its turn allowance?
+
+    This is NOT sleepable and NOT retryable: the stage was given a budget
+    and spent it. Sleeping on it would re-enter a stage that is about to
+    spend the same budget again, which is how a cap becomes a loop.
+    """
+    if not blob:
+        return False
+    if str(blob.get("subtype") or "") == "error_max_turns":
+        return True
+    for key in ("result", "error", "terminal_reason"):
+        value = blob.get(key)
+        if isinstance(value, str) and re.search(
+                r"max(?:imum)?[-_ ]turns?\b|\bturn limit\b", value, re.I):
+            return True
+    return False
 
 
 def is_usage_limit(text: str) -> bool:
@@ -127,15 +209,47 @@ def seconds_until_reset(text: str, now: datetime | None = None) -> tuple[int, st
     return min(max(wait, 0), MAX_WAIT_SECONDS), match.group(0)
 
 
+def classify(paths: list[Path]) -> tuple[str, str]:
+    """(kind, text) for a stage's result files, worst-news-first.
+
+    A usage limit outranks a turn cap: a stage that spent its cap AND hit
+    the window should be slept on, because its next entry gets a fresh cap
+    but not fresh credits.
+    """
+    blobs = [blob_of(p) for p in paths]
+    text = "\n".join(text_of(p) for p in paths)
+
+    if any(structured_limit(b) for b in blobs) or is_usage_limit(text):
+        return "usage_limit", text
+    if any(structured_max_turns(b) for b in blobs):
+        return "max_turns", text
+    if any(b.get("is_error") for b in blobs if b):
+        return "error", text
+    return "ok", text
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("files", nargs="+")
+    ap.add_argument("--classify", action="store_true",
+                    help="print KIND= and always exit 0")
     args = ap.parse_args()
 
-    text = "\n".join(text_of(Path(f)) for f in args.files)
-    if not is_usage_limit(text):
+    paths = [Path(f) for f in args.files]
+    kind, text = classify(paths)
+
+    if kind == "usage_limit":
+        seconds, source = seconds_until_reset(text)
+
+    if args.classify:
+        print(f"KIND={kind}")
+        if kind == "usage_limit":
+            print(f"SECONDS={seconds}")
+            print(f"RESETS={source}")
+        return 0
+
+    if kind != "usage_limit":
         return 1
-    seconds, source = seconds_until_reset(text)
     print(f"SECONDS={seconds}")
     print(f"RESETS={source}")
     return 0

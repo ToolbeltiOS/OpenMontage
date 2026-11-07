@@ -2,6 +2,15 @@
 
 Start here. This is the complete operating guide and agent contract for OpenMontage.
 
+> **If `scripts/run_weekly.sh` started you to run ONE pipeline stage, stop
+> here and read [`docs/STAGE_CONTRACT.md`](docs/STAGE_CONTRACT.md) instead.**
+> It is 6 KB to this file's 48 KB and it is your whole contract. This file is
+> written for an agent driving a production conversationally with a human in
+> the loop; a single unattended stage pays for every byte of it on every turn
+> — the 2026-11-06 script stage carried this file for 280 turns after reading
+> it once, which is about 12,000 tokens re-read 280 times for a guide it had
+> already understood.
+
 For architecture, key files, and conventions see [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md).
 
 ## First Interaction — Onboarding

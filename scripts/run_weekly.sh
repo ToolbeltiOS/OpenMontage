@@ -12,13 +12,35 @@
 #   twenty-minute attempt at 4am buries the reason under another log. It
 #   fails, says so on Telegram, and stops.
 #
+#   Hold a model open while a render runs. The 2026-11-06 render stage was
+#   one `claude -p` agent told to start the render detached and then poll
+#   for it. It polled for 2h45m across 1,222 turns, re-read 388 million
+#   cache tokens and cost $212.43 — $194 of that re-reading its own
+#   conversation — to move 745 KB of tool output, and then hit the five-hour
+#   usage window one minute after the audio mix finished. Nothing in those
+#   turns needed a language model: it ran `ls -lt`, tailed a log and waited.
+#   The compose stage now has NO AGENT: scripts/await_render.py starts the
+#   render and waits, and scripts/render_film.py runs the gates itself.
+#
+#   Abandon a half-made film. A run that dies after the human script gate
+#   has spent the only scarce thing in this pipeline, which is a person's
+#   attention. An unfinished film is finished before a new one is started —
+#   and because the topic picker excludes any subject with a directory under
+#   projects/, re-firing without this would have picked a NEW topic and left
+#   the approved King Tut film unmade.
+#
 #   Run twice. A lock file holds the whole run; a second invocation exits
 #   rather than queueing, because two renders on one Mac is neither.
 #
 #   Continue past a stage error. Every stage's exit code is checked.
 #
 # USAGE
-#   scripts/run_weekly.sh                 # pick a topic and run
+#   scripts/run_weekly.sh                 # finish an unfinished film, else
+#                                         # pick a topic and run
+#   scripts/run_weekly.sh --resume <slug> # finish this film, from its
+#                                         # checkpoints
+#   scripts/run_weekly.sh --new           # start a new film even if one is
+#                                         # unfinished
 #   scripts/run_weekly.sh --brief <path>  # use this brief instead
 #   scripts/run_weekly.sh --dry-run       # prove the hand-offs, render nothing
 #   RUN_WEEKLY_SMOKE=1 scripts/run_weekly.sh
@@ -43,6 +65,8 @@ DATE="$(date +%Y-%m-%d)"
 LOGDIR="$REPO/logs/$DATE"
 LOCK="$REPO/.weekly.lock"
 BRIEF=""
+RESUME=""
+NEW_FILM=0
 DRY_RUN=0
 GATE_HOURS="${GATE_HOURS:-12}"
 SMOKE="${RUN_WEEKLY_SMOKE:-0}"
@@ -69,9 +93,41 @@ FACT_BACKEND="${FACT_BACKEND:-spacy}"
 #: "MAX_RESUMES" appeared in the file.
 MAX_RESUMES="${MAX_RESUMES:-6}"
 
+#: HOW MANY TURNS EACH MODEL STAGE MAY TAKE. A `claude -p` stage pays for
+#: its whole context on every turn, so its cost is the context size times
+#: the turn count — quadratic in turns, not linear. Measured on the
+#: 2026-11-06 render stage: 1,222 turns, context grown to 842,269 tokens,
+#: 388M cache-read tokens, $212.43. The same work in four capped stages
+#: starts each one from an empty context, so the quadratic restarts four
+#: times instead of running once to 1,222.
+#:
+#: A stage that hits its cap FAILS and is not resumed: a stage given a
+#: budget will spend it again. It says which cap it hit and how to raise it,
+#: so a cap set too tight is a one-line fix and not a dead week.
+#:
+#: For reference, what the uncapped 2026-11-06 stage actually spent (tool
+#: calls, scaled to turns at the measured 1.68 turns per call): scene plan
+#: ~275, audio ~203, edit decisions ~113, asset bank ~99. These caps are
+#: deliberately tighter than that, because most of those turns were a loop
+#: — 48 edits to one agent-authored build_scene_plan.py, read back 13 times
+#: — and docs/STAGE_CONTRACT.md now tells the stage not to author programs.
+TURNS_SCRIPT="${TURNS_SCRIPT:-60}"
+TURNS_SCENE_PLAN="${TURNS_SCENE_PLAN:-40}"
+TURNS_ASSETS="${TURNS_ASSETS:-30}"
+TURNS_EDIT="${TURNS_EDIT:-30}"
+TURNS_NOTES="${TURNS_NOTES:-15}"
+
+#: How long the non-agent waiter gives the picture before it reports that
+#: the render is still going. It does NOT kill it: a render killed near the
+#: end leaves no file and no error, which is how three Noah attempts and six
+#: hours were lost.
+RENDER_TIMEOUT_HOURS="${RENDER_TIMEOUT_HOURS:-8}"
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --brief) BRIEF="$2"; shift 2 ;;
+    --resume) RESUME="$2"; shift 2 ;;
+    --new) NEW_FILM=1; shift ;;
     --dry-run) DRY_RUN=1; shift ;;
     --gate-hours) GATE_HOURS="$2"; shift 2 ;;
     *) echo "unknown argument: $1" >&2; exit 64 ;;
@@ -236,14 +292,16 @@ fi
 # the most useful artifact of the first attended run and switching formats
 # must not cost it.
 #
-# $1 stage name   $2 log basename   $3 prompt
+# $1 stage name   $2 log basename   $3 prompt   $4 turn cap (0 = uncapped)
 claude_stage() {
-  local name="$1" base="$2" prompt="$3"
-  local attempt=1 resumes=0 rc t0 t1 limit secs resets back
+  local name="$1" base="$2" prompt="$3" cap="${4:-0}"
+  local attempt=1 resumes=0 rc t0 t1 classified kind secs resets back
+  local -a args
   while true; do
+    args=(-p "$prompt" --permission-mode acceptEdits --output-format json)
+    (( cap > 0 )) && args+=(--max-turns "$cap")
     t0=$(date +%s)
-    claude -p "$prompt" --permission-mode acceptEdits --output-format json \
-      > "$base.json" 2> "$base.err"
+    claude "${args[@]}" > "$base.json" 2> "$base.err"
     rc=$?
     t1=$(date +%s)
 
@@ -251,17 +309,47 @@ claude_stage() {
       --stage "$name" --seconds $((t1 - t0)) --attempt "$attempt" \
       --ledger "$LOGDIR/usage.jsonl" --report "$base.log" || true
 
+    # WHAT KIND OF STOP WAS IT. Asked before the exit code is trusted,
+    # because a stage that spends its turn cap may still exit 0, and a stage
+    # treated as finished when it ran out of turns hands a half-written
+    # artifact to the next stage as if it were done.
+    #
+    # The classifier reads the result record's STRUCTURED fields first. On
+    # 2026-11-06 this was a prose match only, and the limit said "You've hit
+    # your 5-hour limit" — the window is named after its length now, and
+    # every pattern assumed the word session, usage or rate against "limit".
+    # The JSON said "api_error": "usage_limit_reached" in as many words. The
+    # reset time parsed fine. The run failed instead of sleeping 2h47m and
+    # going back in at 02:21, and that cost the film.
+    classified="$("$PY" "$REPO/scripts/usage_limit.py" --classify \
+                  "$base.json" "$base.err" 2>/dev/null || echo KIND=error)"
+    kind="$(printf '%s' "$classified" | sed -n 's/^KIND=//p')"
+
+    if [[ "$kind" == "max_turns" ]]; then
+      say "$name: hit the ${cap}-turn cap — FAILING, not resuming"
+      notify "<b>stage hit its turn cap</b>
+stage: $name
+cap: $cap turns
+
+A stage given a budget will spend it again, so this is not resumed. Either
+the stage is looping — read $base.log for what it was doing — or the cap is
+too tight for this film. Raise it and re-fire:
+
+<code>TURNS_$(printf '%s' "$name" | tr '[:lower:]' '[:upper:]')=$((cap * 2)) scripts/run_weekly.sh --resume $SLUG</code>"
+      return 9
+    fi
+
     [[ $rc -eq 0 ]] && return 0
 
     # A usage limit, or a real failure? Only the first is slept on.
-    if limit="$("$PY" "$REPO/scripts/usage_limit.py" "$base.json" "$base.err")"; then
+    if [[ "$kind" == "usage_limit" ]]; then
       resumes=$((resumes + 1))
       if (( resumes > MAX_RESUMES )); then
         say "$name: usage limit again after $MAX_RESUMES resumes — giving up"
         return "$rc"
       fi
-      secs="$(printf '%s' "$limit" | sed -n 's/^SECONDS=//p')"
-      resets="$(printf '%s' "$limit" | sed -n 's/^RESETS=//p')"
+      secs="$(printf '%s' "$classified" | sed -n 's/^SECONDS=//p')"
+      resets="$(printf '%s' "$classified" | sed -n 's/^RESETS=//p')"
       back="$(date -v +"${secs}"S +%H:%M 2>/dev/null || date -d "+${secs} seconds" +%H:%M)"
       say "$name: usage limit ($resets) — sleeping ${secs}s, back at $back (resume $resumes/$MAX_RESUMES)"
       notify "<b>paused: usage limit, resuming at $back</b>
@@ -274,6 +362,14 @@ resume $resumes of $MAX_RESUMES"
     fi
     return "$rc"
   done
+}
+
+# Has this project already finished this stage? Used to skip a stage on a
+# resume rather than paying a model to read resume_state.py and be told
+# there was nothing to do.
+stage_done() {
+  "$PY" "$REPO/scripts/resume_state.py" --project "$SLUG" --is-done "$1" \
+    >/dev/null 2>&1
 }
 
 # ── one run at a time ────────────────────────────────────────────────────
@@ -295,41 +391,86 @@ caffeinate -dimsu -w $$ &
 CAFFEINE=$!
 say "awake (caffeinate $CAFFEINE)"
 
-# ── 1. the topic ─────────────────────────────────────────────────────────
-if [[ -z "$BRIEF" ]]; then
-  say "picking a topic"
-  "$PY" "$REPO/scripts/pick_topic.py" --top 3 --candidates 14 \
-    > "$LOGDIR/pick_topic.log" 2>&1 \
-    || fail "topic picker" "$(tail -5 "$LOGDIR/pick_topic.log")"
-  BRIEF="$REPO/artifacts/topic_briefs.json"
+# ── 1. which film ────────────────────────────────────────────────────────
+#
+# AN UNFINISHED FILM IS FINISHED BEFORE A NEW ONE IS STARTED, and this is
+# not a convenience. The topic picker excludes any subject that already has
+# a directory under projects/ — a second line of defence added on
+# 2026-11-06 so a published film could not be re-made. That defence means a
+# re-fire after a mid-run death does NOT pick the film back up: it sees
+# projects/king-tut, rules King Tut out, and starts a different film from
+# research. The approved script, the scene plan, the asset bank, the edit
+# decisions and a 235 MB finished audio mix would all have been left on
+# disk, and the human's approval spent for nothing.
+if [[ -z "$RESUME" && -z "$BRIEF" && "$NEW_FILM" != "1" ]]; then
+  RESUME="$("$PY" "$REPO/scripts/unfinished_film.py" 2>/dev/null || true)"
 fi
-TOPIC="$("$PY" -c "
+
+if [[ -n "$RESUME" ]]; then
+  SLUG="$RESUME"
+  [[ -d "$REPO/projects/$SLUG" ]] \
+    || fail "resume" "no project at projects/$SLUG — nothing to resume"
+  TOPIC="$("$PY" -c "
+import json, sys
+try:
+    print(json.load(open('$REPO/projects/$SLUG/project.json'))['title'])
+except Exception:
+    print('$SLUG')
+")"
+  say "resuming the unfinished film: $SLUG  ($TOPIC)"
+  say "         pass --new to start a different film instead"
+  "$PY" "$REPO/scripts/resume_state.py" --project "$SLUG" 2>&1 | sed 's/^/         /'
+  notify "<b>Weekly run resuming an unfinished film</b>
+film: $TOPIC
+project: <code>$SLUG</code>
+code: <code>$RUN_ON @ $RUN_HEAD</code>
+power: ${RUN_POWER:-unknown} ${RUN_CHARGE:-}
+
+Finished stages are not rebuilt. The script is already approved; it will not
+be rewritten and you will not be asked to approve it again.
+
+log: $LOGDIR"
+else
+  if [[ -z "$BRIEF" ]]; then
+    say "picking a topic"
+    "$PY" "$REPO/scripts/pick_topic.py" --top 3 --candidates 14 \
+      > "$LOGDIR/pick_topic.log" 2>&1 \
+      || fail "topic picker" "$(tail -5 "$LOGDIR/pick_topic.log")"
+    BRIEF="$REPO/artifacts/topic_briefs.json"
+  fi
+  TOPIC="$("$PY" -c "
 import json,sys
 b=json.load(open('$BRIEF'))
 briefs=b['briefs'] if isinstance(b,dict) else b
 print(briefs[0]['entity'] if briefs else '')
 ")"
-[[ -n "$TOPIC" ]] || fail "topic picker" "no eligible topic"
-SLUG="$(printf '%s' "$TOPIC" | tr '[:upper:] ' '[:lower:]-' | tr -cd 'a-z0-9-')"
-say "topic: $TOPIC  (project $SLUG)"
-notify "<b>Weekly run started</b>
+  [[ -n "$TOPIC" ]] || fail "topic picker" "no eligible topic"
+  SLUG="$(printf '%s' "$TOPIC" | tr '[:upper:] ' '[:lower:]-' | tr -cd 'a-z0-9-')"
+  say "topic: $TOPIC  (project $SLUG)"
+  notify "<b>Weekly run started</b>
 topic: $TOPIC
 code: <code>$RUN_ON @ $RUN_HEAD</code>
 power: ${RUN_POWER:-unknown} ${RUN_CHARGE:-}
 log: $LOGDIR"
+fi
 
 # ── 2. the film, up to the script ────────────────────────────────────────
 require_power "the script stage"
 PROMPT="$LOGDIR/prompt.txt"
 cat > "$PROMPT" <<PROMPTEOF
-Make this week's documentary.
+Make this week's documentary, from research through to the script, and stop.
 
-Pipeline:  pipeline_defs/narrated-documentary.yaml
-Playbook:  styles/wak3up-documentary.yaml
+Pipeline:  pipeline_defs/narrated-documentary.yaml  (read YOUR stages only)
 Project:   $SLUG
 Brief:     $BRIEF  (take the first brief)
 
-FIRST, before anything else, run this and obey what it says:
+YOUR CONTRACT IS docs/STAGE_CONTRACT.md. Read it first, and read it INSTEAD
+OF AGENT_GUIDE.md — that file is 48 KB written for an agent driving a
+production conversationally with a human present, and you pay for every byte
+of it again on every turn. The 2026-11-06 script stage read it once at turn
+20 and carried it for 288 more.
+
+THEN run this and obey what it says:
 
     .venv/bin/python scripts/resume_state.py --project $SLUG
 
@@ -338,10 +479,26 @@ already on disk is finished work. Do not rebuild a stage it marks [x]: read
 that stage's artifact and carry on from the first one it does not mark.
 Rebuilding spends the run twice and overwrites a result that was fine.
 
-Run the pipeline from research through to the script artifact and stop there.
-Every gate in the pipeline is auto-approved EXCEPT the script gate, which is a
-human one and is handled outside this process — do not wait for it and do not
-approve it yourself.
+YOU HAVE $TURNS_SCRIPT TURNS. At the cap the stage fails and is not resumed.
+If you are going to run out, stop and write what you have with a note of
+what is missing — a partial artifact can be re-entered, a stage that dies
+mid-thought leaves nothing.
+
+INSTEAD OF THE TWO BIGGEST FILES, read their digests. The playbook is 44 KB
+and the script stage uses nine of its twenty-three sections; the research
+brief is 72 KB and most of each data point is a URL you never read:
+
+    .venv/bin/python scripts/playbook_digest.py --stage script
+    .venv/bin/python scripts/brief_digest.py --project $SLUG
+
+The digests are generated from those files, not copies of them, so they
+cannot drift. The fact gate reads the REAL brief, so a digest can never let
+an unsourced sentence through. If a digest is missing something this stage
+needs, that is a bug in the digest script — say so in your closing report.
+
+Every gate in the pipeline is auto-approved EXCEPT the script gate, which is
+a human one and is handled outside this process — do not wait for it and do
+not approve it yourself.
 
 Write the script to projects/$SLUG/artifacts/script.json and the hero style
 frames to projects/$SLUG/renders/style/. Do not render the film.
@@ -391,13 +548,15 @@ PROMPTEOF
 # brief" from. Prints nothing when there is no constraint.
 "$PY" "$REPO/scripts/angle_brief.py" --brief "$BRIEF" >> "$PROMPT" 2>/dev/null || true
 
-if [[ "$SMOKE" == "1" ]]; then
+if stage_done script; then
+  say "script: approved and on disk already — not rewriting it"
+elif [[ "$SMOKE" == "1" ]]; then
   say "smoke: not calling claude -p"
 elif [[ "$DRY_RUN" == "1" ]]; then
   say "dry run: skipping claude -p"
 else
-  say "writing the script (claude -p)"
-  claude_stage "script" "$LOGDIR/script_stage" "$(cat "$PROMPT")" \
+  say "writing the script (claude -p, $TURNS_SCRIPT turns)"
+  claude_stage "script" "$LOGDIR/script_stage" "$(cat "$PROMPT")" "$TURNS_SCRIPT" \
     || fail "script stage" "$(tail -20 "$LOGDIR/script_stage.log" 2>/dev/null \
                              || tail -20 "$LOGDIR/script_stage.err")"
 fi
@@ -412,7 +571,9 @@ require_power "the fact gate"
 # This found that easter-island's act 4 cites fourteen claim ids and that
 # none of them exist — the whole act, twenty-eight factual sentences, with an
 # attribution chain that pointed past the end of a fifteen-entry ledger.
-if [[ "$SMOKE" != "1" && "$DRY_RUN" != "1" ]]; then
+if stage_done script && [[ -n "$RESUME" ]]; then
+  say "fact coverage: the approved script already passed it — skipping"
+elif [[ "$SMOKE" != "1" && "$DRY_RUN" != "1" ]]; then
   say "fact coverage ($FACT_BACKEND)"
   "$PY" "$REPO/lib/verify_fact_coverage.py" --project "$SLUG" \
     --backend "$FACT_BACKEND" --report "$LOGDIR/fact_coverage.md" \
@@ -436,7 +597,14 @@ No model calls, no render, nothing published."
   say "done (smoke)"
   exit 0
 fi
-if [[ "$DRY_RUN" == "1" ]]; then
+if stage_done script && [[ -n "$RESUME" ]]; then
+  # checkpoint_script.json carries human_approved=True, and lib/checkpoint.py
+  # refuses to write a gated stage completed without it. So the approval is a
+  # fact on disk, not a flag this script is trusting itself about. Asking
+  # again would wake someone at 10am to re-approve what they approved at
+  # 20:48.
+  say "script gate: already approved (checkpoint_script.json) — not asking again"
+elif [[ "$DRY_RUN" == "1" ]]; then
   say "dry run: skipping the script gate (there is no script to approve)"
   say "         scripts/dry_run.py is what exercises the gate"
 else
@@ -459,7 +627,10 @@ while true; do
         if [[ "$DRY_RUN" != "1" ]]; then
           claude_stage "notes" "$LOGDIR/notes_stage" \
             "Apply the notes in projects/$SLUG/artifacts/script_notes.txt
-to projects/$SLUG/artifacts/script.json. Change nothing else." \
+to projects/$SLUG/artifacts/script.json. Change nothing else.
+
+Read docs/STAGE_CONTRACT.md, not AGENT_GUIDE.md. You have $TURNS_NOTES turns:
+this is an edit to one file, not a stage." "$TURNS_NOTES" \
             || fail "applying notes" "$(tail -20 "$LOGDIR/notes_stage.log" 2>/dev/null \
                                        || tail -20 "$LOGDIR/notes_stage.err")"
         fi
@@ -473,46 +644,187 @@ bot; see the README." ;;
 done
 fi
 
-# ── 4. the render ────────────────────────────────────────────────────────
+# ── 4. the film, one capped stage at a time ──────────────────────────────
+#
+# WHY FOUR STAGES AND NOT ONE. This was a single `claude -p` call told to go
+# from the approved script to a delivered film. On 2026-11-06 that call ran
+# 1,222 turns over 2h45m, grew its context to 842,269 tokens, read 388
+# million cache tokens and cost $212.43 — and then hit the five-hour usage
+# window one minute after the audio mix finished, with the picture never
+# started.
+#
+# A `claude -p` stage re-reads its whole conversation on every turn, so the
+# bill is the context size times the turn count: QUADRATIC IN TURNS. Of that
+# $212.43, $194.04 was cache reads. The information the stage actually moved
+# was 745 KB of tool output, about 190,000 tokens. It paid 388 million for
+# 190 thousand.
+#
+# Four stages, each starting from an empty context, restart that quadratic
+# four times instead of running it once to 1,222. Each has a turn cap, each
+# ends by writing its artifact and stopping, and the hand-off between them
+# is a file on disk — which is also what makes a mid-run death resumable.
+#
+# And the picture itself has NO MODEL AT ALL. scripts/render_film.py renders
+# the plate, the look pass and the type pass, delivers the file AND RUNS THE
+# GATES. There was never a decision in the compose stage; there was a loop
+# with a sleep in it, and 65 of the render stage's tool calls were that loop.
+
+# What a stage is told before its own instructions. Everything here is about
+# NOT carrying what the other stages need.
+stage_preamble() {
+  local stage="$1" cap="$2" skill="$3"
+  cat <<PRE
+You are the $stage stage of projects/$SLUG, and nothing else.
+
+YOUR CONTRACT IS docs/STAGE_CONTRACT.md. Read it, and read it INSTEAD of
+AGENT_GUIDE.md: that file is 48 KB written for an agent driving a whole
+production conversationally, and a single stage pays for every byte of it
+again on every turn.
+
+FIRST, before anything else, run this and obey what it says:
+
+    .venv/bin/python scripts/resume_state.py --project $SLUG
+
+A stage it marks [x] is FINISHED. Read its artifact and carry on. Do not
+rebuild it.
+
+YOU HAVE $cap TURNS. At the cap this stage FAILS and is not resumed. If you
+are going to run out, stop and write what you have with a note of what is
+missing: a partial artifact can be re-entered, a stage that dies mid-thought
+leaves nothing. Spending turns on a loop is what the cap is for — the stage
+this replaced edited one file it had written itself 48 times and read it
+back 13 times.
+
+READ THESE, AND NOT MORE:
+
+    .venv/bin/python scripts/playbook_digest.py --stage $stage
+    skills/pipelines/narrated-documentary/$skill
+
+The playbook is 44 KB of twenty-three sections and this stage uses a
+handful; the digest is generated from the same file so it cannot drift. Read
+a SLICE of a large artifact with python, never \`cat\`: scene_plan.json is
+329 KB, edit_decisions.json 288 KB and render_props.json 425 KB on a real
+film, and reading one whole costs you 80–110 K tokens on every later turn.
+
+DO NOT edit lib/, scripts/, schemas/, styles/, remotion-composer/src/ or
+config.yaml. The runner refuses to start when they are dirty, so an edit
+here stops next week's run — the 2026-11-06 stages left seven such files
+modified and the next run refused. If shared code is wrong, and twice now it
+genuinely has been, SAY SO IN YOUR CLOSING REPORT with the file, the line
+and the cause, and work around it.
+
+AUTO-APPROVE YOUR OWN GATE. pipeline_defs/narrated-documentary.yaml marks
+scene_plan and assets human_approval_default: true, and lib/checkpoint.py
+refuses to write a gated stage \`completed\` without human_approved=True. The
+ONLY human gate in this pipeline is the script gate, and it is handled
+outside this process and is already past. So write your checkpoint
+\`completed\` with human_approved=True and say in your closing report what a
+reviewer would have wanted to look at. A checkpoint left \`awaiting_human\`
+stops the film: the next stage reads resume_state.py, does not see yours as
+finished, and builds it again.
+
+DO NOT render the film and do not wait for a render. That is not a stage.
+PRE
+}
+
+# $1 stage  $2 cap  $3 director skill  $4 what this stage must produce
+pipeline_stage() {
+  local stage="$1" cap="$2" skill="$3" body="$4"
+  if stage_done "$stage"; then
+    say "$stage: already finished — skipping"
+    return 0
+  fi
+  if [[ "$DRY_RUN" == "1" ]]; then
+    say "dry run: skipping the $stage stage"
+    return 0
+  fi
+  require_power "the $stage stage"
+  say "$stage (claude -p, $cap turns)"
+  claude_stage "$stage" "$LOGDIR/${stage}_stage" \
+    "$(stage_preamble "$stage" "$cap" "$skill")
+
+$body" "$cap" \
+    || fail "$stage stage" "$(tail -20 "$LOGDIR/${stage}_stage.log" 2>/dev/null \
+                             || tail -20 "$LOGDIR/${stage}_stage.err")"
+}
+
+pipeline_stage scene_plan "$TURNS_SCENE_PLAN" scene-director.md \
+"Produce projects/$SLUG/artifacts/scene_plan.json from the APPROVED script at
+projects/$SLUG/artifacts/script.json.
+
+Validate it against schemas/artifacts/scene_plan.schema.json and check every
+authored slot with lib/buildability.py, which validates against
+remotion-composer/component-contract.json — required props, required keys on
+every array item, and enum ranges per component. A slot that passes
+buildability and renders with no picture is a defect worth reporting: the
+contract calls a plate \`image\` and the renderer used to read only
+\`backgroundImage\`.
+
+Write the checkpoint and STOP. Do not generate or acquire a single asset."
+
+pipeline_stage assets "$TURNS_ASSETS" asset-director.md \
+"Produce the asset bank and the asset manifest for every slot the scene plan
+asks for: projects/$SLUG/artifacts/asset_bank.json and asset_manifest.json,
+plus the narration audio.
+
+Use the scripts that exist rather than writing programs:
+scripts/build_asset_bank.py builds the Wikimedia bank from bank_subjects,
+lib/reuse_rules.py holds the one-film-one-use rule,
+scripts/synthesize_narration.py synthesises the narration one segment per
+beat and bakes the written air, scripts/measure_music.py measures the music
+library against the playbook's bed criteria.
+
+Write the checkpoint and STOP. Do not build the edit."
+
+pipeline_stage edit "$TURNS_EDIT" edit-director.md \
+"Produce projects/$SLUG/artifacts/edit_decisions.json, the Remotion props at
+artifacts/render_props.json, and the finished audio mix at
+renders/mix_final.wav with its renders/mix_report.json.
+
+lib/build_render_props.py turns edit_decisions into the props Remotion
+renders; lib/verify_rhythm.py says whether the edit has a rhythm or only an
+average. An authored cut carries its component's props flat beside
+\`type\` and needs no \`source\`.
+
+Those three files are the whole hand-off: the next stage is NOT an agent, it
+is scripts/await_render.py, which starts the render and waits with no model
+open. Write the checkpoint and STOP."
+
+# ── 4b. the picture: no model, no context, no usage limit ────────────────
 require_power "the render"
 if [[ "$DRY_RUN" == "1" ]]; then
   say "dry run: skipping the render"
 else
-  say "rendering (no render retries; usage limits are resumed)"
-  claude_stage "render" "$LOGDIR/render_stage" \
-    "FIRST, before anything else, run this and obey what it says:
-
-    .venv/bin/python scripts/resume_state.py --project $SLUG
-
-This stage can be RE-ENTERED after a usage limit. Everything it marks [x] is
-finished — read the artifact and carry on from the first stage it does not
-mark. Do not rebuild the script; it is approved.
-
-Continue the pipeline for project $SLUG from the approved script through to a
-delivered film. Auto-approve every gate.
-
-START THE PICTURE WITH
-
-    scripts/render_detached.sh $SLUG
-
-and NOT as a background task of your own. scripts/render_film.py is still
-the only full-film render path; that wrapper is how it is started. It puts
-the render in its own session and returns at once, so the render survives
-your waiter, your stage and this script. Then poll
-projects/$SLUG/render_status.json for the outcome and
-projects/$SLUG/render.log for progress.
-
-A render here takes HOURS and a background task is stopped at two. The Noah
-plate was launched three times as a background task and killed three times,
-the last at 33,055 of 35,561 frames, leaving no file and no error — and the
-waiter, which grepped the log for strings only a live render prints, slept
-on a process that no longer existed. Do not wait on a fixed frame number or
-a fixed phrase: render_film.py has its own watchdog and fails loudly.
-
-If the picture is already rendered and only a gate or the audio needs
-rebuilding, say so and do that rather than rendering 36,000 frames again." \
-    || fail "render" "$(tail -20 "$LOGDIR/render_stage.log" 2>/dev/null \
-                       || tail -20 "$LOGDIR/render_stage.err")"
+  # Checked here, cheaply, rather than discovered by render_film.py after
+  # the waiter has already started: "no mix at ..." is the right error but
+  # the wrong place for it.
+  MISSING=""
+  for needed in "artifacts/render_props.json" "renders/mix_final.wav"; do
+    [[ -s "$REPO/projects/$SLUG/$needed" ]] || MISSING="$MISSING $needed"
+  done
+  if [[ -n "$MISSING" ]]; then
+    fail "render" "the edit stage did not leave:$MISSING
+A render needs the props and the mix. Re-run the edit stage."
+  fi
+  # No `stage_done compose` test: compose has no agent now, so nothing
+  # writes its checkpoint. await_render.py answers the question itself —
+  # it returns 0 immediately when render_status.json says delivered and the
+  # file is there — and it costs nothing to ask.
+  say "rendering (no model open; the waiter makes no API calls)"
+  "$PY" "$REPO/scripts/await_render.py" --project "$SLUG" \
+    --timeout-hours "$RENDER_TIMEOUT_HOURS"
+  RENDER_RC=$?
+  case "$RENDER_RC" in
+    0) say "the film is delivered and the gates passed" ;;
+    2) fail "render" "still rendering after ${RENDER_TIMEOUT_HOURS}h. The
+render is STILL GOING and was deliberately not killed — a render killed near
+the end leaves no file and no error. Watch
+projects/$SLUG/render.log, then re-fire: the run picks this film back up.
+No model was open for any of it, so nothing was spent waiting." ;;
+    *) fail "render" "$(tail -20 "$REPO/projects/$SLUG/render_status.json.tail" \
+                        2>/dev/null || tail -20 "$REPO/projects/$SLUG/render.log" \
+                        2>/dev/null || echo "the render failed and left no log")" ;;
+  esac
 fi
 
 # ── 5. publish ───────────────────────────────────────────────────────────
