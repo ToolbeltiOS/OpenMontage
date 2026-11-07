@@ -31,7 +31,9 @@ real failure actually has.
 from __future__ import annotations
 
 import json
-from datetime import datetime
+import subprocess
+import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -41,6 +43,10 @@ from scripts import stage_usage as su
 from scripts import usage_limit as ul
 
 TORONTO = ZoneInfo("America/Toronto")
+ROOT = Path(__file__).resolve().parents[2]
+
+#: The result record the runner actually read that night.
+REAL_RECORD = ROOT / "logs" / "2026-11-06" / "render_stage.json"
 
 #: The 2026-11-06 render stage's result record, trimmed to the fields that
 #: matter. Every number here is measured, not invented.
@@ -90,10 +96,24 @@ class TestTheFiveHourLimitIsAUsageLimit:
         """The next word for that slot has not been invented yet."""
         assert ul.is_usage_limit(message), message
 
-    def test_the_structured_field_is_enough_on_its_own(self):
-        """A vendor rewords a sentence; it changes a field deliberately."""
+    def test_the_json_field_is_matched_by_name(self):
+        """`api_error: "usage_limit_reached"` — the field, not the sentence.
+
+        This is the one that had to be read. The prose patterns all required
+        the word session, usage or rate against "limit"; the field said so
+        outright, with underscores that `[- ]` cannot match, and was never
+        looked at. A vendor rewords a sentence; it changes a field
+        deliberately.
+        """
+        assert THE_RENDER_THAT_COST_212["api_error"] == "usage_limit_reached"
+        assert "usage_limit_reached" in ul.LIMIT_ERRORS
+
+        # With the prose gone entirely, the field alone must still decide.
         no_prose = dict(THE_RENDER_THAT_COST_212, result="stopped")
         assert ul.structured_limit(no_prose)
+        assert not ul.is_usage_limit("stopped"), (
+            "the prose in this variant must carry no signal, or the test is "
+            "not proving the field was read")
 
     def test_it_classifies_as_a_usage_limit(self, tmp_path):
         result = tmp_path / "render_stage.json"
@@ -101,15 +121,55 @@ class TestTheFiveHourLimitIsAUsageLimit:
         kind, _ = ul.classify([result, tmp_path / "render_stage.err"])
         assert kind == "usage_limit"
 
-    def test_it_would_have_resumed_at_0221(self):
-        """The timing was always there. Nothing reached it."""
+    def test_it_would_have_slept_2h47m_and_resumed_at_0221(self):
+        """The timing was always there. Nothing reached it.
+
+        The stage died at 23:33:55 saying "resets 2:20am
+        (America/Toronto)". That is 2h46m05s away, plus the 60-second grace
+        the module adds so a resume lands after the window opens rather than
+        on its exact second: 10,025 seconds, 2h47m05s, back at 02:21.
+        """
         died = datetime(2026, 11, 6, 23, 33, 55, tzinfo=TORONTO)
         seconds, source = ul.seconds_until_reset(
             THE_RENDER_THAT_COST_212["result"], now=died)
-        assert "2:20am" in source
-        assert 2 * 3600 < seconds < 3 * 3600, seconds
-        back = died.timestamp() + seconds
-        assert datetime.fromtimestamp(back, TORONTO).strftime("%H:%M") == "02:21"
+        assert source == "resets 2:20am (America/Toronto)"
+        assert seconds == 10_025, (
+            f"expected 2h46m05s to the reset plus {ul.GRACE_SECONDS}s grace "
+            f"= 10025s, got {seconds}")
+        assert su.hms(seconds) == "2h47m"
+        back = died + timedelta(seconds=seconds)
+        assert back.strftime("%H:%M") == "02:21"
+        assert seconds < ul.MAX_WAIT_SECONDS, (
+            "and it is under the six-hour clamp, so the real sleep is the "
+            "one the message asked for and not the ceiling")
+
+    @pytest.mark.skipif(not REAL_RECORD.exists(),
+                        reason="needs the 2026-11-06 logs on this machine")
+    def test_the_actual_record_on_disk_classifies_as_a_usage_limit(self):
+        """The file the runner read that night, through the CLI it calls.
+
+        An embedded fixture proves the logic; this proves the file. The
+        runner invokes `usage_limit.py --classify <base>.json <base>.err`,
+        and .err was zero bytes — every signal was in the JSON.
+        """
+        done = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "usage_limit.py"),
+             "--classify", str(REAL_RECORD),
+             str(REAL_RECORD.with_suffix(".err"))],
+            capture_output=True, text=True)
+        assert done.returncode == 0, done.stderr
+        assert "KIND=usage_limit" in done.stdout, done.stdout
+        assert "RESETS=resets 2:20am (America/Toronto)" in done.stdout
+
+        # And the plain form the runner used before --classify existed:
+        # exit 0 means "sleep on this".
+        legacy = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "usage_limit.py"),
+             str(REAL_RECORD), str(REAL_RECORD.with_suffix(".err"))],
+            capture_output=True, text=True)
+        assert legacy.returncode == 0, (
+            "this is the exact call that returned 1 on 2026-11-06 and failed "
+            "the run instead of sleeping")
 
 
 class TestAFailureIsStillAFailure:

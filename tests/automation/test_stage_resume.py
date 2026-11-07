@@ -22,13 +22,55 @@ from scripts import stage_usage as su
 
 
 class TestWhatAStageIsToldOnReEntry:
-    def test_a_completed_stage_is_marked_and_named(self):
-        st = rs.state("easter-island")
+    """Built on a project this test makes, not one on the machine.
+
+    These read the live `projects/easter-island` until 2026-11-07. That film
+    is published, and its checkpoints are NOT tracked in git while its
+    artifacts are — so in the runner worktree it has artifacts and no
+    checkpoints at all, `completed` comes back empty, and
+    `test_a_completed_stage_is_marked_and_named` failed. Worse,
+    `test_an_artifact_without_a_checkpoint_is_not_assumed_done` still PASSED,
+    because with nothing completed, "not done" is true for the wrong reason:
+    a vacuous assertion is a worse outcome than a failing one.
+
+    So the project is built here. What a stage is told on re-entry is a
+    property of resume_state.py, not of which films this Mac has made.
+    """
+
+    @staticmethod
+    @pytest.fixture
+    def project(monkeypatch, tmp_path):
+        """A film finished through `script`, with scene_plan half-done.
+
+        scene_plan gets an artifact and no completed checkpoint, which is the
+        shape that must NOT read as finished: a file lying around is not
+        evidence a stage completed.
+        """
+        monkeypatch.setattr(rs, "ROOT", tmp_path)
+        monkeypatch.setattr("lib.checkpoint.get_completed_stages",
+                            lambda *a, **k: ["research", "proposal", "script"])
+        monkeypatch.setattr("lib.checkpoint.get_next_stage",
+                            lambda *a, **k: "scene_plan")
+        art = tmp_path / "projects" / "a-film" / "artifacts"
+        art.mkdir(parents=True)
+        for name in ("research_brief.json", "proposal_packet.json",
+                     "script.json", "scene_plan.json"):
+            (art / name).write_text("{}")
+        return "a-film"
+
+    def test_a_completed_stage_is_marked_and_named(self, project):
+        st = rs.state(project)
         assert "script" in st["completed"]
         assert st["next"] == "scene_plan"
+        # The marked LINES, not every "[x]" in the text: the instruction
+        # paragraph says "Do NOT redo a stage marked [x]" and counting the
+        # substring made that fourth mention look like a fourth stage.
+        marked = [line for line in rs.render(st).splitlines()
+                  if line.strip().startswith("[x]")]
+        assert len(marked) == 3, marked
 
-    def test_the_instruction_forbids_redoing_finished_work(self):
-        text = rs.render(rs.state("easter-island"))
+    def test_the_instruction_forbids_redoing_finished_work(self, project):
+        text = rs.render(rs.state(project))
         assert "Do NOT redo" in text
         assert "spends the run twice" in text
 
@@ -55,9 +97,16 @@ class TestWhatAStageIsToldOnReEntry:
         note = next(r["note"] for r in st["stages"] if r["stage"] == "script")
         assert "MISSING" in note
 
-    def test_an_artifact_without_a_checkpoint_is_not_assumed_done(self):
-        """Files lying around are not evidence a stage finished."""
-        st = rs.state("easter-island")
+    def test_an_artifact_without_a_checkpoint_is_not_assumed_done(self, project):
+        """Files lying around are not evidence a stage finished.
+
+        And it must not pass for the wrong reason: the fixture completes
+        three stages, so "scene_plan is not done" says something.
+        """
+        st = rs.state(project)
+        assert st["completed"], (
+            "if nothing is completed, this test proves nothing — that is how "
+            "it kept passing against a project with no checkpoints at all.")
         scene = next(r for r in st["stages"] if r["stage"] == "scene_plan")
         assert scene["exists"] and not scene["done"]
         assert "do not assume" in scene["note"]

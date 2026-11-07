@@ -154,6 +154,51 @@ log: $LOGDIR/run.log"
   exit 1
 }
 
+# ── did a stage edit the code the film is traced to? ─────────────────────
+#
+# CHECKED AT THE END OF EVERY STAGE, not only at the start of the run.
+#
+# The start-of-run guard proves the film can be traced to a commit. It cannot
+# notice a stage dirtying the tree WHILE the run is going, and on 2026-11-06
+# both `claude -p` stages did exactly that: seven files under schemas/, lib/,
+# scripts/ and remotion-composer/src/, between 20:00 and 22:48. Nothing said
+# so until the NEXT run refused to start at 10:10 the following morning with
+# "REFUSED: 7 uncommitted change(s) to code" — twelve hours later, by which
+# time the only signal was a refusal with no author and no reason.
+#
+# `.claude/settings.json` denies Edit and Write under those directories in
+# this worktree, which is the first line of defence and not the guarantee: a
+# stage must be able to run arbitrary commands to make a film, so `sed -i`,
+# `cat >` and a python script all remain. THIS is the guarantee, because it
+# asks git rather than trusting a tool boundary.
+#
+# It does NOT revert anything. All seven of those edits were real fixes with
+# real causes and were committed as 86e057c; a guard that had discarded them
+# would have destroyed good work and hidden three live defects.
+code_dirty() {
+  git -C "$REPO" status --porcelain -- "${RUN_CODE[@]}" 2>/dev/null
+}
+
+assert_code_clean() {
+  local stage="$1" dirty
+  dirty="$(code_dirty)"
+  [[ -z "$dirty" ]] && return 0
+  say "$stage: THIS STAGE EDITED THE CODE TREE"
+  printf '%s\n' "$dirty" | sed 's/^/         /'
+  fail "$stage (edited the code)" "The $stage stage modified code the film is
+traced to:
+
+$dirty
+
+Nothing has been reverted. Read the diff: the last stage to do this made
+seven edits and all seven were real defects worth committing. Commit or
+revert them, then re-fire — the run picks this film back up where it stopped.
+
+docs/STAGE_CONTRACT.md tells a stage to report a defect in shared code rather
+than fix it, and .claude/settings.json denies Edit and Write there."
+}
+
+
 # ── power ────────────────────────────────────────────────────────────────
 #
 # A RUN TAKES HOURS AND A CLAMSHELL MAC ON BATTERY SLEEPS THROUGH THEM.
@@ -321,6 +366,11 @@ claude_stage() {
     # The JSON said "api_error": "usage_limit_reached" in as many words. The
     # reset time parsed fine. The run failed instead of sleeping 2h47m and
     # going back in at 02:21, and that cost the film.
+    # Before the exit code is read: a stage that dirtied the code stops the
+    # run whether it thinks it succeeded or not. A usage limit is not a
+    # reason to resume into a tree somebody now has to reconcile by hand.
+    assert_code_clean "$name"
+
     classified="$("$PY" "$REPO/scripts/usage_limit.py" --classify \
                   "$base.json" "$base.err" 2>/dev/null || echo KIND=error)"
     kind="$(printf '%s' "$classified" | sed -n 's/^KIND=//p')"
@@ -821,7 +871,8 @@ render is STILL GOING and was deliberately not killed — a render killed near
 the end leaves no file and no error. Watch
 projects/$SLUG/render.log, then re-fire: the run picks this film back up.
 No model was open for any of it, so nothing was spent waiting." ;;
-    *) fail "render" "$(tail -20 "$REPO/projects/$SLUG/render_status.json.tail" \
+    *) assert_code_clean "render"
+       fail "render" "$(tail -20 "$REPO/projects/$SLUG/render_status.json.tail" \
                         2>/dev/null || tail -20 "$REPO/projects/$SLUG/render.log" \
                         2>/dev/null || echo "the render failed and left no log")" ;;
   esac
@@ -835,6 +886,7 @@ if [[ "$DRY_RUN" == "1" && ! -f "$REPO/projects/$SLUG/artifacts/listing.json" ]]
   say "done (dry run: topic and hand-offs only)"
   exit 0
 fi
+assert_code_clean "the render"
 say "publishing"
 PUBLISH_ARGS=(--project "$SLUG")
 [[ "$DRY_RUN" == "1" ]] && PUBLISH_ARGS+=(--dry-run)
@@ -866,6 +918,7 @@ COSTEOF
   printf '%s\n' "$COST"
 fi
 
+assert_code_clean "publish"
 say "done"
 notify "<b>Weekly run finished</b>
 topic: $TOPIC

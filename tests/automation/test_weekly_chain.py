@@ -856,12 +856,51 @@ class TestEveryCommandTheUnattendedRunIssues:
                 f"{path}: {line}"
 
     def test_the_only_full_film_render_path_sets_its_own_directory(self):
-        """Which is why no one has to write the incantation."""
+        """Which is why no one has to write the incantation.
+
+        This asserted `"cwd=COMPOSER" in source` and began failing when
+        film_render.py started passing COMPOSER POSITIONALLY —
+        `run_watched(cmd, COMPOSER, "plate", count, cuts)`. The property was
+        never broken; the test was reading a spelling. So it reads the tree
+        now: every npx invocation must be handed COMPOSER as its working
+        directory, however the argument is written.
+        """
+        import ast
         from pathlib import Path
 
-        source = Path("lib/film_render.py").read_text()
-        assert "cwd=COMPOSER" in source
-        assert source.count("npx") >= 1
+        tree = ast.parse(Path("lib/film_render.py").read_text())
+
+        #: (function, which positional argument is cwd)
+        RUNNERS = {"run": 1, "run_watched": 1}
+        npx_calls = []
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call) or not node.args:
+                continue
+            name = getattr(node.func, "id", None)
+            if name not in RUNNERS:
+                continue
+            argv = node.args[0]
+            if not isinstance(argv, (ast.List, ast.Tuple)) or not argv.elts:
+                continue
+            first = argv.elts[0]
+            if not (isinstance(first, ast.Constant) and first.value == "npx"):
+                continue
+            index = RUNNERS[name]
+            if len(node.args) > index:
+                cwd = node.args[index]
+            else:
+                cwd = next((kw.value for kw in node.keywords
+                            if kw.arg == "cwd"), None)
+            npx_calls.append((name, ast.unparse(cwd) if cwd else None))
+
+        assert npx_calls, (
+            "no npx invocation found in lib/film_render.py — either the "
+            "render path moved or this test can no longer see it.")
+        for name, cwd in npx_calls:
+            assert cwd == "COMPOSER", (
+                f"{name}(...) runs npx with cwd={cwd!r}. Remotion must be "
+                f"run from remotion-composer/, which is why no caller has to "
+                f"write the incantation.")
 
 
 class TestTheNoahConstraint:
