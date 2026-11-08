@@ -35,9 +35,15 @@ class TestTheSchedulerDoesNotTryTheImpossible:
         assert 'if listing.get("pinned_comment") and publish_at is not None:' \
             in SOURCE
 
-    def test_it_says_what_is_owed_and_when_it_can_be_done(self):
-        assert "POST THE CREDITS COMMENT after the film goes public" in SOURCE
-        assert "disables comments while a video is private" in SOURCE
+    def test_it_records_where_the_credits_actually_are(self):
+        """Not as an owed item: the attribution is the hosted page the
+        description links to, and the page is up before the upload runs.
+        The comment is a second copy, and if it never posts the film is
+        still attributed."""
+        assert "credits are at {page_url(args.project)}" in SOURCE
+        assert "done.append(" in SOURCE
+        assert "POST THE CREDITS COMMENT" not in SOURCE, (
+            "the comment is a backup copy and cannot be a manual chore")
 
     def test_the_public_path_still_posts_with_the_upload(self):
         """A film published with --now has comments and must carry its
@@ -143,17 +149,34 @@ class TestTheAgentThatPostsThemLater:
         assert self.plist()["RunAtLoad"] is True
 
 
-class TestThePointerIsInTheDescription:
-    """The comment can land an hour after the film goes public, so the
-    description has to say where the credits are, above the fold."""
+class TestTheLinkIsInTheDescription:
+    """CC BY 4.0 3(a)(2) is satisfied by a link to a resource carrying the
+    required information. That link is the attribution, so it goes above
+    the fold and it goes in the description, which publishes with the film
+    — not in a comment that cannot exist while the video is private."""
 
     SOURCE = (ROOT / "scripts" / "build_listing.py").read_text()
 
-    def test_the_line_is_in_the_template(self):
-        assert '"Full image credits in the pinned comment."' in self.SOURCE
+    def test_the_description_links_the_page(self):
+        assert "page_url(project)" in self.SOURCE
+        assert "from build_credits_page import page_url" in self.SOURCE
 
     def test_it_sits_directly_under_the_hook(self):
-        """Not in the credits block at the bottom, where the long version
-        already is and where nobody reading three lines will see it."""
+        """Not only in the credits block at the bottom, where nobody
+        reading three lines will see it."""
         top = self.SOURCE[self.SOURCE.find("parts = [hook(script)"):]
-        assert top.index("Full image credits") < top.index("CHAPTERS")
+        assert top.index("page_url(project)") < top.index("CHAPTERS")
+
+    def test_it_says_how_many_assets_and_under_what_terms(self):
+        """A bare link is not a licence summary."""
+        top = self.SOURCE[self.SOURCE.find("parts = [hook(script)"):]
+        head = top[:top.index("CHAPTERS")]
+        # The sentence is split across f-string literals in the source, so
+        # the joined text is what gets asserted, not the lines.
+        joined = "".join(head.split('"')[1::2])
+        assert "freely licensed images and clips" in joined, joined[:200]
+        assert "each credited with its author and licence" in joined
+        assert "credit_required_assets" in head
+
+    def test_the_pinned_comment_is_no_longer_what_the_description_cites(self):
+        assert "is in the pinned comment" not in self.SOURCE
