@@ -76,6 +76,23 @@ def main() -> int:
     props_path = Path(args.props) if args.props else project / "artifacts" / "render_props.json"
     props = json.loads(props_path.read_text())
     cuts = props["cuts"]
+
+    # BEFORE ANY PASS, because this is answerable from the props in a
+    # millisecond and costs hours to find afterwards. A frame no cut covers
+    # is painted as the composition's bare background and survives every
+    # delivery gate there is; film #1 shipped with eight of them.
+    sys.path.insert(0, str(ROOT / "lib"))
+    from buildability import check_timeline_coverage
+    holes, coverage = check_timeline_coverage(cuts, FPS)
+    if holes:
+        for hole in holes[:20]:
+            print("   TIMELINE:", hole)
+        raise SystemExit(
+            f"{args.project}: {coverage['gap_frames']} frame(s) belong to no "
+            f"cut and {coverage['overlap_frames']} to more than one. The "
+            f"timeline has to cover every frame exactly once before anything "
+            f"is rendered from it.")
+
     count = frame_count(cuts, FPS)
     seconds = count / FPS
 

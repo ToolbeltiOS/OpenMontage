@@ -162,6 +162,100 @@ def check_scene_plan(slots: list[dict[str, Any]], contract: dict[str, Any] | Non
     return (not problems), problems, counts
 
 
+# ---------------------------------------------------------------------------
+# The timeline, frame by frame
+# ---------------------------------------------------------------------------
+
+#: How the composition turns a cut's seconds into frames.
+#:
+#: This mirrors `frameSpan` in `remotion-composer/src/Explainer.tsx` and has
+#: to keep mirroring it: the whole point is to read the same timeline the
+#: renderer will lay out, from the props, before anything is rendered.
+def frame_span(element: dict[str, Any], fps: int = 30) -> tuple[int, int]:
+    """(first frame, last frame) inclusive, both edges rounded from the timeline."""
+    first = round(float(element["in_seconds"]) * fps)
+    last = round(float(element["out_seconds"]) * fps) - 1
+    return first, max(first, last)
+
+
+def check_timeline_coverage(cuts: list[dict[str, Any]], fps: int = 30
+                            ) -> tuple[list[str], dict[str, Any]]:
+    """Every frame of the film is covered by exactly one cut.
+
+    WHY THIS IS BLOCKING
+    --------------------
+    A frame no cut covers is not a missing frame. It is a frame the
+    composition paints with its bare background — no scene, no chrome —
+    while the type pass goes on laying captions over it. It looks like a
+    flash, and it survives every delivery gate there is:
+
+      - frame count:  the frame is present
+      - frame motion: one frame is not a freeze
+      - frame order:  the delivered film is compared against the PLATE, and
+                      the gap is in the plate, so the two agree perfectly
+      - plate purity, type lock, delivery audio: not their question
+
+    Film #1 shipped with eight of these. It was published before anything
+    looked at a histogram of single-frame differences, and the only reason
+    they were ever found is that a splice went looking for something else.
+
+    Counted on the props of the four films made so far, under the old
+    arithmetic (start rounded from the timeline, duration rounded from
+    `out - in`): they-said-it-couldnt-be-built 21, king-tut 13,
+    easter-island 0, noah 0.
+
+    OVERLAPS FAIL TOO. Two cuts over one frame is the same class of defect
+    read from the other side — the later cut wins and the earlier one is a
+    frame shorter than its own edit says, which is exactly the arithmetic
+    that produced the gaps.
+    """
+    problems: list[str] = []
+    if not cuts:
+        return ["the props carry no cuts at all"], {"cuts": 0}
+
+    spans = sorted((frame_span(c, fps), c.get("id", "<no id>")) for c in cuts)
+    total = max(last for (_, last), _ in spans) + 1
+
+    gaps: list[dict[str, Any]] = []
+    overlaps: list[dict[str, Any]] = []
+    for ((a1, b1), id1), ((a2, b2), id2) in zip(spans, spans[1:]):
+        if a2 > b1 + 1:
+            gaps.append({"first": b1 + 1, "last": a2 - 1,
+                         "after": id1, "before": id2})
+        elif a2 <= b1:
+            overlaps.append({"first": a2, "last": min(b1, b2),
+                             "cuts": [id1, id2]})
+
+    first_frame = spans[0][0][0]
+    if first_frame != 0:
+        problems.append(
+            f"the film starts at frame {first_frame}, not 0 — "
+            f"{first_frame} frame(s) before {spans[0][1]} are covered by "
+            f"nothing")
+    for gap in gaps:
+        span = (f"frame {gap['first']}" if gap["first"] == gap["last"]
+                else f"frames {gap['first']}-{gap['last']}")
+        problems.append(
+            f"{span} ({gap['first'] / fps:.3f}s) "
+            f"is covered by no cut — it falls between {gap['after']} and "
+            f"{gap['before']}, so the composition paints its bare background "
+            f"there: no scene, no chrome")
+    for over in overlaps:
+        span = (f"frame {over['first']}" if over["first"] == over["last"]
+                else f"frames {over['first']}-{over['last']}")
+        problems.append(
+            f"{span} ({over['first'] / fps:.3f}s) is covered by "
+            f"{' and '.join(over['cuts'])} at once — the later cut paints "
+            f"over the earlier one, which is a frame shorter than its edit")
+
+    return problems, {"cuts": len(cuts), "frames": total,
+                      "gap_frames": sum(g["last"] - g["first"] + 1 for g in gaps),
+                      "gaps": gaps[:40],
+                      "overlap_frames": sum(o["last"] - o["first"] + 1
+                                            for o in overlaps),
+                      "overlaps": overlaps[:40]}
+
+
 if __name__ == "__main__":
     import sys
 

@@ -1200,6 +1200,36 @@ const OverlayRenderer: React.FC<{ overlay: Overlay; theme: ThemeConfig }> = ({
 // Main composition
 // ---------------------------------------------------------------------------
 
+/**
+ * The frames a timed element occupies, as whole frames.
+ *
+ * BOTH EDGES ARE ROUNDED FROM THE TIMELINE, and the duration is their
+ * difference. Rounding the START from the timeline and the DURATION from
+ * `out - in` rounds two different quantities independently, and when they
+ * disagree the element ends a frame before the next one starts. Nothing
+ * covers that frame, so the composition paints its bare background: no
+ * scene, no chrome, under whatever the type pass puts over it.
+ *
+ * Counted from the props of the four films made so far, under the old
+ * arithmetic: they-said-it-couldnt-be-built 21 such frames, king-tut 13,
+ * easter-island 0, noah 0. The first of those is published, and it has
+ * eight visible single-frame flashes in it — luma 32 against neighbours at
+ * 15, in dark passages — three of them in a gap.
+ *
+ * `to` of one cut equals `from` of the next whenever their seconds meet,
+ * which is what makes the timeline contiguous BY CONSTRUCTION rather than
+ * by luck. `lib/buildability.py` refuses to render a props file where it
+ * is not.
+ */
+const frameSpan = (
+  element: { in_seconds: number; out_seconds: number },
+  fps: number,
+): { from: number; duration: number } => {
+  const from = Math.round(element.in_seconds * fps);
+  const to = Math.round(element.out_seconds * fps);
+  return { from, duration: Math.max(1, to - from) };
+};
+
 export const Explainer: React.FC<ExplainerProps> = (props) => {
   const { cuts, overlays, captions, audio } = props;
   const layerMode: LayerMode = props.layer_mode ?? "all";
@@ -1227,8 +1257,7 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
 
       {/* Layer 1: Visual scenes */}
       {cuts.map((cut) => {
-        const from = Math.round(cut.in_seconds * fps);
-        const duration = Math.round((cut.out_seconds - cut.in_seconds) * fps);
+        const { from, duration } = frameSpan(cut, fps);
 
         return (
           <Sequence key={cut.id} from={from} durationInFrames={duration}>
@@ -1239,10 +1268,7 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
 
       {/* Layer 2: Overlays (section titles, stat reveals, hero titles) */}
       {overlays?.map((overlay, i) => {
-        const from = Math.round(overlay.in_seconds * fps);
-        const duration = Math.round(
-          (overlay.out_seconds - overlay.in_seconds) * fps
-        );
+        const { from, duration } = frameSpan(overlay, fps);
 
         return (
           <Sequence key={`overlay-${i}`} from={from} durationInFrames={duration}>
@@ -1267,8 +1293,7 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
           {cuts.map((cut, i) => {
             const band = captionBand(cut as never);
             if (!band) return null;
-            const from = Math.round(cut.in_seconds * fps);
-            const duration = Math.max(1, Math.round((cut.out_seconds - cut.in_seconds) * fps));
+            const { from, duration } = frameSpan(cut, fps);
             return (
               <Sequence key={`cap-${cut.id ?? i}`} from={from} durationInFrames={duration}>
                 <DocCaption
