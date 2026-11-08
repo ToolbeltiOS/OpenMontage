@@ -61,5 +61,19 @@
       "Edit(//Users/mac/Developer/wak3up-docs/runner/config.yaml)",
       "Edit(//Users/mac/Developer/wak3up-docs/runner/.claude/**)"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/mac/Developer/wak3up-docs/runner/.venv/bin/python /Users/mac/Developer/wak3up-docs/runner/.claude/hooks/bash_guard.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
   }
 }
