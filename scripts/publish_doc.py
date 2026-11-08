@@ -288,6 +288,8 @@ def main() -> int:
               f"compose stage.")
         return 1
     listing = json.loads(listing_path.read_text())
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from build_credits_page import page_url
     video = Path(args.video) if args.video else project / "renders" / "final.mp4"
     thumbnail = Path(args.thumbnail) if args.thumbnail else project / "renders" / "thumbnail.jpg"
     captions = Path(args.captions) if args.captions else artifacts / "captions.en.srt"
@@ -367,13 +369,16 @@ def main() -> int:
         # The credits are the per-asset attribution the CC BY licences
         # require and the description carries only sources and music, so
         # this is owed, not optional.
-        manual.append(
-            f"POST THE CREDITS COMMENT after the film goes public "
-            f"({publish_at.astimezone().strftime('%a %d %b %H:%M')}) — "
-            f"YouTube disables comments while a video is private. The text "
-            f"is artifacts/listing.json -> pinned_comment "
-            f"({len(listing['pinned_comment'])} chars), and it still has to "
-            f"be PINNED by hand afterwards")
+        # NOT a manual item any more, and not an obligation: the credits
+        # live on the hosted page the description links to, which is up
+        # before this upload runs. The comment is a second copy of the same
+        # list, posted by com.wak3up.docs.credits within the hour after the
+        # film goes public. If it never posts, the attribution is still
+        # published and still linked.
+        done.append(
+            f"credits are at {page_url(args.project)} — the comment copy "
+            f"follows when the film goes public "
+            f"({publish_at.astimezone().strftime('%a %d %b %H:%M')})")
     elif listing.get("pinned_comment"):
         try:
             comment_id = yt.commentThreads().insert(part="snippet", body={

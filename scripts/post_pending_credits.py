@@ -15,10 +15,14 @@ The API's own answer is 403 "insufficient permissions. The request might not
 be properly authorized", which reads as a missing scope and is not one —
 `check_youtube_auth.py` reports youtube.force-ssl granted.
 
-The credits are the per-asset attribution the CC BY licences require. The
-description carries the hook, the chapters, the sources and the music; the
-per-asset credits are the comment. So this is owed, not optional, and
-nothing else in the pipeline comes back after a film goes public.
+A SECOND COPY, NOT THE RECORD. The attribution itself is the hosted
+credits page the description links to, which is pushed before the upload
+and is live from the moment anyone can see the film — CC BY 4.0 3(a)(2)
+allows exactly that, "providing a URI or hyperlink to a resource that
+includes the required information". This posts the same list as a comment
+because a reader on the video should not have to leave it, and because a
+page and a comment that agree are better than either alone. Nothing depends
+on it: if it never runs, the film is still properly attributed.
 
 IDEMPOTENT. It refuses to post twice: a recorded comment_id is enough to
 stop, and failing that it reads the video's existing threads and stops if

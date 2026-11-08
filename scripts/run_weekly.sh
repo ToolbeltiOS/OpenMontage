@@ -909,6 +909,18 @@ if [[ "$DRY_RUN" == "1" && ! -f "$REPO/projects/$SLUG/artifacts/listing.json" ]]
   exit 0
 fi
 assert_code_clean "the render"
+
+# ── 5a. the credits page, BEFORE the upload ──────────────────────────────
+# The description links to it, so it has to be live before the description
+# is. See scripts/publish_credits_page.sh for why the push lives in a shell
+# step rather than in the publisher.
+say "credits page"
+if ! "$REPO/scripts/publish_credits_page.sh" "$SLUG" \
+      > "$LOGDIR/credits_page.log" 2>&1; then
+  fail "credits page" "$(tail -5 "$LOGDIR/credits_page.log")"
+fi
+say "$(tail -1 "$LOGDIR/credits_page.log")"
+
 say "publishing"
 PUBLISH_ARGS=(--project "$SLUG")
 [[ "$DRY_RUN" == "1" ]] && PUBLISH_ARGS+=(--dry-run)

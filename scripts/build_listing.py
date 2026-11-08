@@ -106,8 +106,51 @@ def used_assets(props: dict) -> list[dict]:
     return ids
 
 
-def credits_block(art: Path, props: dict) -> tuple[str, dict]:
-    """Creator, licence and source URL for every asset the film cut to."""
+#: Licence name -> the deed a reader can actually open. A credits page that
+#: names a licence without linking it makes the reader go and find it, which
+#: is most of what CC BY 4.0 3(a)(1)(iii) asks the publisher to do.
+LICENCE_DEEDS = {
+    "CC BY 1.0": "https://creativecommons.org/licenses/by/1.0/",
+    "CC BY 2.0": "https://creativecommons.org/licenses/by/2.0/",
+    "CC BY 2.5": "https://creativecommons.org/licenses/by/2.5/",
+    "CC BY 3.0": "https://creativecommons.org/licenses/by/3.0/",
+    "CC BY 4.0": "https://creativecommons.org/licenses/by/4.0/",
+    "CC BY-SA 1.0": "https://creativecommons.org/licenses/by-sa/1.0/",
+    "CC BY-SA 2.0": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "CC BY-SA 2.5": "https://creativecommons.org/licenses/by-sa/2.5/",
+    "CC BY-SA 3.0": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "CC BY-SA 4.0": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "CC0 1.0": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "CC0": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "Public domain": "https://en.wikipedia.org/wiki/Public_domain",
+    "Pixabay Content License": "https://pixabay.com/service/license-summary/",
+}
+
+
+def licence_deed(licence: str) -> str:
+    """The deed for a licence name, or "" when there is nothing to link."""
+    name = (licence or "").strip()
+    if name in LICENCE_DEEDS:
+        return LICENCE_DEEDS[name]
+    for known, url in LICENCE_DEEDS.items():          # "CC BY-SA 3.0 de"
+        if name.upper().startswith(known.upper()):
+            return url
+    return ""
+
+
+def credits_rows(art: Path, props: dict) -> tuple[list[dict], dict]:
+    """One record per credited asset, and the counts that describe them.
+
+    THE SINGLE SOURCE OF TRUTH for both the pinned comment and the hosted
+    credits page. They were two renderings of two different walks of the
+    bank before this, which is exactly how a film ends up with a page and a
+    comment that disagree about what is in it. `credits_block` renders the
+    text from these records and nothing else does the walk.
+
+    A record carries `key`, which is the comment's own line for that asset
+    and therefore the thing that decides identity and sort order; the text
+    block is `sorted(key)` and nothing about it changes.
+    """
     # EVERY bank file, not just the first. The fetcher writes more than one —
     # `asset_bank.json` alongside `asset_bank_deep.json` and
     # `asset_bank_small.json` — and reading only `asset_bank.json` left 18
@@ -127,16 +170,28 @@ def credits_block(art: Path, props: dict) -> tuple[str, dict]:
                 entries.setdefault(d["parent_id"], d)
 
     wanted = used_assets(props)
-    rows, share_alike = {}, 0
+    rows: dict[str, dict] = {}
+    share_alike = 0
     for aid, a in entries.items():
         if aid not in wanted:
             continue
         licence = a.get("licence") or "unknown"
         artist = (a.get("artist") or "").strip() or "(not supplied)"
         page = a.get("page") or ""
-        rows[f"{artist} — {licence} — {page}"] = licence
-    for licence in rows.values():
-        if "BY-SA" in licence.upper():
+        rows.setdefault(f"{artist} — {licence} — {page}", {
+            "key": f"{artist} — {licence} — {page}",
+            "asset_id": aid,
+            "title": (a.get("title") or "").strip(),
+            "artist": artist,
+            "licence": licence,
+            "deed": licence_deed(licence),
+            "page": page,
+            "provider": a.get("provider") or "",
+            "notice": (a.get("credit") or "").strip(),
+            "kind": "asset",
+        })
+    for record in rows.values():
+        if "BY-SA" in record["licence"].upper():
             share_alike += 1
 
     # The texture clips are not in the bank — they are screened separately,
@@ -155,17 +210,36 @@ def credits_block(art: Path, props: dict) -> tuple[str, dict]:
                 continue
             num = re.sub(r"\D+", "", cid.replace("_1080", ""))
             url = f"https://pixabay.com/videos/id-{num}/" if num else ""
-            rows[f"{num or cid} — {licence} (free, no attribution required)"
-                 f" — {url}"] = licence
+            key = (f"{num or cid} — {licence} (free, no attribution "
+                   f"required) — {url}")
+            rows.setdefault(key, {
+                "key": key,
+                "asset_id": cid,
+                "title": f"Texture clip {num or cid}",
+                "artist": "",
+                "licence": licence,
+                "deed": licence_deed(licence),
+                "page": url,
+                "provider": "Pixabay",
+                "notice": "free, no attribution required",
+                "kind": "texture",
+            })
             textures += 1
 
+    return sorted(rows.values(), key=lambda r: r["key"]), {
+        "credit_required_assets": len(rows),
+        "share_alike_assets": share_alike,
+        "texture_clips": textures}
+
+
+def credits_block(art: Path, props: dict) -> tuple[str, dict]:
+    """The pinned comment's text, rendered from `credits_rows` and nothing
+    else. Byte for byte what it was before the records existed."""
+    records, att = credits_rows(art, props)
     lines = ["IMAGE AND FOOTAGE CREDITS", "",
              "This film uses freely licensed material.", ""]
-    lines += sorted(rows)
-    block = "\n".join(lines)
-    return block, {"credit_required_assets": len(rows),
-                   "share_alike_assets": share_alike,
-                   "texture_clips": textures}
+    lines += [r["key"] for r in records]
+    return "\n".join(lines), att
 
 
 def music_lines(ed: dict) -> list[str]:
@@ -277,14 +351,23 @@ def build(project: str) -> dict:
     chaps = chapters(art, aud, script)
     block, att = credits_block(art, props)
 
-    # THE POINTER GOES ABOVE THE FOLD, and it is in the description rather
-    # than only in the comment because the comment may not be there yet:
-    # YouTube disables comments while a video is private, so a film uploaded
-    # private and scheduled cannot carry its credits until the moment it
-    # goes public, and `post_pending_credits.py` posts them within the hour
-    # after. The credits block further down says the same thing at length,
-    # where nobody reading the first three lines will see it.
-    parts = [hook(script), "", "Full image credits in the pinned comment.", ""]
+    # ATTRIBUTION LIVES ON A PAGE, AND THE LINK IS ABOVE THE FOLD.
+    #
+    # CC BY 4.0 3(a)(2) allows the required attribution to be given by
+    # "providing a URI or hyperlink to a resource that includes the required
+    # information", which is what the credits page is. A comment is not a
+    # resource one can rely on: YouTube disables comments on a private
+    # video, so a film uploaded private and scheduled has no way to carry
+    # its credits until the moment it goes public — king-tut went up owing
+    # 9,345 characters of attribution with nowhere to put them.
+    #
+    # The page is pushed BEFORE the upload, so the URL in this line is live
+    # by the time anybody can read it.
+    from build_credits_page import page_url
+    parts = [hook(script), "",
+             f"{att['credit_required_assets']} freely licensed images and "
+             f"clips, each credited with its author and licence: "
+             f"{page_url(project)}", ""]
     parts += ["CHAPTERS"] + [f"{c['time']} {c['title']}" for c in chaps] + [""]
 
     primary = [s for s in brief.get("sources", [])
@@ -307,9 +390,9 @@ def build(project: str) -> dict:
         f"licensed photographs and clips. {att['share_alike_assets']} of them "
         f"are share-alike (CC BY-SA), and the film is offered under the same "
         f"terms where those shots appear.",
-        "Every credit — creator, licence and source URL — is in the pinned "
-        "comment, because the full list is longer than a YouTube description "
-        "may be.",
+        f"Every credit — creator, licence and source URL — is at "
+        f"{page_url(project)}, because the full list is longer than a "
+        f"YouTube description may be.",
         "",
         "Narration is synthesised speech. Graphics are original.",
         "",
