@@ -22,8 +22,10 @@ class TestTheAgentCanActuallyFire:
     def test_the_program_it_runs_exists(self):
         """A path with a stray "22:" in it is a Friday that never happens."""
         d = plistlib.loads(PLIST.read_bytes())
-        program = Path(d["ProgramArguments"][-1])
-        assert program.exists(), f"launchd points at {program}, which is not there"
+        for program in (Path(a) for a in d["ProgramArguments"]
+                        if a.startswith("/")):
+            assert program.exists(), (
+                f"launchd points at {program}, which is not there")
 
     @pytest.mark.parametrize("plist", sorted(
         (ROOT / "launchd").glob("com.wak3up.docs.*.plist")),
@@ -43,10 +45,16 @@ class TestTheAgentCanActuallyFire:
         so a fourth agent is covered the day it is added.
         """
         d = plistlib.loads(plist.read_bytes())
-        program = Path(d["ProgramArguments"][-1])
-        assert program.exists(), (
-            f"{plist.name} points at {program}, which is not there — the "
-            f"agent will exit 127 every time it fires and say nothing")
+        # EVERY argument that is a path, not just the last one. An agent may
+        # pass flags after its script — the credits agent passes `--all` —
+        # and reading only the last argument would check the flag and skip
+        # the script, which is the thing that goes missing.
+        paths = [Path(a) for a in d["ProgramArguments"] if a.startswith("/")]
+        assert paths, f"{plist.name} runs nothing by absolute path"
+        for program in paths:
+            assert program.exists(), (
+                f"{plist.name} points at {program}, which is not there — the "
+                f"agent will exit 127 every time it fires and say nothing")
 
     @pytest.mark.parametrize("plist", sorted(
         (ROOT / "launchd").glob("com.wak3up.docs.*.plist")),

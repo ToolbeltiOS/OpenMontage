@@ -103,3 +103,57 @@ class TestThePosterRefusesToPostTwice:
         tell 'not yet' from 'broken'."""
         assert 'if privacy != "public":' in POSTER
         assert "return 2" in POSTER
+
+
+class TestTheAgentThatPostsThemLater:
+    """Hourly, forever, because a Monday-morning one-off is a thing someone
+    has to remember. The other three agents are covered by
+    tests/automation/test_runner_wiring.py, which parametrises over
+    launchd/com.wak3up.docs.*.plist and so covers this one the day it
+    arrives — that is why those tests are not repeated here."""
+
+    PLIST = ROOT / "launchd" / "com.wak3up.docs.credits.plist"
+
+    def plist(self):
+        import plistlib
+        return plistlib.loads(self.PLIST.read_bytes())
+
+    def test_the_agent_exists(self):
+        assert self.PLIST.exists()
+
+    def test_it_runs_every_hour(self):
+        """StartInterval and not StartCalendarInterval: launchd runs a
+        missed interval when the Mac wakes, and this Mac sleeps."""
+        d = self.plist()
+        assert d["StartInterval"] == 3600
+        assert "StartCalendarInterval" not in d
+
+    def test_it_runs_the_poster_over_every_film(self):
+        d = self.plist()
+        assert d["ProgramArguments"][-1] == "--all"
+        assert d["ProgramArguments"][-2].endswith("post_pending_credits.py")
+
+    def test_it_runs_from_the_runner_worktree(self):
+        d = self.plist()
+        assert d["WorkingDirectory"] == "/Users/mac/Developer/wak3up-docs/runner"
+        assert all("/runner/" in a for a in d["ProgramArguments"][:-1])
+
+    def test_it_also_runs_when_it_is_loaded(self):
+        """A film may already be public and owed its credits."""
+        assert self.plist()["RunAtLoad"] is True
+
+
+class TestThePointerIsInTheDescription:
+    """The comment can land an hour after the film goes public, so the
+    description has to say where the credits are, above the fold."""
+
+    SOURCE = (ROOT / "scripts" / "build_listing.py").read_text()
+
+    def test_the_line_is_in_the_template(self):
+        assert '"Full image credits in the pinned comment."' in self.SOURCE
+
+    def test_it_sits_directly_under_the_hook(self):
+        """Not in the credits block at the bottom, where the long version
+        already is and where nobody reading three lines will see it."""
+        top = self.SOURCE[self.SOURCE.find("parts = [hook(script)"):]
+        assert top.index("Full image credits") < top.index("CHAPTERS")

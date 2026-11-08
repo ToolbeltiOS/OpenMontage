@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.wak3up.docs.credits</string>
+
+    <!-- EVERY HOUR, FOREVER, and that is the point.
+
+         YouTube disables comments on a PRIVATE video, so a film uploaded
+         private and scheduled cannot carry the per-asset CC BY attribution
+         its licences require until the moment it goes public. king-tut was
+         the first film published that way and its credits comment came back
+         403; easter-island and noah went up public immediately and posted
+         theirs with the upload.
+
+         Nothing else in the pipeline comes back after a film goes public,
+         and a Monday-morning one-off is a thing someone has to remember.
+         `post_pending_credits.py` with `all` is idempotent: a recorded
+         comment_id stops it, and failing that it reads the channel's own
+         threads, and it exits 2 for "still private". So firing it every
+         hour of every week costs one API call and covers every future
+         scheduled publish without anyone remembering anything.
+
+         StartInterval, not StartCalendarInterval: launchd runs a missed
+         interval when the Mac wakes, and this Mac sleeps. -->
+    <key>StartInterval</key>
+    <integer>3600</integer>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/mac/Developer/wak3up-docs/runner/.venv/bin/python</string>
+        <string>/Users/mac/Developer/wak3up-docs/runner/scripts/post_pending_credits.py</string>
+        <string>--all</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/mac/Developer/wak3up-docs/runner</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>REPO</key><string>/Users/mac/Developer/wak3up-docs/runner</string>
+        <key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/mac/.local/bin</string>
+        <key>HOME</key><string>/Users/mac</string>
+        <!-- The published ledger, outside every worktree. See the metrics
+             agent for why a per-branch copy is not an option. -->
+        <key>WAK3UP_DOCS_STATE</key><string>/Users/mac/Developer/wak3up-docs/state</string>
+    </dict>
+
+    <!-- On load too: a film may already be public and owed its credits. -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/mac/Developer/wak3up-docs/runner/logs/com.wak3up.docs.credits.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/mac/Developer/wak3up-docs/runner/logs/com.wak3up.docs.credits.err.log</string>
+
+    <key>Nice</key>
+    <integer>5</integer>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+</dict>
+</plist>

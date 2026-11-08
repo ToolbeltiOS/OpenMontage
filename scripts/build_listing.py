@@ -277,7 +277,14 @@ def build(project: str) -> dict:
     chaps = chapters(art, aud, script)
     block, att = credits_block(art, props)
 
-    parts = [hook(script), ""]
+    # THE POINTER GOES ABOVE THE FOLD, and it is in the description rather
+    # than only in the comment because the comment may not be there yet:
+    # YouTube disables comments while a video is private, so a film uploaded
+    # private and scheduled cannot carry its credits until the moment it
+    # goes public, and `post_pending_credits.py` posts them within the hour
+    # after. The credits block further down says the same thing at length,
+    # where nobody reading the first three lines will see it.
+    parts = [hook(script), "", "Full image credits in the pinned comment.", ""]
     parts += ["CHAPTERS"] + [f"{c['time']} {c['title']}" for c in chaps] + [""]
 
     primary = [s for s in brief.get("sources", [])
