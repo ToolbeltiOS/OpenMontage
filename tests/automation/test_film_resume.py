@@ -133,14 +133,37 @@ class TestWhatIsNotResumed:
 
 
 class TestTheRealStateOnThisMachine:
-    """Skipped on CI: this is about THIS Mac, on 2026-11-07."""
+    """Skipped on CI: this is about THIS Mac.
+
+    king-tut was published on 2026-11-08 — uploaded private, scheduled
+    public for Monday the 9th at 09:00 — which made the assertion that used
+    to live here ("king-tut is not published and so is resumable") false on
+    the hour it went up. It is replaced by the thing that matters now, and
+    that would be much worse to get wrong: a film on the channel must never
+    be offered up to be made again. The runner re-picked Noah once, from a
+    ledger that was one copy per branch, and that is the whole reason this
+    ledger lives outside every worktree.
+    """
 
     @pytest.mark.skipif(bool(os.environ.get("CI")), reason="machine-specific")
-    def test_the_three_published_films_are_in_the_ledger(self):
+    def test_every_published_film_is_in_the_ledger(self):
         slugs = uf.published_slugs()
-        for film in ("they-said-it-couldnt-be-built", "easter-island", "noah"):
+        for film in ("they-said-it-couldnt-be-built", "easter-island", "noah",
+                     "king-tut"):
             assert film in slugs, (film, slugs)
 
     @pytest.mark.skipif(bool(os.environ.get("CI")), reason="machine-specific")
-    def test_king_tut_is_not_published_and_so_is_resumable(self):
-        assert "king-tut" not in uf.published_slugs()
+    def test_a_scheduled_film_counts_as_published(self):
+        """It is on the channel from the moment it is uploaded, whatever its
+        publish date says. A ledger entry dated in the FUTURE — king-tut's
+        reads 2026-11-09 — must still stop the film being remade today."""
+        import shared_state
+        entry = [f for f in shared_state.published_films()
+                 if f.get("project") == "king-tut"]
+        assert entry, "king-tut is not in the ledger"
+        assert "king-tut" in uf.published_slugs()
+
+    @pytest.mark.skipif(bool(os.environ.get("CI")), reason="machine-specific")
+    def test_nothing_on_this_machine_is_offered_as_unfinished(self):
+        """Every project here is either published or was never approved."""
+        assert [slug for slug, _, _ in uf.unfinished()] == []
