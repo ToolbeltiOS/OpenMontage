@@ -192,12 +192,37 @@ def main() -> int:
     analytics = build("youtubeAnalytics", "v2", credentials=creds)
     today = date.today().isoformat()
     pulled = []
+    waiting: list[dict] = []
+    failed: list[tuple[dict, Exception]] = []
     for film in films:
         video_id = film.get("video_id")
         if not video_id:
             continue
+        # A SCHEDULED FILM HAS A PUBLISH DATE IN THE FUTURE, and Analytics
+        # will not take one. king-tut was uploaded private on 2026-11-08 to
+        # go public on the 9th, and this agent asked for
+        # startDate=2026-11-09 endDate=2026-11-08 and got back HTTP 412
+        # "'start-date' must be before or the same as the 'end-date'",
+        # which killed the whole run — the three films it had already
+        # measured were never written and never sent.
+        #
+        # There is nothing to measure anyway: the film is private, nobody
+        # has seen it. It is counted as waiting and picked up next week.
+        published = film.get("published", today)
+        if published > today:
+            waiting.append(film)
+            print(f"{film['title'][:40]} ({video_id})")
+            print(f"   not public until {published} — nothing to measure yet")
+            continue
         print(f"{film['title'][:40]} ({video_id})")
-        measured = pull(video_id, film.get("published", today), analytics)
+        # ONE FILM MUST NOT COST THE OTHERS. Every measurement above this
+        # one was already thrown away once by a single 412.
+        try:
+            measured = pull(video_id, published, analytics)
+        except Exception as error:                 # noqa: BLE001
+            failed.append((film, error))
+            print(f"   FAILED: {type(error).__name__}: {str(error)[:160]}")
+            continue
         out = ROOT / "artifacts" / "metrics" / video_id
         out.mkdir(parents=True, exist_ok=True)
         (out / f"{today}.json").write_text(json.dumps({
@@ -211,8 +236,13 @@ def main() -> int:
     if pulled and not args.quiet:
         import telegram
         telegram.send(summarise(pulled))
-    print(f"-> artifacts/metrics/ ({len(pulled)} films)")
-    return 0
+    for film, error in failed:
+        print(f"   {film.get('video_id')}: {type(error).__name__}")
+    print(f"-> artifacts/metrics/ ({len(pulled)} films"
+          + (f", {len(waiting)} not public yet" if waiting else "")
+          + (f", {len(failed)} FAILED" if failed else "") + ")")
+    # A film that is not public yet is not a failure. A film that broke is.
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

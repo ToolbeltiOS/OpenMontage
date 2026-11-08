@@ -6,26 +6,30 @@
     <key>Label</key>
     <string>com.wak3up.docs.metrics</string>
 
-    <!-- Tuesday 09 local time -->
+    <!-- Tuesday 09:00 local. Weekday 2 IS Tuesday; this said Weekday 0,
+         Hour 2 — Sunday at two in the morning — under a comment claiming
+         Tuesday at nine, which is neither the same day nor the same hour.
+         The weekly agent carried the identical defect (Weekday 0 under a
+         comment claiming Friday) and a test now pins all four. -->
     <key>StartCalendarInterval</key>
     <dict>
-        <key>Weekday</key><integer>00</integer>
-        <key>Hour</key><integer>2</integer>
+        <key>Weekday</key><integer>2</integer>
+        <key>Hour</key><integer>9</integer>
         <key>Minute</key><integer>0</integer>
     </dict>
 
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/mac/Developer/wak3up-docs/OpenMontage/.venv/bin/python</string>
-        <string>/Users/mac/Developer/wak3up-docs/OpenMontage/scripts/pull_metrics.py</string>
+        <string>/Users/mac/Developer/wak3up-docs/runner/.venv/bin/python</string>
+        <string>/Users/mac/Developer/wak3up-docs/runner/scripts/pull_metrics.py</string>
     </array>
 
     <key>WorkingDirectory</key>
-    <string>/Users/mac/Developer/wak3up-docs/OpenMontage</string>
+    <string>/Users/mac/Developer/wak3up-docs/runner</string>
 
     <key>EnvironmentVariables</key>
     <dict>
-        <key>REPO</key><string>/Users/mac/Developer/wak3up-docs/OpenMontage</string>
+        <key>REPO</key><string>/Users/mac/Developer/wak3up-docs/runner</string>
         <key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/mac/.local/bin</string>
         <key>HOME</key><string>/Users/mac</string>
         <!-- The published ledger and the topic-pick history. OUTSIDE EVERY
@@ -43,9 +47,9 @@
     <false/>
 
     <key>StandardOutPath</key>
-    <string>/Users/mac/Developer/wak3up-docs/OpenMontage/logs/com.wak3up.docs.metrics.out.log</string>
+    <string>/Users/mac/Developer/wak3up-docs/runner/logs/com.wak3up.docs.metrics.out.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/mac/Developer/wak3up-docs/OpenMontage/logs/com.wak3up.docs.metrics.err.log</string>
+    <string>/Users/mac/Developer/wak3up-docs/runner/logs/com.wak3up.docs.metrics.err.log</string>
 
     <!-- A render is the whole machine for an hour; nice it so the Mac stays
          usable if anyone is awake. -->

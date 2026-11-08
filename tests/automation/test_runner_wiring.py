@@ -284,3 +284,64 @@ class TestSmokeMode:
                 assert "RUN_WEEKLY_SMOKE" not in plist.read_text(), (
                     f"{plist} still carries the smoke flag — Friday would "
                     f"pick a topic, post to Telegram and stop")
+
+
+#: When each agent says it runs, and when launchd is told to run it. These
+#: are kept in one table because the two have disagreed three times:
+#:
+#:   weekly    Weekday 0 under a comment claiming Friday    (fixed earlier)
+#:   metrics   Weekday 0 Hour 2 under "Tuesday 09 local"    — Sunday, 02:00
+#:   tripwire  Hour 0 under a header reading "Sunday noon"  — midnight
+#:
+#: launchd Weekday: 0 (or 7) Sunday, 1 Monday ... 5 Friday.
+AGENT_SCHEDULE = {
+    "com.wak3up.docs.weekly": {"Weekday": 5, "Hour": 19, "Minute": 0},
+    "com.wak3up.docs.metrics": {"Weekday": 2, "Hour": 9, "Minute": 0},
+    "com.wak3up.docs.tripwire": {"Weekday": 0, "Hour": 12, "Minute": 0},
+}
+
+#: The agent that runs every hour instead, and so has no calendar at all.
+INTERVAL_AGENTS = {"com.wak3up.docs.credits": 3600}
+
+
+class TestEveryAgentRunsWhenItSaysItDoes:
+    @pytest.mark.parametrize("label", sorted(AGENT_SCHEDULE))
+    def test_the_calendar_is_the_one_in_the_table(self, label):
+        d = plistlib.loads((ROOT / "launchd" / f"{label}.plist").read_bytes())
+        assert d.get("StartCalendarInterval") == AGENT_SCHEDULE[label], (
+            f"{label} does not fire when this table says it does — and the "
+            f"table is what the comments in the plists claim")
+
+    @pytest.mark.parametrize("label", sorted(INTERVAL_AGENTS))
+    def test_an_interval_agent_has_no_calendar(self, label):
+        d = plistlib.loads((ROOT / "launchd" / f"{label}.plist").read_bytes())
+        assert d.get("StartInterval") == INTERVAL_AGENTS[label]
+        assert "StartCalendarInterval" not in d
+
+    def test_the_table_covers_every_agent_on_disk(self):
+        """So a fifth agent cannot be added without a time being stated."""
+        on_disk = {p.stem for p in (ROOT / "launchd").glob("com.wak3up.docs.*.plist")}
+        assert on_disk == set(AGENT_SCHEDULE) | set(INTERVAL_AGENTS), (
+            f"an agent exists with no entry in the schedule table: "
+            f"{on_disk ^ (set(AGENT_SCHEDULE) | set(INTERVAL_AGENTS))}")
+
+
+class TestEveryAgentRunsTheSameBranch:
+    """The agents ran out of the OpenMontage worktree, which is pinned to
+    `asset-library`, while every fix lands on `automation` in the runner.
+    The files were identical by luck, not by construction — and a ledger
+    that was one copy per branch is exactly how the runner re-picked Noah.
+    """
+
+    @pytest.mark.parametrize("plist", sorted(
+        (ROOT / "launchd").glob("com.wak3up.docs.*.plist")),
+        ids=lambda p: p.stem)
+    def test_it_runs_out_of_the_runner_worktree(self, plist):
+        d = plistlib.loads(plist.read_bytes())
+        assert d["WorkingDirectory"] == "/Users/mac/Developer/wak3up-docs/runner"
+        for arg in d["ProgramArguments"]:
+            if arg.startswith("/Users/mac/Developer/wak3up-docs/"):
+                assert "/runner/" in arg, (
+                    f"{plist.name} runs {arg}, which is a different worktree "
+                    f"and therefore a different branch")
+
