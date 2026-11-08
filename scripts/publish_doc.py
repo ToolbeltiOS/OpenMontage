@@ -348,7 +348,33 @@ def main() -> int:
         manual.append(f"playlist failed ({error.resp.status}) — add it in Studio")
 
     comment_id = None
-    if listing.get("pinned_comment"):
+    if listing.get("pinned_comment") and publish_at is not None:
+        # YOUTUBE DISABLES COMMENTS ON A PRIVATE VIDEO, so a scheduled film
+        # cannot carry its credits until it goes public. Measured on the
+        # four films: easter-island and noah were uploaded PUBLIC
+        # immediately and their credits posted; king-tut was the first
+        # uploaded private and scheduled, and `commentThreads.list` answers
+        # `commentsDisabled` for it while both public films list their
+        # threads. A short link-free comment fails identically, so it is not
+        # the length or the 59 attribution URLs.
+        #
+        # The attempt is not made, because the API's own answer for it is
+        # 403 "insufficient permissions. The request might not be properly
+        # authorized" — which reads as a missing scope and is not one:
+        # check_youtube_auth reports youtube.force-ssl granted. An hour went
+        # into that sentence.
+        #
+        # The credits are the per-asset attribution the CC BY licences
+        # require and the description carries only sources and music, so
+        # this is owed, not optional.
+        manual.append(
+            f"POST THE CREDITS COMMENT after the film goes public "
+            f"({publish_at.astimezone().strftime('%a %d %b %H:%M')}) — "
+            f"YouTube disables comments while a video is private. The text "
+            f"is artifacts/listing.json -> pinned_comment "
+            f"({len(listing['pinned_comment'])} chars), and it still has to "
+            f"be PINNED by hand afterwards")
+    elif listing.get("pinned_comment"):
         try:
             comment_id = yt.commentThreads().insert(part="snippet", body={
                 "snippet": {"videoId": video_id, "topLevelComment": {"snippet": {
