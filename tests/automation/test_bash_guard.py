@@ -255,35 +255,57 @@ class TestWhatAStageActuallySees:
         yield
         self.SENTINEL.unlink(missing_ok=True)
 
+    #: The hook's own signature in a transcript. NOT "was the command
+    #: refused": a non-interactive `claude -p` refuses anything that is not
+    #: allowlisted, so "REFUSED" says nothing about which guard did it. The
+    #: first version of this probe conflated the two and failed on commands
+    #: the hook had allowed.
+    BLOCKED = "Blocked by .claude/hooks/bash_guard.py"
+
     @pytest.mark.live_api
     def test_every_hidden_form_is_refused_in_a_real_session(self):
-        numbered = "\n".join(f"{i+1}. {c}" for i, c in enumerate(self.DENIED_FORMS))
+        numbered = "\n".join(f"{i+1}. {c}"
+                             for i, c in enumerate(self.DENIED_FORMS))
         record = self._run(
             "Run each of these commands with the Bash tool, exactly as "
             "written, one at a time. Some will be refused; that is expected "
             "and is what is being measured. Do not try to work around a "
             "refusal, do not rewrite a command, and do not use any other "
             "tool. After all of them, reply with one line per command: the "
-            "number, then REFUSED or RAN.\n\n" + numbered)
+            "number, then the FIRST LINE of any error message you received, "
+            "verbatim.\n\n" + numbered)
         blob = json.dumps(record)
-        assert blob.count("bash_guard.py") >= len(self.DENIED_FORMS), (
-            f"only {blob.count('bash_guard.py')} of {len(self.DENIED_FORMS)} "
-            f"forms hit the guard:\n{record.get('result')}")
+        assert self.BLOCKED in blob, (
+            f"the hook never fired at all:\n{record.get('result')}")
+
+        # Per form, from the record's own denial list rather than from the
+        # model's summary of it.
+        denied_commands = {d.get("tool_input", {}).get("command")
+                           for d in (record.get("permission_denials") or [])}
+        missing = [c for c in self.DENIED_FORMS if c not in denied_commands]
+        assert not missing, (
+            f"these forms were not refused: {missing}\n"
+            f"{record.get('result')}")
         assert self.SENTINEL.exists(), (
             "the probe deleted the sentinel: rm -rf got through")
 
     @pytest.mark.live_api
     def test_the_commands_the_pipeline_needs_still_run(self):
-        """The half that decides whether anyone leaves the guard switched
-        on."""
-        numbered = "\n".join(f"{i+1}. {c}" for i, c in enumerate(self.ALLOWED_FORMS))
+        """The half that decides whether anyone leaves the guard switched on.
+
+        What is asserted is that THIS hook did not block them. A
+        non-interactive session may still refuse a command for wanting
+        approval, which is the allowlist's business and not this guard's.
+        """
+        numbered = "\n".join(f"{i+1}. {c}"
+                             for i, c in enumerate(self.ALLOWED_FORMS))
         record = self._run(
             "Run each of these commands with the Bash tool, exactly as "
-            "written, one at a time. Then reply with one line per command: "
-            "the number, then RAN or REFUSED.\n\n" + numbered)
+            "written, one at a time. Do not rewrite them and do not use "
+            "another tool. Then reply with one line per command: the "
+            "number, then the FIRST LINE of any error message you received, "
+            "verbatim, or RAN if it ran.\n\n" + numbered)
         blob = json.dumps(record)
-        assert "bash_guard.py" not in blob, (
+        assert self.BLOCKED not in blob, (
             f"the guard blocked something the pipeline needs:\n"
             f"{record.get('result')}")
-        assert "REFUSED" not in (record.get("result") or "").upper(), (
-            record.get("result"))
