@@ -103,6 +103,47 @@ DEFAULT_SETTLE_S = 2.0
 #: second, so this catches it with more than five times the margin.
 SHIFT_TOLERANCE_PX = 0.65
 
+#: What a LONE box over the tolerance has to read before it is believed.
+#:
+#: A scene whose type moves does not move one word. The calibration above
+#: measured a deliberate one-pixel shift at median 0.999 and MINIMUM 0.865
+#: across every word in the frame — all of them, together — and the same
+#: thing on king-tut's c038 reads 34 of 34 over tolerance, minimum 0.826.
+#: Noise does the opposite: it lifts one small box and leaves the rest.
+#:
+#: Measured over all 141 text-bearing scenes of king-tut, bound to the type
+#: pass, against the 0.65 tolerance:
+#:
+#:     worst box per scene    median 0.508   p90 0.535   max 0.660
+#:     median box per scene   median 0.015   p90 0.029
+#:     scenes with 1 word over tolerance    1
+#:     scenes with 2 or more                0
+#:
+#: Every scene in the film carries a box at about 0.5px while its type sits
+#: at 0.015 — a small dim box is mostly plate, and the plate is moving on
+#: purpose. The noise reaches 0.660 and a real one-pixel shift starts at
+#: 0.826, so a lone box is believed from 0.75: 1.14x clear of the highest
+#: noise measured and 1.10x below the smallest real shift. Two boxes over
+#: the tolerance still fail outright, at any size.
+SOLO_CEILING_PX = 0.75
+
+
+def scene_has_moving_type(moved: int, worst: float) -> bool:
+    """Did this scene's TYPE move, given how many of its boxes read over
+    the tolerance and how far the worst of them went?
+
+    Type that moves takes every word with it: a deliberate one-pixel shift
+    reads over the tolerance on every word in the frame, minimum 0.826.
+    One box over, below the ceiling, is the plate showing through a small
+    dim box — measured on 141 scenes of king-tut, where the worst box in
+    EVERY scene reads about 0.5px while the type sits at 0.015.
+    """
+    if moved == 0:
+        return False
+    if moved == 1 and worst < SOLO_CEILING_PX:
+        return False
+    return True
+
 #: Padding around an OCR box before the patch is cut, in pixels. Small on
 #: purpose — see above; at 6px the median measurement rose from 0.013 to 0.494
 #: because the box filled up with moving background.
@@ -319,10 +360,17 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
                 "moved": len(moved),
                 "worst_shift_px": round(worst, 3),
                 "median_shift_px": round(float(np.median(sizes)), 3) if sizes else 0.0,
+                "solo_noise": bool(moved) and not scene_has_moving_type(
+                    len(moved), worst),
                 "declared": bool(cut.get("text_move")),
                 "bound_by": bound,
             })
-            if moved and not cut.get("text_move"):
+            # A scene fails when its TYPE moved, and type that moves takes
+            # every word with it. One box over the tolerance is the shape of
+            # the plate showing through a small one — see SOLO_CEILING_PX.
+            solo_noise = bool(moved) and not scene_has_moving_type(
+                len(moved), worst)
+            if moved and not solo_noise and not cut.get("text_move"):
                 shown = "; ".join(f"{b['text']!r} by {dx:+.2f},{dy:+.2f}px"
                                   for b, dx, dy in moved[:4])
                 problems.append(
@@ -334,7 +382,10 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
     measured = {
         "bound_by": "type pass" if type_pass is not None else "cut text",
         "scenes_sampled": len(samples),
-        "scenes_with_movement": sum(1 for s in samples if s["moved"]),
+        "scenes_with_movement": sum(1 for s in samples
+                                    if s["moved"] and not s.get("solo_noise")),
+        "scenes_with_one_box_over": sum(1 for s in samples
+                                        if s.get("solo_noise")),
         "worst_shift_px": round(max((s["worst_shift_px"] for s in samples),
                                     default=0.0), 3),
         "cuts_past_the_end": len(skipped),

@@ -770,9 +770,14 @@ def report(title: str, dest: Path, picture: Path, count: int, seconds: float,
         f"plate pass | {verdict('plate purity')} |",
         f"| type lock | {type_lock['scenes_sampled']} text-bearing scenes "
         f"sampled a second apart, {type_lock['scenes_with_movement']} with a "
-        f"word in a different place, worst {type_lock['worst_shift_px']}px, "
-        f"readings bound to our type by {type_lock.get('bound_by', 'cut text')}"
-        f" | {verdict('type lock')} |",
+        f"word in a different place, worst {type_lock['worst_shift_px']}px"
+        + (f", {type_lock['scenes_with_one_box_over']} scene(s) where a "
+           f"single box read over the tolerance and the rest of the scene "
+           f"did not"
+           if type_lock.get('scenes_with_one_box_over') else "")
+        + f", readings bound to our type by "
+          f"{type_lock.get('bound_by', 'cut text')}"
+          f" | {verdict('type lock')} |",
         f"| frame count | {results.get('frame count', {}).get('delivered')} "
         f"delivered of {results.get('frame count', {}).get('asked')} asked "
         f"({results.get('frame count', {}).get('seconds_missing')}s missing) | "

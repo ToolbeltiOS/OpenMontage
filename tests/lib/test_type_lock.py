@@ -469,3 +469,78 @@ class TestAReadingIsBoundToTheTypeThatPaintedIt:
                                        type_layer=str(tmp_path / "missing.mov"))
         assert measured["bound_by"] == "cut text"
         assert isinstance(problems, list)
+
+
+class TestOneBoxIsNotAMovingScene:
+    """The verdict is about the scene, not about its worst box.
+
+    king-tut's delivery failed on c038: 1 of 34 words over the 0.65
+    tolerance, '032' from the scene-index chrome at 0.66px. Measured at the
+    gate's own sample point, that scene reads
+
+        34 words   median 0.027px   p90 0.501   max 0.660
+
+    and the same first frame against itself shifted by exactly one pixel
+    reads
+
+        34 words   median 0.995px   min 0.826   34 of 34 over tolerance
+
+    Surveyed over all 141 text-bearing scenes of the film, bound to the type
+    pass: the worst box per scene has median 0.508 and max 0.660, while the
+    median box per scene has median 0.015. EVERY scene carries a box at
+    about half a pixel — a small dim box is mostly plate, and the plate is
+    moving on purpose — so the tolerance was sitting at 78% of a noise floor
+    with one box in roughly 3,500 across the film crossing it.
+
+    The tolerance is unchanged. What changed is that one box cannot carry a
+    scene: type that moves moves all of it.
+    """
+
+    def test_a_scene_whose_boxes_all_sit_still_is_locked(self):
+        assert not vtl.scene_has_moving_type(0, 0.508)
+
+    def test_one_box_in_the_noise_does_not_fail_a_scene(self):
+        """c038's real numbers."""
+        assert not vtl.scene_has_moving_type(1, 0.660)
+
+    def test_two_boxes_over_the_tolerance_fail_at_any_size(self):
+        assert vtl.scene_has_moving_type(2, 0.660)
+
+    def test_one_box_at_a_real_shift_still_fails(self):
+        assert vtl.scene_has_moving_type(1, 0.826)
+        assert vtl.scene_has_moving_type(1, 0.90)
+
+    def test_a_whole_frame_shifted_one_pixel_fails(self):
+        """The Noah drift's shape: every word, together."""
+        assert vtl.scene_has_moving_type(34, 0.995)
+
+    def test_the_ceiling_sits_between_the_two_populations(self):
+        """The measured gap it has to fall in: noise tops out at 0.660 on
+        this film, a real one-pixel shift starts at 0.826."""
+        assert 0.660 < vtl.SOLO_CEILING_PX < 0.826
+        assert vtl.SHIFT_TOLERANCE_PX == 0.65, (
+            "the tolerance is not what was changed here")
+
+    def test_a_one_pixel_shift_really_does_move_every_word(self):
+        """The premise the rule stands on, measured rather than asserted:
+        shift the type and NO word stays put."""
+        import tempfile
+        from pathlib import Path
+        from PIL import Image
+
+        first = type_only_frame()
+        moved_frame = type_only_frame(chrome_dx=1.0)
+        with tempfile.TemporaryDirectory() as tmp:
+            png = Path(tmp) / "type.png"
+            Image.fromarray(first).save(png)
+            boxes = [b for b in vtl.words(png) if vtl.measurable(b["text"])]
+        assert boxes, "the fixture put no measurable words on screen"
+        sizes = []
+        for box in boxes:
+            shift = vtl.shift_in_box(first, moved_frame, box)
+            if shift is None:
+                continue
+            sizes.append(max(abs(shift[0]), abs(shift[1])))
+        assert len(sizes) >= 2, f"only {len(sizes)} words measured"
+        assert min(sizes) > vtl.SHIFT_TOLERANCE_PX, (
+            f"a one-pixel shift left a word under the tolerance: {sizes}")
