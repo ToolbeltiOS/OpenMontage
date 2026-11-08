@@ -43,6 +43,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "lib"))
 
+from buildability import frame_span  # noqa: E402
 from film_render import (COMPOSER, FPS, frame_count, props_for_layer,  # noqa: E402
                          render_plate, run, verified_stills, verified_video)
 
@@ -58,16 +59,22 @@ PAD = 10
 
 def ranges_for(cuts: list[dict[str, Any]], wanted: set[str], by: str,
                total: int, pad: int = PAD) -> list[tuple[int, int, list[str]]]:
-    """The merged, padded frame ranges the named cuts occupy."""
+    """The merged, padded frame ranges the named cuts occupy.
+
+    `frame_span` IS THE COMPOSITION'S OWN ARITHMETIC — both edges rounded
+    from the timeline, JavaScript's rounding. A patch laid out by any other
+    sum writes the right pixels at the wrong frame, and the frame a cut
+    gained when that arithmetic was fixed is precisely the one that most
+    needs rewriting.
+    """
     spans: list[tuple[int, int, str]] = []
     for cut in cuts:
         key = cut.get("id") if by == "id" else cut.get("type")
         if key not in wanted:
             continue
-        start = round(float(cut["in_seconds"]) * FPS)
-        length = round((float(cut["out_seconds"]) - float(cut["in_seconds"])) * FPS)
+        start, last = frame_span(cut, FPS)
         spans.append((max(0, start - pad),
-                      min(total - 1, start + length - 1 + pad),
+                      min(total - 1, last + pad),
                       str(cut.get("id"))))
     spans.sort()
     merged: list[tuple[int, int, list[str]]] = []
@@ -106,9 +113,7 @@ def spans_for(cuts: list[dict[str, Any]], wanted: set[str], by: str
         key = cut.get("id") if by == "id" else cut.get("type")
         if key not in wanted:
             continue
-        start = round(float(cut["in_seconds"]) * FPS)
-        length = round((float(cut["out_seconds"]) - float(cut["in_seconds"])) * FPS)
-        out.append((start, start + length - 1))
+        out.append(frame_span(cut, FPS))
     return sorted(out)
 
 

@@ -16,6 +16,7 @@ component's contract.
 from __future__ import annotations
 
 import json
+import math
 import os
 from typing import Any
 
@@ -171,10 +172,29 @@ def check_scene_plan(slots: list[dict[str, Any]], contract: dict[str, Any] | Non
 #: This mirrors `frameSpan` in `remotion-composer/src/Explainer.tsx` and has
 #: to keep mirroring it: the whole point is to read the same timeline the
 #: renderer will lay out, from the props, before anything is rendered.
+def js_round(x: float) -> int:
+    """`Math.round`, which is NOT Python's `round`.
+
+    The composition lays the timeline out in JavaScript, and the two
+    languages disagree on exactly the values this check exists to find.
+    JavaScript rounds a half UP; Python rounds it to EVEN. A cut at 807.35s
+    lands on frame 24220.5, which JavaScript puts at 24221 and Python at
+    24220 — a one-frame disagreement about where a cut begins, in a check
+    whose whole job is to find one-frame holes.
+
+    Measured: counting they-said-it-couldnt-be-built's holes with Python's
+    rounding gives 21 and with JavaScript's gives 27. The film has 27. The
+    six it missed include three of the five flashes visible in the published
+    file. A check that models the composition must round the way the
+    composition rounds.
+    """
+    return math.floor(x + 0.5)
+
+
 def frame_span(element: dict[str, Any], fps: int = 30) -> tuple[int, int]:
     """(first frame, last frame) inclusive, both edges rounded from the timeline."""
-    first = round(float(element["in_seconds"]) * fps)
-    last = round(float(element["out_seconds"]) * fps) - 1
+    first = js_round(float(element["in_seconds"]) * fps)
+    last = js_round(float(element["out_seconds"]) * fps) - 1
     return first, max(first, last)
 
 

@@ -10,7 +10,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { EXPO_IN_OUT } from "./design/system";
+import { EXPO_IN_OUT, SYS } from "./design/system";
 import { loadSpaceGrotesk } from "./lib/localFonts";
 import { TextCard } from "./components/TextCard";
 import { StatCard } from "./components/StatCard";
@@ -1242,18 +1242,43 @@ export const Explainer: React.FC<ExplainerProps> = (props) => {
   // Resolve theme from props — playbook name, theme name, or custom themeConfig
   const theme = resolveTheme(props as Record<string, unknown>);
 
+  /**
+   * THE FILM'S OWN FLOOR, NOT THE TEMPLATE'S.
+   *
+   * `resolveTheme` has no entry for "wak3up-documentary", so every
+   * documentary ever rendered fell through to `flat-motion-graphics` and
+   * took its violet-and-pink `AnimatedBackground` as Layer 0. Nobody chose
+   * it. It is under every cut, and because every documentary scene paints
+   * an opaque backdrop of its own — `SceneShell` and `Plate` paint
+   * `SYS.bg`, `ImageScene` paints the theme background, the cards paint
+   * `theme.surfaceColor` — a viewer only ever sees Layer 0 on a frame where
+   * NO SCENE PAINTED. That frame is already a defect; what this decides is
+   * whether the defect reads as a bright violet flash or as the near-black
+   * the film is made of.
+   *
+   * Measured on king-tut's delivered picture: Layer 0 was visible on 13
+   * frames, every one of them a hole in the timeline, and five of those
+   * were bright enough for the dropout scan to find. On frames that are NOT
+   * a hole it is visible nowhere, which is why this change re-renders
+   * nothing by itself.
+   */
+  const documentary = (props as Record<string, unknown>).playbook
+    === "wak3up-documentary";
+  const floor = documentary ? SYS.bg : theme.backgroundColor;
+
   return (
     <AbsoluteFill
       style={{
         // The type pass is composited over the graded plate and must carry
         // nothing behind the glyphs.
-        background: layerMode === "type" ? "transparent" : theme.backgroundColor,
+        background: layerMode === "type" ? "transparent" : floor,
         fontFamily: theme.headingFont || fontFamily,
       }}
     >
      <LayerScope mode={layerMode}>
-      {/* Layer 0: Animated gradient background — driven by theme */}
-      <AnimatedBackground theme={theme} />
+      {/* Layer 0: the floor. A documentary gets the house black; every other
+          playbook keeps the themed gradient it was designed against. */}
+      {documentary ? null : <AnimatedBackground theme={theme} />}
 
       {/* Layer 1: Visual scenes */}
       {cuts.map((cut) => {

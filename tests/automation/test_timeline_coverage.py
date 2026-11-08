@@ -15,13 +15,19 @@ as a white flash.
 
 Counted from the props of the four films made so far:
 
-    they-said-it-couldnt-be-built   21 uncovered frames
+    they-said-it-couldnt-be-built   27 uncovered frames
     king-tut                        13
     easter-island                    0
     noah                             0
 
+COUNTED THE WAY THE COMPOSITION COUNTS. The first pass at this test used
+Python's `round`, which rounds a half to EVEN where JavaScript rounds it UP,
+and reported 21 instead of 27 — it disagreed with the composition about six
+cut boundaries that land exactly on a half frame. `buildability.js_round` is
+the composition's rounding; nothing here may use the builtin.
+
 they-said-it is published (CDpzQKwTBsI) and a scan of its delivered file
-found eight single-frame flashes — luma 32 against neighbours at 15 — three
+found eight single-frame flashes — luma 32 against neighbours at 15 — five
 of which are in one of those gaps. The two films with no gaps have no
 flashes. Nothing in the delivery gates can see this: the frame is present so
 frame count passes, one frame is not a freeze so frame motion passes, and
@@ -44,7 +50,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "lib"))
 
-from buildability import check_timeline_coverage, frame_span  # noqa: E402
+from buildability import check_timeline_coverage, frame_span, js_round  # noqa: E402
 
 FPS = 30
 
@@ -53,7 +59,7 @@ FPS = 30
 #: to the source clip, and only king-tut carries `timeline_start_seconds` —
 #: so the authoritative timeline is the props the composition is handed.
 FILMS = {
-    "they-said-it-couldnt-be-built": 21,
+    "they-said-it-couldnt-be-built": 27,
     "easter-island": 0,
     "noah": 0,
     "king-tut": 13,
@@ -71,11 +77,63 @@ def props_for(film: str):
 
 def legacy_span(cut, fps=FPS):
     """The arithmetic as it shipped: start from the timeline, duration from
-    the difference."""
-    first = round(float(cut["in_seconds"]) * fps)
-    last = first + round((float(cut["out_seconds"])
-                          - float(cut["in_seconds"])) * fps) - 1
+    the difference. `js_round` because the shipped arithmetic was
+    JavaScript's."""
+    first = js_round(float(cut["in_seconds"]) * fps)
+    last = first + js_round((float(cut["out_seconds"])
+                             - float(cut["in_seconds"])) * fps) - 1
     return first, max(first, last)
+
+
+class TestTheCheckRoundsTheWayTheCompositionRounds:
+    """A half frame is where the two languages part company, and a half
+    frame is exactly what a cut boundary lands on when a duration ends in
+    .05 of a second. Measured on the real props: Python's rounding finds 21
+    of they-said-it's 27 holes."""
+
+    @pytest.mark.parametrize("value,expected", [
+        (24220.5, 24221), (0.5, 1), (1.5, 2), (2.5, 3), (-0.5, 0),
+        (24220.4, 24220), (24220.6, 24221),
+    ])
+    def test_a_half_rounds_up_like_math_round(self, value, expected):
+        assert js_round(value) == expected
+
+    def test_the_builtin_would_have_disagreed(self):
+        """The control: if these ever agree, this test is measuring nothing."""
+        assert round(24220.5) == 24220 and js_round(24220.5) == 24221
+
+    def test_the_builtin_undercounts_the_published_film(self):
+        cuts = props_for("they-said-it-couldnt-be-built")
+        if cuts is None:
+            pytest.skip("they-said-it has no render_props.json in any worktree")
+
+        def python_span(cut, fps=FPS):
+            first = round(float(cut["in_seconds"]) * fps)
+            last = first + round((float(cut["out_seconds"])
+                                  - float(cut["in_seconds"])) * fps) - 1
+            return first, max(first, last)
+
+        assert uncovered(cuts, python_span) == 21
+        assert uncovered(cuts, legacy_span) == 27
+
+    def test_no_source_file_turns_seconds_into_frames_with_the_builtin(self):
+        """A SECONDS-TO-FRAMES conversion anywhere in lib/ is this bug again.
+
+        Narrowly: `round(<seconds> * fps)` with no second argument. A
+        `round(frames / fps, 2)` is a number for a human to read and is not
+        this; it is the conversions the composition also makes that have to
+        agree with it frame for frame.
+        """
+        import re
+        pattern = re.compile(r"(?<![\w.])round\s*\([^,()]*\*\s*(?:fps|FPS|30)\s*\)")
+        offenders = []
+        for path in sorted((ROOT / "lib").glob("*.py")):
+            for n, line in enumerate(path.read_text().splitlines(), 1):
+                if pattern.search(line):
+                    offenders.append(f"{path.name}:{n}: {line.strip()}")
+        assert offenders == [], (
+            "use buildability.js_round for anything the composition also "
+            "rounds:\n" + "\n".join(offenders))
 
 
 def uncovered(cuts, span) -> int:

@@ -57,6 +57,8 @@ import json
 import subprocess
 from typing import Any
 
+from buildability import js_round
+
 #: Frames are compared at this size, as in verify_frame_motion: big enough
 #: that a sub-pixel move is not thrown away by the downscale.
 MEASURE_SIZE = (480, 270)
@@ -202,7 +204,7 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
     # gate failed the film for the two. The frames either side read 3.84 and
     # 4.45: not a blink, a threshold.
     black = _runs(luma < BLACK_LUMA)
-    edge_frames = {round(e * fps) for e in edges}
+    edge_frames = {js_round(e * fps) for e in edges}
     isolated = [(a, n) for a, n in black
                 if n < MIN_BLACK_RUN and not any(abs(a - e) <= 1
                                                  for e in edge_frames)]

@@ -23,6 +23,8 @@ os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from tools.video.video_compose import VideoCompose  # noqa: E402
 
+from buildability import js_round
+
 ART = "projects/they-said-it-couldnt-be-built/artifacts/"
 OUT = "projects/they-said-it-couldnt-be-built/renders/"
 SECTIONS = ["cold_open", "act1", "act2", "act3", "act4", "outro"]
@@ -91,14 +93,14 @@ def main() -> int:
             if abs(have - (end + 1)) < 2.0 or abs(have - end) < 2.0:
                 print(f"[{section}] already rendered ({have:.1f}s) — keeping", flush=True)
                 manifest.append({"section": section, "path": out, "wall_seconds": 0,
-                                 "frames": round(end * 30), "fps": None, "resumed": True})
+                                 "frames": js_round(end * 30), "fps": None, "resumed": True})
                 continue
             print(f"[{section}] existing file is {have:.1f}s, expected ~{end:.1f}s — re-rendering",
                   flush=True)
 
         t0 = time.time()
         print(f"[{section}] {len(part['cuts'])} cuts, {end:.1f}s, "
-              f"{round(end * 30)} frames — starting", flush=True)
+              f"{js_round(end * 30)} frames — starting", flush=True)
         res = VideoCompose().execute({
             "operation": "render",
             "edit_decisions": part,
@@ -112,13 +114,13 @@ def main() -> int:
             **({"concurrency": concurrency} if concurrency else {}),
         })
         wall = time.time() - t0
-        fps = (round(end * 30) / wall) if wall else 0
+        fps = (js_round(end * 30) / wall) if wall else 0
         print(f"[{section}] success={res.success} wall={wall:.0f}s ({fps:.2f} fps)", flush=True)
         if not res.success:
             print(f"[{section}] ERROR {res.error}", flush=True)
             return 1
         manifest.append({"section": section, "path": out, "wall_seconds": round(wall, 1),
-                         "frames": round(end * 30), "fps": round(fps, 2)})
+                         "frames": js_round(end * 30), "fps": round(fps, 2)})
 
     if only:
         print(json.dumps(manifest, indent=1))
