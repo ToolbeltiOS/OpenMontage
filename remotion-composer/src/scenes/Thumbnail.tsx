@@ -1,5 +1,6 @@
 import React from "react";
-import { AbsoluteFill, Img, staticFile } from "remotion";
+import { AbsoluteFill, Img } from "remotion";
+import { resolveAsset } from "../lib/resolveAsset";
 import { SYS, TYPE, TRACK, SHADOW } from "../design/system";
 import { Graded } from "../design/Frame";
 
@@ -51,7 +52,18 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
       {/* Graded with no act, which is BASE_ACT_GRADE by definition. */}
       <Graded>
         <Img
-          src={image.startsWith("/") ? image : staticFile(image)}
+          /*
+           * `resolveAsset`, NOT a bare absolute path. An absolute path
+           * handed to <Img> is resolved against the dev server's origin —
+           * http://localhost:3000/Users/... — which 404s, the image never
+           * loads, and the still render is cancelled with a React stack
+           * and no mention of the file. Every other component in the
+           * composition goes through resolveAsset, which turns an absolute
+           * path into a file:// URL; this one had its own copy of the
+           * logic and it was wrong. It is why DocThumbnail had never
+           * rendered a real film's still.
+           */
+          src={resolveAsset(image)}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
       </Graded>
