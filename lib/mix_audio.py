@@ -1177,7 +1177,20 @@ def main() -> int:
     # ducker on the same voice would fight the first one, and the floor would
     # pump where the bed does not.
     design, design_report = build_sound_design(total, bed)
-    design_ducked = (design[:n, None] * duck) if design is not None else None
+    if design is None:
+        design_ducked = None
+    else:
+        # The sound-design layer is rendered from its own spec against the
+        # film's duration, and `n` comes from the voice; the two can land a
+        # sample apart after resampling — on this film, 56,873,599 against
+        # 56,873,600. A slice cannot lengthen an array, so the short case has
+        # to be padded rather than broadcast, which is what it was doing.
+        # One sample is 21 microseconds of silence at the very end of the
+        # film; the alternative was a ValueError with the mix 95% built.
+        design = design[:n]
+        if design.shape[0] < n:
+            design = np.pad(design, (0, n - design.shape[0]))
+        design_ducked = design[:, None] * duck
 
     # IS THE FLOOR UNDER THE BED, EVERYWHERE?
     #

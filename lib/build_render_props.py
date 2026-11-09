@@ -510,6 +510,25 @@ def main() -> int:
         sys.argv = [sys.argv[0]] + argv
     print(f"project: {PROJECT}")
     ed = json.load(open(os.path.join(ART, "edit_decisions.json"), encoding="utf-8"))
+
+    # A cut's SCENE payload is flattened onto the cut here, once, before
+    # anything else reads it.
+    #
+    # schemas/artifacts/edit_decisions.schema.json closes the cut object:
+    # a cut states where the boundary is, how the camera moves and whether
+    # the sound leads it. An authored scene also needs a component name and
+    # props that differ per component, and carrying those flat made the
+    # artifact fail its own schema — so an edit stage could not be
+    # checkpointed at all. They live under `scene` in the artifact and are
+    # flattened here, because this is the stage that builds what the
+    # renderer actually reads. Existing props with the flat shape still work:
+    # a cut with no `scene` key passes through untouched.
+    for cut in ed.get("cuts", []):
+        scene = cut.pop("scene", None)
+        if isinstance(scene, dict):
+            for key, value in scene.items():
+                cut.setdefault(key, value)
+
     script = json.load(open(os.path.join(ART, "script.json"), encoding="utf-8"))
     set_sections(script)
     music_dir = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("MUSIC_LIBRARY_DIR", "")

@@ -24,15 +24,15 @@ The Shorts that performed on King Tut keep returning to: king, curse, unexplaine
 
 | entity | category files | counted | clears 8 |
 |---|---|---|---|
-| Amarna Period | 54 | 54.0 | yes |
-| Akhenaten | 39 | 39.0 | yes |
+| Grand Egyptian Museum | 60 | 60.0 | yes |
+| Akhenaten | 57 | 57.0 | yes |
+| Amarna Period | 57 | 57.0 | yes |
+| Eighteenth Dynasty of Egypt | 57 | 57.0 | yes |
 | King Tut | 35 | 35.0 | yes |
-| Discovery of the tomb of Tutankhamun | 4 | 23.5 | yes |
-| Eighteenth Dynasty of Egypt | 0 | 14.0 | yes |
-| George Herbert, 5th Earl of Carnarvon | 10 | 10.0 | yes |
-| Grand Egyptian Museum | 10 | 10.0 | yes |
-| Ankhesenamun | 9 | 9.0 | yes |
-| 317a and 317b mummies | 1 | 2.0 | **no** |
-| Curse of the pharaohs | 0 | 0.5 | **no** |
+| Ankhesenamun | 30 | 30.0 | yes |
+| Ay (pharaoh) | 29 | 29.0 | yes |
+| Discovery of the tomb of Tutankhamun | 27 | 27.0 | yes |
+| Curse of the pharaohs | 19 | 19.0 | yes |
+| George Herbert, 5th Earl of Carnarvon | 17 | 17.0 | yes |
 
 Eligible: **6/6** of the top entities clear 8 usable assets each.

@@ -103,6 +103,30 @@
         "type": "object",
         "required": ["claim", "source_url", "credibility"],
         "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[cr][0-9]{1,3}$",
+            "description": "Explicit claim id, e.g. 'c07'. The script's paragraph `claims` lists cite this. Without it lib/verify_fact_coverage.py reads ids POSITIONALLY, which is a guess — and it is the guess that let easter-island cite fifty-four ids against a fifteen-claim ledger."
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["date", "name", "figure", "quote", "event", "claim"],
+            "description": "What sort of span this claim licenses. Dates, names and figures are exactly what the script gate checks."
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["established", "probable", "contested"]
+          },
+          "contested": {
+            "type": "boolean",
+            "description": "Not a defect — often the most interesting material. A contested claim must be narrated AS contested."
+          },
+          "notes": { "type": "string" },
+          "supports": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Exact script sentences this claim attributes. Per-sentence attribution held in the LEDGER, so a delivered film can be attributed without its script being touched."
+          },
           "claim": { "type": "string", "description": "The specific fact, statistic, or data point" },
           "source_url": { "type": "string", "format": "uri" },
           "source_name": { "type": "string", "description": "e.g., 'Stack Overflow 2025 Developer Survey'" },

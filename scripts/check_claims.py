@@ -20,6 +20,13 @@ each one:
   2. every factual sentence has a claim attributable to IT — the paragraph's
      own `claims` list, or a ledger entry naming the sentence in `supports`.
 
+`[framing]` is honoured here exactly as the gate honours it, and for the same
+reason the marker exists: a check that disagreed with the gate about which
+sentences are exempt would send the writer to repair a line the gate was
+always going to pass, which is the opposite of the job. A marker is still not
+a licence — a framing sentence carrying a proper noun, a number of ten or
+more, or a date is reported with the word that blocked it.
+
 If a sentence needs a source the brief does not have, the answer is to
 research it and add the data point, or to cut the sentence. It is never to
 write down an id and move on.
@@ -38,8 +45,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "lib"))
 
 from verify_fact_coverage import (  # noqa: E402
-    _norm_sentence, cited_anywhere, claims_for, exempt_sections, ledger,
-    paragraphs, sentence_index, sentences, triggers)
+    _norm_sentence, cited_anywhere, claims_for, exempt_sections,
+    framing_disqualifiers, ledger, paragraphs, sentence_index,
+    sentences_marked, triggers)
 
 
 def check_section(section: dict, book: dict, by_sentence: dict,
@@ -58,11 +66,30 @@ def check_section(section: dict, book: dict, by_sentence: dict,
     for cited in no_url:
         problems.append(f"cites {cited!r}, which has no source_url.")
 
-    needing = uncovered = 0
+    needing = uncovered = framing = framing_skipped = 0
     for index, para in enumerate(paragraphs(section.get("text") or "")):
         ids, _ = claims_for(section, index)
-        for sentence in sentences(para):
-            if not triggers(sentence, backend):
+        for sentence, is_framing in sentences_marked(para):
+            # `[framing]` marks a sentence that counts or signposts the FILM's
+            # own structure. It is skipped ONLY if it carries no proper noun,
+            # no number of ten or more and no date — and a marker that does
+            # not exempt the sentence says which word blocked it. Read here
+            # for the same reason the gate reads it: a check that disagreed
+            # with the gate on this would send the writer to fix a sentence
+            # the gate was always going to pass.
+            blocked = (framing_disqualifiers(sentence, backend)
+                       if is_framing else {})
+            if is_framing:
+                framing += 1
+                if not blocked:
+                    framing_skipped += 1
+                else:
+                    problems.append(
+                        f"p{index}: {sentence[:80]!r} is marked [framing] but "
+                        + ", ".join(f"{k} {v}" for k, v in blocked.items())
+                        + " — the marker says what a sentence is FOR, not "
+                          "that it makes no claim.")
+            if not triggers(sentence, backend) or (is_framing and not blocked):
                 continue
             needing += 1
             own = by_sentence.get(_norm_sentence(sentence), [])
@@ -77,7 +104,8 @@ def check_section(section: dict, book: dict, by_sentence: dict,
     return problems, {"id": section.get("id"), "cites": len(cited_anywhere(section)),
                       "unknown": len(unknown), "without_url": len(no_url),
                       "sentences_needing_a_claim": needing,
-                      "uncovered": uncovered}
+                      "uncovered": uncovered, "framing": framing,
+                      "framing_skipped": framing_skipped}
 
 
 def main() -> int:
@@ -109,7 +137,8 @@ def main() -> int:
         problems, m = check_section(section, book, by_sentence, args.backend)
         print(f"{sid}: cites {m['cites']} claim(s), {m['unknown']} unknown, "
               f"{m['sentences_needing_a_claim']} sentences need a claim, "
-              f"{m['uncovered']} uncovered")
+              f"{m['uncovered']} uncovered, {m['framing']} framing "
+              f"({m['framing_skipped']} skipped)")
         for p in problems[:20]:
             print("  -", p)
         if len(problems) > 20:

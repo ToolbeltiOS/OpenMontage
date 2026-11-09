@@ -89,6 +89,30 @@
               "required": ["word", "phonetic"]
             }
           },
+          "paragraphs": {
+            "type": "array",
+            "description": "One entry per paragraph of `text`, in order, carrying that paragraph's claim ids. This is the attribution the fact gate reads (lib/verify_fact_coverage.py claims_for). A section-level `claims` or `source_ref` covers NOTHING: it attributes a whole act to a bag of ids and cannot say which sentence rests on which claim.",
+            "items": {
+              "type": "object",
+              "required": ["text", "claims"],
+              "properties": {
+                "text": { "type": "string", "description": "The paragraph's narration, for review. `text` on the section remains the authority the gate parses." },
+                "claims": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Claim ids in the research_brief's data_points. Every id must resolve and carry a source_url."
+                },
+                "beat": { "type": "string", "enum": ["reveal", "exposition", "landing", "transition"] },
+                "register": { "type": "string", "enum": ["awe", "tension", "doubt", "quiet", "resolution"] }
+              },
+              "additionalProperties": false
+            }
+          },
+          "claims": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Section-level claim ids. Read and resolve-checked, but covers no sentence. Prefer `paragraphs[].claims`."
+          },
           "source_ref": {
             "type": "string",
             "description": "Reference to the research_brief data point or URL that supports this claim. Every factual claim should be traceable."

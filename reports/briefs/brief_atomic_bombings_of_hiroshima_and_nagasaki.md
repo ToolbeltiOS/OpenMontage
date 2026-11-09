@@ -26,15 +26,15 @@ The Shorts that performed on Atomic bombings of Hiroshima and Nagasaki keep retu
 
 | entity | category files | counted | clears 8 |
 |---|---|---|---|
-| Boeing B-29 Superfortress | 35 | 35.0 | yes |
+| Boeing B-29 Superfortress | 56 | 56.0 | yes |
+| Atomic bombings of Hiroshima and Nagasaki | 30 | 30.0 | yes |
+| 509th Composite Group | 30 | 30.0 | yes |
 | Attack on Yokosuka | 3 | 20.5 | yes |
-| Attacks on Kure and the Inland Sea (July 1945) | 0 | 13.0 | yes |
-| Atomic bombings of Hiroshima and Nagasaki | 11 | 11.0 | yes |
-| Air raids on Japan | 0 | 10.5 | yes |
+| Allied naval bombardments of Japan during World War II | 20 | 20.0 | yes |
+| Air raids on Japan | 15 | 15.0 | yes |
+| Attacks on Kure and the Inland Sea (July 1945) | 0 | 13.5 | yes |
 | Atomic bombs | 0 | 9.0 | yes |
-| Allied naval bombardments of Japan during World War II | 8 | 8.0 | yes |
-| Acute radiation syndrome | 6 | 6.5 | **no** |
-| 509th Composite Group | 3 | 6.0 | **no** |
+| Acute radiation syndrome | 8 | 8.0 | yes |
 | Attack on Kure (March 1945) | 0 | 5.5 | **no** |
 
 Eligible: **6/6** of the top entities clear 8 usable assets each.
