@@ -83,6 +83,18 @@ def build(slug: str, out: Path, *, title: str | None = None,
         title = (json.loads(listing.read_text()).get("title")
                  if listing.exists() else slug)
 
+    # THE IMAGE HAS TO BE SERVED, NOT READ OFF THE DISK. A page served from
+    # http://localhost is not allowed to load a file:// URL, so an absolute
+    # path reaches the browser and is refused — the exact failure
+    # `stage_assets` was written for, and its docstring records the same
+    # console line this hit. Reuse it rather than keep a second copy of the
+    # rule: it hard-links the asset into public/assets_<project>/ under a
+    # content-addressed name and hands back the relative path.
+    sys.path.insert(0, str(ROOT / "lib"))
+    from film_render import stage_assets
+    image = stage_assets({"cuts": [{"source": image}]},
+                         slug)["cuts"][0]["source"]
+
     props: dict[str, Any] = {"image": image, "title": title,
                              "titleSide": title_side, "scale": scale,
                              "offsetX": offset_x, "offsetY": offset_y}
