@@ -38,6 +38,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "lib"))
 
+#: Every pass `render_film.py` can reuse, so a slice renders all of them.
+#: Checked against render_film's own list by
+#: tests/automation/test_slice_check.py, because a pass renamed there and not
+#: here would be silently reused again.
+REDO_PASSES = ("plate", "frames", "look", "type")
+
 
 def source_project(slug: str) -> Path:
     for root in ("runner", "OpenMontage", "fix-render-finalise",
@@ -132,9 +138,29 @@ def main() -> int:
 
     mix = trim_mix(project / "renders" / "mix_final.wav", end, work / "mix.wav")
     dest = work / f"{label}.mp4"
+    # EVERY PASS IS RE-RENDERED, ALWAYS.
+    #
+    # A slice exists to answer "does the real chain still produce a film that
+    # passes every gate", and `render_film` reuses a pass whose output already
+    # verifies. On 2026-11-09 that turned this script into a mux-and-gate run:
+    # it printed "reusing plate.mp4", "reusing frames_king-tut-slice",
+    # "reusing look.mp4", "reusing type.mov", then FILM DELIVERY: PASS, and
+    # the merge it was gating had not touched a single frame of it.
+    #
+    # Worse is the HALF-reused run, which is what a careless fix produces.
+    # Clearing `out/<label>` and re-rendering the plate leaves
+    # `public/frames_<label>` behind — `reuse` verifies the stills COUNT, and
+    # the count still matches — so the look pass ran on frames extracted from
+    # the PREVIOUS plate while the gates compared against the new one. It
+    # passed, with frame-order correlation 0.9924 where a coherent chain reads
+    # 0.999. A mixed chain that passes is worse evidence than a failure.
+    #
+    # So the passes are named here rather than left to whatever is on disk,
+    # and `--redo` is the mechanism because it is the one `reuse` consults.
     cmd = [sys.executable, str(ROOT / "scripts" / "render_film.py"),
            "--project", label, "--props", str(props_path),
-           "--mix", str(mix), "--out", str(dest), "--force"]
+           "--mix", str(mix), "--out", str(dest), "--force",
+           "--redo", ",".join(REDO_PASSES)]
     print("   " + " ".join(cmd))
     if args.dry_run:
         return 0
