@@ -148,6 +148,51 @@ Each cut carries a short `reason`. This is not ceremony — it is what makes the
 timeline reviewable and what catches the cut that exists only because a clip was
 available.
 
+### 7b. Where An Authored Cut's Props Go
+
+**A cut object is a closed set of EDITORIAL decisions** — where the boundary
+is, how the camera moves, whether the sound leads it. An authored scene also
+needs a component name and that component's props, which are a different
+kind of thing and vary per component. Those go under `scene`, never flat on
+the cut.
+
+This is not style. `schemas/artifacts/edit_decisions.schema.json` closes the
+cut object, so a cut carrying component props flat fails its own schema and
+**the stage cannot be checkpointed at all** — the edit is lost at the end of
+the stage that made it.
+
+`source` is required on every cut. For an authored cut it is the SLOT ID,
+not a file path. `lib/build_render_props.py` flattens `scene` onto the cut
+before the renderer sees it, so the composition is unchanged.
+
+```json
+{
+  "id": "c017",
+  "in_seconds": 0.0,
+  "out_seconds": 9.067,
+  "layer": "primary",
+  "source": "act1_s010",
+  "transition_in": "cut",
+  "transition_duration": 0.0,
+  "reason": "meaning_change | act1_s010 | straight cut on meaning change",
+  "beat": "exposition",
+  "register": "quiet",
+  "internal_motion": true,
+  "scene": {
+    "type": "evidence_card",
+    "treatment": "graphic",
+    "act": "act1",
+    "actNumber": "01",
+    "claim": "The claim this card states, in one sentence.",
+    "attribution": "Who said it",
+    "status": "claim"
+  }
+}
+```
+
+`layer` is a STRING — `primary`, `overlay` or `background`. Two earlier
+films wrote it as an integer and their artifacts no longer match the schema.
+
 ### 8. Reserve The Ending
 
 Nothing essential in the last 20 seconds. The outro CTA is 10 seconds maximum.

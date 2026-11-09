@@ -91,6 +91,27 @@ The deterministic work is already written. Call it:
 | has the edit a rhythm or only an average? | `lib/verify_rhythm.py` |
 | where did the film leave the playbook? | `scripts/critic_pass.py` |
 
+## An authored cut's props go under `scene`
+
+A cut object is a closed set of EDITORIAL decisions — where the boundary
+is, how the camera moves, whether the sound leads it.
+`schemas/artifacts/edit_decisions.schema.json` closes it. An authored
+scene's component name and props are a different kind of thing and vary per
+component, so they live under `scene` on the cut, never flat beside `id`
+and `in_seconds`.
+
+A cut carrying component props flat fails the artifact's own schema, and
+the stage **cannot be checkpointed at all** — the edit is lost at the end of
+the stage that made it. `lib/build_render_props.py` flattens `scene` onto
+the cut before the renderer reads it, so the composition is unchanged.
+
+`source` is required on every cut; for an authored cut it is the slot id,
+not a file path. `layer` is a string: `primary`, `overlay` or `background`.
+
+The edit director skill carries a worked example, and a test validates that
+example against the schema — see
+`tests/automation/test_authored_cut_shape.py`.
+
 If one of these is missing something you need, **say so in your closing
 report** and do the smallest thing that gets this film made. A throwaway
 script in `projects/<slug>/` is acceptable when nothing fits; forty-eight
