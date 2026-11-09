@@ -57,7 +57,14 @@ def pending(project: str) -> dict | None:
 
 def already_ours(yt, video_id: str, text: str) -> str | None:
     """Has this comment already been posted? The ledger can be lost; the
-    channel cannot."""
+    channel cannot.
+
+    `text` must be what was POSTED, not what is owed. A block over
+    COMMENT_LIMIT goes up split, and the top-level comment then begins
+    "(1 of 2)" — so matching on the head of the whole block would miss our
+    own comment and post the credits a second time, which is the one failure
+    this function exists to prevent.
+    """
     from googleapiclient.errors import HttpError
     try:
         threads = yt.commentThreads().list(
@@ -101,7 +108,19 @@ def post(project: str, dry_run: bool = False) -> int:
         print(f"   still private — comments are disabled until {when}")
         return 2
 
-    existing = already_ours(yt, video_id, text)
+    # YOUTUBE REFUSES A COMMENT OVER ~8,000 CHARACTERS, and this is the path
+    # that posts the credits for every scheduled film. It posted the whole
+    # block as one comment, so noah's 12,502 characters would have been
+    # refused with a 400 and the attribution lost to a line in the manual
+    # list — the exact failure publish_doc.py's split_comment was measured
+    # and written for, on the branch where the long block no longer goes
+    # through publish_doc at all. Same function, one caller more.
+    parts = P.split_comment(text)
+    if len(parts) > 1:
+        print(f"   {len(text)} chars over the {P.COMMENT_LIMIT} limit: "
+              f"{len(parts)} parts, longest {max(len(p) for p in parts)}")
+
+    existing = already_ours(yt, video_id, parts[0])
     if existing:
         print(f"   already posted as {existing} — recording it, posting nothing")
     elif dry_run:
@@ -109,14 +128,34 @@ def post(project: str, dry_run: bool = False) -> int:
         return 0
     else:
         try:
-            existing = yt.commentThreads().insert(part="snippet", body={
+            thread = yt.commentThreads().insert(part="snippet", body={
                 "snippet": {"videoId": video_id, "topLevelComment": {
-                    "snippet": {"textOriginal": text}}}}).execute()["id"]
-            print(f"   posted {existing}")
+                    "snippet": {"textOriginal": parts[0]}}}}).execute()
+            existing = thread["id"]
+            print(f"   posted {existing}"
+                  + (f" ({len(parts)} parts)" if len(parts) > 1 else ""))
         except HttpError as error:
             print(f"   FAILED {error.resp.status}: "
                   f"{error.content.decode()[:200]}")
             return 1
+        # The rest continue as replies on our own comment. A part that fails
+        # is named rather than swallowed: those lines are a CC BY attribution
+        # obligation, not a courtesy, so a half-posted block has to be
+        # visible as owed.
+        top_id = thread["snippet"]["topLevelComment"]["id"]
+        for i, part in enumerate(parts[1:], start=2):
+            try:
+                yt.comments().insert(part="snippet", body={"snippet": {
+                    "parentId": top_id, "textOriginal": part}}).execute()
+                print(f"   posted part {i} of {len(parts)}")
+            except HttpError as error:
+                print(f"   FAILED part {i} of {len(parts)} "
+                      f"({error.resp.status}) — post it by hand from "
+                      f"listing.json")
+                record.setdefault("manual", []).append(
+                    f"POST CREDITS PART {i} of {len(parts)} by hand — it "
+                    f"failed with {error.resp.status} and the lines it "
+                    f"carries are a licence obligation")
 
     record["comment_id"] = existing
     record["manual"] = [m for m in record.get("manual", [])
@@ -130,8 +169,9 @@ def post(project: str, dry_run: bool = False) -> int:
     telegram.send(
         f"<b>Credits posted</b> — {listing['title']}\n"
         f"https://www.youtube.com/watch?v={video_id}\n"
-        f"✓ {len(text)} characters of attribution\n"
-        f"· PIN it in Studio — there is no API for pinning")
+        f"✓ {len(text)} characters of attribution"
+        + (f" in {len(parts)} parts\n" if len(parts) > 1 else "\n")
+        + f"· PIN it in Studio — there is no API for pinning")
     return 0
 
 

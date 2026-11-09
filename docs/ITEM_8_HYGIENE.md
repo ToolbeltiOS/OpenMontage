@@ -4,6 +4,12 @@ Collected during merge week for **item 8**. Queued deliberately, not done:
 both were found while settling the one-shot levels at the `asset-library`
 merge, and neither is a reason to hold a merge.
 
+A third item was queued here and then **done immediately instead**, because
+it was not a measurement problem: `post_pending_credits.py` posted the whole
+credits block as one comment, and that is the path every scheduled film's
+credits now take. See the commit "The backup credits path could not carry a
+big bank either".
+
 Item 8 started as "`additionalProperties` back to strict once buildability
 enumerates props per component" and `MERGE_ASSET_LIBRARY.md` section 0
 answered that part: strict came from closing the cut, so that task became
@@ -47,10 +53,18 @@ plausible figure. This project has now found three gates that proved an
 intention while nothing checked the render; this is the first one that
 checked the render and read the wrong part of it.
 
-**Not to be done quietly:** the −6.6 dB figure appears in delivered mix
-reports for four films. Changing where it is measured changes what those
-numbers meant, so the fix should say so in the report rather than silently
-restating history.
+**The four delivered reports are NOT to be rewritten.** Ruled 2026-11-09.
+The −6.6 dB riser figures in easter-island's, they-said-it's, noah's and
+king-tut's mix reports stay exactly as they are: they are what the gate
+measured on the day, and a report edited after the fact is no longer a
+record of its run. What those numbers measured — ambience and room tone in
+the ramp-in, not the riser — is written down here, which is where the
+correction belongs.
+
+Instead the fixed gate **adds a line to NEW reports**: `measurement window
+changed on <date>`, naming the riser window and why. A reader comparing a
+new report against an old one then has the one fact they need, in the new
+report, without either report having been altered to agree with the other.
 
 ---
 
@@ -84,11 +98,20 @@ authority for what the mix was made of — `scripts/export_excerpts.py` says
 so in as many words — and an authority that cannot be followed back to the
 files is a record of names, not of inputs.
 
-**Worth deciding at the same time:** whether the EDL's selection belongs in
-git in some form. The gitignore keeps the audio out, which is right; it also
-keeps out the ONE fact that cannot be recovered, which is which bed was
-chosen for which span and why. The report is where that fact should live,
-and repo-relative paths are most of the way there.
+**And track the music EDL's JSON in git.** Ruled 2026-11-09, both halves:
+repo-relative bed paths in `mix_report.json`, AND the EDL itself under
+version control. The audio stays ignored — a bed is tens of megabytes and
+regenerable from the candidates — but WHICH BED FOR WHICH SPAN IS A
+DECISION, made by ear, and decisions are what this repo keeps. It is the one
+fact in the mix that cannot be recovered from anything else: the candidates
+are all still on disk, and nothing says which three were chosen or why.
+
+The existing rule is the right shape to copy. `.gitignore` already ignores
+`projects/**` and then un-ignores the artifacts that are decisions —
+`listing.json` because it is the published record, `script.json` and
+`derived_assets.json` because nine tests read a published film's own
+provenance. The EDL belongs in that list for the same reason and under the
+same `!projects/*/artifacts/` pattern.
 
 ---
 
