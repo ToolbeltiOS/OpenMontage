@@ -1096,6 +1096,28 @@ def playbook_under_speech_lufs() -> float:
         return float(yaml.safe_load(fh)["audio"]["music_under_speech_lufs"])
 
 
+def fit_to_length(signal: "np.ndarray", n: int) -> "np.ndarray":
+    """A mono layer at exactly `n` samples, padded or trimmed.
+
+    THE SOUND-DESIGN LAYER AND THE VOICE CAN LAND A SAMPLE APART. The design
+    is rendered from its own spec against the film's duration; `n` comes from
+    the voice. After resampling the two disagree by a sample or so — measured
+    on noah at 56,873,599 against 56,873,600.
+
+    The code here was `design[:n, None] * duck`, and A SLICE CANNOT LENGTHEN
+    AN ARRAY: when the design is the shorter of the two, the slice is a
+    no-op and numpy is asked to broadcast 56,873,599 against 56,873,600,
+    which it refuses. That is a ValueError with the mix 95% built, at the end
+    of a stage that has already paid for everything.
+
+    Padding is silence: one sample is 21 microseconds at 48 kHz, at the very
+    end of the film, under a duck envelope that is itself near zero there.
+    """
+    if signal.shape[0] >= n:
+        return signal[:n]
+    return np.pad(signal, (0, n - signal.shape[0]))
+
+
 def main() -> int:
     """argv: [--project <slug>] <spans json> <out> [under-speech LUFS] [window json]
 
@@ -1177,7 +1199,8 @@ def main() -> int:
     # ducker on the same voice would fight the first one, and the floor would
     # pump where the bed does not.
     design, design_report = build_sound_design(total, bed)
-    design_ducked = (design[:n, None] * duck) if design is not None else None
+    design_ducked = (fit_to_length(design, n)[:, None] * duck
+                     if design is not None else None)
 
     # IS THE FLOOR UNDER THE BED, EVERYWHERE?
     #
