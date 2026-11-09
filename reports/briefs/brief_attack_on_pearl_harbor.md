@@ -22,17 +22,17 @@ The Shorts that performed on Attack on Pearl Harbor keep returning to: japan's, 
 - The Face Carved in Japan's Sunken City  
   https://youtube.com/shorts/-iXpsL8sFFU
 
-## Entities, and how deep the archive is
+## What the island's article suggests
 
 | entity | category files | counted | clears 8 |
 |---|---|---|---|
-| USS Utah (BB-31) | 29 | 29.0 | yes |
-| USS Neosho (AO-23) | 28 | 28.0 | yes |
-| December 1941 | 4 | 24.0 | yes |
+| USS West Virginia (BB-48) | 60 | 60.0 | yes |
+| USS Utah (BB-31) | 59 | 59.0 | yes |
+| Aleutian Islands campaign | 55 | 55.0 | yes |
+| USS Neosho (AO-23) | 32 | 32.0 | yes |
+| December 1941 | 6 | 25.5 | yes |
 | Attack on Pearl Harbor | 23 | 23.0 | yes |
-| Aleutian Islands campaign | 21 | 21.0 | yes |
 | Ancient Hawaii | 0 | 19.5 | yes |
-| USS West Virginia (BB-48) | 19 | 19.0 | yes |
 | 1st Air Fleet | 0 | 15.5 | yes |
 | American Theater (World War II) | 0 | 8.5 | yes |
 | A date which will live in infamy | 0 | 6.0 | **no** |

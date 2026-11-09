@@ -76,6 +76,6 @@ These are the film's own subjects, named in the constraint. The list below them 
 | Giovanni Benedetto Castiglione | 16 | 16.0 | yes |
 | Japheth | 16 | 16.0 | yes |
 | Ham (son of Noah) | 13 | 13.0 | yes |
-| Noah's wife | 0 | 9.5 | yes |
+| Noah | 10 | 10.0 | yes |
 
 Eligible: **6/6** of the top entities clear 8 usable assets each.

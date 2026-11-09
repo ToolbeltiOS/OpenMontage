@@ -1,481 +1,67 @@
 {
- "generated": "2026-10-30T23:19:07.396993+00:00",
+ "generated": "2026-11-07T00:51:27.552691+00:00",
  "ledger_size": 500,
- "clusters_considered": 66,
+ "clusters_considered": 60,
  "min_assets_per_entity": 8,
  "entities_checked": 6,
- "briefs": [
+ "published_ledger": "/Users/mac/Developer/wak3up-docs/state/published.json",
+ "youtube_check": {
+  "ok": true,
+  "long_form_uploads": 7,
+  "subjects": 113,
+  "video_ids": [
+   "gQvV4K3LxVc",
+   "CDpzQKwTBsI",
+   "smlOZ9v2jdM",
+   "bd4jgodJ120",
+   "mYb1uoVGGcI",
+   "Axoovel28Ag",
+   "PtTjy_prEHA"
+  ]
+ },
+ "excluded": [
+  {
+   "entity": "Easter Island",
+   "why": "already published (in the ledger)"
+  },
+  {
+   "entity": "Built",
+   "why": "already published (in the ledger)"
+  },
   {
    "entity": "Noah",
-   "shorts": 2,
-   "median_views": 366,
-   "best_views": 575,
-   "mean_engagement": 1.96,
-   "titles": [
-    "Noah: The First Drunk in History? \ud83c\udf77 #Shorts",
-    "Noah's Flood Story Was Written Centuries Earlier #Shorts"
-   ],
-   "urls": [
-    "https://youtube.com/shorts/qTFEo0GCjWY",
-    "https://youtube.com/shorts/qplcEEGex5Y"
-   ],
-   "wikidata": {
-    "phrase": "Noah",
-    "item": "Q81422",
-    "description": "biblical prophet, son of Lamech, major figure in the Book of Genesis",
-    "sitelinks": 122,
-    "subject": true,
-    "why": "it is someone",
-    "article": "Noah"
-   },
-   "entities": [
-    {
-     "entity": "Book of Genesis",
-     "categories": [
-      "Book of Genesis",
-      "Book of Genesis - Chapter 9",
-      "Book of Genesis - Chapter 49"
-     ],
-     "category_files": 59,
-     "search_files": 0,
-     "counted": 59.0,
-     "clears": true,
-     "examples": [
-      "\"The Creation,\" Niche Sculptures, Wells Cathedral West Fa\u00e7ade (3610854381).jpg",
-      "039.3 402 Sara (Genesis 20 2) \u2022 invenit James Tissot \u2022 pinxit James Tissot \u2022 excudit Maurice de Brunoff apud Philip de Vere \u2022 praesentat Phillip Medhurst.jpg",
-      "056.3 402 Enl\u00e8vement de Dinah, fille de Lia (Genesis 34 2) \u2022 invenit James Tissot \u2022 pinxit James Tissot \u2022 excudit Maurice de Brunoff apud Philip de Vere \u2022 praesentat Phillip Medhurst.jpg",
-      "057.3 402 Le massacre des Sich\u00e9mites (Genesis 35 5) \u2022 invenit James Tissot \u2022 pinxit James Tissot \u2022 excudit Maurice de Brunoff apud Philip de Vere \u2022 praesentat Phillip Medhurst.jpg"
-     ]
-    },
-    {
-     "entity": "Noah's Ark",
-     "categories": [
-      "Noah's Ark",
-      "Noah's Ark II",
-      "Noah's Ark Zoo Farm"
-     ],
-     "category_files": 56,
-     "search_files": 0,
-     "counted": 56.0,
-     "clears": true,
-     "examples": [
-      "500 Armenian dram - 2017 (obverse).png",
-      "500 Armenian dram - 2017 (reverse).png",
-      "A curious hieroglyphick Bible; or Fleuron T147645-16.png",
-      "Ark structure.jpg"
-     ]
-    },
-    {
-     "entity": "Genesis flood narrative",
-     "categories": [
-      "The Great Flood",
-      "Genesis flood narrative"
-     ],
-     "category_files": 25,
-     "search_files": 0,
-     "counted": 25.0,
-     "clears": true,
-     "examples": [
-      "007.The Great Flood.jpg",
-      "18-2051 planche grav\u00e9e sur cuivre (exemple 1) (51372239410).jpg",
-      "Anacron\u00f3pete en el Diluvio (Anacron\u00f3pete, p214).png",
-      "Augsburger Wunderzeichenbuch, Folio 1.jpg"
-     ]
-    },
-    {
-     "entity": "Shem",
-     "categories": [
-      "Shem (given name)",
-      "Shem",
-      "Shem Schroeck"
-     ],
-     "category_files": 21,
-     "search_files": 0,
-     "counted": 21.0,
-     "clears": true,
-     "examples": [
-      "A map of Asia as inhabited by Shem (FL27963638 2488683).jpg",
-      "Biblical haplogroup tree.jpg",
-      "Dominee Charles Chais, Carte des premier etablissemens de Famille de Sem et des Colonies qui en sortirent (FL45612090 3957220).jpg",
-      "Dominee Charles Chais, Carte des premier etablissemens des Colonies des Descendans de Cam (FL45612443 3957221).jpg"
-     ]
-    },
-    {
-     "entity": "Noah (name)",
-     "categories": [
-      "Noah (name)"
-     ],
-     "category_files": 0,
-     "search_files": 40,
-     "counted": 20.0,
-     "clears": true,
-     "examples": [
-      "Noah(1).png",
-      "Caricature of Noah E. Offutt (1916).png",
-      "3 grappes de noah.jpg",
-      "Noah Emmerich.jpg"
-     ]
-    },
-    {
-     "entity": "Lamech (father of Noah)",
-     "categories": [
-      "Lamech (father of Noah)"
-     ],
-     "category_files": 0,
-     "search_files": 36,
-     "counted": 18.0,
-     "clears": true,
-     "examples": [
-      "BOWYER BIBLE GENESIS 081. Lamech and his two wives. Genesis cap 4 v 19. De Vos.jpg",
-      "Lamech and Cain MET DP818832.jpg",
-      "Mosaici del battistero, genesi 10 Lamech uccide Caino e Tubalkain.jpg",
-      "Lamech lunar crater map.jpg"
-     ]
-    },
-    {
-     "entity": "Giovanni Benedetto Castiglione",
-     "categories": [
-      "Giovanni Benedetto Castiglione",
-      "Giovanni Benedetto Castiglione - In Front of Noah's Ark (Dresden)",
-      "La maga Circe by Giovanni Benedetto Castiglione"
-     ],
-     "category_files": 16,
-     "search_files": 0,
-     "counted": 16.0,
-     "clears": true,
-     "examples": [
-      "A Family in a Desert Landscape, by Giovanni Benedetto Castiglione (Getty 108G7C).jpg",
-      "Agenda-Rossa-33.jpg",
-      "Melancholy) - G. Bened. Castilionus Genovensis LCCN92500814.jpg",
-      "Melancholy) - G. Bened. Castilionus Genovensis LCCN92500814.tif"
-     ]
-    },
-    {
-     "entity": "Japheth",
-     "categories": [
-      "Japheth",
-      "Japheth Campbell",
-      "Japheth (given name)"
-     ],
-     "category_files": 16,
-     "search_files": 0,
-     "counted": 16.0,
-     "clears": true,
-     "examples": [
-      "Biblical haplogroup tree.jpg",
-      "Dominee Charles Chais, Carte des premier etablissemens de Iaphet et de ses Sept Fils soit dans l'Asie Mineure soit dans le Pais qui setendent du Pont (FL45612081 3957216).jpg",
-      "Edward Wells, Karte von den Inseln der Heyden, das ist von den Laendern, welche durch die Nachkommen des Iaphet nach und nach bevoelkert worden (FL50290114 2369155).jpg",
-      "First depiction of historical ethnology by Semitic, Hamitic and Japhetic, 1771, Gatterer.jpg"
-     ]
-    },
-    {
-     "entity": "Ham (son of Noah)",
-     "categories": [
-      "Ham (son of Noah)"
-     ],
-     "category_files": 13,
-     "search_files": 0,
-     "counted": 13.0,
-     "clears": true,
-     "examples": [
-      "009.Noah Curses Ham and Canaan.jpg",
-      "Biblical haplogroup tree.jpg",
-      "Cham en zijn vrouw Cataflua Liber Chronicarum (serietitel), RP-P-2016-49-8-6.jpg",
-      "Edward Wells, A map of the first plantation of the sons of HAM (FL49973301 4073128).jpg"
-     ]
-    },
-    {
-     "entity": "Noah's wife",
-     "categories": [
-      "Noah's wife"
-     ],
-     "category_files": 0,
-     "search_files": 19,
-     "counted": 9.5,
-     "clears": true,
-     "examples": [
-      "Attributed to Antonio de Bellis - The Sacrifice of Noah - Google Art Project (cropped Noah's wife).jpg",
-      "\"Noah's wife\" on Archstoyanie festival.jpg",
-      "Rebecca Greenleaf Webster wife of Noah Webster.jpg",
-      "Noah's wife lived a wonderful life - one step - DPLA - 36ca89150e275c9ce638de1b5e022496 (page 11).jpg"
-     ]
-    },
-    {
-     "entity": "Noah",
-     "categories": [
-      "Noah (given name)",
-      "Noah",
-      "Noah Wulff"
-     ],
-     "category_files": 8,
-     "search_files": 0,
-     "counted": 8.0,
-     "clears": true,
-     "examples": [
-      "Caricature of Noah E. Offutt (1916).png",
-      "Cloth book cover of \"Early Vanities\".jpg",
-      "JTF-SD member\u2019s family sledding outing turns scary (6508404).jpeg",
-      "Noah Locke.jpg"
-     ]
-    }
-   ],
-   "deepest_six": "6/6",
-   "eligible": true,
-   "min_assets": 8,
-   "thin": [],
-   "spine_entities": [
-    {
-     "entity": "Epic of Gilgamesh",
-     "categories": [
-      "Epic of Gilgamesh",
-      "The Epic of Gilgamesh"
-     ],
-     "category_files": 33,
-     "search_files": 0,
-     "counted": 33.0,
-     "clears": true,
-     "examples": [
-      "AN (cuneiforme).JPG",
-      "Bilgamesh (cuneiforme).JPG",
-      "Brussels - 2010-May - IMG 7201.jpg",
-      "CBS7771 Gilgamesh Epic Penn Museum.jpg"
-     ]
-    },
-    {
-     "entity": "Flood Tablet",
-     "categories": [
-      "Flood Tablet"
-     ],
-     "category_files": 10,
-     "search_files": 0,
-     "counted": 10.0,
-     "clears": true,
-     "examples": [
-      "British Museum Flood Tablet 1.jpg",
-      "British Museum Flood Tablet.jpg",
-      "Epic of Gilgamesh, plaster cast of tablet XI, The Flood Tale, Neo-Assyrian period, c. 9th-7th century BC - Harvard Semitic Museum - Cambridge, MA - DSC06162.jpg",
-      "Library of Ashurbanipal The Flood Tablet.jpg"
-     ]
-    },
-    {
-     "entity": "George Smith (Assyriologist)",
-     "categories": [
-      "George Smith (assyriologist)"
-     ],
-     "category_files": 8,
-     "search_files": 0,
-     "counted": 8.0,
-     "clears": true,
-     "examples": [
-      "Assyrian discoveries an account of explorations and discoveries on the site of Nineveh, during 1873 and 1874, RP-F-2005-140.jpg",
-      "Chald\u00e4ische Genesis (titel op object), RP-F-2001-7-863.jpg",
-      "George Smith-Assyriologist 001.jpg",
-      "George Smith.jpg"
-     ]
-    },
-    {
-     "entity": "Matsya",
-     "categories": [
-      "Matsya",
-      "Matsya Purana",
-      "Paintings of Matsya"
-     ],
-     "category_files": 37,
-     "search_files": 0,
-     "counted": 37.0,
-     "clears": true,
-     "examples": [
-      "A dictionary of important names, objects, and terms, found in the Holy Scriptures. Intended principally for youth (1831) (14776328785).jpg",
-      "Dasavatara1.png",
-      "Dasavataralu - Matsya avatar of Lord Vishnu on Sri Venkateshwara temple, Guntur.jpg",
-      "Depictions of episodes from Hindu mythology.jpg"
-     ]
-    },
-    {
-     "entity": "Black Sea",
-     "categories": [
-      "Black Sea",
-      "Black Sea Dahu",
-      "Black Sea Arena"
-     ],
-     "category_files": 59,
-     "search_files": 0,
-     "counted": 59.0,
-     "clears": true,
-     "examples": [
-      "20250928 View from aircraft in Russia 02 (44131).jpg",
-      "A Turquoise Tint for the Black Sea (1229998 - ISS074-E-619520 lrg).jpg",
-      "A Turquoise Tint for the Black Sea (1229998 - ISS074-E-619520).jpg",
-      "Adler, Krasnodar Krai, Russia - panoramio (25).jpg"
-     ]
-    },
-    {
-     "entity": "Noah's Ark",
-     "categories": [
-      "Noah's Ark",
-      "Noah's Ark II",
-      "Noah's Ark Zoo Farm"
-     ],
-     "category_files": 56,
-     "search_files": 0,
-     "counted": 56.0,
-     "clears": true,
-     "examples": [
-      "500 Armenian dram - 2017 (obverse).png",
-      "500 Armenian dram - 2017 (reverse).png",
-      "A curious hieroglyphick Bible; or Fleuron T147645-16.png",
-      "Ark structure.jpg"
-     ]
-    },
-    {
-     "entity": "Ark van Noach",
-     "categories": [
-      "Ark van Noach (ship, 2012)"
-     ],
-     "category_files": 11,
-     "search_files": 0,
-     "counted": 11.0,
-     "clears": true,
-     "examples": [
-      "Ark van Noach - Krimpen aan den IJssel (28907522361).jpg",
-      "Ark van Noach in Dordrecht, Noah's Ark replica (public domain).jpg",
-      "Ark van Noach in Dordrecht.jpg",
-      "Ark van Noach ship Krimpen aan den IJssel 2.jpg"
-     ]
-    },
-    {
-     "entity": "Mount Ararat",
-     "categories": [
-      "Mount Ararat",
-      "Mount Ararat (Free State)",
-      "Mount Ararat Baptist Church"
-     ],
-     "category_files": 60,
-     "search_files": 0,
-     "counted": 60.0,
-     "clears": true,
-     "examples": [
-      "\"Ararat\" brandy factory, Erevan, Armenia - panoramio.jpg",
-      "00 2399 Mount Ararat, Turkey.jpg",
-      "04400 Bozkurt-Do\u011fubayaz\u0131t-A\u011fr\u0131, Turkey - panoramio (1).jpg",
-      "04400 \u00dczengili-Do\u011fubayaz\u0131t-A\u011fr\u0131, Turkey - panoramio.jpg"
-     ]
-    },
-    {
-     "entity": "Durup\u0131nar",
-     "categories": [
-      "Durup\u0131nar Site"
-     ],
-     "category_files": 13,
-     "search_files": 0,
-     "counted": 13.0,
-     "clears": true,
-     "examples": [
-      "04400 \u00dczengili-Do\u011fubayaz\u0131t-A\u011fr\u0131, Turkey - panoramio (3).jpg",
-      "04400 \u00dczengili-Do\u011fubayaz\u0131t-A\u011fr\u0131, Turkey - panoramio.jpg",
-      "Ark structure.jpg",
-      "Arka Noego - Centrum Turystyczne w \u00dczengili (Turcja).jpg"
-     ]
-    }
-   ],
-   "angle": {
-    "recurring_words": [
-     "noah",
-     "drunk",
-     "noah's",
-     "flood",
-     "written",
-     "centuries",
-     "earlier"
-    ],
-    "source_titles": [
-     "Noah: The First Drunk in History? \ud83c\udf77",
-     "Noah's Flood Story Was Written Centuries Earlier"
-    ],
-    "claim": "The open files are: the same story in older cultures \u2014 Gilgamesh tablet XI, read by George Smith in 1872; Atrahasis; the Manu flood; the Black Sea deluge hypothesis (Ryan & Pitman, 1997), and its critics; the Ark's stated dimensions, and the Dutch full-scale build; Durup\u0131nar and the Ararat expeditions \u2014 the claims, their best evidence, and the geological reading. Believers and sceptics each get their strongest case, stated at its strongest. Nothing is stated as fact without a ledger entry. No sermon or debunk register.",
-    "constraint": {
-     "framing": "A mystery-first investigation of the Flood story AS AN ARTEFACT: why the same story exists across cultures.",
-     "spine": [
-      "the same story in older cultures \u2014 Gilgamesh tablet XI, read by George Smith in 1872; Atrahasis; the Manu flood",
-      "the Black Sea deluge hypothesis (Ryan & Pitman, 1997), and its critics",
-      "the Ark's stated dimensions, and the Dutch full-scale build",
-      "Durup\u0131nar and the Ararat expeditions \u2014 the claims, their best evidence, and the geological reading"
-     ],
-     "entities": [
-      "Epic of Gilgamesh",
-      "Flood Tablet",
-      "George Smith (Assyriologist)",
-      "Matsya",
-      "Black Sea",
-      "Noah's Ark",
-      "Ark van Noach",
-      "Mount Ararat",
-      "Durup\u0131nar"
-     ],
-     "satellite": {
-      "lat": 39.44064,
-      "lon": 44.23481,
-      "wikidata": "Q1267546",
-      "use": "optional overhead, to show the outline. NOT the hero: there are 13 usable photographs.",
-      "sources": [
-       "Sentinel-2 / NASA Worldview true colour",
-       "USGS or Copernicus DEM tile for a terrain render"
-      ]
-     },
-     "supporting": {
-      "Atrahasis": {
-       "counted": 6.0,
-       "as": "one tablet image plus an authored evidence card",
-       "not": "a spine entity \u2014 it does not carry an act"
-      }
-     },
-     "register": {
-      "both_sides": "Believers and sceptics each get their strongest case, stated at its strongest.",
-      "evidence": "Nothing is stated as fact without a ledger entry.",
-      "forbidden": [
-       "sermon",
-       "debunk"
-      ],
-      "why": "the subject is why the same story exists across cultures. A film that arrives knowing the answer is not investigating, and either register loses the half of the audience it was not written for."
-     },
-     "titles": {
-      "min_chars": 30,
-      "max_chars": 45,
-      "exemplars": [
-       "The Flood Before the Bible",
-       "They Keep Finding the Ark"
-      ],
-      "exemplars_note": "VOICE EXAMPLES, NOT CANDIDATES \u2014 the owner's own ruling, 2026-10-26. They are 26 and 25 characters and the 30-45 rule stands; they are here to show the register and must not be used as titles",
-      "default": "The Flood Story Before the Bible",
-      "default_rule": "use the default unless the script argues otherwise, and say what the argument is",
-      "candidates": [
-       "The Flood Story Before the Bible",
-       "Everybody Keeps Finding Noah's Ark",
-       "The Flood That Predates the Bible",
-       "Four Cultures, One Flood Story"
-      ]
-     },
-     "set_by": "owner, 2026-10-26"
-    }
-   },
-   "title_candidates": [
-    "The Flood Story Before the Bible",
-    "Everybody Keeps Finding Noah's Ark",
-    "The Flood That Predates the Bible",
-    "Four Cultures, One Flood Story"
-   ],
-   "title_rule": {
-    "min_chars": 30,
-    "max_chars": 45,
-    "exemplars": [
-     "The Flood Before the Bible",
-     "They Keep Finding the Ark"
-    ],
-    "exemplars_note": "VOICE EXAMPLES, NOT CANDIDATES \u2014 the owner's own ruling, 2026-10-26. They are 26 and 25 characters and the 30-45 rule stands; they are here to show the register and must not be used as titles",
-    "default": "The Flood Story Before the Bible",
-    "default_rule": "use the default unless the script argues otherwise, and say what the argument is"
-   }
+   "why": "already published (in the ledger)"
   },
+  {
+   "entity": "Great Pyramid",
+   "why": "already published (in the ledger)"
+  },
+  {
+   "entity": "Stonehenge",
+   "why": "already published (in the ledger)"
+  },
+  {
+   "entity": "Year",
+   "why": "already a long-form upload on the channel (PtTjy_prEHA)"
+  },
+  {
+   "entity": "Bible",
+   "why": "already published (in the ledger)"
+  },
+  {
+   "entity": "Jesus",
+   "why": "already a long-form upload on the channel (bd4jgodJ120)"
+  },
+  {
+   "entity": "Flood",
+   "why": "already published (in the ledger)"
+  },
+  {
+   "entity": "Amazon",
+   "why": "already a long-form upload on the channel (Axoovel28Ag)"
+  }
+ ],
+ "briefs": [
   {
    "entity": "King Tut",
    "shorts": 2,
@@ -505,7 +91,7 @@
      "categories": [
       "Grand Egyptian Museum",
       "Collections of the Grand Egyptian Museum",
-      "A Trip to the Grand Egyptian Museum 2025"
+      "Ramses II colossal statue in the Grand Egyptian Museum"
      ],
      "category_files": 60,
      "search_files": 0,
@@ -972,6 +558,256 @@
     "What Atomic bombings of Hiroshima and Nagasaki Was Really Built For",
     "The Atomic bombings of Hiroshima and Nagasaki Problem",
     "Atomic bombings of Hiroshima and Nagasaki Should Not Exist"
+   ]
+  },
+  {
+   "entity": "Attack on Pearl Harbor",
+   "shorts": 3,
+   "median_views": 214,
+   "best_views": 527,
+   "mean_engagement": 6.54,
+   "titles": [
+    "Why Japan's Underwater Pyramid Terrifies Scientists #Shorts",
+    "Is Japan hiding a 10,000-year-old pyramid? #Shorts",
+    "The Face Carved in Japan's Sunken City #Shorts"
+   ],
+   "urls": [
+    "https://youtube.com/shorts/oDW4G09kD94",
+    "https://youtube.com/shorts/RIZxmJTIZBc",
+    "https://youtube.com/shorts/-iXpsL8sFFU"
+   ],
+   "derived_from": "Japan",
+   "wikidata": {
+    "phrase": "Attack on Pearl Harbor",
+    "item": "Q52418",
+    "description": "1941 Japanese surprise attack on the U.S",
+    "sitelinks": 88,
+    "subject": true,
+    "why": "it is somewhere; and it is dated",
+    "article": "Attack on Pearl Harbor"
+   },
+   "note": "split out of Japan, which is a container. The Shorts were about Japan; the evidence for this part is weaker and its score is halved to say so.",
+   "entities": [
+    {
+     "entity": "USS West Virginia (BB-48)",
+     "categories": [
+      "USS West Virginia (BB-48)"
+     ],
+     "category_files": 60,
+     "search_files": 0,
+     "counted": 60.0,
+     "clears": true,
+     "examples": [
+      "80-G-1027204 (24894381945).jpg",
+      "80-G-32426 (20844315793).jpg",
+      "80-G-32475 (21278260409).jpg",
+      "80-G-32726 (21109898200).jpg"
+     ]
+    },
+    {
+     "entity": "USS Utah (BB-31)",
+     "categories": [
+      "USS Utah (BB-31)",
+      "USS Utah (BB-31) Bell"
+     ],
+     "category_files": 59,
+     "search_files": 0,
+     "counted": 59.0,
+     "clears": true,
+     "examples": [
+      "111-SC-32887 - NARA - 55224926.jpg",
+      "80-188-CD Match Book Cover.jpg",
+      "80-G-416384 (24219717259).jpg",
+      "Aboard the USS Utah (BB-31) - Herbert Hoover and Lou Henry Hoover 150126-A-WQ129-042.jpg"
+     ]
+    },
+    {
+     "entity": "Aleutian Islands campaign",
+     "categories": [
+      "Aleutian Islands campaign"
+     ],
+     "category_files": 55,
+     "search_files": 0,
+     "counted": 55.0,
+     "clears": true,
+     "examples": [
+      "21st Bomb Squadron B-24 Liberator Amchitka Alaska Mar 1943.jpg",
+      "635th Bombardment Squadron A-24 Dive Bombers.jpg",
+      "A PBY-5A Catalina patrol bomber cruises against a backdrop of snow-clad mountains in Aleutian Islands, searching for... - NARA - 520976.jpg",
+      "Aleut szki csata terkep.jpg"
+     ]
+    },
+    {
+     "entity": "USS Neosho (AO-23)",
+     "categories": [
+      "USS Neosho (AO-23)",
+      "US National Archives File Unit: Neosho (AO-23) - Report of Changes, June 1942"
+     ],
+     "category_files": 32,
+     "search_files": 0,
+     "counted": 32.0,
+     "clears": true,
+     "examples": [
+      "80-G-13106 (21649170058).jpg",
+      "Battleship-row-torpedos.jpg",
+      "Coral Sea Neosho Burning.jpg",
+      "Pearl harbor 12-7-41 from attacking plane Nara 80-G-30550.png"
+     ]
+    },
+    {
+     "entity": "December 1941",
+     "categories": [
+      "December 1941",
+      "December 1941 in Hesse",
+      "December 1941 in China"
+     ],
+     "category_files": 6,
+     "search_files": 39,
+     "counted": 25.5,
+     "clears": true,
+     "examples": [
+      "Make Him Pay For That Day^ - NARA - 534311.jpg",
+      "New Zealand Decalres War on Japan (11090353516).jpg",
+      "USN telegram 19411207.jpg",
+      "Finnish-war-children-two-sisters-in-Stockholm-1941-142362185236.jpg"
+     ]
+    },
+    {
+     "entity": "Attack on Pearl Harbor",
+     "categories": [
+      "Attack on Pearl Harbor",
+      "Pearl Harbor attack"
+     ],
+     "category_files": 23,
+     "search_files": 0,
+     "counted": 23.0,
+     "clears": true,
+     "examples": [
+      "86116781 Pearl Harbor, Hawaii 1941 SDASM Image.jpg",
+      "Attack on Pearl Harbor, Official Report, 1 September 1945 (6460372815).jpg",
+      "Attack on Pearl Harbour Japanese Plane View Colourized.png",
+      "Captured Japanese photograph taken aboard a Japanese carrier before the attack on Pearl Harbor, December 7, 1941. Local Identifier 80-G-30549, National Archives Identifier 520599.jpg"
+     ]
+    },
+    {
+     "entity": "Ancient Hawaii",
+     "categories": [
+      "Ancient Hawaii"
+     ],
+     "category_files": 0,
+     "search_files": 39,
+     "counted": 19.5,
+     "clears": true,
+     "examples": [
+      "Ancient Hawaii, Places of Worship, from Brother Bertram Photograph Collection.jpg",
+      "Ancient surfboard.jpg",
+      "Incredible Vista of Nanue Stream Gulch from Hawaii Route 19, Hawaii (4528494027).jpg",
+      "Ancient Hawaii, Hale o Keawe, (1), from Brother Bertram Photograph Collection.jpg"
+     ]
+    },
+    {
+     "entity": "1st Air Fleet",
+     "categories": [
+      "1st Air Fleet"
+     ],
+     "category_files": 0,
+     "search_files": 31,
+     "counted": 15.5,
+     "clears": true,
+     "examples": [
+      "Nagumo with the staff of the 1st air fleet (2).jpg",
+      "Nagumo with the staff of the 1st air fleet.jpg",
+      "Chuichi Nagumo with the staff of the 1st Air Fleet.jpg",
+      "US Navy 110105-N-9564W-139 Seabees assist the crew members of Fleet Air Reconnaissance Squadron (VQ 2) with an engine swap.jpg"
+     ]
+    },
+    {
+     "entity": "American Theater (World War II)",
+     "categories": [
+      "American Theater (World War II)"
+     ],
+     "category_files": 0,
+     "search_files": 17,
+     "counted": 8.5,
+     "clears": true,
+     "examples": [
+      "American World War II senior military officials, 1945.JPEG",
+      "Six female war correspondents who covered the U.S. Army in the European Theater during World War II in 1943.jpg",
+      "American Theater Service Streamer.jpg",
+      "Battles and campaigns - World War II, European and African theater LOC 2011593048.jpg"
+     ]
+    },
+    {
+     "entity": "A date which will live in infamy",
+     "categories": [
+      "A date which will live in infamy"
+     ],
+     "category_files": 0,
+     "search_files": 12,
+     "counted": 6.0,
+     "clears": false,
+     "examples": [
+      "Fdr delivers speech.jpg",
+      "Day-of-infamy-draft1-page3.jpg",
+      "Day-of-infamy-draft1-page2.jpg",
+      "Day-of-infamy-draft1-page1.jpg"
+     ]
+    },
+    {
+     "entity": "1941 United States declaration of war upon Germany",
+     "categories": [
+      "1941 United States declaration of war upon Germany"
+     ],
+     "category_files": 0,
+     "search_files": 2,
+     "counted": 1.0,
+     "clears": false,
+     "examples": [
+      "Franklin Roosevelt signing declaration of war against Germany.jpg",
+      "The United States of America Joins the Second World War in 1941 HU56120.jpg"
+     ]
+    },
+    {
+     "entity": "1887 Constitution of the Hawaiian Kingdom",
+     "categories": [
+      "1887 Constitution of the Hawaiian Kingdom"
+     ],
+     "category_files": 0,
+     "search_files": 1,
+     "counted": 0.5,
+     "clears": false,
+     "examples": [
+      "Bayonet Constitution political cartoon 1887.jpg"
+     ]
+    }
+   ],
+   "deepest_six": "6/6",
+   "eligible": true,
+   "min_assets": 8,
+   "thin": [],
+   "angle": {
+    "recurring_words": [
+     "japan's",
+     "pyramid",
+     "underwater",
+     "terrifies",
+     "scientists",
+     "japan",
+     "hiding",
+     "year"
+    ],
+    "source_titles": [
+     "Why Japan's Underwater Pyramid Terrifies Scientists",
+     "Is Japan hiding a 10,000-year-old pyramid?",
+     "The Face Carved in Japan's Sunken City"
+    ],
+    "claim": "The Shorts that performed on Attack on Pearl Harbor keep returning to: japan's, pyramid, underwater, terrifies. The film has to answer that, not introduce the subject."
+   },
+   "title_candidates": [
+    "Attack on Pearl Harbor: The Part Nobody Can Explain",
+    "What Attack on Pearl Harbor Was Really Built For",
+    "The Attack on Pearl Harbor Problem",
+    "Attack on Pearl Harbor Should Not Exist"
    ]
   }
  ]
