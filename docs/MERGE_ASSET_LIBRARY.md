@@ -10,10 +10,43 @@ auto-merges cleanly. The work is the 33 hunks.
 
 ---
 
-## 0. THE DECISION THAT GATES EVERYTHING ELSE
+## 0. THE DECISION — **B, taken 2026-11-09**
 
-Two coherent designs collide here, and the merge cannot be resolved until
-someone picks one. This is not a stale branch versus a current one.
+**Chosen: the cut object is CLOSED, component props live under the single
+`scene` key, and those props are validated by `lib/buildability.py` against
+the component contract.**
+
+The two designs below collided, and this resolves them rather than picking
+a winner between them: B closes the cut WITHOUT enumerating component props
+in the schema, which is the thing design A objected to. The schema gains
+one key whose value is open; `buildability` keeps doing the checking it
+already does, against the component contract, which is stricter than an
+enumeration here could be and cannot drift from it because there is only
+one copy. A's objection stands and B does not trip it.
+
+What follows from the decision:
+
+  * `b17f841` STANDS — the instructions in `docs/STAGE_CONTRACT.md` and
+    `skills/pipelines/narrated-documentary/edit-director.md` already
+    describe the `scene` sub-object, and the three skipped tests in
+    `tests/automation/test_authored_cut_shape.py` go live when the schema
+    lands, including the control that a flattened cut is refused.
+  * The three underscore keys are **REWRITTEN, NOT DELETED**. They are
+    design A's recorded reasoning and it is still true about props being
+    open-ended and checked by `buildability`; what changes is where they
+    sit. `_why_source_is_not_required` becomes an explanation of why
+    `source` carries the SLOT ID for an authored cut. The next person has
+    to be able to see that this changed twice and why.
+  * `9159da5` holds unchanged: the four published films are NOT migrated,
+    they load, and the flattening is safe on all of them.
+  * **Item 8 is largely satisfied by this.** Its task — "additionalProperties
+    back to strict once buildability enumerates props per component" — is
+    met without the enumeration: strict comes from the closed cut, and
+    `buildability` already validates the props. Item 8 becomes verification
+    rather than construction.
+
+The two designs, recorded because the merge still has to reconcile them
+file by file:
 
 **Design A — on `automation`, from `86e057c` (2026-11-07).** The cut object
 is OPEN (`additionalProperties: true`) and `source` is not required. The
@@ -42,7 +75,7 @@ answered by design B, because B does not enumerate: it puts the open set
 under one key. That is the strongest argument for B, and it is compatible
 with A's objection rather than contradicting it.
 
-**What is already done for B**, and must be REVERTED if A is chosen:
+**What is already done for B** (all of it stands, now that B is chosen):
 
   * `b17f841` documents the `scene` sub-object in
     `docs/STAGE_CONTRACT.md` and
@@ -53,9 +86,7 @@ with A's objection rather than contradicting it.
   * `9159da5` proves all four films still load and flatten safely, with no
     migration. This holds under EITHER design.
 
-**Item 8 depends on this.** "edit_decisions additionalProperties back to
-strict once buildability enumerates props per component" is design B's
-goal by a route design A has already argued against.
+**Item 8 depended on this**, and is answered above.
 
 ---
 
@@ -90,8 +121,10 @@ listed in group 3.
 
 Neither side wins. Resolve by hand, preserving `86e057c` in every case.
 
-  * `schemas/artifacts/edit_decisions.schema.json` (2 hunks) — gated on
-    section 0.
+  * `schemas/artifacts/edit_decisions.schema.json` (2 hunks) — take the
+    WIP's closed-cut structure per section 0, keeping `86e057c`'s `source`
+    and `total_duration_seconds`, and REWRITING the three underscore keys
+    rather than dropping them.
   * `schemas/artifacts/research_brief.schema.json` (1)
   * `scripts/check_claims.py` (3)
   * `remotion-composer/component-contract.json` (2)
