@@ -31,3 +31,14 @@ paths:
   styles_dir: styles
   skills_dir: skills
   output_dir: output
+
+# The 2.5D depth plates.
+#
+# cap: how many stills in one film may carry one. The work is per-still and
+# the Friday run has a wall-clock, so it is a budget rather than a limit on
+# quality. Measured 2026-11-09: a depth map is 0.58s once the model is
+# resident, a DepthFlow clip about 0.9s per second of cut, and an anchor
+# track 22.9s — so 25 stills costs between 3 and 12 minutes depending on how
+# many of them are annotated stills, against a one-hour ceiling.
+depth:
+  cap: 25

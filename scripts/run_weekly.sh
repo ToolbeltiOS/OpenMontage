@@ -896,6 +896,38 @@ Those three files are the whole hand-off: the next stage is NOT an agent, it
 is scripts/await_render.py, which starts the render and waits with no model
 open. Write the checkpoint and STOP."
 
+# ── 4a. depth plates for the stills that earn one ────────────────────────
+#
+# AFTER the edit has written render_props.json and BEFORE the render reads
+# it: the builder writes `depth_clip` into the props, so it has to run
+# while there are still props to write into.
+#
+# Two steps, because eligibility cannot be predicted from a photograph.
+# Measured 2026-11-09: the obvious predictor — how much relief the depth
+# model found — ranked a real room LOWEST of 24 stills and a flat lantern
+# slide HIGHEST, because Depth Anything V2 normalises per image. So the
+# budget picks candidates cheaply and the parallax gate judges the RENDERED
+# clip; a cut that does not earn its depth plate loses it and renders flat.
+#
+# NEITHER STEP MAY FAIL THE FILM. 2.5D is an improvement on a fallback that
+# still works, and both scripts exit 0 for a per-cut failure by design —
+# `|| true` is belt and braces for the case where one cannot start at all,
+# because a missing .venv-depth must not cost a week's film.
+if [[ "$DRY_RUN" != "1" ]] && [[ -x "$REPO/.venv-depth/bin/python" ]]; then
+  say "depth plates"
+  "$PY" "$REPO/scripts/build_25d_cuts.py" --project "$SLUG" --all \
+    > "$LOGDIR/depth_build.log" 2>&1 || true
+  "$PY" "$REPO/scripts/verify_25d_cuts.py" --project "$SLUG" \
+    > "$LOGDIR/depth_gate.log" 2>&1 || true
+  say "$(tail -1 "$LOGDIR/depth_build.log" 2>/dev/null)"
+  say "$(grep -E '^  [0-9]+ kept' "$LOGDIR/depth_gate.log" 2>/dev/null | tail -1)"
+elif [[ "$DRY_RUN" != "1" ]]; then
+  # Named rather than skipped in silence: the preflight checks for this,
+  # and a film that quietly stopped getting depth plates is a regression
+  # nobody would see.
+  say "depth plates: SKIPPED, no .venv-depth in $REPO (see docs/PREFLIGHT.md)"
+fi
+
 # ── 4b. the picture: no model, no context, no usage limit ────────────────
 require_power "the render"
 if [[ "$DRY_RUN" == "1" ]]; then

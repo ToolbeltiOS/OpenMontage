@@ -102,6 +102,21 @@ def main() -> int:
 
     project = source_project(args.project)
     props = json.loads((project / "artifacts" / "render_props.json").read_text())
+
+    # A FILM'S RELATIVE ASSET PATHS BELONG TO ITS OWN WORKTREE. `stage_assets`
+    # resolves them against the tree it is running in, so slicing a film that
+    # lives elsewhere reported dozens of assets as missing — measured on
+    # they-said-it, 34 of them — when every one was on disk. Absolute paths
+    # are untouched.
+    sys.path.insert(0, str(ROOT / "lib"))
+    from film_render import _asset_values
+    owner = project.parent.parent
+    for node, key, value in list(_asset_values(props)):
+        if not value.startswith("/"):
+            candidate = owner / value
+            if candidate.exists():
+                node[key] = str(candidate)
+
     sliced, end = carve(props, args.seconds)
     props_path = work / "render_props.json"
     props_path.write_text(json.dumps(sliced))

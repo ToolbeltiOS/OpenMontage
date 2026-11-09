@@ -91,6 +91,43 @@ def _env() -> dict:
 DRIFT_PARALLAX: float | None = 0.08
 
 
+#: How many stills in one film may carry a depth plate.
+#:
+#: A BUDGET, because the work is per-still and the Friday run has a
+#: wall-clock. Measured 2026-11-09 on this machine: a depth map is 0.58s
+#: once the model is resident, a DepthFlow clip about 0.9s per second of
+#: cut, and an anchor track 22.9s — so 25 stills is between 3 and 12
+#: minutes depending on how many are annotated, against a one-hour ceiling.
+#:
+#: Read from config.yaml (`depth.cap`) so it can be changed without a code
+#: edit; this is the default if the key is absent.
+DEFAULT_CAP = 25
+
+
+def cap_from_config() -> int:
+    try:
+        import yaml
+        blob = yaml.safe_load((ROOT / "config.yaml").read_text()) or {}
+        value = ((blob.get("depth") or {}).get("cap"))
+        return int(value) if value is not None else DEFAULT_CAP
+    except Exception:                       # noqa: BLE001
+        return DEFAULT_CAP
+
+
+def candidate_order(cut: dict) -> tuple:
+    """Which stills keep their depth plate when the budget runs out.
+
+    The planner's own mark first, then the cuts a film turns on, then the
+    LONGEST holds — parallax is a move, and a move reads on a six-second
+    hold in a way it cannot on a one-second one. Cut id last, so the same
+    film always chooses the same stills.
+    """
+    forced = 0 if cut.get("depth_candidate") is True else 1
+    hero = 0 if cut.get("hero") else 1
+    seconds = float(cut.get("out_seconds", 0)) - float(cut.get("in_seconds", 0))
+    return (forced, hero, -seconds, str(cut.get("id")))
+
+
 def camera_of(cut: dict) -> tuple[str, float, float]:
     """The cut's authored move, as `render_25d.py`'s move and amount.
 
@@ -133,7 +170,21 @@ def camera_of(cut: dict) -> tuple[str, float, float]:
 
 
 def eligible(cut: dict) -> str | None:
-    """Why this cut cannot have a depth plate, or None if it can."""
+    """Why this cut cannot have a depth plate, or None if it can.
+
+    THE RULE DECIDES, AND THE PLANNER VETOES — not the other way round.
+    `depth_candidate: false` on a cut is honoured absolutely; absent means
+    eligible if the measurements below say so.
+    
+    That inversion is deliberate. The obvious design is for the planner to
+    mark cuts eligible, but this file already records what happened last
+    time something waited to be marked: "THIS USED TO BE AN ASSET CLASS AND
+    THE GUARD DID NOTHING. No stage sets `text_bearing`." A feature that
+    depends on a flag no stage writes is a feature that never runs, and
+    nobody finds out for four films.
+    """
+    if cut.get("depth_candidate") is False:
+        return "the planner excluded it (depth_candidate: false)"
     if cut.get("type") not in ("annotated_still", "image", None):
         return f"type {cut.get('type')}"
     if cut.get("asset_class") in NEVER:
@@ -232,6 +283,9 @@ def main() -> int:
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--props", default=None)
+    ap.add_argument("--cap", type=int, default=None,
+                    help=f"stills to build; default from config.yaml "
+                         f"depth.cap, else {DEFAULT_CAP}")
     args = ap.parse_args()
 
     props_path = Path(args.props) if args.props else (
@@ -240,7 +294,9 @@ def main() -> int:
     cuts = props["cuts"]
 
     wanted = set(args.cuts or [])
-    rows, skipped = [], []
+    cap = args.cap if args.cap is not None else cap_from_config()
+
+    picked, skipped = [], []
     for cut in cuts:
         if wanted and cut["id"] not in wanted:
             continue
@@ -250,9 +306,34 @@ def main() -> int:
         if why:
             skipped.append((cut["id"], why))
             continue
-        rows.append(build_cut(cut, args.project,
-                              ROOT / "projects" / args.project / "renders" / "depth",
-                              args.dry_run))
+        picked.append(cut)
+
+    # THE BUDGET, applied after eligibility and never before it: a cut
+    # refused for being text-bearing is refused on its own evidence, and
+    # must not free a place for a worse one by accident.
+    picked.sort(key=candidate_order)
+    over = picked[cap:]
+    picked = picked[:cap]
+    for cut in over:
+        skipped.append((cut["id"], f"over the budget of {cap} stills"))
+    print(f"{args.project}: {len(picked)} still(s) within a budget of {cap}, "
+          f"{len(skipped)} not taken")
+
+    rows = []
+    out_dir = ROOT / "projects" / args.project / "renders" / "depth"
+    for cut in picked:
+        # PER-CUT, NEVER PER-FILM. `build_cut` records a failed subprocess
+        # in the row, but anything that RAISES — a depth model that cannot
+        # load, a corrupt image, a full disk — would otherwise abort the
+        # loop and take every remaining cut with it. A 2.5D failure costs
+        # that cut its depth plate and nothing else: it renders flat, which
+        # is the film we would have had anyway.
+        try:
+            rows.append(build_cut(cut, args.project, out_dir, args.dry_run))
+        except Exception as error:          # noqa: BLE001
+            rows.append({"cut": cut["id"], "move": "-", "amount": 0.0,
+                         "pan": 0.0, "seconds": 0.0, "anchors": 0,
+                         "error": f"{type(error).__name__}: {error}"})
 
     for r in rows:
         bits = (f"  {r['cut']}  {r['move']:<5} off {r['amount']:+.4f} "
@@ -285,7 +366,17 @@ def main() -> int:
         props_path.write_text(json.dumps(props, indent=1) + "\n")
     print(f"\n{wrote} cut(s) given a depth plate in {props_path.name}")
     failed = [r for r in rows if r.get("error")]
-    return 1 if failed else 0
+    for r in failed:
+        print(f"  {r['cut']}: NO DEPTH PLATE — {r['error']}")
+    if failed:
+        print(f"{len(failed)} cut(s) will render flat, as they do today. "
+              f"This is not a failure of the film.")
+    # EXIT 0 EVEN SO. The caller is the edit stage, and a non-zero exit
+    # there fails the film — which would mean one unbuildable still costing
+    # a week's work for a feature that is an improvement on a fallback that
+    # still works. Only a catastrophe above (no props, bad arguments) exits
+    # non-zero, by raising.
+    return 0
 
 
 if __name__ == "__main__":
