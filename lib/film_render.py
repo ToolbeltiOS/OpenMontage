@@ -697,6 +697,7 @@ def gates(dest: Path, picture: Path, cuts: list[dict[str, Any]],
     from verify_delivery_audio import check as check_audio
     from verify_frame_motion import check as check_motion
     from verify_frame_order import check as check_order
+    from verify_plate_dropout import check as check_dropout
     from verify_type_lock import check as check_type, plate_is_clean
 
     results: dict[str, Any] = {}
@@ -708,6 +709,13 @@ def gates(dest: Path, picture: Path, cuts: list[dict[str, Any]],
         "type lock": check_type(str(dest), cuts, fps,
                                 str(type_layer) if type_layer else None),
         "delivery audio": check_audio(str(dest), expected_lufs),
+        # THE ONLY GATE THAT CAN SEE A DEFECT THE PLATE AND THE DELIVERY
+        # AGREE ABOUT. Frame order compares the two, so a frame whose
+        # picture never painted passes it perfectly; frame count sees a
+        # frame that is present; frame motion sees that one frame is not a
+        # freeze. Film #1 shipped with eight of these and king-tut's first
+        # delivery had five, under 7 of 7 green.
+        "plate-dropout": check_dropout(str(dest), fps),
     }.items():
         results[name] = measured
         problems += [f"{name}: {p}" for p in found]
@@ -778,6 +786,14 @@ def report(title: str, dest: Path, picture: Path, count: int, seconds: float,
         + f", readings bound to our type by "
           f"{type_lock.get('bound_by', 'cut text')}"
           f" | {verdict('type lock')} |",
+        f"| plate-dropout | {results['plate-dropout']['frames']} frames "
+        f"scanned, {results['plate-dropout']['certain']} certain, "
+        f"{results['plate-dropout']['marginal']} marginal"
+        + (f", closest call {results['plate-dropout']['worst_decisiveness']} "
+           f"of the spike (certain under {0.25})"
+           if results['plate-dropout']['worst_decisiveness'] is not None
+           else ", nothing came near the limit")
+        + f" | {verdict('plate-dropout')} |",
         f"| frame count | {results.get('frame count', {}).get('delivered')} "
         f"delivered of {results.get('frame count', {}).get('asked')} asked "
         f"({results.get('frame count', {}).get('seconds_missing')}s missing) | "

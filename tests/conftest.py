@@ -117,10 +117,23 @@ def pytest_configure(config):
         "live_api: test performs a real, billable API call. Skipped unless "
         f"{_ALLOW_ENV_FLAG}=1 is set.",
     )
+    config.addinivalue_line(
+        "markers",
+        "slow_decode: test decodes a whole delivered film — minutes, not "
+        "seconds. Skipped unless OPENMONTAGE_SLOW=1 is set. These cost no "
+        "money, only time, but a suite that takes a quarter of an hour is a "
+        "suite nobody runs before committing.",
+    )
 
 
 def pytest_collection_modifyitems(config, items):
-    """Skip live_api tests unless the operator explicitly opted in."""
+    """Skip the opt-in tests unless the operator asked for them."""
+    if not os.environ.get("OPENMONTAGE_SLOW"):
+        slow = pytest.mark.skip(
+            reason="decodes a whole film; set OPENMONTAGE_SLOW=1 to run")
+        for item in items:
+            if "slow_decode" in item.keywords:
+                item.add_marker(slow)
     if _network_allowed():
         return
     skip = pytest.mark.skip(
