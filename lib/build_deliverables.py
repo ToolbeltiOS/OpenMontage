@@ -14,7 +14,38 @@ import sys
 import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SLUG = "they-said-it-couldnt-be-built"
+
+
+def _resolve_slug() -> str:
+    """Which film this is, from what the caller actually gave us.
+
+    THIS WAS A CONSTANT — `SLUG = "they-said-it-couldnt-be-built"` — so the
+    module built run #1's delivery folder whatever film it was handed, and
+    the compose stage of every film after it quietly produced no thumbnail,
+    no metadata and no delivery folder of its own. king-tut was published
+    without a custom thumbnail because of this line.
+
+    Three ways, most explicit first, and an error rather than a default: a
+    wrong film is worse than no film.
+    """
+    argv = sys.argv[1:]
+    if "--project" in argv:
+        return argv[argv.index("--project") + 1]
+    from_env = os.environ.get("OPENMONTAGE_PROJECT")
+    if from_env:
+        return from_env
+    # The mp4 it was given: projects/<slug>/renders/final.mp4
+    for arg in argv:
+        if arg.endswith(".mp4"):
+            parts = os.path.abspath(arg).split(os.sep)
+            if "projects" in parts:
+                return parts[parts.index("projects") + 1]
+    raise SystemExit(
+        "which film? pass --project <slug>, set OPENMONTAGE_PROJECT, or give "
+        "a path under projects/<slug>/")
+
+
+SLUG = _resolve_slug()
 PROJ = os.path.join(ROOT, "projects", SLUG)
 ART = os.path.join(PROJ, "artifacts")
 DEST = os.path.expanduser(f"~/Developer/wak3up-docs/output/{SLUG}")
@@ -200,18 +231,15 @@ def main() -> int:
     # Sacsayhuaman joint with its contact line annotated, which is the film's
     # argument in one frame.
     thumb = os.path.join(DEST, "thumbnail.jpg")
-    slot_props = os.environ.get("THUMBNAIL_PROPS")
-    if slot_props and os.path.exists(slot_props):
-        png = os.path.join(DEST, ".thumb.png")
-        subprocess.run(["npx", "remotion", "still", "SlotPreview", png,
-                        "--frame=170", f"--props={slot_props}", "--log=error"],
-                       check=True, cwd=os.path.join(ROOT, "remotion-composer"))
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", png, "-q:v", "2", thumb],
-                       check=True)
-        os.remove(png)
-    else:
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", "1130", "-i", final,
-                        "-frames:v", "1", "-q:v", "2", thumb], check=True)
+    sys.path.insert(0, os.path.join(ROOT, "lib"))
+    from build_thumbnail import build as build_thumb
+    from pathlib import Path as _Path
+    made = build_thumb(SLUG, _Path(thumb))
+    print(f"  thumbnail from {made['from_cut']} ({made['bytes'] // 1024} KB)")
+    # The project keeps its own copy, which is where publish_doc looks.
+    beside = os.path.join(PROJ, "renders", "thumbnail.jpg")
+    os.makedirs(os.path.dirname(beside), exist_ok=True)
+    shutil.copy2(thumb, beside)
 
     ed = json.load(open(os.path.join(ART, "edit_decisions.json"), encoding="utf-8"))
     am = json.load(open(os.path.join(ART, "asset_manifest.json"), encoding="utf-8"))
