@@ -444,6 +444,40 @@ stage_done() {
     >/dev/null 2>&1
 }
 
+# ── the renderer's own dependencies ──────────────────────────────────────
+#
+# WHY THIS IS A START CHECK AND NOT A COMMENT.
+#
+# `runner/remotion-composer/node_modules` was a SYMLINK into the dev
+# checkout at OpenMontage/remotion-composer/node_modules — 733 MB shared
+# between two worktrees on two different branches. Every render the runner
+# has ever done used whatever happened to be installed over there, which
+# means the pinned `package-lock.json` in this tree described one thing and
+# the renderer ran another. An `npm install` in the dev checkout, a branch
+# switch, or deleting that directory to free disk would have changed the
+# runner's renderer without touching the runner.
+#
+# It is checked at the START, because the alternative is discovering it
+# four hours in: the plate pass is the first thing that needs the renderer
+# and the first thing that would fail.
+COMPOSER_MODULES="$REPO/remotion-composer/node_modules"
+if [[ -L "$COMPOSER_MODULES" ]]; then
+  fail "node_modules" "$COMPOSER_MODULES is a SYMLINK to $(readlink "$COMPOSER_MODULES").
+The renderer would run whatever is installed in that tree, not what this
+tree's package-lock.json pins. Fix: rm the link, then npm ci in
+$REPO/remotion-composer."
+fi
+if [[ ! -d "$COMPOSER_MODULES" ]]; then
+  fail "node_modules" "$COMPOSER_MODULES is missing.
+Fix: npm ci in $REPO/remotion-composer (npm ci, not npm install — the
+lockfile is what pins the renderer)."
+fi
+if [[ ! -x "$REPO/remotion-composer/node_modules/.bin/remotion" ]]; then
+  fail "node_modules" "$COMPOSER_MODULES exists but has no remotion binary.
+A partial install renders nothing. Fix: npm ci in $REPO/remotion-composer."
+fi
+say "node_modules: real directory, remotion present"
+
 # ── one run at a time ────────────────────────────────────────────────────
 if ! mkdir "$LOCK" 2>/dev/null; then
   owner="$(cat "$LOCK/pid" 2>/dev/null || echo unknown)"
