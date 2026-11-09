@@ -54,10 +54,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
+import sys
 from typing import Any
 
-from buildability import js_round
+# ITS OWN DIRECTORY, BEFORE A SIBLING IMPORT. This module is imported both
+# by `film_render`, which puts lib/ on the path first, and directly — by its
+# own __main__ and by a test collecting this file first. Relying on the
+# caller to have arranged sys.path means the import works until the day
+# something imports it earliest, and then fails with ModuleNotFoundError in
+# a place that has nothing to do with the cause.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from buildability import js_round  # noqa: E402
 
 #: Frames are compared at this size, as in verify_frame_motion: big enough
 #: that a sub-pixel move is not thrown away by the downscale.

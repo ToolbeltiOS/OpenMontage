@@ -19,6 +19,9 @@ import sys
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# lib/ as well as the repo root: the root is for `tools.video.video_compose`,
+# but `buildability` is a SIBLING of this file and the root does not reach it.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from tools.video.video_compose import VideoCompose  # noqa: E402

@@ -45,10 +45,21 @@ def _resolve_slug() -> str:
         "a path under projects/<slug>/")
 
 
-SLUG = _resolve_slug()
-PROJ = os.path.join(ROOT, "projects", SLUG)
-ART = os.path.join(PROJ, "artifacts")
-DEST = os.path.expanduser(f"~/Developer/wak3up-docs/output/{SLUG}")
+#: Set by `_use()`, which `main()` calls. NOT resolved at import time:
+#: `SLUG = _resolve_slug()` at module scope made importing this module
+#: raise SystemExit("which film?") for anything that merely wanted to read
+#: a function out of it — including the test that imports every module in
+#: lib/ to prove they import at all.
+SLUG = ""
+PROJ = ART = DEST = ""
+
+
+def _use(slug: str) -> None:
+    global SLUG, PROJ, ART, DEST
+    SLUG = slug
+    PROJ = os.path.join(ROOT, "projects", SLUG)
+    ART = os.path.join(PROJ, "artifacts")
+    DEST = os.path.expanduser(f"~/Developer/wak3up-docs/output/{SLUG}")
 
 
 def probe(path: str) -> dict:
@@ -159,6 +170,7 @@ def hard_checks(final: str, tail_seconds: float = 0.5) -> list[dict]:
 
 
 def main() -> int:
+    _use(_resolve_slug())
     mp4 = sys.argv[1]
     rr_path = os.path.join(ART, "render_report.json")
     rr = json.load(open(rr_path, encoding="utf-8")) if os.path.exists(rr_path) else {}

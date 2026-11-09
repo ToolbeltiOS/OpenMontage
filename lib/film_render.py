@@ -685,7 +685,8 @@ def remux(dest: Path, mix: Path) -> None:
 
 def gates(dest: Path, picture: Path, cuts: list[dict[str, Any]],
           expected_lufs: float | None, fps: int = FPS,
-          type_layer: Path | None = None
+          type_layer: Path | None = None, *,
+          loudness_reference_required: bool = True
           ) -> tuple[list[str], dict[str, Any]]:
     """Every blocking check, on the file that is about to be delivered.
 
@@ -708,7 +709,9 @@ def gates(dest: Path, picture: Path, cuts: list[dict[str, Any]],
         "plate purity": plate_is_clean(str(picture), cuts),
         "type lock": check_type(str(dest), cuts, fps,
                                 str(type_layer) if type_layer else None),
-        "delivery audio": check_audio(str(dest), expected_lufs),
+        "delivery audio": check_audio(
+            str(dest), expected_lufs,
+            reference_required=loudness_reference_required),
         # THE ONLY GATE THAT CAN SEE A DEFECT THE PLATE AND THE DELIVERY
         # AGREE ABOUT. Frame order compares the two, so a frame whose
         # picture never painted passes it perfectly; frame count sees a
@@ -754,6 +757,14 @@ def report(title: str, dest: Path, picture: Path, count: int, seconds: float,
     audio = results["delivery audio"]
 
     def verdict(name: str) -> str:
+        """FAIL, PASS, or SKIPPED.
+
+        SKIPPED exists because a gate measured against a missing reference
+        used to print PASS, which is the one thing a gate table must never
+        do: it reads as "checked and fine" when it means "not checked".
+        """
+        if (results.get(name) or {}).get("skipped"):
+            return "SKIPPED"
         return "FAIL" if any(p.startswith(name + ":") for p in problems) else "PASS"
 
     lines = [
@@ -799,8 +810,13 @@ def report(title: str, dest: Path, picture: Path, count: int, seconds: float,
         f"({results.get('frame count', {}).get('seconds_missing')}s missing) | "
         f"{verdict('frame count')} |",
         f"| delivery audio | {audio.get('mean_dbfs')} dBFS mean, "
-        f"{audio.get('integrated_lufs')} LUFS against the mix's {expected_lufs} "
-        f"({audio.get('loudness_delta_db')} dB) | {verdict('delivery audio')} |",
+        + (f"{audio.get('integrated_lufs')} LUFS — "
+           f"{audio.get('skipped_reason')}, so the loudness was compared "
+           f"with NOTHING"
+           if audio.get("skipped") else
+           f"{audio.get('integrated_lufs')} LUFS against the mix's "
+           f"{expected_lufs} ({audio.get('loudness_delta_db')} dB)")
+        + f" | {verdict('delivery audio')} |",
         "",
         "## Luma map", "",
         "One character per frame, 30 per row — a second a row. `#` is black, "

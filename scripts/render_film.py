@@ -179,7 +179,19 @@ def main() -> int:
     expected = None
     if mix_report.exists():
         expected = ((json.loads(mix_report.read_text()) or {}).get("final") or {}).get("lufs")
-    problems, results = gates(dest, picture, cuts, expected, FPS, type_layer)
+
+    # IS THIS A FILM, OR A SLICE OF ONE?
+    #
+    # A real film has a project directory, and its delivery MUST be compared
+    # against the loudness its own mixer recorded — a missing mix_report.json
+    # is then a failure, not a reason to skip the check. A slice rendered to
+    # prove the chain works has no mix report by construction, and the gate
+    # says SKIPPED with the reason instead of printing a PASS it did not
+    # earn. The slice on 2026-11-09 printed "-14.06 LUFS against the mix's
+    # None ... PASS", which reads as checked-and-fine and meant not-checked.
+    real_film = (project / "artifacts" / "render_props.json").exists()
+    problems, results = gates(dest, picture, cuts, expected, FPS, type_layer,
+                              loudness_reference_required=real_film)
     # named after the file delivered, not the project: a slice rendered to
     # check the path works must not leave a report that reads as the film's
     out = report(f"Film delivery — {args.project} — {dest.name}", dest, picture,
@@ -204,14 +216,8 @@ def main() -> int:
     # Wrapped, because a photo that fails to send is not a reason to fail a
     # film that just passed every gate.
     if not problems:
-        try:
-            from thumbnail_gate import post as post_thumbnail
-            record = post_thumbnail(args.project)
-            print(f"   thumbnail: {record['from_cut']} posted, set anyway "
-                  f"at {record['deadline']} if nobody replies")
-        except Exception as error:          # noqa: BLE001
-            print(f"   thumbnail gate did not run ({type(error).__name__}: "
-                  f"{error}); the film is unaffected")
+        from thumbnail_gate import post_quietly
+        print("   " + post_quietly(args.project))
 
     return 0 if not problems else 1
 

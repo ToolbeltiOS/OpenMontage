@@ -171,10 +171,23 @@ def muxed(tmp_path, name, audio=None):
 
 class TestDeliveryAudio:
     def test_a_real_mix_passes(self, tmp_path):
+        """The gate's own checks — the floor and the silence test — on a
+        well-formed track. NOT the loudness comparison, which has its own
+        two tests below, so this says `reference_required=False`: without
+        it the call means "a real film with no mix report", which is now a
+        failure in its own right."""
         film = muxed(tmp_path, "mixed", tone(tmp_path / "mix.wav"))
-        problems, measured = vda.check(str(film))
+        problems, measured = vda.check(str(film), reference_required=False)
         assert problems == [], problems
         assert measured["mean_dbfs"] > vda.MIN_MEAN_DBFS
+
+    def test_the_same_call_without_that_flag_fails_for_the_missing_report(
+            self, tmp_path):
+        """The leniency this test used to rely on, now named out loud. A
+        delivery whose loudness was compared with nothing must not pass."""
+        film = muxed(tmp_path, "mixed2", tone(tmp_path / "mix2.wav"))
+        problems, _ = vda.check(str(film))
+        assert any("no mix report" in p for p in problems), problems
 
     def test_a_silent_delivery_is_caught(self, tmp_path):
         """The defect exactly as it shipped: a present, plausible, empty track."""

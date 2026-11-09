@@ -185,3 +185,7 @@ artifacts/metrics/
 # written into a tree by an older script, or by hand, cannot be committed back
 # into a branch and become a second answer.
 artifacts/published.json
+
+# The DepthFlow renderer needs Python 3.11+ (shaderflow imports typing.Self)
+# and the pipeline runs on 3.10, so it gets its own interpreter.
+.venv-depth/

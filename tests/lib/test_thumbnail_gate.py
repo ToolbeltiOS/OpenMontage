@@ -164,23 +164,69 @@ class TestItCannotDelayTheFilm:
     SOURCE = (ROOT / "scripts" / "render_film.py").read_text()
 
     def test_delivery_posts_it(self):
-        assert "from thumbnail_gate import post as post_thumbnail" in self.SOURCE
+        assert "from thumbnail_gate import post_quietly" in self.SOURCE
 
     def test_delivery_does_not_wait_for_an_answer(self):
-        after = self.SOURCE[self.SOURCE.index("post_thumbnail"):]
+        after = self.SOURCE[self.SOURCE.index("post_quietly"):]
         for waiting in ("resolve(", "await_reply", "input(", "sleep("):
             assert waiting not in after, (
                 f"delivery waits on {waiting!r} — the upload must not depend "
                 f"on a reply")
 
-    def test_a_failed_post_does_not_fail_the_film(self):
-        """A photo that will not send is not a reason to fail a film that
-        just passed every gate."""
-        block = self.SOURCE[self.SOURCE.index("if not problems:"):]
-        block = block[:block.index("return 0 if not problems else 1")]
-        assert "try:" in block and "except Exception" in block
-        assert "the film is unaffected" in block
+    def test_delivery_calls_the_guarded_entry_point(self):
+        assert "from thumbnail_gate import post_quietly" in self.SOURCE
+        assert "post_quietly(args.project)" in self.SOURCE
+
+
+class TestAFailedPostCannotTakeTheFilmDown:
+    """THIS WAS A SHAPE TEST AND IT PASSED WHILE THE BEHAVIOUR WAS WRONG.
+
+    It asserted that the source contained `try:` and `except Exception`,
+    which it did — and `SystemExit` inherits from `BaseException`, so the
+    guard did not catch the most likely failure on this path. Measured: a
+    two-minute slice rendered every pass, passed all seven gates, printed
+    FILM DELIVERY: PASS, and then exited non-zero because the slice's label
+    is not a real project and `build_thumbnail` raises `SystemExit` for
+    that. `stage_assets` raises it too, when an asset the props name has
+    moved — which is a real film's failure, not a slice's.
+
+    So these call the thing and look at what happens."""
+
+    @pytest.mark.parametrize("error", [
+        SystemExit("no render_props.json in any worktree"),
+        SystemExit("4 asset(s) in the props do not exist"),
+        RuntimeError("telegram is down"),
+        OSError("disk full"),
+    ], ids=["systemexit-no-props", "systemexit-missing-assets",
+            "runtime", "oserror"])
+    def test_the_film_survives_it(self, error, monkeypatch):
+        def raising(slug, **kw):
+            raise error
+        monkeypatch.setattr(T, "post", raising)
+        said = T.post_quietly("a-film")
+        assert "the film is unaffected" in said
+        assert type(error).__name__ in said
+
+    def test_a_keyboard_interrupt_still_stops_the_render(self, monkeypatch):
+        """Stopping a render by hand must stop it. KeyboardInterrupt is a
+        BaseException too, and catching it here would make ctrl-c print a
+        note and carry on."""
+        def interrupted(slug, **kw):
+            raise KeyboardInterrupt()
+        monkeypatch.setattr(T, "post", interrupted)
+        with pytest.raises(KeyboardInterrupt):
+            T.post_quietly("a-film")
+
+    def test_a_working_post_is_reported(self, monkeypatch):
+        monkeypatch.setattr(T, "post", lambda slug, **kw: {
+            "from_cut": "c001", "deadline": "2026-11-08T20:00:00"})
+        said = T.post_quietly("a-film")
+        assert "c001" in said and "2026-11-08T20:00:00" in said
+        assert "did not run" not in said
 
     def test_it_only_runs_when_the_film_passed(self):
-        assert ("if not problems:\n        try:\n            from "
-                "thumbnail_gate import post" in self.SOURCE)
+        source = (ROOT / "scripts" / "render_film.py").read_text()
+        assert ("if not problems:\n        from thumbnail_gate import "
+                "post_quietly" in source), (
+            "a film that FAILED its gates must not post a thumbnail for "
+            "approval")

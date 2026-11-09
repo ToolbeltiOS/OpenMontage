@@ -56,7 +56,11 @@ def stage(cut: dict, into: Path) -> dict:
     """
     into.mkdir(parents=True, exist_ok=True)
     cut = dict(cut)
-    for key in ("source", "image", "backgroundImage"):
+    # `depth_clip` is staged for the same reason as the picture: with a 2.5D
+    # plate the moving image IS the clip, and a cut whose clip Chrome cannot
+    # fetch renders as an empty frame with the annotations floating on it —
+    # which measures as a perfect anchor match over a black plate.
+    for key in ("source", "image", "backgroundImage", "depth_clip"):
         src = cut.get(key)
         if not isinstance(src, str) or not src:
             continue
@@ -104,9 +108,22 @@ def anchor_dot(with_annotation: Path, without: Path):
     import cv2
     import numpy as np
 
-    a = cv2.imread(str(with_annotation), cv2.IMREAD_GRAYSCALE).astype("int16")
-    b = cv2.imread(str(without), cv2.IMREAD_GRAYSCALE).astype("int16")
-    diff = (np.abs(a - b) > 24).astype("uint8")
+    # IN COLOUR, AND THE GREY VERSION WAS WRONG. The accent is ochre, and
+    # ochre on weathered grey stone has almost the same LUMA: measured on
+    # c154's fifth anchor the dot reads BGR (59,132,184) against a
+    # background of (117,132,141), which in grey is 139.2 against 133.0 -- a
+    # difference of 6.2, under any usable threshold. The dot was plainly
+    # visible in the frame and entirely absent from the grey difference, and
+    # the gate reported "no anchor dot found" for a dot that was drawn
+    # exactly where the track said it would be.
+    #
+    # Summed over the channels the same pixel differs by 101. Colour is safe
+    # here in a way it was NOT for finding the dot by its hue -- this
+    # compares the same frame with and against itself without the
+    # annotation, so only the annotation can account for a difference.
+    a = cv2.imread(str(with_annotation)).astype("int16")
+    b = cv2.imread(str(without)).astype("int16")
+    diff = (np.abs(a - b).sum(axis=2) > 60).astype("uint8")
     # The leader starts at the dot's centre and the ring surrounds it, so all
     # three arrive as one 44x38 component. An opening with a 7px disc erases
     # anything thinner than itself — the one-pixel leader and the 1.5px ring —
@@ -143,20 +160,43 @@ def anchor_dot(with_annotation: Path, without: Path):
     return None if best is None else best[1]
 
 
-def feature_moved_to(first: Path, second: Path, x: float, y: float):
-    """Where the patch of photograph around (x, y) has got to in `second`."""
+#: The score a match must reach AFTER the warp is fitted, by normalised
+#: correlation between the first frame's patch warped into the second and
+#: what is actually there.
+#:
+#: 0.8. The 2D cuts matched at 0.906-0.985 under a plain template match
+#: because a CSS scale moves a patch rigidly. A depth displacement does not:
+#: the patch is warped, and on the 2.5D c053 the same template match scored
+#: 0.604 and put the feature 385px from where it was. A score below this is
+#: reported as a FAILED MEASUREMENT rather than a moved anchor, because that
+#: is what it is -- and the old code never checked the score at all, so a
+#: 0.604 match was allowed to condemn the render.
+MATCH_FLOOR = 0.8
+
+#: How far out the seed may be before ECC is asked to refine it. ECC's
+#: capture range is small: measured on a synthetic 11px translation it fails
+#: to converge from identity at all, and converges to cc=0.9996 from a seed
+#: 2px off. So the template match does the finding and ECC only polishes.
+ECC_CRITERIA = (300, 1e-7)
+
+
+def _template_seed(a, b, x: float, y: float):
+    """Where the patch has roughly got to, by rigid multi-scale matching.
+
+    This is the SEED and no longer the answer. It is good at finding a patch
+    anywhere in the frame and bad at saying precisely where, once the patch
+    has been warped rather than moved.
+    """
     import cv2
     import numpy as np
 
-    a = cv2.imread(str(first), cv2.IMREAD_GRAYSCALE)
-    b = cv2.imread(str(second), cv2.IMREAD_GRAYSCALE)
     x0, y0 = int(x) - PATCH, int(y) - PATCH
     patch = a[y0:y0 + 2 * PATCH, x0:x0 + 2 * PATCH]
+    if patch.size == 0:
+        return None
     best = None
-    # the image grows a little across the hold, so the patch is matched at a
-    # few scales and the best is taken
-    for s in np.arange(0.98, 1.13, 0.01):
-        scaled = cv2.resize(patch, None, fx=float(s), fy=float(s),
+    for sc in np.arange(0.98, 1.13, 0.01):
+        scaled = cv2.resize(patch, None, fx=float(sc), fy=float(sc),
                             interpolation=cv2.INTER_CUBIC)
         if scaled.shape[0] >= b.shape[0] or scaled.shape[1] >= b.shape[1]:
             continue
@@ -164,7 +204,196 @@ def feature_moved_to(first: Path, second: Path, x: float, y: float):
         _, score, _, loc = cv2.minMaxLoc(res)
         if best is None or score > best[0]:
             best = (score, (loc[0] + scaled.shape[1] / 2,
-                            loc[1] + scaled.shape[0] / 2), float(s))
+                            loc[1] + scaled.shape[0] / 2), float(sc))
+    return best
+
+
+def _window(img, cx: float, cy: float, half: int):
+    """A `half`-radius window about (cx, cy), and where its corner sits."""
+    h, w = img.shape[:2]
+    x0 = max(0, min(int(round(cx)) - half, w - 2 * half))
+    y0 = max(0, min(int(round(cy)) - half, h - 2 * half))
+    return img[y0:y0 + 2 * half, x0:x0 + 2 * half], x0, y0
+
+
+def _ncc(p, q, valid=None) -> float:
+    """Normalised correlation between two same-size patches.
+
+    `valid` IS NOT OPTIONAL IN PRACTICE, and leaving it out is what made the
+    first version of this useless. Warping a patch into a window leaves a
+    border of zeros where the patch no longer covers, and scoring over the
+    whole window pulls a good alignment down: textured c154 anchors whose
+    dots sat 3.5px from their features scored 0.637 that way. The score has
+    to be taken only where the warped patch actually landed.
+    """
+    import numpy as np
+
+    p = p.astype("float64")
+    q = q.astype("float64")
+    if valid is not None:
+        p, q = p[valid], q[valid]
+    p = p.ravel() - p.mean()
+    q = q.ravel() - q.mean()
+    d = float(np.linalg.norm(p) * np.linalg.norm(q))
+    return float(p @ q / d) if d else 0.0
+
+
+def _ecc_refine(a, b, x: float, y: float, seed):
+    """Refine the seed with an AFFINE fit, which a warped patch needs.
+
+    The first frame's patch is the template and the second frame's window is
+    the input, which is the orientation that makes the recovered translation
+    the feature's own displacement -- determined by measurement on a
+    synthetic 11px shift, not by reading the signature: the other
+    orientation returns the negation, and both look plausible.
+
+    The windows are pre-aligned by the seed, so the affine ECC fits is the
+    RESIDUAL: a couple of pixels of translation plus whatever scale, shear
+    and rotation the depth displacement introduced.
+    """
+    import cv2
+    import numpy as np
+
+    (_, (sx, sy), _) = seed
+    patch, _, _ = _window(a, x, y, PATCH)
+    region, rx0, ry0 = _window(b, sx, sy, PATCH)
+    if patch.shape != region.shape or patch.size == 0:
+        return None
+
+    warp = np.eye(2, 3, dtype=np.float32)
+    try:
+        cv2.findTransformECC(
+            patch.astype(np.float32) / 255.0,
+            region.astype(np.float32) / 255.0,
+            warp, cv2.MOTION_AFFINE,
+            (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT,
+             ECC_CRITERIA[0], ECC_CRITERIA[1]), None, 5)
+    except cv2.error:
+        return None                       # did not converge; SIFT next
+
+    # the feature is the CENTRE of the template, so carry that one point
+    # through the fitted affine and back out to absolute coordinates
+    centre = np.array([PATCH, PATCH, 1.0])
+    fx, fy = warp @ centre
+    warped = cv2.warpAffine(patch, warp, (patch.shape[1], patch.shape[0]),
+                            flags=cv2.INTER_LINEAR)
+    cover = cv2.warpAffine(np.ones_like(patch), warp,
+                           (patch.shape[1], patch.shape[0]),
+                           flags=cv2.INTER_NEAREST) > 0
+    if cover.sum() < 0.5 * patch.size:
+        return None                       # warped mostly out of the window
+    return (_ncc(warped, region, cover), (rx0 + float(fx), ry0 + float(fy)),
+            float(np.linalg.det(warp[:, :2])) ** 0.5, "ecc-affine")
+
+
+def _sift_refine(a, b, x: float, y: float, seed):
+    """Fallback: SIFT correspondences and a homography on the local region.
+
+    For the case ECC cannot start from -- a patch warped enough that the
+    rigid seed is itself far out. Features are matched between the patch and
+    a generous window of the second frame, a homography is fitted with
+    RANSAC, and the score is still the correlation after warping, so it is
+    comparable to the ECC path and to MATCH_FLOOR.
+    """
+    import cv2
+    import numpy as np
+
+    (_, (sx, sy), _) = seed
+    patch, _, _ = _window(a, x, y, PATCH)
+    half = PATCH * 2
+    region, rx0, ry0 = _window(b, sx, sy, half)
+    if patch.size == 0 or region.size == 0:
+        return None
+    try:
+        sift = cv2.SIFT_create()
+    except AttributeError:
+        return None
+    kp1, d1 = sift.detectAndCompute(patch, None)
+    kp2, d2 = sift.detectAndCompute(region, None)
+    if d1 is None or d2 is None or len(kp1) < 4 or len(kp2) < 4:
+        return None
+
+    matches = cv2.BFMatcher().knnMatch(d1, d2, k=2)
+    good = [m for m, n in (p for p in matches if len(p) == 2)
+            if m.distance < 0.75 * n.distance]
+    if len(good) < 4:
+        return None
+    src = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+    dst = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+    H, inliers = cv2.findHomography(src, dst, cv2.RANSAC, 3.0)
+    if H is None:
+        return None
+
+    centre = np.array([PATCH, PATCH, 1.0])
+    p = H @ centre
+    if abs(p[2]) < 1e-9:
+        return None
+    fx, fy = p[0] / p[2], p[1] / p[2]
+    warped = cv2.warpPerspective(patch, H, (region.shape[1], region.shape[0]))
+    # Where the patch LANDED, from warping a mask rather than from `warped >
+    # 0` -- a dark patch has genuine zeros in it. And the coverage is judged
+    # against the PATCH's own area, not the search window's: the window is
+    # four times the patch, so comparing against the window meant the test
+    # could essentially never pass and SIFT returned None almost every time.
+    mask = cv2.warpPerspective(np.ones_like(patch), H,
+                               (region.shape[1], region.shape[0]),
+                               flags=cv2.INTER_NEAREST) > 0
+    if mask.sum() < 0.5 * patch.size:
+        return None
+    score = _ncc(warped, region, mask)
+    scale = float(abs(np.linalg.det(H[:2, :2]))) ** 0.5
+    return (score, (rx0 + float(fx), ry0 + float(fy)), scale, "sift-homography")
+
+
+def patch_contrast(first: Path, x: float, y: float) -> float:
+    """How much there is to match at (x, y), as the patch's grey sd.
+
+    Reported alongside a failed match so the failure says WHICH failure it
+    is. A patch with no contrast cannot be located by template matching, by
+    ECC or by SIFT, and the answer each returns is noise -- so a low score
+    over a flat patch means "this anchor is not verifiable from the
+    photograph", while a low score over a textured one means something is
+    wrong with the render.
+
+    Measured on c053: the anchor that cannot be matched sits on sd 6.15 of
+    255, its best template response 0.604 against a runner-up of 0.522. The
+    anchor that matches at 0.954 sits on sd 43.74.
+    """
+    import cv2
+
+    a = cv2.imread(str(first), cv2.IMREAD_GRAYSCALE)
+    patch, _, _ = _window(a, x, y, PATCH)
+    return float(patch.std()) if patch.size else 0.0
+
+
+def feature_moved_to(first: Path, second: Path, x: float, y: float):
+    """Where the patch of photograph around (x, y) has got to in `second`.
+
+    Three stages, because a 2.5D plate is NOT a rigid transform of the
+    photograph and the rigid matcher this started as cannot describe it. The
+    template match finds the patch, an affine ECC fit refines it, and SIFT
+    with a homography covers the case ECC will not start from. Whatever
+    answers, the score is the correlation after the warp, so one floor
+    applies to all three.
+    """
+    import cv2
+
+    a = cv2.imread(str(first), cv2.IMREAD_GRAYSCALE)
+    b = cv2.imread(str(second), cv2.IMREAD_GRAYSCALE)
+    seed = _template_seed(a, b, x, y)
+    if seed is None:
+        return None
+
+    best = None
+    for refine in (_ecc_refine, _sift_refine):
+        got = refine(a, b, x, y, seed)
+        if got and (best is None or got[0] > best[0]):
+            best = got
+        if best and best[0] >= MATCH_FLOOR:
+            break
+    if best is None:
+        score, (fx, fy), scale = seed
+        return (score, (fx, fy), scale, "template-rigid")
     return best
 
 
@@ -220,11 +449,37 @@ def main() -> int:
             last_none = render_still(none_props, work / f"{cut_id}_a{n}_none.png", last)
 
             locked = (a["x"] * width, a["y"] * height)
-            match = feature_moved_to(first_bare, last_bare, *locked)
+
+            # WHERE THE FEATURE IS AT FRAME 0, which is NOT the authored
+            # position on a 2.5D plate. `isometric` is 0.30 from the first
+            # frame, so the shader has already displaced every point before
+            # the move begins; the authored (x, y) is where the point is in
+            # the PHOTOGRAPH, not where it appears in frame 0 of the render.
+            #
+            # Patching at the authored position therefore tracks whatever
+            # happens to sit there, and compares it against a dot that
+            # follows the intended point. Measured, the error IS that
+            # displacement, anchor for anchor:
+            #
+            #   cut   frame-0 offset            reported error
+            #   c154  8.6 8.4 7.2 11.5 3.7      7.8 8.3 7.5 10.3
+            #   c053  2.5 1.2                   3.9 --
+            #   c143  1.9                       1.4
+            #
+            # The authored position stays as the `if locked` CONTROL, which
+            # is what it is for: how far the dot would sit from the feature
+            # if it did not move at all.
+            start = locked
+            track = cut.get("anchor_track") or {}
+            pts = (track.get("anchors") or {}).get(
+                f"{a['x']:.4f},{a['y']:.4f}")
+            if pts:
+                start = (pts[0][0] * width, pts[0][1] * height)
+            match = feature_moved_to(first_bare, last_bare, *start)
             if match is None:
                 failures.append(f"{cut_id} {a['label']}: the patch could not be matched")
                 continue
-            score, (fx, fy), scale = match
+            score, (fx, fy), scale, method = match
             dot = anchor_dot(last_with, last_none)
             if dot is None:
                 failures.append(f"{cut_id} {a['label']}: no anchor dot found")
@@ -234,18 +489,42 @@ def main() -> int:
             rows.append({
                 "cut": cut_id, "label": a["label"],
                 "frames": last + 1,
-                "feature_at_start": [round(v, 1) for v in locked],
+                "feature_at_start": [round(v, 1) for v in start],
+                "authored_at": [round(v, 1) for v in locked],
                 "feature_at_end": [round(fx, 1), round(fy, 1)],
                 "dot_at_end": [round(dot[0], 1), round(dot[1], 1)],
                 "match_score": round(score, 3),
                 "match_scale": round(scale, 3),
+                "match_method": method,
                 "anchor_off_feature_px": round(off, 2),
                 "would_be_off_if_locked_px": round(drift_if_locked, 2),
             })
-            if off > TOLERANCE_PX:
+            # THE SCORE IS CHECKED FIRST, and it never was. A match the
+            # matcher does not believe cannot condemn the render: c053's
+            # first annotation scored 0.604 under the rigid matcher and
+            # reported the feature 385px away, which was the measurement
+            # failing and was recorded as the anchor failing.
+            if score < MATCH_FLOOR:
+                sd = patch_contrast(first_bare, *start)
+                why = ("the photograph has almost no contrast there "
+                       f"(grey sd {sd:.2f} of 255), so no matcher can "
+                       f"locate it and this anchor is NOT VERIFIABLE from "
+                       f"the picture -- which is where the annotation was "
+                       f"placed, not a fault in the render"
+                       if sd < 15.0 else
+                       f"the patch has contrast to spare (grey sd "
+                       f"{sd:.2f}), so this is the RENDER or the track, not "
+                       f"the picture")
+                failures.append(
+                    f"{cut_id} {a['label']}: THE MEASUREMENT FAILED, not "
+                    f"necessarily the anchor -- the patch matched at "
+                    f"{score:.3f} after a {method} warp, under the "
+                    f"{MATCH_FLOOR} floor. {why}.")
+            elif off > TOLERANCE_PX:
                 failures.append(
                     f"{cut_id} {a['label']}: the dot is {off:.1f}px from the "
-                    f"feature at the end of the hold (tolerance {TOLERANCE_PX})")
+                    f"feature at the end of the hold (tolerance "
+                    f"{TOLERANCE_PX}, matched {score:.3f} by {method})")
 
     # The other half of the rule: the labels have to be standing still while
     # the anchors move. Rendered flat — type over the moving photograph, with
@@ -288,8 +567,8 @@ def main() -> int:
         "sit from its feature under the previous behaviour, and it is what",
         "makes a passing number mean something.",
         "",
-        "| cut | annotation | frames | feature start | feature end | dot end | off | if locked | match |",
-        "|---|---|---|---|---|---|---|---|---|",
+        "| cut | annotation | frames | feature start | feature end | dot end | off | if locked | match | by |",
+        "|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in rows:
         lines.append(
@@ -298,7 +577,8 @@ def main() -> int:
             f"{r['feature_at_end'][0]},{r['feature_at_end'][1]} | "
             f"{r['dot_at_end'][0]},{r['dot_at_end'][1]} | "
             f"**{r['anchor_off_feature_px']}px** | "
-            f"{r['would_be_off_if_locked_px']}px | {r['match_score']} |")
+            f"{r['would_be_off_if_locked_px']}px | {r['match_score']} | "
+            f"{r.get('match_method','-')} |")
     lines += [
         "",
         "## And the labels did not move",
@@ -319,7 +599,8 @@ def main() -> int:
     for r in rows:
         print(f"{r['cut']} {r['label']}: dot {r['anchor_off_feature_px']}px from "
               f"the feature, would have been {r['would_be_off_if_locked_px']}px "
-              f"if locked (match {r['match_score']})")
+              f"if locked (match {r['match_score']} by "
+              f"{r.get('match_method','-')})")
     for cut_id, m, _ in type_rows:
         print(f"{cut_id} type lock: {m['scenes_with_movement']} scenes with a "
               f"word in a different place, worst {m['worst_shift_px']}px")

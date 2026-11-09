@@ -84,8 +84,26 @@ def has_audio(path: str) -> bool:
     return bool(out.strip())
 
 
-def check(film: str, expected_lufs: float | None = None
+def check(film: str, expected_lufs: float | None = None, *,
+          reference_required: bool = True
           ) -> tuple[list[str], dict[str, Any]]:
+    """Measure the delivered sound, and REFUSE TO PASS ON A MISSING
+    REFERENCE.
+
+    The loudness check compares the delivered film against the figure the
+    mixer recorded in `mix_report.json`. When that file is absent
+    `expected_lufs` is None, and this used to quietly skip the comparison
+    and return no problems — so the delivery table printed PASS for a check
+    that never ran. A two-minute slice did exactly that on 2026-11-09:
+    "-14.06 LUFS against the mix's None ... PASS".
+
+    A gate measured against a missing reference must never print PASS. For
+    a real film the reference is REQUIRED and its absence is a failure: a
+    delivery nobody compared to its own mix is a delivery nobody checked.
+    For a slice, which has no mix report by construction, the caller passes
+    `reference_required=False` and the gate reports SKIPPED with the reason
+    rather than claiming a pass it did not earn.
+    """
     problems: list[str] = []
 
     if not has_audio(film):
@@ -102,7 +120,20 @@ def check(film: str, expected_lufs: float | None = None
 
     lufs = integrated_lufs(film)
     delta = None
-    if expected_lufs is not None:
+    skipped_reason = None
+    if expected_lufs is None:
+        if reference_required:
+            problems.append(
+                "there is no mix report, so the delivered loudness was "
+                "compared with nothing. The film measures "
+                f"{lufs:.2f} LUFS and no one knows whether that is the mix "
+                f"it claims to carry — renders/mix_report.json is written "
+                f"by the mixer and is what this gate exists to check "
+                f"against.")
+        else:
+            skipped_reason = ("no mix report, and none was required for "
+                              "this delivery")
+    else:
         delta = lufs - expected_lufs
         if abs(delta) > LOUDNESS_TOLERANCE_DB:
             problems.append(
@@ -113,6 +144,8 @@ def check(film: str, expected_lufs: float | None = None
 
     measured = {
         "has_audio": True,
+        "skipped": skipped_reason is not None,
+        "skipped_reason": skipped_reason,
         "mean_dbfs": round(mean, 2),
         "peak_dbfs": round(peak, 2),
         "integrated_lufs": round(lufs, 2),

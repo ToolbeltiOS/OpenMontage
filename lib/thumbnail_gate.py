@@ -212,3 +212,29 @@ def resolve(slug: str, now: datetime | None = None) -> str:
 
     path.write_text(json.dumps(record, indent=1) + "\n")
     return record["state"]
+
+
+def post_quietly(slug: str) -> str:
+    """Post the thumbnail; never let it take the film down with it.
+
+    `SystemExit` IS NOT AN `Exception`. It inherits from `BaseException`, so
+    `except Exception` does not catch it — and SystemExit is the most likely
+    failure on this path, not an exotic one: `build_thumbnail` raises it for
+    a project with no props, and `stage_assets` raises it when an asset the
+    props name has moved.
+
+    Measured 2026-11-09: a two-minute slice rendered every pass, passed all
+    seven gates, printed FILM DELIVERY: PASS — and then died here, because
+    the slice's label is not a real project. The film was finished and the
+    process still exited non-zero.
+
+    KeyboardInterrupt is deliberately NOT caught: stopping a render by hand
+    must stop it.
+    """
+    try:
+        record = post(slug)
+        return (f"thumbnail: {record['from_cut']} posted, set anyway at "
+                f"{record['deadline']} if nobody replies")
+    except (Exception, SystemExit) as error:
+        return (f"thumbnail gate did not run ({type(error).__name__}: "
+                f"{error}); the film is unaffected")

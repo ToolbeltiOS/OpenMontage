@@ -1,0 +1,99 @@
+# The 2.5D depth interpreter — pinned.
+#
+# WHY A SECOND INTERPRETER AT ALL
+# DepthFlow's renderer imports `typing.Self`, which needs Python 3.11+, and
+# the pipeline's own venv is 3.10. So the 2.5D path runs under
+# `<worktree>/.venv-depth` and nothing else does.
+#
+# WHY THE PATH IS PER-WORKTREE, AND WHY THIS FILE EXISTS
+# `DEPTH_PY = ROOT / ".venv-depth" / "bin" / "python"` in
+# scripts/build_25d_cuts.py and lib/verify_depth_parallax.py is relative to
+# the worktree that runs it. On 2026-11-09 it existed ONLY in OpenMontage,
+# so the runner — which is what makes the films — had no way to build a 2.5D
+# cut at all. This file is how any worktree gets the same one.
+#
+#   uv venv --python 3.12 .venv-depth
+#   uv pip install --python .venv-depth/bin/python -r requirements-depth.txt
+#
+# FULLY PINNED, not just the direct dependencies: a renderer whose output is
+# compared frame-to-frame against a gate cannot be allowed to drift with
+# whatever a resolver picks on the day.
+#
+# The MODEL WEIGHTS are not here. Depth Anything V2 Small lives in
+# ~/.cache/huggingface, which is user-level and shared by every worktree.
+annotated-doc==0.0.5
+annotated-types==0.8.0
+anyio==4.15.1
+attrs==26.1.0
+certifi==2026.10.23
+cffi==2.1.1
+charset-normalizer==3.5.2
+click==8.5.0
+cyclopts==5.3.1
+dearlog==0.1.1
+depthflow==1.0.1
+diskcache==5.6.3
+docstring-parser==0.18.0
+filelock==4.2.4
+fsspec==2026.9.0
+glcontext==3.1.0
+glfw==2.11.0
+h11==0.16.0
+hf-xet==1.7.0
+httpcore2==2.16.0
+httpx2==2.16.0
+huggingface-hub==2.3.0
+idna==3.20
+imageio==2.38.1
+imgui-bundle==1.93.0
+importlib-resources==7.1.0
+jinja2==3.1.6
+markdown-it-py==4.2.0
+markupsafe==3.0.4
+mdurl==0.1.2
+mido==1.3.3
+moderngl==5.13.0
+mpmath==1.3.0
+networkx==3.7
+numpy==2.5.4
+numpy-quaternion==2024.0.13
+ordered-set==4.1.0
+packaging==26.3
+parsenaut==0.3.0
+pillow==13.0.0
+platformdirs==4.13.5
+pooch==1.9.0
+pretty-midi==0.2.11.post0
+pycparser==3.12
+pydantic==2.14.1
+pydantic-core==2.50.1
+pyfluidsynth==1.3.4
+pygments==2.21.0
+pyyaml==6.0.3
+rapidfuzz==3.14.6
+regex==2026.9.29
+requests==2.34.2
+rich==15.0.0
+rich-rst==2.2.0
+safetensors==0.8.0
+scipy==1.18.1
+setuptools==84.2.1
+shaderflow==0.12.0
+shellingham==1.5.4
+six==1.17.0
+soundcard==0.4.6
+sympy==1.14.0
+thefuzz==0.22.1
+tokenizers==0.23.3
+torch==2.14.1
+torchvision==0.29.1
+tqdm==4.70.1
+transformers==5.20.2
+truststore==0.10.5
+turbopipe==2.1.0
+typer==0.27.3
+typing-extensions==4.16.0
+typing-inspection==0.4.4
+urllib3==2.8.0
+watchdog==6.0.0
+xxhash==4.0.2
