@@ -118,7 +118,7 @@ class TestTheAgentThatPostsThemLater:
     launchd/com.wak3up.docs.*.plist and so covers this one the day it
     arrives — that is why those tests are not repeated here."""
 
-    PLIST = ROOT / "launchd" / "com.wak3up.docs.credits.plist"
+    PLIST = ROOT / "launchd" / "com.wak3up.docs.afterpublish.plist"
 
     def plist(self):
         import plistlib
@@ -137,7 +137,7 @@ class TestTheAgentThatPostsThemLater:
     def test_it_runs_the_poster_over_every_film(self):
         d = self.plist()
         assert d["ProgramArguments"][-1] == "--all"
-        assert d["ProgramArguments"][-2].endswith("post_pending_credits.py")
+        assert d["ProgramArguments"][-2].endswith("after_publish.py")
 
     def test_it_runs_from_the_runner_worktree(self):
         d = self.plist()

@@ -301,7 +301,7 @@ AGENT_SCHEDULE = {
 }
 
 #: The agent that runs every hour instead, and so has no calendar at all.
-INTERVAL_AGENTS = {"com.wak3up.docs.credits": 3600}
+INTERVAL_AGENTS = {"com.wak3up.docs.afterpublish": 3600}
 
 
 class TestEveryAgentRunsWhenItSaysItDoes:

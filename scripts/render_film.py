@@ -191,6 +191,28 @@ def main() -> int:
     for p in problems[:20]:
         print("   FAIL:", p)
     print("FILM DELIVERY:", "PASS" if not problems else "FAIL")
+
+    # THE THUMBNAIL GATE, AND IT DOES NOT BLOCK.
+    #
+    # Generated here, shown here, and the upload goes ahead without it: the
+    # schedule is the one thing that cannot slip, and a reply that arrives
+    # on Sunday must not decide whether a film goes out on Monday. If
+    # nobody answers, `scripts/after_publish.py` sets it anyway on Sunday
+    # evening and says so — a generated thumbnail beats YouTube's
+    # auto-frame, so silence must not cost the film one.
+    #
+    # Wrapped, because a photo that fails to send is not a reason to fail a
+    # film that just passed every gate.
+    if not problems:
+        try:
+            from thumbnail_gate import post as post_thumbnail
+            record = post_thumbnail(args.project)
+            print(f"   thumbnail: {record['from_cut']} posted, set anyway "
+                  f"at {record['deadline']} if nobody replies")
+        except Exception as error:          # noqa: BLE001
+            print(f"   thumbnail gate did not run ({type(error).__name__}: "
+                  f"{error}); the film is unaffected")
+
     return 0 if not problems else 1
 
 

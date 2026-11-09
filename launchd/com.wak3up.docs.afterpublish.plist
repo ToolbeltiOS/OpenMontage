@@ -4,7 +4,7 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.wak3up.docs.credits</string>
+    <string>com.wak3up.docs.afterpublish</string>
 
     <!-- EVERY HOUR, FOREVER, and that is the point.
 
@@ -17,7 +17,13 @@
 
          Nothing else in the pipeline comes back after a film goes public,
          and a Monday-morning one-off is a thing someone has to remember.
-         `post_pending_credits.py` with `all` is idempotent: a recorded
+         It now also resolves the THUMBNAIL gate, which is posted at
+         delivery and never waited for: set on an "ok", regenerated on a
+         "no", and set anyway at its Sunday deadline. One agent rather than
+         two, because both are "the film is out, finish the paperwork" and
+         a second agent is a second thing to notice has stopped firing.
+
+         `after_publish.py` with `all` is idempotent: a recorded
          comment_id stops it, and failing that it reads the channel's own
          threads, and it exits 2 for "still private". So firing it every
          hour of every week costs one API call and covers every future
@@ -31,7 +37,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/Users/mac/Developer/wak3up-docs/runner/.venv/bin/python</string>
-        <string>/Users/mac/Developer/wak3up-docs/runner/scripts/post_pending_credits.py</string>
+        <string>/Users/mac/Developer/wak3up-docs/runner/scripts/after_publish.py</string>
         <string>--all</string>
     </array>
 
@@ -53,9 +59,9 @@
     <true/>
 
     <key>StandardOutPath</key>
-    <string>/Users/mac/Developer/wak3up-docs/runner/logs/com.wak3up.docs.credits.out.log</string>
+    <string>/Users/mac/Developer/wak3up-docs/runner/logs/com.wak3up.docs.afterpublish.out.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/mac/Developer/wak3up-docs/runner/logs/com.wak3up.docs.credits.err.log</string>
+    <string>/Users/mac/Developer/wak3up-docs/runner/logs/com.wak3up.docs.afterpublish.err.log</string>
 
     <key>Nice</key>
     <integer>5</integer>
