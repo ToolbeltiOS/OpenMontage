@@ -2,6 +2,7 @@ import React from "react";
 import { interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, TRACK, EXPO_OUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
+import { TextureName } from "../design/Texture";
 import { TYPE_CLASS } from "../design/layers";
 
 export type SchematicEffect = "draw" | "fade" | "slide-in";
@@ -46,6 +47,12 @@ export interface SchematicLabel {
 }
 
 export interface SchematicProps {
+  /**
+   * House-library texture behind the scene. Omit for the default; pass
+   * `null` to go back to the flat ground. See `design/Texture.tsx`.
+   */
+  texture?: TextureName | null;
+
   viewBox?: string;
   layers: SchematicLayer[];
   reveals?: SchematicReveal[];
@@ -70,6 +77,7 @@ export interface SchematicProps {
  * is literally drawn rather than faded in.
  */
 export const Schematic: React.FC<SchematicProps> = ({
+  texture,
   viewBox = "0 0 1920 1080",
   layers,
   reveals = [],
@@ -98,6 +106,9 @@ export const Schematic: React.FC<SchematicProps> = ({
 
   return (
     <SceneShell
+      {...(texture === null
+        ? {}
+        : { texture: texture ?? "sandstone", textureKind: "stone" as const })}
       title={title}
       kicker={kicker}
       caption={caption}

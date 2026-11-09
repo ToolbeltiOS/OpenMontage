@@ -68,9 +68,17 @@ REAL_OUTPUT_LINE = (
 
 @pytest.fixture
 def quick(monkeypatch):
-    """The same watchdog, on a clock a test can wait out."""
+    """The same watchdog, on a clock a test can wait out.
+
+    WATCH_FINALISE is patched too, since the asset-library merge: a pass
+    that has printed its last frame is given that limit rather than
+    WATCH_STALL, so a case here whose script reaches `Rendered n/n` waits
+    out the finalise clock and not the stall clock. Left unpatched it is
+    1,800 seconds and every such case passes by never being judged.
+    """
     monkeypatch.setattr(film_render, "WATCH_INTERVAL", 0.2)
     monkeypatch.setattr(film_render, "WATCH_STALL", 1.0)
+    monkeypatch.setattr(film_render, "WATCH_FINALISE", 1.0)
     monkeypatch.setattr(film_render, "FINISH_GRACE", 1.0)
 
 

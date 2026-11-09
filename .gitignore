@@ -129,6 +129,9 @@ remotion-composer/out/
 remotion-composer/projects/
 remotion-composer/public/*
 # But keep demo props (shipped with the project for zero-key demos)
+# The house library, symlinked so 18MB is not duplicated into the
+# bundle. The link is tracked; its target is assets/library/.
+!remotion-composer/public/library
 !remotion-composer/public/demo-props/
 # Keep the two stills the wak3up-documentary component demos render against,
 # so a fresh clone can run them. Both Wikimedia Commons, CC BY-SA, attributed

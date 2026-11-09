@@ -914,9 +914,38 @@ audio:
     levels_relative_to_music_bed_db:
       ambience: -10                      # the per-act bed: wind, stone, sea, desert
       room_tone: -12                     # under every silence, always present
-      riser_peak: -12                    # at the top of the riser, into the landing
-      impact_peak: -6                    # the low hit on a hard cut at a reveal
-      sting_peak: -2                     # the act boundary, under the fade to black
+      # THE THREE ONE-SHOTS MOVE AS A GROUP, AND THE SPACING IS THE OWNER'S.
+      #
+      # The owner's table was riser -2, impact +4, sting +8 — spacing 6 and 4.
+      # It has now been shifted down twice, and BOTH times all three moved
+      # together, because the spacing is a decision about how the three
+      # relate and the shift is a decision about the ceiling.
+      #
+      # LOWERED 2026-10-31, from -6 and -2, because the old values could not
+      # pass the ceiling they are graded against. The one-shot is PLACED
+      # against the bed's minimum over its own span; the ceiling is CHECKED
+      # by comparing the one-shot's loudest 400 ms window with the bed's
+      # level at the instant it plays. Those are two different windows, so a
+      # -2 dB sting has 2 dB of headroom against a measurement that can move
+      # by more than that: on the noah mix the boundary sting came out +0.5
+      # dB over the bed and the impact at 817.3s +0.4 dB, and
+      # lib/mix_audio.py refused the layer — correctly. The fix is margin,
+      # not a looser ceiling.
+      #
+      # THAT CHANGE MOVED ONLY TWO OF THE THREE, and compressed the spacing
+      # from 6 and 4 to 4 and 3. Corrected 2026-11-09, at the asset-library
+      # merge: the group is now the owner's original table shifted down by
+      # exactly 12 dB, which keeps the margin the measurement asked for on
+      # impact and gives the spacing back. The owner's standing note is that
+      # the SFX were too loud, so the shift is downward by design.
+      #
+      # The sting's margin is the one number this costs: -4 sits about 1.5 dB
+      # under the bed on the measurement that refused it at -2, where -5
+      # would sit 2.5 dB under. Accepted by ear on a 30-second A/B of the
+      # busiest act boundary of king-tut, old levels against these.
+      riser_peak: -14                    # at the top of the riser, into the landing
+      impact_peak: -8                    # the low hit on a hard cut at a reveal
+      sting_peak: -4                     # the act boundary, under the fade to black
     unit: >
       LUFS, K-weighted, against the bed's median short-term window. It was
       broadband RMS, which is the wrong unit for a table that is checked by a
@@ -1176,9 +1205,57 @@ audio:
 captions:
   enabled: true
   delivery: closed_captions          # long-form ships a sidecar, not a burn
-  granularity: word_level            # the source timing; the TRACK is phrase-level
+  granularity: sentence_level        # see timing: below; the TRACK is phrase-level
   source_preference: ["tts_word_timestamps", "transcription_alignment"]
-  alignment_rule: "The script is the authority for spelling; the transcript is the authority for timing."
+  alignment_rule: "The script is the authority for spelling. The SENTENCE is
+                   the authority for timing, and words are placed inside it —
+                   not the other way round. See timing:."
+
+  # ── where cue timing comes from, and why not from the words ──────────
+  #
+  # CHANGED 2026-11-02, after noah shipped without a caption track.
+  #
+  # WORD-LEVEL FORCED ALIGNMENT ON SYNTHETIC SPEECH DRIFTS LOCALLY. WhisperX
+  # (wav2vec2) placed every one of noah's 2,687 words — 0 unplaced, 0 under
+  # the 40ms floor, the word-duration gate PASSED — and the track was still
+  # unusable: 39 of 275 cues ran over the 20 chars/second ceiling, worst at
+  # 47, against a film that averages 13.6. The error is local and it
+  # CONSERVES: 15 further cues ran under 9 chars/s, words held too long
+  # exactly where others were rushed. Re-running the alignment reproduced it
+  # to the word — 2,690 of 2,690 timings identical — because the aligner is
+  # deterministic and was doing what it always does.
+  #
+  # Two gates looked straight at this and saw nothing, for the same reason:
+  # they measure a word. `repair_unplaced` spreads an unplaced run and
+  # `enforce_floor` pads every word to 41ms, so the duration gate reads the
+  # REPAIR, not the alignment. Mean confidence is lower across the dense
+  # cues (0.352 against 0.590) but only 1 of the 39 sits in the near-zero
+  # band, so confidence narrows the search and does not find it either.
+  #
+  # A cue is read as a sentence, so a sentence is what must be timed.
+  timing:
+    authority: sentence
+    method: >
+      Detect sentence boundaries from silence (VAD over the narration wav),
+      match that sequence to the script's sentence sequence, give each
+      sentence its MEASURED span, then distribute its words inside that span
+      by character count. Cues are built from the result.
+    word_timings_are: "a hint inside a sentence, never the span of a cue"
+    acceptance:
+      rule: "A/B against the track it replaces, on one act before the film."
+      cues_over_max_chars_per_second: near_zero
+      cues_under_9_chars_per_second: near_zero
+      note: "BOTH, because the error conserves — fixing only the fast cues
+             would mean the time was moved somewhere else rather than
+             corrected."
+    measured_noah_2026_11_02:
+      cues: 275
+      over_20_cps: 39
+      under_9_cps: 15
+      cps_min_median_max: [1.7, 17.0, 47.0]
+      film_average_cps: 13.6
+      words_placed: "2687 of 2687, 0 unplaced"
+      realignment_changed: "nothing — 2690 of 2690 timings identical"
 
   srt:
     max_chars_per_line: 42

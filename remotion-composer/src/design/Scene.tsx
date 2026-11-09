@@ -1,5 +1,6 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
+import { TexturePlate, TextureName, TextureKind } from "./Texture";
 import { SYS, TYPE, TRACK, EXPO_OUT, LAYOUT, SHADOW, stagger } from "./system";
 import { FrameLayer, FrameLayerProps, Plate, PlateSweep } from "./Frame";
 import { T } from "./Type";
@@ -189,6 +190,15 @@ export interface SceneShellProps extends Partial<FrameLayerProps> {
   plate?: string;
   /** flat background instead of the plate (for paper and map scenes) */
   background?: string;
+  /**
+   * A house-library texture in the plate layer, instead of a flat
+   * background or a blurred photograph. It drifts with the sustaining move
+   * and takes the grain pass, like any plate; everything above it stays
+   * locked. See `design/Texture.tsx`.
+   */
+  texture?: TextureName;
+  textureKind?: TextureKind;
+  textureStrength?: number;
   title?: string;
   kicker?: string;
   title_at?: number;
@@ -228,6 +238,9 @@ export const SceneShell: React.FC<SceneShellProps> = ({
   chrome = true,
   paperInk = false,
   sustain = true,
+  texture,
+  textureKind = "paper",
+  textureStrength = 1,
   ...frameProps
 }) => {
   const frame = useCurrentFrame();
@@ -267,7 +280,13 @@ export const SceneShell: React.FC<SceneShellProps> = ({
         would be motionless the moment its reveals finished, which is the
         defect the sustaining move exists to prevent. */}
     <AbsoluteFill style={plateStyle}>
-      {background
+      {texture ? (
+        <>
+          <TexturePlate name={texture} kind={textureKind}
+                        strength={textureStrength} />
+          {sustain ? <PlateSweep /> : null}
+        </>
+      ) : background
         ? (sustain ? <PlateSweep /> : null)
         : <Plate image={plate} sweep={sustain} />}
     </AbsoluteFill>

@@ -1,0 +1,49 @@
+{
+ "assets": [
+  {
+   "provider": "generated",
+   "generated": true,
+   "model": "pixazo/flux-1-schnell",
+   "prompt": "a very large wooden vessel under construction on dry land, timber frames and scaffolding, workers with adzes and bow drills, ancient near-eastern dress. nineteenth-century steel engraving, fine parallel hatching and cross-hatching, monochrome sepia ink on aged paper, archaeological plate illustration, precise draughtsmanship, even lighting, no colour wash, visible engraved line texture, plate border",
+   "style_prompt": "nineteenth-century steel engraving, fine parallel hatching and cross-hatching, monochrome sepia ink on aged paper, archaeological plate illustration, precise draughtsmanship, even lighting, no colour wash, visible engraved line texture, plate border",
+   "negative_prompt": "photorealistic, photograph, photographic, realistic rendering, 3d render, cgi, digital painting, concept art, cinematic lighting, depth of field, bokeh, lens flare, colour photograph, oil painting, watercolour, anime, cartoon, modern clothing, text, watermark, signature, logo",
+   "seed": null,
+   "subject": "a very large wooden vessel under construction on dry land, timber frames and scaffolding, workers with adzes and bow drills, ancient near-eastern dress",
+   "licence": "generated \u2014 not a sourced work; no third-party rights",
+   "attribution": "",
+   "url": "",
+   "note": "An illustration. Not evidence, and never placed in a slot tagged evidence or stills_of_record.",
+   "path": "assets/library/illustrations/ark-build.png"
+  },
+  {
+   "provider": "generated",
+   "generated": true,
+   "model": "pixazo/flux-1-schnell",
+   "prompt": "a Greek traveller in a himation standing before the colossal unworked limestone blocks of the Tiryns citadel wall, scale of a man against the masonry, second century AD. nineteenth-century steel engraving, fine parallel hatching and cross-hatching, monochrome sepia ink on aged paper, archaeological plate illustration, precise draughtsmanship, even lighting, no colour wash, visible engraved line texture, plate border",
+   "style_prompt": "nineteenth-century steel engraving, fine parallel hatching and cross-hatching, monochrome sepia ink on aged paper, archaeological plate illustration, precise draughtsmanship, even lighting, no colour wash, visible engraved line texture, plate border",
+   "negative_prompt": "photorealistic, photograph, photographic, realistic rendering, 3d render, cgi, digital painting, concept art, cinematic lighting, depth of field, bokeh, lens flare, colour photograph, oil painting, watercolour, anime, cartoon, modern clothing, text, watermark, signature, logo",
+   "seed": null,
+   "subject": "a Greek traveller in a himation standing before the colossal unworked limestone blocks of the Tiryns citadel wall, scale of a man against the masonry, second century AD",
+   "licence": "generated \u2014 not a sourced work; no third-party rights",
+   "attribution": "",
+   "url": "",
+   "note": "An illustration. Not evidence, and never placed in a slot tagged evidence or stills_of_record.",
+   "path": "assets/library/illustrations/pausanias-at-tiryns.png"
+  },
+  {
+   "provider": "generated",
+   "generated": true,
+   "model": "pixazo/flux-1-schnell",
+   "prompt": "teams of people hauling a large carved stone statue on a wooden sledge with ropes over bare ground, many figures straining, no machinery. nineteenth-century steel engraving, fine parallel hatching and cross-hatching, monochrome sepia ink on aged paper, archaeological plate illustration, precise draughtsmanship, even lighting, no colour wash, visible engraved line texture, plate border",
+   "style_prompt": "nineteenth-century steel engraving, fine parallel hatching and cross-hatching, monochrome sepia ink on aged paper, archaeological plate illustration, precise draughtsmanship, even lighting, no colour wash, visible engraved line texture, plate border",
+   "negative_prompt": "photorealistic, photograph, photographic, realistic rendering, 3d render, cgi, digital painting, concept art, cinematic lighting, depth of field, bokeh, lens flare, colour photograph, oil painting, watercolour, anime, cartoon, modern clothing, text, watermark, signature, logo",
+   "seed": null,
+   "subject": "teams of people hauling a large carved stone statue on a wooden sledge with ropes over bare ground, many figures straining, no machinery",
+   "licence": "generated \u2014 not a sourced work; no third-party rights",
+   "attribution": "",
+   "url": "",
+   "note": "An illustration. Not evidence, and never placed in a slot tagged evidence or stills_of_record.",
+   "path": "assets/library/illustrations/sledge-teams.png"
+  }
+ ]
+}

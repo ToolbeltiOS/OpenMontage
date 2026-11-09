@@ -1,0 +1,42 @@
+{
+  "_comment": "FLUX.1 schnell fp8, all-in-one checkpoint, for the local $0 route. The repo's flux2-txt2img.json is FLUX.2-dev in NVIDIA nvfp4 with a Mistral text encoder: a different architecture (EmptyFlux2LatentImage, Flux2Scheduler) and a format Apple MPS cannot run, so schnell could not be swapped into it. 4 steps and cfg 1.0 are schnell's own design, not a quality compromise.",
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": { "ckpt_name": "flux1-schnell-fp8.safetensors" }
+  },
+  "2": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "clip": ["1", 1], "text": "" }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "clip": ["1", 1], "text": "" }
+  },
+  "4": {
+    "class_type": "EmptyLatentImage",
+    "inputs": { "width": 1024, "height": 1024, "batch_size": 1 }
+  },
+  "5": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["2", 0],
+      "negative": ["3", 0],
+      "latent_image": ["4", 0],
+      "seed": 0,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "6": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["5", 0], "vae": ["1", 2] }
+  },
+  "7": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["6", 0], "filename_prefix": "illustration" }
+  }
+}

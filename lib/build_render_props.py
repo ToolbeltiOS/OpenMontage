@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 import re
 import subprocess
 import sys
@@ -509,6 +510,25 @@ def main() -> int:
         sys.argv = [sys.argv[0]] + argv
     print(f"project: {PROJECT}")
     ed = json.load(open(os.path.join(ART, "edit_decisions.json"), encoding="utf-8"))
+
+    # A cut's SCENE payload is flattened onto the cut here, once, before
+    # anything else reads it.
+    #
+    # schemas/artifacts/edit_decisions.schema.json closes the cut object:
+    # a cut states where the boundary is, how the camera moves and whether
+    # the sound leads it. An authored scene also needs a component name and
+    # props that differ per component, and carrying those flat made the
+    # artifact fail its own schema — so an edit stage could not be
+    # checkpointed at all. They live under `scene` in the artifact and are
+    # flattened here, because this is the stage that builds what the
+    # renderer actually reads. Existing props with the flat shape still work:
+    # a cut with no `scene` key passes through untouched.
+    for cut in ed.get("cuts", []):
+        scene = cut.pop("scene", None)
+        if isinstance(scene, dict):
+            for key, value in scene.items():
+                cut.setdefault(key, value)
+
     script = json.load(open(os.path.join(ART, "script.json"), encoding="utf-8"))
     set_sections(script)
     music_dir = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("MUSIC_LIBRARY_DIR", "")
@@ -546,6 +566,28 @@ def main() -> int:
         cut.setdefault("actNumber", num)
         cut.setdefault("actTitle", title)
         cut.setdefault("sceneIndex", "S " + sid.rsplit("_s", 1)[-1])
+
+    # AN ILLUSTRATION NOT APPROVED AT THE GATE IS NOT USED.
+    #
+    # It is the only picture in the film nobody sourced, so it does not get
+    # in on the strength of having been generated. The gate shows each one
+    # with its subject and records the ones it CONFIRMED DELIVERED; anything
+    # else — a render made after the gate, or one whose upload failed — goes
+    # back to the slot's fallback here rather than reaching the film.
+    #
+    # Applied before the proxy pass, so a demoted cut is proxied as the
+    # still it has become.
+    try:
+        import illustration_spec
+    except ImportError:
+        from . import illustration_spec          # type: ignore[no-redef]
+    demoted = illustration_spec.demote_unapproved(ed["cuts"], Path(ROOT))
+    for d in demoted:
+        print(f"  illustration refused: {d['cut']} ({d['subject']!r}) -> "
+              f"{d['fell_to']}", flush=True)
+    if demoted:
+        print(f"  {len(demoted)} illustration(s) fell back; approve them at "
+              f"the script gate to use them", flush=True)
 
     # Oversized stills are rendered against downscaled proxies.
     proxied = 0

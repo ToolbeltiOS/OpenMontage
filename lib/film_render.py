@@ -56,9 +56,11 @@ def run(cmd: list[str], cwd: Path | None = None) -> None:
     subprocess.run(cmd, cwd=cwd, check=True)
 
 
-#: How often the watchdog looks, and how long it will tolerate no progress.
+#: How often the watchdog looks, how long it tolerates no progress while
+#: frames are still being made, and how long it tolerates none once the last
+#: frame is in.
 #:
-#: WHY THIS EXISTS. The Noah plate was launched three times as a background
+#: WHY THIS EXISTS. The Noah plate was started three times as a background
 #: task of the agent driving the stage, and all three times the harness
 #: stopped that task at its two-hour limit. The third died with 33,055 of
 #: 35,561 frames rendered — and left nothing: no output file, no error line,
@@ -71,12 +73,28 @@ def run(cmd: list[str], cwd: Path | None = None) -> None:
 #: dead, so the wait slept forever on a process that no longer existed. A
 #: waiter keyed on strings that only a LIVING process emits cannot report a
 #: death. This watchdog watches the process, not the text.
+#: AND WHY IT IS NOT JUST A TIMER. The first version of it killed the Noah
+#: TYPE PASS — a healthy one. Remotion had printed `Encoded 35561/35561` and
+#: its own closing summary, and was finalising a 9.7 GB ProRes 4444 file;
+#: finalising prints nothing at all, and ten minutes of silence later the
+#: watchdog shot it. The file turned out to be complete — 35,561 frames,
+#: duration 1185.366667, matching the plate exactly — so the watchdog
+#: destroyed nothing but three and a half hours of the run.
+#:
+#: Silence is not death. A process is making progress if ANY of three things
+#: is true: it printed a line, its output file grew, or it burned CPU. And
+#: once the last frame is encoded the rule is stricter still: a process that
+#: has reached its final frame is NEVER killed while its output file is
+#: still growing, and it gets WATCH_FINALISE rather than WATCH_STALL to
+#: write the file out.
 WATCH_INTERVAL = 30
 WATCH_STALL = 600
+WATCH_FINALISE = 1800
 
 #: Remotion's two counters. `Encoded` trails `Rendered` by a long way — it
 #: was at 886 when 33,055 frames had been rendered — so a reader who takes
-#: the last line of the log as "the frame we got to" is out by 32,000.
+#: the last line of the log as "the frame we got to" is out by 32,000. Both
+#: count as progress; only `Rendered` is reported as the frame reached.
 _PROGRESS = re.compile(r"^(Rendered|Encoded)\s+(\d+)/(\d+)")
 
 #: The line Remotion prints when a pass has written its file:
@@ -162,6 +180,57 @@ def _is_output(named: str, output: Path | None) -> bool:
         return False
 
 
+def _file_size(path: Path | None) -> int:
+    """The output's size, or -1 while it does not exist yet."""
+    try:
+        return path.stat().st_size if path else -1
+    except OSError:
+        return -1
+
+
+def _tree_cpu_seconds(pid: int) -> float:
+    """Cumulative CPU of a process and everything under it.
+
+    The renderer is `npx` over `node` over a pile of Chromium processes, so
+    the CPU that matters is never the child's own. Read once per interval.
+    """
+    try:
+        out = subprocess.run(["ps", "-axo", "pid=,ppid=,time="],
+                             capture_output=True, text=True, timeout=20).stdout
+    except (OSError, subprocess.SubprocessError):
+        return -1.0
+    kids: dict[int, list[int]] = {}
+    cpu: dict[int, float] = {}
+    for line in out.splitlines():
+        parts = line.split()
+        if len(parts) < 3:
+            continue
+        try:
+            this, parent = int(parts[0]), int(parts[1])
+        except ValueError:
+            continue
+        clock = parts[2]
+        secs = 0.0
+        bits = clock.replace("-", ":").split(":")
+        try:
+            for bit in bits:
+                secs = secs * 60 + float(bit)
+        except ValueError:
+            secs = 0.0
+        cpu[this] = secs
+        kids.setdefault(parent, []).append(this)
+    total, stack = 0.0, [pid]
+    seen = set()
+    while stack:
+        this = stack.pop()
+        if this in seen:
+            continue
+        seen.add(this)
+        total += cpu.get(this, 0.0)
+        stack.extend(kids.get(this, ()))
+    return total
+
+
 def cut_at_frame(cuts: list[dict[str, Any]] | None, frame: int,
                  fps: int = FPS) -> str:
     """The cut on screen at a frame, named well enough to go and look at it."""
@@ -182,11 +251,15 @@ def run_watched(cmd: list[str], cwd: Path | None, label: str, count: int,
 
     Progress is read from the child's own output as it arrives — BOTH of
     Remotion's counters, because an h264 encode prints only the second one
-    and the encode is the longest silence in a pass. If neither counter moves
-    for WATCH_STALL seconds the render TREE is killed; if the pass exits
-    non-zero having never named its output, the failure names the frame, the
-    cut on screen at that frame, and the last twenty lines. Nothing here
-    greps for a fixed frame number or a fixed phrase.
+    and the encode is the longest silence in a pass — and ALSO from the
+    output file's size and the process tree's CPU, so a pass that has
+    stopped TALKING is not mistaken for a pass that has stopped WORKING. If
+    nothing moves at all for WATCH_STALL seconds the render TREE is killed;
+    once the last frame is in, the limit is WATCH_FINALISE instead and the
+    pass is never killed while its output file is still growing. If the pass
+    exits non-zero having never named its output, the failure names the
+    frame, the cut on screen at that frame, and the last twenty lines.
+    Nothing here greps for a fixed frame number or a fixed phrase.
 
     A pass that has printed its output line is DONE, whatever it does next:
     see FINISH_GRACE for the three hours that bought this paragraph.
@@ -199,35 +272,66 @@ def run_watched(cmd: list[str], cwd: Path | None, label: str, count: int,
                             stderr=subprocess.STDOUT, text=True, bufsize=1,
                             start_new_session=True)
     tail: collections.deque[str] = collections.deque(maxlen=20)
-    state: dict[str, Any] = {"frame": 0, "at": time.monotonic(),
-                             "stalled": False, "wrote": None,
+    state: dict[str, Any] = {"frame": 0, "encoded": 0, "at": time.monotonic(),
+                             "final": False, "stalled": None, "wrote": None,
                              "wrote_at": 0.0, "reaped": False}
     lock = threading.Lock()
 
     def watch() -> None:
+        size = _file_size(output)
+        cpu = _tree_cpu_seconds(proc.pid)
+        moved = time.monotonic()           # last time ANYTHING moved
         while proc.poll() is None:
             time.sleep(WATCH_INTERVAL)
+            now = time.monotonic()
             with lock:
-                if state["wrote"] is not None:
-                    idle = time.monotonic() - state["wrote_at"]
-                    if idle < FINISH_GRACE:
-                        continue
+                spoke, frame, final = state["at"], state["frame"], state["final"]
+                wrote, wrote_at = state["wrote"], state["wrote_at"]
+            if wrote is not None:
+                # The pass named its output. Whatever it is doing now is
+                # teardown, and teardown is what hangs.
+                idle = now - wrote_at
+                if idle < FINISH_GRACE:
+                    continue
+                with lock:
                     state["reaped"] = True
-                else:
-                    idle = time.monotonic() - state["at"]
-                    if idle < WATCH_STALL:
-                        continue
-                    state["stalled"] = True
-                done, frame, wrote = (state["reaped"], state["frame"],
-                                      state["wrote"])
-            if done:
                 print(f"  {label}: wrote {wrote} and was still up "
                       f"{int(idle)}s later — reaping the render tree")
             else:
-                print(f"  WATCHDOG: no progress for {int(idle)}s at frame "
-                      f"{frame}/{count} — killing {label}")
+                # SILENCE IS NOT DEATH: a printed line, a growing output file
+                # and CPU burned anywhere in the tree all count as progress.
+                new_size = _file_size(output)
+                # CPU IS PROGRESS ONLY BEFORE THE LAST FRAME. Past it the
+                # rule is "stricter still" by its own terms above, and the
+                # evidence that a finalising pass is working is its output
+                # file GROWING — a muxer writes bytes. Counting CPU there
+                # makes the finalise phase LOOSER instead, and it is how a
+                # pass that printed a `+` line for a file it never wrote
+                # escaped this watchdog: the claim was false, and the CPU of
+                # its own idle loop read as work.
+                new_cpu = -1.0 if final else _tree_cpu_seconds(proc.pid)
+                growing, busy = new_size > size, new_cpu > cpu
+                if growing or busy or spoke > moved:
+                    moved = max(moved, spoke, now if (growing or busy) else moved)
+                    size, cpu = max(size, new_size), max(cpu, new_cpu)
+                    continue
+                idle = now - moved
+                limit = WATCH_FINALISE if final else WATCH_STALL
+                if idle < limit:
+                    continue
+                where = ("finalising, after the last frame" if final
+                         else f"at frame {frame}/{count}")
+                with lock:
+                    state["stalled"] = (
+                        f"nothing moved for {int(idle)}s {where} — no output, "
+                        f"no growth in "
+                        f"{output.name if output else 'the output'} "
+                        f"({new_size} bytes), no CPU")
+                    message = state["stalled"]
+                print(f"  WATCHDOG: {message} — killing {label}")
             sys.stdout.flush()
             _reap(proc)
+
             return
 
     watcher = threading.Thread(target=watch, daemon=True)
@@ -242,13 +346,20 @@ def run_watched(cmd: list[str], cwd: Path | None, label: str, count: int,
         m = _PROGRESS.match(line)
         if m:
             with lock:
+                state["at"] = time.monotonic()
+                got = int(m.group(2))
                 # The frame REACHED is the `Rendered` counter only: `Encoded`
                 # trailed it by 32,000 once, and a failure that names the
                 # encoder's number sends the reader to the wrong cut. Both
                 # counters are a heartbeat.
                 if m.group(1) == "Rendered":
-                    state["frame"] = int(m.group(2))
-                state["at"] = time.monotonic()
+                    state["frame"] = max(state["frame"], got)
+                else:
+                    state["encoded"] = max(state["encoded"], got)
+                # The last frame is in. From here the pass is allowed to go
+                # quiet while it writes the file out, on WATCH_FINALISE.
+                if max(state["frame"], state["encoded"]) >= count:
+                    state["final"] = True
             continue
         w = _WROTE.match(line)
         if w and state["wrote"] is None and _is_output(w.group(1), output):
@@ -277,7 +388,7 @@ def run_watched(cmd: list[str], cwd: Path | None, label: str, count: int,
     if rc == 0 and not stalled:
         return
 
-    why = (f"no progress for {WATCH_STALL}s" if stalled
+    why = (stalled if stalled
            else f"exited {rc}" if rc > 0 else f"killed by signal {-rc}")
     raise SystemExit(
         f"{label} FAILED: {why}\n"
@@ -686,7 +797,9 @@ def remux(dest: Path, mix: Path) -> None:
 def gates(dest: Path, picture: Path, cuts: list[dict[str, Any]],
           expected_lufs: float | None, fps: int = FPS,
           type_layer: Path | None = None, *,
-          loudness_reference_required: bool = True
+          loudness_reference_required: bool = True,
+          project: str | None = None,
+          props_path: Path | None = None
           ) -> tuple[list[str], dict[str, Any]]:
     """Every blocking check, on the file that is about to be delivered.
 
@@ -732,6 +845,32 @@ def gates(dest: Path, picture: Path, cuts: list[dict[str, Any]],
     # mix is 0.486s shorter than the cuts and nothing was responsible for
     # noticing. No decode is added here; this is arithmetic on a figure two
     # gates already had.
+    # DID WHAT THE OWNER APPROVED REACH THE FILM?
+    #
+    # Blocking, and the third guard of its kind, because this project has now
+    # produced three gates that proved an intention while nothing checked the
+    # render: a `texture` field never forwarded, camera props the renderer
+    # never read, and three illustrations approved at the script gate that
+    # appear in no cut. See lib/verify_approved_use.py.
+    #
+    # IT IS A WHOLE-FILM CHECK, so it is SKIPPED on a slice rather than
+    # failed by one. The approvals are for the film; a 2-minute slice
+    # references the first few cuts of it, so an illustration used in act 3
+    # reads as approved-and-unused. The caller passes `project` only for a
+    # real film, and the row still appears, saying SKIPPED — a gate that
+    # vanishes from its own table is the fault the row loop below exists for.
+    if project:
+        from verify_approved_use import check as check_approved
+        ok_use, use_problems, use_summary = check_approved(
+            project, props_path=props_path)
+        results["approved asset use"] = use_summary
+        problems += [f"approved asset use: {p}" for p in use_problems]
+    else:
+        results["approved asset use"] = {
+            "skipped": True,
+            "skipped_reason": "not a whole film, so the approvals it would "
+                              "be checked against do not apply"}
+
     asked = frame_count(cuts, fps)
     got = int(results["frame motion"].get("frames") or 0)
     results["frame count"] = {"asked": asked, "delivered": got,
@@ -817,6 +956,21 @@ def report(title: str, dest: Path, picture: Path, count: int, seconds: float,
            f"{audio.get('integrated_lufs')} LUFS against the mix's "
            f"{expected_lufs} ({audio.get('loudness_delta_db')} dB)")
         + f" | {verdict('delivery audio')} |",
+    ]
+    # Every gate in `results` gets a row, or a gate can block a delivery
+    # without appearing in the table that is supposed to account for it —
+    # which is what the approved-asset-use gate did on its first run. The
+    # rows above are written by hand because each reads its own measurements;
+    # anything added to `gates()` and not given a row lands here.
+    for name, measured in results.items():
+        if name in ("frame motion", "frame order", "plate purity", "type lock",
+                    "frame count", "delivery audio", "plate-dropout"):
+            continue
+        detail = ", ".join(f"{k.replace('_', ' ')} {v}"
+                           for k, v in measured.items()) if isinstance(
+                               measured, dict) else str(measured)
+        lines.append(f"| {name} | {detail} | {verdict(name)} |")
+    lines += [
         "",
         "## Luma map", "",
         "One character per frame, 30 per row — a second a row. `#` is black, "

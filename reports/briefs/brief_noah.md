@@ -23,12 +23,12 @@ The open files are: the same story in older cultures — Gilgamesh tablet XI, re
 - No sermon or debunk register.
 - The subject is why the same story exists across cultures. A film that arrives knowing the answer is not investigating, and either register loses the half of the audience it was not written for.
 
-**Named in the spine, but thin on Commons.** Measured, not assumed — these will not clear the asset floor and the film has to be shot around them:
+**Supporting, not spine.** Below the asset floor on purpose — these do not carry an act:
 
-| entity | counted | shoot instead | why |
-|---|---|---|---|
-| Atrahasis | 2.0 | Cuneiform tablets, Epic of Gilgamesh | it is a text, and the text survives as tablets that are photographed under other names |
-| Durupınar | 0.5 | Mount Ararat, public-domain satellite imagery (NASA/USGS), which is not in a Commons category under this name | this is the one that matters: a boat-shaped formation is a VISUAL claim, and an act built around a picture that does not exist will talk over something else |
+| entity | counted | used as |
+|---|---|---|
+| Atrahasis | 6.0 | one tablet image plus an authored evidence card |
+
 
 ## Title candidates
 
@@ -50,33 +50,32 @@ These are the film's own subjects, named in the constraint. The list below them 
 
 | entity | category files | counted | clears 8 |
 |---|---|---|---|
-| Epic of Gilgamesh | 16 | 16.0 | yes |
-| Flood Tablet | 8 | 8.0 | yes |
-| George Smith (Assyriologist) | 5 | 20.5 | yes |
-| Matsya | 22 | 22.0 | yes |
-| Black Sea | 55 | 55.0 | yes |
-| Noah's Ark | 4 | 20.0 | yes |
+| Epic of Gilgamesh | 33 | 33.0 | yes |
+| Flood Tablet | 10 | 10.0 | yes |
+| George Smith (Assyriologist) | 8 | 8.0 | yes |
+| Matsya | 37 | 37.0 | yes |
+| Black Sea | 59 | 59.0 | yes |
+| Noah's Ark | 56 | 56.0 | yes |
 | Ark van Noach | 11 | 11.0 | yes |
-| Mount Ararat | 47 | 47.0 | yes |
-| Atrahasis | 2 | 2.0 | **no** |
-| Durupınar | 0 | 0.0 | **no** |
+| Mount Ararat | 60 | 60.0 | yes |
+| Durupınar | 13 | 13.0 | yes |
 
-**8 of 10** spine entities clear 8 usable assets.
+**9 of 9** spine entities clear 8 usable assets.
 
 
 ## What the island's article suggests
 
 | entity | category files | counted | clears 8 |
 |---|---|---|---|
-| Book of Genesis | 50 | 50.0 | yes |
+| Book of Genesis | 59 | 59.0 | yes |
+| Noah's Ark | 56 | 56.0 | yes |
+| Genesis flood narrative | 25 | 25.0 | yes |
+| Shem | 21 | 21.0 | yes |
 | Noah (name) | 0 | 20.0 | yes |
-| Noah's Ark | 4 | 20.0 | yes |
-| Noah | 2 | 18.5 | yes |
 | Lamech (father of Noah) | 0 | 18.0 | yes |
-| Shem | 13 | 13.0 | yes |
-| Genesis flood narrative | 0 | 12.5 | yes |
-| Giovanni Benedetto Castiglione | 10 | 10.0 | yes |
+| Giovanni Benedetto Castiglione | 16 | 16.0 | yes |
+| Japheth | 16 | 16.0 | yes |
+| Ham (son of Noah) | 13 | 13.0 | yes |
 | Noah's wife | 0 | 9.5 | yes |
-| Japheth | 7 | 8.0 | yes |
 
 Eligible: **6/6** of the top entities clear 8 usable assets each.

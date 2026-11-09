@@ -3,6 +3,7 @@ import { interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, TRACK, EXPO_OUT, LAYOUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
 import { TYPE_CLASS } from "../design/layers";
+import { SvgGlyph } from "../design/Texture";
 
 export interface TimelineEvent {
   /** Negative = BC. 1922 = AD 1922, -1400 = 1400 BC. */
@@ -11,6 +12,8 @@ export interface TimelineEvent {
   text?: string;
   at: number;
   accent?: boolean;
+  /** a house-library glyph above the marker; see design/glyphIndex.ts */
+  glyph?: string;
 }
 
 export interface TimelineProps {
@@ -291,6 +294,16 @@ export const Timeline: React.FC<TimelineProps> = ({
                 >
                   {e.label}
                 </text>
+                {/* `dir` is -1 above the axis and +1 below it, and the glyph
+                    has to follow it. A fixed -52 put the glyph above the
+                    label for events above the axis, which is right, and on
+                    top of the year for the ones below it, which is not. */}
+                {e.glyph ? (
+                  <SvgGlyph name={e.glyph} x={p} y={labelY + lift + dir * 40}
+                            size={34}
+                            color={e.accent ? SYS.accent : SYS.muted}
+                            opacity={o * 0.92} />
+                ) : null}
               </g>
             );
           }

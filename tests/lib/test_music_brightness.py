@@ -21,10 +21,18 @@ import pytest
 from lib import music_brightness as mb
 
 
-def tone(path, filt: str, seconds: float = 8.0) -> str:
-    """Pink noise through a filter chain, written as a wav."""
+def tone(path, filt: str, seconds: float = 8.0, seed: int | None = None) -> str:
+    """Pink noise through a filter chain, written as a wav.
+
+    `seed` fixes the realisation. Unseeded, `anoisesrc` gives a different one
+    every run, which is right for a test asserting a large difference and
+    wrong for one asserting a small one — see the shelf test below.
+    """
+    src = f"anoisesrc=d={seconds}:c=pink:r=22050"
+    if seed is not None:
+        src += f":seed={seed}"
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi",
-                    "-i", f"anoisesrc=d={seconds}:c=pink:r=22050",
+                    "-i", src,
                     "-af", filt, "-ar", "22050", "-ac", "1", str(path)],
                    check=True)
     return str(path)
@@ -146,10 +154,32 @@ class TestTheEqIsAShelfNotABell:
         assert "lowpass=f=7000" not in mb.BED_EQ
 
     def test_the_shelf_actually_attenuates_above_its_corner(self, tmp_path):
-        flat = tone(tmp_path / "f.wav", "anull")
-        before = mb.brightness(flat)
+        """The SHELF's own effect, isolated from the rest of the chain.
+
+        IT USED TO COMPARE THE WHOLE CHAIN AGAINST NO EQ AT ALL, and that is
+        not a test of the shelf: `BED_EQ`'s two 120 Hz high-passes RAISE the
+        centroid by removing low energy, while the shelf and the two
+        low-passes lower it. On pink noise the two nearly cancel — measured
+        1032.4 Hz against 1023.2 Hz, a 0.9% residual — so the SIGN of the
+        comparison depended on which noise realisation `anoisesrc` happened
+        to produce, and the assertion failed about once in twelve runs. It
+        was green at the 2026-11-09 baseline by luck, not by being true.
+
+        Compared instead against the same chain with ONLY the shelf removed,
+        so the difference is the shelf and nothing else: 1029.7 Hz against
+        1244.1 Hz, and 1.43% of the energy above 4 kHz against 3.81%. Both
+        hold on every realisation tested, and the seed removes the question.
+        """
+        flat = tone(tmp_path / "f.wav", "anull", seed=1)
+        unshelved_chain = mb.BED_EQ.replace(
+            "highshelf=f=3500:g=-6:width_type=q:width=0.7,", "")
+        assert unshelved_chain != mb.BED_EQ, (
+            "BED_EQ no longer names the shelf this test removes, so the "
+            "comparison below is against an identical chain")
         after = mb.brightness(flat, mb.BED_EQ)
-        assert after["spectral_centroid_hz"] < before["spectral_centroid_hz"]
+        unshelved = mb.brightness(flat, unshelved_chain)
+        assert after["spectral_centroid_hz"] < unshelved["spectral_centroid_hz"]
+        assert after["energy_above_4k_pct"] < unshelved["energy_above_4k_pct"]
 
 
 class TestRanking:

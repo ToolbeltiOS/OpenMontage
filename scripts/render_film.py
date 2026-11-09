@@ -191,7 +191,9 @@ def main() -> int:
     # None ... PASS", which reads as checked-and-fine and meant not-checked.
     real_film = (project / "artifacts" / "render_props.json").exists()
     problems, results = gates(dest, picture, cuts, expected, FPS, type_layer,
-                              loudness_reference_required=real_film)
+                              loudness_reference_required=real_film,
+                              project=args.project if real_film else None,
+                              props_path=props_path)
     # named after the file delivered, not the project: a slice rendered to
     # check the path works must not leave a report that reads as the film's
     out = report(f"Film delivery — {args.project} — {dest.name}", dest, picture,

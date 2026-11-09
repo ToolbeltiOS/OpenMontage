@@ -9,16 +9,15 @@
     "version": { "type": "string", "const": "1.0" },
     "cuts": {
       "type": "array",
-      "_why_source_is_not_required": "A cut in an authored-scene pipeline has no source file: it names a component in remotion-composer/component-contract.json and DRAWS its picture. The narrated-documentary films run 60% of their cuts that way. `source` was required here because every pipeline that had exercised this schema cut from footage.",
-      "_why_additional_properties": "An authored cut carries its component's props FLAT beside `type` - that is the shape remotion-composer/src/Explainer.tsx reads and lib/build_render_props.py passes through - and those props are open-ended: a schematic's layers, a timeline's events, a map_route's markers. They are NOT unchecked. lib/buildability.py validates every one against the component contract, which is stricter than an enumeration here could be: it checks required props, required keys on every array item, and enum ranges per component. Enumerating them a second time in this file would be a copy that drifts.",
-      "_found_by": "The king-tut run, which is the first to CHECKPOINT the edit stage. Two delivered films carried authored cuts past this schema without it ever being applied to them.",
+      "_why_source_is_not_required": "THE NAME OF THIS KEY IS HISTORICAL: `source` IS required now. It is kept because the name is the question that was asked, and the value is the answer that reversed it. THIS CHANGED TWICE AND THE SECOND CHANGE REVERSED THE FIRST. `source` was originally required because every pipeline that had exercised this schema cut from footage. On 2026-11-07 the king-tut run - the first to CHECKPOINT the edit stage - made it OPTIONAL, because an authored cut has no source file: it names a component and DRAWS its picture, and the narrated-documentary films run 60% of their cuts that way. On 2026-11-09 it was made REQUIRED AGAIN, with a different meaning: every cut must say what it is a cut OF, and for an authored cut that is the SLOT ID from scene_plan.json rather than a file path. An id is not a path and has no suffix - see tests/automation/test_authored_cut_shape.py. The first reasoning was right that there is no FILE; it was wrong that there is therefore nothing to name.",
+      "_why_additional_properties": "THE NAME OF THIS KEY IS HISTORICAL TOO: `additionalProperties` on the cut is now false. ALSO CHANGED TWICE, AND THE REASONING SURVIVED THE CHANGE. Component props ARE open-ended - a schematic's layers, a timeline's events, a map_route's markers - and they are NOT unchecked: lib/buildability.py validates every one against remotion-composer/component-contract.json, which is stricter than an enumeration here could be, because it checks required props, required keys on every array item, and enum ranges PER COMPONENT. Enumerating them a second time in this file would be a copy that drifts. That is why this schema still does not list them. What changed on 2026-11-09 is WHERE they sit. They used to sit FLAT beside `type`, which forced `additionalProperties: true` on the whole cut - so the open set was the entire cut object, and a typo in an EDITORIAL field passed validation silently. Now they sit under the single `scene` key, which is open, and the cut around it is CLOSED. lib/build_render_props.py flattens `scene` onto the cut before the renderer sees it, so the shape remotion-composer/src/Explainer.tsx reads is unchanged. One open key instead of one open object, and the checking stays where it already was.",
+      "_found_by": "The king-tut run, which is the first to CHECKPOINT the edit stage. Two delivered films carried authored cuts past this schema without it ever being applied to them. The `scene` sub-object came from noah, authored under it: all 159 cuts validate clean. The four films published before 2026-11-09 are NOT migrated - they load, and the flattening is safe on all of them.",
       "items": {
         "type": "object",
-        "required": ["id", "in_seconds", "out_seconds"],
+        "required": ["id", "source", "in_seconds", "out_seconds"],
         "properties": {
           "id": { "type": "string" },
-          "type": { "type": "string", "description": "For an AUTHORED cut: the component in remotion-composer/component-contract.json that draws it. Mutually exclusive with `source` in practice - a cut is either sourced or drawn." },
-          "source": { "type": "string", "description": "Source file path or asset-manifest ID. Absent on an authored cut." },
+          "source": { "type": "string", "description": "What this is a cut OF. For a SOURCED cut: a source file path or asset-manifest ID. For an AUTHORED cut: the SLOT ID from scene_plan.json - an id, not a path, so it has no file suffix. Required either way; see `_why_source_carries_the_slot_id`." },
           "in_seconds": { "type": "number", "minimum": 0 },
           "out_seconds": { "type": "number", "minimum": 0 },
           "speed": { "type": "number", "minimum": 0.1, "default": 1.0 },
@@ -112,9 +111,18 @@
             "maximum": 18,
             "description": "Positive: this scene's audio leads its picture by N frames (J-cut). Negative: the picture leads the narration (L-cut). Zero or absent: a straight cut."
           },
-          "lead_reason": { "type": "string" }
+          "lead_reason": { "type": "string" },
+          "scene": {
+            "type": "object",
+            "description": "Scene payload for a hand-authored cut, used when composition_mode is atelier. The cut object proper is a closed set of EDITORIAL decisions \u2014 where the boundary is, how the camera moves, whether the sound leads it. An authored scene also needs a component name and its props, which are a different kind of thing and vary per component, so they live here. lib/build_render_props.py flattens this onto the cut before the renderer sees it.",
+            "required": ["type"],
+            "properties": {
+              "type": { "type": "string", "description": "component name in remotion-composer/component-contract.json" }
+            },
+            "additionalProperties": true
+          }
         },
-        "additionalProperties": true
+        "additionalProperties": false
       }
     },
     "overlays": {

@@ -1,0 +1,48 @@
+{
+ "project": "noah",
+ "video_id": "gQvV4K3LxVc",
+ "url": "https://www.youtube.com/watch?v=gQvV4K3LxVc",
+ "title": "The Flood Story Before the Bible",
+ "uploaded": "2026-11-02T15:23:33.140066+00:00",
+ "public_immediately": true,
+ "publish_at": "2026-11-02T15:23:33.140066+00:00",
+ "playlist_id": "PLGLHDmJ31GMo",
+ "comment_id": "Ugx7pc8_K9MNIxqvtn14AaABAg",
+ "done": [
+  "uploaded PUBLIC immediately",
+  "custom thumbnail set",
+  "added to 'Documentaries'",
+  "credits comment posted in 2 parts"
+ ],
+ "manual": [
+  "no caption file at /Users/mac/Developer/wak3up-docs/OpenMontage/projects/noah/artifacts/captions.en.srt",
+  "set the End Screen (no API)",
+  "confirm the Altered content disclosure is ON in Studio \u2014 the narration is synthesised and the API does not return containsSyntheticMedia, so it cannot be verified from here",
+  "PIN the credits comment (no API for it)"
+ ],
+ "comment_parts": 2,
+ "captions": {
+  "uploaded": false,
+  "reason": "39 of 275 cues over the 20 chars/second reading-rate ceiling, against a threshold of 5 for an automatic upload",
+  "realignment": {
+   "ran": "2026-11-02, scripts/align_narration.py --project noah (WhisperX wav2vec2 forced alignment against the approved script)",
+   "placed": "2687 of 2687 words, 0 unplaced, 0 under the 40ms floor",
+   "effect_on_timings": "NONE \u2014 2690 of 2690 caption words came back with timings identical to the published props, so the alignment is deterministic and was already forced-aligned on 2026-10-31. The easter-island fix does not apply here: that one replaced transcribe-and-match with forced alignment, and noah already had it."
+  },
+  "measured": {
+   "cues": 275,
+   "over_20_cps": 39,
+   "under_9_cps": 15,
+   "cps_min": 1.7,
+   "cps_median": 17.0,
+   "cps_max": 47.0,
+   "mean_alignment_confidence_over_ceiling": 0.352,
+   "mean_alignment_confidence_elsewhere": 0.59,
+   "words_at_zero_confidence": "285 of 2687 (11%)"
+  },
+  "diagnosis": "Local drift, not fast speech. The film averages 13.6 chars/s and the worst cue runs at 47; the 15 cues under 9 cps are the other half of the same error, words held too long where others were rushed. Alignment confidence is lower on the dense cues (0.352 vs 0.590) but only 1 of the 39 is in the near-zero band, so confidence is a contributing signal and not the whole cause.",
+  "evidence": "projects/noah/artifacts/caption_density.txt lists all 39 with their timecodes and sentences",
+  "track_on_disk": "projects/noah/artifacts/captions.en.FAILS_READABILITY.srt",
+  "note": "A caption track can be replaced at any time without touching the published video. Nothing about the picture is affected: captions are a sidecar and are never burnt in."
+ }
+}

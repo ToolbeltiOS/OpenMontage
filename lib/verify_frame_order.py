@@ -179,6 +179,42 @@ def _runs(flags) -> list[tuple[int, int]]:
     return out
 
 
+def _coalesce(runs: list[tuple[int, int]], gap: int) -> list[tuple[int, int]]:
+    """Join runs separated by fewer than `gap` frames.
+
+    A LUMA SERIES SITTING ON THE THRESHOLD FLICKERS, and the flicker is not a
+    defect — it is the threshold. Measured on the Noah delivery, cut c110, a
+    dark texture shot running 844.40–849.03s whose mean luma drifts down
+    through BLACK_LUMA about two thirds of the way in:
+
+        846.73s  4.014      846.87s  3.888   <- black
+        846.77s  4.011      846.90s  3.932   <- black
+        846.80s  3.941  <-  846.93s  3.819   <- black, and so on to the cut
+        846.83s  3.982      847.00s  3.761   <- black
+
+    One frame under, one frame over, then two and a quarter seconds under.
+    That produced a 1-frame "isolated" run two frames before a 66-frame hold
+    and the gate called it "a frame from somewhere else" — of a frame whose
+    brightest pixel is 192 and whose neighbours are indistinguishable from it.
+
+    This is the second time this threshold has blamed a render for a ruler.
+    The first was act 2's fade crossing it after two frames where act 3's
+    took nine, fixed by exempting runs at a declared cut; the exemption did
+    not help here because the crossing is mid-shot. Joining runs that are
+    nearer to each other than a hold is long is the general form of both.
+    """
+    if not runs:
+        return []
+    out = [runs[0]]
+    for start, length in runs[1:]:
+        prev_start, prev_length = out[-1]
+        if start - (prev_start + prev_length) < gap:
+            out[-1] = (prev_start, start + length - prev_start)
+        else:
+            out.append((start, length))
+    return out
+
+
 def boundaries(cuts: list[dict[str, Any]] | None) -> list[float]:
     """Every declared cut boundary, in seconds."""
     if not cuts:
@@ -213,7 +249,9 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
     # crossed BLACK_LUMA after two frames where act 3's took nine — and the
     # gate failed the film for the two. The frames either side read 3.84 and
     # 4.45: not a blink, a threshold.
-    black = _runs(luma < BLACK_LUMA)
+    # Coalesced first: a one-frame dip beside a long hold is that hold, not a
+    # frame from somewhere else. See _coalesce.
+    black = _coalesce(_runs(luma < BLACK_LUMA), MIN_BLACK_RUN)
     edge_frames = {js_round(e * fps) for e in edges}
     isolated = [(a, n) for a, n in black
                 if n < MIN_BLACK_RUN and not any(abs(a - e) <= 1

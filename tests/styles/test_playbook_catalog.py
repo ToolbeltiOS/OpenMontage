@@ -212,11 +212,36 @@ class TestTheAudioRevisionIsStatedOnce:
                 f"a blocking check")
 
     def test_the_owner_s_spacing_between_the_one_shots_is_preserved(self):
-        """They were shifted as a group, by the 10 dB the gate measured.
+        """They were shifted as a group, by the 12 dB the gate measured.
 
         riser -2, impact +4, sting +8 was the owner's table; the gate refused
         it and the three moved down together. The SPACING is the owner's
         decision and must survive the shift.
+
+        IT DID NOT SURVIVE THE SECOND SHIFT, and this test is how that was
+        found. `d05353a` on `asset-library` (2026-10-31) lowered impact -6 to
+        -8 and sting -2 to -5 and left riser at -12, for a measured reason:
+        the one-shot is PLACED against the bed's minimum over its own span
+        but CHECKED against the bed's level at the instant it plays, two
+        different windows, and on the noah mix the boundary sting came out
+        +0.5 dB OVER the bed and the impact at 817.3s +0.4 dB, so
+        lib/mix_audio.py refused the layer. The margin was right; moving two
+        of the three was not. It left the spacing at 4 and 3, and this test
+        failed on that branch for nine days.
+
+        RESOLVED BY THE OWNER 2026-11-09, at the asset-library merge, as the
+        full group shift: -14 / -8 / -4, which is the original table moved
+        down by exactly 12 dB. The impact keeps the margin the measurement
+        asked for, the spacing comes back, and the direction matches the
+        owner's standing note that the SFX were too loud.
+
+        WHAT IT COSTS, recorded because it is the one number that got worse:
+        the sting now sits about 1.5 dB under the bed on the measurement that
+        refused it at -2, where -5 would have sat 2.5 dB under. The owner
+        accepted that by ear on a 30-second A/B of king-tut's busiest act
+        boundary, old levels against these, with the fallback on record: if
+        the riser disappears under the bed at -14, the sting goes back to -5
+        and the second assertion here becomes 3.
         """
         off = self._playbook()["audio"]["sound_design"][
             "levels_relative_to_music_bed_db"]

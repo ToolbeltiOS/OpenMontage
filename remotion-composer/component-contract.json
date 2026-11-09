@@ -109,7 +109,9 @@
     "kicker",
     "source",
     "basemap",
-    "basemap_drift"
+    "basemap_drift",
+    "mapPlate",
+    "mapPlateCredit"
    ],
    "array_item_required": {
     "markers": [
@@ -123,7 +125,7 @@
    "slot_required": [
     "claim_id"
    ],
-   "claim_id_note": "SLOT-LEVEL, not a component prop: MapRoute never receives it. The planner records which ledger claim the route illustrates, because the claim's date decides chart-or-terrain and cannot be inferred from the scene description. A claim that resolves to no date is fine and gives terrain with the reason 'undated event'; a route with NO claim_id fails the build. See skills/pipelines/narrated-documentary/scene-director.md section 5b."
+   "claim_id_note": "SLOT-LEVEL, not a component prop: MapRoute never receives it. The planner records which ledger claim the route illustrates, because the claim's date decides chart-or-terrain and cannot be inferred from the scene description (the date lookup is lib/event_year.py). A claim that resolves to no date is fine and gives terrain with the reason 'undated event'; a route with NO claim_id fails the build. See skills/pipelines/narrated-documentary/scene-director.md section 5b."
   },
   "globe_descent": {
    "required": [

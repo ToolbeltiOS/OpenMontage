@@ -11,6 +11,8 @@ import {
   useVideoConfig,
 } from "remotion";
 import { EXPO_IN_OUT, SYS } from "./design/system";
+import { Illustration } from "./scenes/Illustration";
+import { TextureName } from "./design/Texture";
 import { loadSpaceGrotesk } from "./lib/localFonts";
 import { TextCard } from "./components/TextCard";
 import { StatCard } from "./components/StatCard";
@@ -269,6 +271,31 @@ export interface Cut {
    */
   depth_clip?: string;
   anchor_track?: any;
+  /**
+   * A historical map plate under the route, with its credit. Written by
+   * `lib/map_plate.py`, which also records the licence, the attribution,
+   * the source and the reason on the cut — see CUT_FIELDS there.
+   */
+  mapPlate?: string;
+  mapPlateCredit?: string;
+  /** illustration: what the generated plate depicts, for the strip */
+  subject?: string;
+  /**
+   * A house-library texture behind the scene. Undefined takes the family's
+   * default; `null` goes back to the flat ground.
+   *
+   * NOT `texture`, WHICH IS ALREADY TAKEN — a `texture_field` cut uses that
+   * for a media path, and a library texture is a NAME. One field meaning a
+   * file in one scene and a palette entry in another is a collision waiting
+   * for whoever reads it next.
+   *
+   * THE CALL SITES HAVE TO FORWARD THIS. They did not at first, so the
+   * components defaulted to parchment and stone whatever the props said,
+   * the documented `null` escape was unreachable, and a before/after
+   * comparison of the style frames came back byte-identical on four of six
+   * — both sides were the "after".
+   */
+  plate_texture?: TextureName | null;
   layers?: any[];
   reveals?: any[];
   labels?: any[];
@@ -857,12 +884,18 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
       annotations={cut.annotations} measurement={cut.measurement}
       cutaway={cut.cutaway} caption={cut.caption} title={cut.title} dim={cut.dim} {...chrome} />);
   }
+  if (cut.type === "illustration" && cut.backgroundImage) {
+    return (<Illustration image={cut.backgroundImage} subject={cut.subject ?? cut.title ?? ""}
+      parallax={cut.parallax} parallaxFrom={cut.parallaxFrom} parallaxTo={cut.parallaxTo}
+      caption={cut.caption} title={cut.title} {...chrome} />);
+  }
   if (cut.type === "schematic" && cut.layers) {
-    return (<Schematic viewBox={cut.viewBox} layers={cut.layers} reveals={cut.reveals}
+    return (<Schematic texture={cut.plate_texture} viewBox={cut.viewBox} layers={cut.layers} reveals={cut.reveals}
       labels={cut.labels} title={cut.title} caption={cut.caption} {...chrome} />);
   }
   if (cut.type === "map_route" && cut.route) {
     return (<MapRoute route={cut.route} markers={cut.markers} center={cut.center}
+      mapPlate={cut.mapPlate} mapPlateCredit={cut.mapPlateCredit}
       scale={cut.scale} draw_seconds={cut.draw_seconds} draw_at={cut.draw_at}
       distance_callout={cut.distance_callout} title={cut.title} caption={cut.caption}
       arc={cut.arc} {...chrome} />);
@@ -872,7 +905,7 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
       playhead={cut.playhead} title={cut.title} caption={cut.caption} {...chrome} />);
   }
   if (cut.type === "document_reveal" && cut.lines) {
-    return (<DocumentReveal headline={cut.headline} lines={cut.lines} source={cut.sourceLine}
+    return (<DocumentReveal texture={cut.plate_texture} headline={cut.headline} lines={cut.lines} source={cut.sourceLine}
       image={plate} paper={cut.paper} light_sweep={cut.light_sweep}
       sweep_at={cut.sweep_at} caption={cut.caption} kicker={cut.kicker}
       actNumber={cut.actNumber} actTitle={cut.actTitle} sceneIndex={cut.sceneIndex}
@@ -902,7 +935,7 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
       coords={cut.coords} kicker={cut.kicker} source={cut.sourceLine} />);
   }
   if (cut.type === "evidence_card" && cut.claim && cut.attribution) {
-    return (<EvidenceCard index={cut.index} claim={cut.claim} attribution={cut.attribution}
+    return (<EvidenceCard texture={cut.plate_texture} index={cut.index} claim={cut.claim} attribution={cut.attribution}
       detail={cut.detail} status={cut.status} caption={cut.caption}
       actNumber={cut.actNumber} actTitle={cut.actTitle} sceneIndex={cut.sceneIndex}
       source={cut.sourceLine} />);

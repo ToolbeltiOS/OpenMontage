@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-26T14:10:10.456160+00:00",
+ "generated": "2026-10-30T23:19:07.396993+00:00",
  "ledger_size": 500,
  "clusters_considered": 66,
  "min_assets_per_entity": 8,
@@ -23,7 +23,7 @@
     "phrase": "Noah",
     "item": "Q81422",
     "description": "biblical prophet, son of Lamech, major figure in the Book of Genesis",
-    "sitelinks": 121,
+    "sitelinks": 122,
     "subject": true,
     "why": "it is someone",
     "article": "Noah"
@@ -36,15 +36,68 @@
       "Book of Genesis - Chapter 9",
       "Book of Genesis - Chapter 49"
      ],
-     "category_files": 50,
+     "category_files": 59,
      "search_files": 0,
-     "counted": 50.0,
+     "counted": 59.0,
      "clears": true,
      "examples": [
+      "\"The Creation,\" Niche Sculptures, Wells Cathedral West Fa\u00e7ade (3610854381).jpg",
       "039.3 402 Sara (Genesis 20 2) \u2022 invenit James Tissot \u2022 pinxit James Tissot \u2022 excudit Maurice de Brunoff apud Philip de Vere \u2022 praesentat Phillip Medhurst.jpg",
       "056.3 402 Enl\u00e8vement de Dinah, fille de Lia (Genesis 34 2) \u2022 invenit James Tissot \u2022 pinxit James Tissot \u2022 excudit Maurice de Brunoff apud Philip de Vere \u2022 praesentat Phillip Medhurst.jpg",
-      "057.3 402 Le massacre des Sich\u00e9mites (Genesis 35 5) \u2022 invenit James Tissot \u2022 pinxit James Tissot \u2022 excudit Maurice de Brunoff apud Philip de Vere \u2022 praesentat Phillip Medhurst.jpg",
-      "058 403 Joseph raconte ses songes (Genesis 37 8) \u2022 invenit James Tissot \u2022 pinxit James Tissot et alia \u2022 excudit Maurice de Brunoff apud Philip de Vere \u2022 praesentat Phillip Medhurst.jpg"
+      "057.3 402 Le massacre des Sich\u00e9mites (Genesis 35 5) \u2022 invenit James Tissot \u2022 pinxit James Tissot \u2022 excudit Maurice de Brunoff apud Philip de Vere \u2022 praesentat Phillip Medhurst.jpg"
+     ]
+    },
+    {
+     "entity": "Noah's Ark",
+     "categories": [
+      "Noah's Ark",
+      "Noah's Ark II",
+      "Noah's Ark Zoo Farm"
+     ],
+     "category_files": 56,
+     "search_files": 0,
+     "counted": 56.0,
+     "clears": true,
+     "examples": [
+      "500 Armenian dram - 2017 (obverse).png",
+      "500 Armenian dram - 2017 (reverse).png",
+      "A curious hieroglyphick Bible; or Fleuron T147645-16.png",
+      "Ark structure.jpg"
+     ]
+    },
+    {
+     "entity": "Genesis flood narrative",
+     "categories": [
+      "The Great Flood",
+      "Genesis flood narrative"
+     ],
+     "category_files": 25,
+     "search_files": 0,
+     "counted": 25.0,
+     "clears": true,
+     "examples": [
+      "007.The Great Flood.jpg",
+      "18-2051 planche grav\u00e9e sur cuivre (exemple 1) (51372239410).jpg",
+      "Anacron\u00f3pete en el Diluvio (Anacron\u00f3pete, p214).png",
+      "Augsburger Wunderzeichenbuch, Folio 1.jpg"
+     ]
+    },
+    {
+     "entity": "Shem",
+     "categories": [
+      "Shem (given name)",
+      "Shem",
+      "Shem Schroeck"
+     ],
+     "category_files": 21,
+     "search_files": 0,
+     "counted": 21.0,
+     "clears": true,
+     "examples": [
+      "A map of Asia as inhabited by Shem (FL27963638 2488683).jpg",
+      "Biblical haplogroup tree.jpg",
+      "Dominee Charles Chais, Carte des premier etablissemens de Famille de Sem et des Colonies qui en sortirent (FL45612090 3957220).jpg",
+      "Dominee Charles Chais, Carte des premier etablissemens des Colonies des Descendans de Cam (FL45612443 3957221).jpg"
      ]
     },
     {
@@ -57,44 +110,10 @@
      "counted": 20.0,
      "clears": true,
      "examples": [
-      "3 grappes de noah.jpg",
       "Noah(1).png",
       "Caricature of Noah E. Offutt (1916).png",
+      "3 grappes de noah.jpg",
       "Noah Emmerich.jpg"
-     ]
-    },
-    {
-     "entity": "Noah's Ark",
-     "categories": [
-      "Noah's Ark",
-      "Noah's Ark II",
-      "Noah's Ark Zoo Farm"
-     ],
-     "category_files": 4,
-     "search_files": 32,
-     "counted": 20.0,
-     "clears": true,
-     "examples": [
-      "BOWYER BIBLE GENESIS 087. The wickedness of Noah's generation. Genesis cap 6 v 11. Hoet.jpg",
-      "BOWYER BIBLE GENESIS 110. Noah's burnt offering. Genesis cap 8 v 20. Marillier.jpg",
-      "Exhibit Showing First European Rendering of Mt. Ararat - With Noah's Ark - Ishak Pasa Palace - Outside Dogubayazit - Turkey (5809367478).jpg",
-      "Frances Gwendolyn Castens in her Noah's Ark costume, worn when skating, Halifax, Nova Scotia, Canada, 1890s.jpg"
-     ]
-    },
-    {
-     "entity": "Noah",
-     "categories": [
-      "Noah",
-      "Noah Wulff",
-      "Noah Eyawo"
-     ],
-     "category_files": 2,
-     "search_files": 33,
-     "counted": 18.5,
-     "clears": true,
-     "examples": [
-      "Noah Urrea during The Voice Kids Russia in 2018 01.jpg",
-      "Noah Urrea's official autograph.png"
      ]
     },
     {
@@ -114,55 +133,55 @@
      ]
     },
     {
-     "entity": "Shem",
-     "categories": [
-      "Shem",
-      "Shem Schroeck",
-      "Shem Tov Levi"
-     ],
-     "category_files": 13,
-     "search_files": 0,
-     "counted": 13.0,
-     "clears": true,
-     "examples": [
-      "A map of Asia as inhabited by Shem (FL27963638 2488683).jpg",
-      "Edward Wells, Karte von den ersten Wohnungen der Soehne des Shem, und von den Laendern welch ihre Colonien bevoelkert haben (FL50290119 2369156).jpg",
-      "John in Korovniki church - patriarch 01 Shem (c. 1654, Yaroslavl).jpg",
-      "Seleznikha church - Shem (18 c.).jpg"
-     ]
-    },
-    {
-     "entity": "Genesis flood narrative",
-     "categories": [
-      "Genesis flood narrative"
-     ],
-     "category_files": 0,
-     "search_files": 25,
-     "counted": 12.5,
-     "clears": true,
-     "examples": [
-      "The great flood - Biblical.jpg",
-      "007.The Great Flood.jpg",
-      "Flood P4280274.jpg",
-      "The Great Flood by Jan Nagel.jpg"
-     ]
-    },
-    {
      "entity": "Giovanni Benedetto Castiglione",
      "categories": [
       "Giovanni Benedetto Castiglione",
       "Giovanni Benedetto Castiglione - In Front of Noah's Ark (Dresden)",
       "La maga Circe by Giovanni Benedetto Castiglione"
      ],
-     "category_files": 10,
+     "category_files": 16,
      "search_files": 0,
-     "counted": 10.0,
+     "counted": 16.0,
      "clears": true,
      "examples": [
       "A Family in a Desert Landscape, by Giovanni Benedetto Castiglione (Getty 108G7C).jpg",
-      "Pastoral Journey, by Giovanni Benedetto Castiglione (Getty 103R08).jpg",
-      "The Expulsion of Hagar, by Giovanni Benedetto Castiglione (Getty 103QWF).jpg",
-      "Dresden, Gem\u00e4ldegalerie Alte Meister, Giovanni Benedetto Castiglione, vor der Arche Noah.jpg"
+      "Agenda-Rossa-33.jpg",
+      "Melancholy) - G. Bened. Castilionus Genovensis LCCN92500814.jpg",
+      "Melancholy) - G. Bened. Castilionus Genovensis LCCN92500814.tif"
+     ]
+    },
+    {
+     "entity": "Japheth",
+     "categories": [
+      "Japheth",
+      "Japheth Campbell",
+      "Japheth (given name)"
+     ],
+     "category_files": 16,
+     "search_files": 0,
+     "counted": 16.0,
+     "clears": true,
+     "examples": [
+      "Biblical haplogroup tree.jpg",
+      "Dominee Charles Chais, Carte des premier etablissemens de Iaphet et de ses Sept Fils soit dans l'Asie Mineure soit dans le Pais qui setendent du Pont (FL45612081 3957216).jpg",
+      "Edward Wells, Karte von den Inseln der Heyden, das ist von den Laendern, welche durch die Nachkommen des Iaphet nach und nach bevoelkert worden (FL50290114 2369155).jpg",
+      "First depiction of historical ethnology by Semitic, Hamitic and Japhetic, 1771, Gatterer.jpg"
+     ]
+    },
+    {
+     "entity": "Ham (son of Noah)",
+     "categories": [
+      "Ham (son of Noah)"
+     ],
+     "category_files": 13,
+     "search_files": 0,
+     "counted": 13.0,
+     "clears": true,
+     "examples": [
+      "009.Noah Curses Ham and Canaan.jpg",
+      "Biblical haplogroup tree.jpg",
+      "Cham en zijn vrouw Cataflua Liber Chronicarum (serietitel), RP-P-2016-49-8-6.jpg",
+      "Edward Wells, A map of the first plantation of the sons of HAM (FL49973301 4073128).jpg"
      ]
     },
     {
@@ -178,37 +197,26 @@
       "Attributed to Antonio de Bellis - The Sacrifice of Noah - Google Art Project (cropped Noah's wife).jpg",
       "\"Noah's wife\" on Archstoyanie festival.jpg",
       "Rebecca Greenleaf Webster wife of Noah Webster.jpg",
-      "Noah's wife lived a wonderful life - one step - DPLA - 36ca89150e275c9ce638de1b5e022496 (page 3).jpg"
+      "Noah's wife lived a wonderful life - one step - DPLA - 36ca89150e275c9ce638de1b5e022496 (page 11).jpg"
      ]
     },
     {
-     "entity": "Japheth",
+     "entity": "Noah",
      "categories": [
-      "Japheth",
-      "Japheth Campbell",
-      "Japheth (given name)"
+      "Noah (given name)",
+      "Noah",
+      "Noah Wulff"
      ],
-     "category_files": 7,
-     "search_files": 6,
+     "category_files": 8,
+     "search_files": 0,
      "counted": 8.0,
      "clears": true,
      "examples": [
-      "Japheth.jpg",
-      "Shem, Ham and Japheth (cropped)3.jpg",
-      "Shem, Ham and Japheth.jpg",
-      "Tissot Shem, Ham and Japheth.jpg"
+      "Caricature of Noah E. Offutt (1916).png",
+      "Cloth book cover of \"Early Vanities\".jpg",
+      "JTF-SD member\u2019s family sledding outing turns scary (6508404).jpeg",
+      "Noah Locke.jpg"
      ]
-    },
-    {
-     "entity": "Ham (son of Noah)",
-     "categories": [
-      "Ham (son of Noah)"
-     ],
-     "category_files": 0,
-     "search_files": 0,
-     "counted": 0.0,
-     "clears": false,
-     "examples": []
     }
    ],
    "deepest_six": "6/6",
@@ -222,15 +230,15 @@
       "Epic of Gilgamesh",
       "The Epic of Gilgamesh"
      ],
-     "category_files": 16,
+     "category_files": 33,
      "search_files": 0,
-     "counted": 16.0,
+     "counted": 33.0,
      "clears": true,
      "examples": [
-      "CBS7771 Gilgamesh Epic Penn Museum.jpg",
-      "Clay tablet, Epic of Gilgamesh, from Hattusa, Turkey. 13th century BCE. Neues Museum, Germany.jpg",
-      "Epic of Gilgamesh, three fragments - Oriental Institute Museum, University of Chicago - DSC07124.JPG",
-      "Fragment of Tablet II of the Epic of Gilgamesh. Old-Babylonian period, from southern Iraq. Sulaymaniyah Museum, Iraqi Kurdistan.jpg"
+      "AN (cuneiforme).JPG",
+      "Bilgamesh (cuneiforme).JPG",
+      "Brussels - 2010-May - IMG 7201.jpg",
+      "CBS7771 Gilgamesh Epic Penn Museum.jpg"
      ]
     },
     {
@@ -238,9 +246,9 @@
      "categories": [
       "Flood Tablet"
      ],
-     "category_files": 8,
+     "category_files": 10,
      "search_files": 0,
-     "counted": 8.0,
+     "counted": 10.0,
      "clears": true,
      "examples": [
       "British Museum Flood Tablet 1.jpg",
@@ -254,15 +262,15 @@
      "categories": [
       "George Smith (assyriologist)"
      ],
-     "category_files": 5,
-     "search_files": 36,
-     "counted": 20.5,
+     "category_files": 8,
+     "search_files": 0,
+     "counted": 8.0,
      "clears": true,
      "examples": [
+      "Assyrian discoveries an account of explorations and discoveries on the site of Nineveh, during 1873 and 1874, RP-F-2005-140.jpg",
+      "Chald\u00e4ische Genesis (titel op object), RP-F-2001-7-863.jpg",
       "George Smith-Assyriologist 001.jpg",
-      "George Smith.jpg",
-      "GeorgeSmith.jpg",
-      "Mr. George Smith (cropped).jpg"
+      "George Smith.jpg"
      ]
     },
     {
@@ -272,15 +280,15 @@
       "Matsya Purana",
       "Paintings of Matsya"
      ],
-     "category_files": 22,
+     "category_files": 37,
      "search_files": 0,
-     "counted": 22.0,
+     "counted": 37.0,
      "clears": true,
      "examples": [
+      "A dictionary of important names, objects, and terms, found in the Holy Scriptures. Intended principally for youth (1831) (14776328785).jpg",
+      "Dasavatara1.png",
       "Dasavataralu - Matsya avatar of Lord Vishnu on Sri Venkateshwara temple, Guntur.jpg",
-      "Ksharpana from Matsya Janpad, Private collection.jpg",
-      "Matsya Avatar of Vishnu LACMA M.79.252.8.jpg",
-      "Matsya Avatar of Vishnu, the Bhattabati Ratneshwar Temple, Murshidabad, West Bengal circa 18th century CE.jpg"
+      "Depictions of episodes from Hindu mythology.jpg"
      ]
     },
     {
@@ -290,15 +298,15 @@
       "Black Sea Dahu",
       "Black Sea Arena"
      ],
-     "category_files": 55,
+     "category_files": 59,
      "search_files": 0,
-     "counted": 55.0,
+     "counted": 59.0,
      "clears": true,
      "examples": [
+      "20250928 View from aircraft in Russia 02 (44131).jpg",
       "A Turquoise Tint for the Black Sea (1229998 - ISS074-E-619520 lrg).jpg",
       "A Turquoise Tint for the Black Sea (1229998 - ISS074-E-619520).jpg",
-      "Black Sea (2632849445).jpg",
-      "Black Sea (2836439357).jpg"
+      "Adler, Krasnodar Krai, Russia - panoramio (25).jpg"
      ]
     },
     {
@@ -308,15 +316,15 @@
       "Noah's Ark II",
       "Noah's Ark Zoo Farm"
      ],
-     "category_files": 4,
-     "search_files": 32,
-     "counted": 20.0,
+     "category_files": 56,
+     "search_files": 0,
+     "counted": 56.0,
      "clears": true,
      "examples": [
-      "BOWYER BIBLE GENESIS 087. The wickedness of Noah's generation. Genesis cap 6 v 11. Hoet.jpg",
-      "BOWYER BIBLE GENESIS 110. Noah's burnt offering. Genesis cap 8 v 20. Marillier.jpg",
-      "Exhibit Showing First European Rendering of Mt. Ararat - With Noah's Ark - Ishak Pasa Palace - Outside Dogubayazit - Turkey (5809367478).jpg",
-      "Frances Gwendolyn Castens in her Noah's Ark costume, worn when skating, Halifax, Nova Scotia, Canada, 1890s.jpg"
+      "500 Armenian dram - 2017 (obverse).png",
+      "500 Armenian dram - 2017 (reverse).png",
+      "A curious hieroglyphick Bible; or Fleuron T147645-16.png",
+      "Ark structure.jpg"
      ]
     },
     {
@@ -342,29 +350,15 @@
       "Mount Ararat (Free State)",
       "Mount Ararat Baptist Church"
      ],
-     "category_files": 47,
+     "category_files": 60,
      "search_files": 0,
-     "counted": 47.0,
+     "counted": 60.0,
      "clears": true,
      "examples": [
       "\"Ararat\" brandy factory, Erevan, Armenia - panoramio.jpg",
       "00 2399 Mount Ararat, Turkey.jpg",
-      "1998 Mt Ararat, Turquie.jpg",
-      "2001 satellite picture of Mount Ararat.jpg"
-     ]
-    },
-    {
-     "entity": "Atrahasis",
-     "categories": [
-      "Atrahasis"
-     ],
-     "category_files": 2,
-     "search_files": 2,
-     "counted": 2.0,
-     "clears": false,
-     "examples": [
-      "Babylon Story of the Flood, Tablet containing the Epic of Atrahasis, 1635 BCE, probably from Sipar. Currently at the British Museum.jpg",
-      "Fragment of the Babylonian flood story Epic of Atrahasis, Akkadian, Mesopotamia, First Dynasty of Babylon, reign of King Ammi-saduqa, c. 1646-1626 BC, clay- Morgan Library & Museum - New York City - DSC06597.jpg"
+      "04400 Bozkurt-Do\u011fubayaz\u0131t-A\u011fr\u0131, Turkey - panoramio (1).jpg",
+      "04400 \u00dczengili-Do\u011fubayaz\u0131t-A\u011fr\u0131, Turkey - panoramio.jpg"
      ]
     },
     {
@@ -372,11 +366,16 @@
      "categories": [
       "Durup\u0131nar Site"
      ],
-     "category_files": 0,
+     "category_files": 13,
      "search_files": 0,
-     "counted": 0.0,
-     "clears": false,
-     "examples": []
+     "counted": 13.0,
+     "clears": true,
+     "examples": [
+      "04400 \u00dczengili-Do\u011fubayaz\u0131t-A\u011fr\u0131, Turkey - panoramio (3).jpg",
+      "04400 \u00dczengili-Do\u011fubayaz\u0131t-A\u011fr\u0131, Turkey - panoramio.jpg",
+      "Ark structure.jpg",
+      "Arka Noego - Centrum Turystyczne w \u00dczengili (Turcja).jpg"
+     ]
     }
    ],
    "angle": {
@@ -411,25 +410,23 @@
       "Noah's Ark",
       "Ark van Noach",
       "Mount Ararat",
-      "Atrahasis",
       "Durup\u0131nar"
      ],
-     "thin": {
+     "satellite": {
+      "lat": 39.44064,
+      "lon": 44.23481,
+      "wikidata": "Q1267546",
+      "use": "optional overhead, to show the outline. NOT the hero: there are 13 usable photographs.",
+      "sources": [
+       "Sentinel-2 / NASA Worldview true colour",
+       "USGS or Copernicus DEM tile for a terrain render"
+      ]
+     },
+     "supporting": {
       "Atrahasis": {
-       "counted": 2.0,
-       "shoot_instead": [
-        "Cuneiform tablets",
-        "Epic of Gilgamesh"
-       ],
-       "why": "it is a text, and the text survives as tablets that are photographed under other names"
-      },
-      "Durup\u0131nar": {
-       "counted": 0.5,
-       "shoot_instead": [
-        "Mount Ararat",
-        "public-domain satellite imagery (NASA/USGS), which is not in a Commons category under this name"
-       ],
-       "why": "this is the one that matters: a boat-shaped formation is a VISUAL claim, and an act built around a picture that does not exist will talk over something else"
+       "counted": 6.0,
+       "as": "one tablet image plus an authored evidence card",
+       "not": "a spine entity \u2014 it does not carry an act"
       }
      },
      "register": {
@@ -448,7 +445,9 @@
        "The Flood Before the Bible",
        "They Keep Finding the Ark"
       ],
-      "exemplars_note": "they are 26 and 25 characters, so neither meets the 30-45 rule stated beside them \u2014 the rule is the length, the exemplars are the voice",
+      "exemplars_note": "VOICE EXAMPLES, NOT CANDIDATES \u2014 the owner's own ruling, 2026-10-26. They are 26 and 25 characters and the 30-45 rule stands; they are here to show the register and must not be used as titles",
+      "default": "The Flood Story Before the Bible",
+      "default_rule": "use the default unless the script argues otherwise, and say what the argument is",
       "candidates": [
        "The Flood Story Before the Bible",
        "Everybody Keeps Finding Noah's Ark",
@@ -472,7 +471,9 @@
      "The Flood Before the Bible",
      "They Keep Finding the Ark"
     ],
-    "exemplars_note": "they are 26 and 25 characters, so neither meets the 30-45 rule stated beside them \u2014 the rule is the length, the exemplars are the voice"
+    "exemplars_note": "VOICE EXAMPLES, NOT CANDIDATES \u2014 the owner's own ruling, 2026-10-26. They are 26 and 25 characters and the 30-45 rule stands; they are here to show the register and must not be used as titles",
+    "default": "The Flood Story Before the Bible",
+    "default_rule": "use the default unless the script argues otherwise, and say what the argument is"
    }
   },
   {
@@ -500,20 +501,21 @@
    },
    "entities": [
     {
-     "entity": "Amarna Period",
+     "entity": "Grand Egyptian Museum",
      "categories": [
-      "Amarna Period",
-      "Egyptian antiquities from the Amarna Period in the \u00c4gyptisches Museum Berlin"
+      "Grand Egyptian Museum",
+      "Collections of the Grand Egyptian Museum",
+      "A Trip to the Grand Egyptian Museum 2025"
      ],
-     "category_files": 54,
+     "category_files": 60,
      "search_files": 0,
-     "counted": 54.0,
+     "counted": 60.0,
      "clears": true,
      "examples": [
-      "Akhenaten with one of his girls, detail of an altarpiece of a shrine. God Aten and his cartouches appear. C. 1345 BCE. From Amarna, Egypt. Neues Museum.jpg",
-      "Amarna Period Carved Limestone Relief of (probably) Pharaoh Akhnaton & Wife Nefertiti, New Kingdom, 18th Dynasty, c. 1340 BC (28465728740) (cropped).jpg",
-      "Amarna Period Carved Limestone Relief of (probably) Pharaoh Akhnaton & Wife Nefertiti, New Kingdom, 18th Dynasty, c. 1340 BC (28465728740).jpg",
-      "Amarna Period Royal Family Limestone Portrait of a Princess, 18th Dynasty, c. 1340 BC (28466293010).jpg"
+      "2\u0627\u0644\u0645\u062a\u062d\u0641 \u0627\u0644\u0645\u0635\u0631\u064a \u0627\u0644\u0643\u0628\u064a\u0631.jpg",
+      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 01.jpg",
+      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 02.jpg",
+      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 03.jpg"
      ]
     },
     {
@@ -523,15 +525,50 @@
       "Akhenaten N 831",
       "Akhenaten and Nefertiti E15593"
      ],
-     "category_files": 39,
+     "category_files": 57,
      "search_files": 0,
-     "counted": 39.0,
+     "counted": 57.0,
      "clears": true,
      "examples": [
+      "(.) Karnak, Amenophis IV 1900 (cropped).jpg",
+      "(.) Karnak, Amenophis IV 1900.jpg",
       "Akhenaten names&goddess Amarna tomb I.png",
-      "Akhenaten Throwing Stick EA34213.jpg",
-      "Akhenaten with one of his girls, detail of an altarpiece of a shrine. God Aten and his cartouches appear. C. 1345 BCE. From Amarna, Egypt. Neues Museum.jpg",
-      "Akhenaten's beneficient solar divinity (...) LOC matpc.07418.jpg"
+      "Akhenaten Throwing Stick EA34213.jpg"
+     ]
+    },
+    {
+     "entity": "Amarna Period",
+     "categories": [
+      "Akhenaten",
+      "Amarna Period",
+      "Egyptian antiquities from the Amarna Period in the \u00c4gyptisches Museum Berlin"
+     ],
+     "category_files": 57,
+     "search_files": 0,
+     "counted": 57.0,
+     "clears": true,
+     "examples": [
+      "(.) Karnak, Amenophis IV 1900 (cropped).jpg",
+      "(.) Karnak, Amenophis IV 1900.jpg",
+      "Akhenaten names&goddess Amarna tomb I.png",
+      "Akhenaten Throwing Stick EA34213.jpg"
+     ]
+    },
+    {
+     "entity": "Eighteenth Dynasty of Egypt",
+     "categories": [
+      "18th dynasty of Egypt",
+      "Eighteenth Dynasty of Egypt"
+     ],
+     "category_files": 57,
+     "search_files": 0,
+     "counted": 57.0,
+     "clears": true,
+     "examples": [
+      "A painted Group Sculpture from Thebes, Museo Civico di Bologna.jpg",
+      "A Sleepy Servant, Tell el Amarna, 18th Dynasty, Ashmolean Museum, Oxford.jpg",
+      "A XVIII. dinasztia csal\u00e1df\u00e1ja.png",
+      "Abydos Koenigsliste 66-74.jpg"
      ]
     },
     {
@@ -553,113 +590,21 @@
      ]
     },
     {
-     "entity": "Discovery of the tomb of Tutankhamun",
-     "categories": [
-      "Discovery of the tomb of Tutankhamun"
-     ],
-     "category_files": 4,
-     "search_files": 39,
-     "counted": 23.5,
-     "clears": true,
-     "examples": [
-      "Fouilles au tombeau de Tu Tenk Amen (i.e. Toutankhamon, Howard Carter supervisant le transport d'objets) - btv1b53097235n.jpg",
-      "Fouilles au tombeau du pharaon Tu Tenk Amen (i.e. Toutankhamon, Howard Carter supervisant le transport d'objets) - btv1b530972435.jpg",
-      "Fouilles de Louqsor au tombeau du pharaon Tu Tenk Amen (i.e. Toutankhamon), large bo\u00eete contenant des \u00e9toffes, inscription des noms du roi et de la reine peintes \u00e0 l'avant de la bo\u00eete, en lettres d'or sur fond... - btv1b53097242q.jpg",
-      "Fouilles de Louqsor au tombeau du pharaon Tu Tenk Amen (i.e. Toutankhamon, quatre Egyptiens portent des) bo\u00eetes de bois contenant des aliments momifi\u00e9s, gigot de mouton (et un autre Egyptien tient une) natte de... - btv1b530972418.jpg"
-     ]
-    },
-    {
-     "entity": "Eighteenth Dynasty of Egypt",
-     "categories": [
-      "Eighteenth Dynasty of Egypt"
-     ],
-     "category_files": 0,
-     "search_files": 28,
-     "counted": 14.0,
-     "clears": true,
-     "examples": [
-      "Head of an Early Eighteenth Dynasty King, ca. 1539-1493 B.C.E.,37.38E.jpg",
-      "Head of Nefertiti or Merit-Aten Quarzite Amarna 18th Dynasty 1340-1335 BCE.jpg",
-      "Black granite statue of the goddess Sekhmet excacvated at Ramesseum in Thebes Egypt 1405-1367 BCE Late 18th Dynasty Penn Museum 02.jpg",
-      "Relief of Horemheb with chapter 110 of the Book of the Dead, 18th Dynasty, reign of Tutankhamun, (1332-1323 BCE) made of Limestone with traces of polychromy, from the Memphite Tomb of Horemheb in Saqqara.jpg"
-     ]
-    },
-    {
-     "entity": "George Herbert, 5th Earl of Carnarvon",
-     "categories": [
-      "George Herbert, 5th Earl of Carnarvon"
-     ],
-     "category_files": 10,
-     "search_files": 0,
-     "counted": 10.0,
-     "clears": true,
-     "examples": [
-      "Carter, Tomb of Tut-Ankh-Amen, The Late Earl of Carnarvon (cropped).jpg",
-      "Carter, Tomb of Tut-Ankh-Amen, The Late Earl of Carnarvon.jpg",
-      "George Edward Stanhope Molyneux Herbert00.jpg",
-      "George Herbert, 5th Earl of Carnarvon (-1923).jpg"
-     ]
-    },
-    {
-     "entity": "Grand Egyptian Museum",
-     "categories": [
-      "Grand Egyptian Museum",
-      "Collections of the Grand Egyptian Museum",
-      "A Trip to the Grand Egyptian Museum 2025"
-     ],
-     "category_files": 10,
-     "search_files": 0,
-     "counted": 10.0,
-     "clears": true,
-     "examples": [
-      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 01.jpg",
-      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 02.jpg",
-      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 03.jpg",
-      "75 Tonnen wiegt die Kolossalstatue des Ramses II im Gro\u00dfen \u00c4gyptischen Museum. 04.jpg"
-     ]
-    },
-    {
      "entity": "Ankhesenamun",
      "categories": [
       "Ankhesenamun",
       "Ankhesenamun in popular culture",
       "Statue of Amunet with features of Ankhesenamun (Karnak temple of Amun-Ra)"
      ],
-     "category_files": 9,
+     "category_files": 30,
      "search_files": 0,
-     "counted": 9.0,
+     "counted": 30.0,
      "clears": true,
      "examples": [
-      "Ankhesenamun handing arrow to seated Tutankhamun.jpg",
-      "Ankhesenamun holding Tutankhamen's arm.jpg",
-      "Ankhesenamun offering flowers to Tutankhamun.jpg",
-      "Ankhesenamun offering lotus to seated King.jpg"
-     ]
-    },
-    {
-     "entity": "317a and 317b mummies",
-     "categories": [
-      "317a and 317b mummies"
-     ],
-     "category_files": 1,
-     "search_files": 3,
-     "counted": 2.0,
-     "clears": false,
-     "examples": [
-      "\u80ce\u5150317a\u3068317b, \u30c4\u30bf\u30f3\u30ab\u30fc\u30e1\u30f3\u306e\u5b50\u4f9b.jpg"
-     ]
-    },
-    {
-     "entity": "Curse of the pharaohs",
-     "categories": [
-      "Curse of the pharaohs"
-     ],
-     "category_files": 0,
-     "search_files": 1,
-     "counted": 0.5,
-     "clears": false,
-     "examples": [
-      "The Curse of Artemisia \u2013 Fragment WDL4310.png"
+      "Egypt Amarna Princess.jpg",
+      "3daughters-Akhenaten.jpg",
+      "AkhenatenFamily2.jpg",
+      "AmarnaRelief-TwoAmarnaPrincesses-OneWithSistrum02 BrooklynMuseum.png"
      ]
     },
     {
@@ -667,11 +612,81 @@
      "categories": [
       "Ay (pharaoh)"
      ],
-     "category_files": 0,
+     "category_files": 29,
      "search_files": 0,
-     "counted": 0.0,
-     "clears": false,
-     "examples": []
+     "counted": 29.0,
+     "clears": true,
+     "examples": [
+      "AkhmimAy.jpg",
+      "Ay detail in KV62 - Opening of the Mouth for Tutankhamun (adze).jpeg",
+      "Ay detail in KV62 - Opening of the Mouth for Tutankhamun (cropped).jpeg",
+      "Ay detail in KV62 - Opening of the Mouth for Tutankhamun.jpeg"
+     ]
+    },
+    {
+     "entity": "Discovery of the tomb of Tutankhamun",
+     "categories": [
+      "Discovery of the tomb of Tutankhamun"
+     ],
+     "category_files": 27,
+     "search_files": 0,
+     "counted": 27.0,
+     "clears": true,
+     "examples": [
+      "\u0635\u0648\u0631 \u0646\u0627\u062f\u0631\u0629 \u0644\u0645\u0635\u0631 \u0648\u0627\u062b\u0627\u0631\u0647\u0627 (01).png",
+      "\u0635\u0648\u0631 \u0646\u0627\u062f\u0631\u0629 \u0644\u0645\u0635\u0631 \u0648\u0627\u062b\u0627\u0631\u0647\u0627 (02).png",
+      "\u0635\u0648\u0631 \u0646\u0627\u062f\u0631\u0629 \u0644\u0645\u0635\u0631 \u0648\u0627\u062b\u0627\u0631\u0647\u0627 (03).png",
+      "\u0635\u0648\u0631 \u0646\u0627\u062f\u0631\u0629 \u0644\u0645\u0635\u0631 \u0648\u0627\u062b\u0627\u0631\u0647\u0627 (04).png"
+     ]
+    },
+    {
+     "entity": "Curse of the pharaohs",
+     "categories": [
+      "Fluch des Pharao (Belantis)",
+      "Curse of the pharaohs"
+     ],
+     "category_files": 19,
+     "search_files": 0,
+     "counted": 19.0,
+     "clears": true,
+     "examples": [
+      "2016 WGT 009 Belantis.jpg",
+      "Belantis - Fluch des Pharao.jpg",
+      "Belantis 2019 (3).jpg",
+      "Fluch des Pharao (Belantis) (1).jpg"
+     ]
+    },
+    {
+     "entity": "George Herbert, 5th Earl of Carnarvon",
+     "categories": [
+      "George Herbert, 5th Earl of Carnarvon"
+     ],
+     "category_files": 17,
+     "search_files": 0,
+     "counted": 17.0,
+     "clears": true,
+     "examples": [
+      "Carter, Tomb of Tut-Ankh-Amen, The Late Earl of Carnarvon (cropped).jpg",
+      "Carter, Tomb of Tut-Ankh-Amen, The Late Earl of Carnarvon.jpg",
+      "Deir el Bahari, Egypt MET DP114622.jpg",
+      "Dier el Bahari, Egypt MET DP114623.jpg"
+     ]
+    },
+    {
+     "entity": "317a and 317b mummies",
+     "categories": [
+      "317a and 317b mummies"
+     ],
+     "category_files": 11,
+     "search_files": 0,
+     "counted": 11.0,
+     "clears": true,
+     "examples": [
+      "Anubis-shrine (Box 317).jpg",
+      "Anubis-shrine (cropped).jpg",
+      "Anubis-shrine.jpg",
+      "Arkofthecovenantatkingtutstomb.jpg"
+     ]
     },
     {
      "entity": "Fan-bearer on the Right Side of the King",
@@ -747,15 +762,50 @@
       "Boeing B-29 Superfortress",
       "Accidents and incidents involving the Boeing B-29 Superfortress"
      ],
-     "category_files": 35,
+     "category_files": 56,
      "search_files": 0,
-     "counted": 35.0,
+     "counted": 56.0,
      "clears": true,
      "examples": [
       "01 00095244 SDASM Aircraft Image - Boeing B-29 Crew, peace time (53958633656).jpg",
       "01 00095245 SDASM Aircraft Image - Boeing B-29 Tinianor Saipan (53958882503).jpg",
       "1944 - B-29 Superfortress Chrysler - 11 Jul MC - Allentown PA.jpg",
       "1945 B-29 Number 2 on Hokkaido.jpg"
+     ]
+    },
+    {
+     "entity": "Atomic bombings of Hiroshima and Nagasaki",
+     "categories": [
+      "Atomic bombings of Hiroshima and Nagasaki",
+      "Casualties of atomic bombings of Hiroshima and Nagasaki",
+      "Films about the atomic bombings of Hiroshima and Nagasaki"
+     ],
+     "category_files": 30,
+     "search_files": 0,
+     "counted": 30.0,
+     "clears": true,
+     "examples": [
+      "'So sieht unsere strahlende Zukunft aus - deshalb heute aktiv - sonst morgen radioaktiv' - aktion pro vita Stuttgart -- 1970er.JPG",
+      "Agnew Leaflet.jpg",
+      "Amid the wreckage of a prison in Nagasaki, three Manhattan Project specialists use Geiger counters to measure residual radioactivity.jpg",
+      "Assembly Area For Dead - DPLA - d58fb73e6d1a0f1a60397f49a4ea0ffc.jpg"
+     ]
+    },
+    {
+     "entity": "509th Composite Group",
+     "categories": [
+      "509th Composite Group",
+      "509th Composite Group memorial"
+     ],
+     "category_files": 30,
+     "search_files": 0,
+     "counted": 30.0,
+     "clears": true,
+     "examples": [
+      "'Bockscar' nose art, National Museum of the US Air Force, Dayton, Ohio, USA. (43020082700).jpg",
+      "1st Ordnance Squadron.jpg",
+      "320 Troop Carrier Sq emblem.png",
+      "393 Bombardment Sq emblem (Very Heavy).png"
      ]
     },
     {
@@ -774,53 +824,52 @@
      ]
     },
     {
+     "entity": "Allied naval bombardments of Japan during World War II",
+     "categories": [
+      "Allied naval bombardments of Japan during World War II"
+     ],
+     "category_files": 20,
+     "search_files": 0,
+     "counted": 20.0,
+     "clears": true,
+     "examples": [
+      "Allied naval operations off Japan during July and August 1945.jpg",
+      "Bombardment of Kamaishi, Japan, 14 July 1945 - 80-G-490143.jpg",
+      "Bombardment of Kamaishi, Japan, 14 July 1945 - 80-G-490143.tiff",
+      "Bombardment of Kamaishi, Japan, 14 July 1945 - 80-G-K-6035.jpg"
+     ]
+    },
+    {
+     "entity": "Air raids on Japan",
+     "categories": [
+      "Bombing of Japan in World War II",
+      "Air raids on Japan"
+     ],
+     "category_files": 15,
+     "search_files": 0,
+     "counted": 15.0,
+     "clears": true,
+     "examples": [
+      "20th AF bases Marianas.jpg",
+      "B-29 shot down by flak.jpg",
+      "B-29 targets from China.jpg",
+      "B-29s dropping bombs.jpg"
+     ]
+    },
+    {
      "entity": "Attacks on Kure and the Inland Sea (July 1945)",
      "categories": [
       "Attacks on Kure and the Inland Sea (July 1945)"
      ],
      "category_files": 0,
-     "search_files": 26,
-     "counted": 13.0,
+     "search_files": 27,
+     "counted": 13.5,
      "clears": true,
      "examples": [
       "Iwate sunk after the attack on Kure (2).jpg",
       "U.S. Navy carrier aircraft attack the Japanese battleship Haruna near Kure, Japan, on 28 July 1945 (80-G-490226).jpg",
       "Iwate sunk after the attack on Kure.jpg",
       "Damaged Kure by bombing of US bombers - 1945.png"
-     ]
-    },
-    {
-     "entity": "Atomic bombings of Hiroshima and Nagasaki",
-     "categories": [
-      "Atomic bombings of Hiroshima and Nagasaki",
-      "Casualties of atomic bombings of Hiroshima and Nagasaki",
-      "Films about the atomic bombings of Hiroshima and Nagasaki"
-     ],
-     "category_files": 11,
-     "search_files": 0,
-     "counted": 11.0,
-     "clears": true,
-     "examples": [
-      "Amid the wreckage of a prison in Nagasaki, three Manhattan Project specialists use Geiger counters to measure residual radioactivity.jpg",
-      "Atomic Bomb.webm",
-      "Building in Hiroshima left standing after atomic bomb.jpg",
-      "First leaflet which was dropped on Japanese cities in conjunction with the Atomic Bomb.jpg"
-     ]
-    },
-    {
-     "entity": "Air raids on Japan",
-     "categories": [
-      "Air raids on Japan"
-     ],
-     "category_files": 0,
-     "search_files": 21,
-     "counted": 10.5,
-     "clears": true,
-     "examples": [
-      "Navigation track chart for USAAF air raids on Japan, Mission No. 277-281.jpg",
-      "Air-Raids-on-Okazaki-1.jpg",
-      "Large scale air-raid shelter in Japan.JPG",
-      "Kobe Mosque survived the air raids in WWII 1945.jpg"
      ]
     },
     {
@@ -840,51 +889,19 @@
      ]
     },
     {
-     "entity": "Allied naval bombardments of Japan during World War II",
+     "entity": "Acute radiation syndrome",
      "categories": [
-      "Allied naval bombardments of Japan during World War II"
+      "Acute radiation syndrome"
      ],
      "category_files": 8,
      "search_files": 0,
      "counted": 8.0,
      "clears": true,
      "examples": [
-      "Allied naval operations off Japan during July and August 1945.jpg",
-      "Bombardment of Kamaishi, Japan, 14 July 1945 - 80-G-490143.jpg",
-      "Bombardment of Kamaishi, Japan, 14 July 1945 - 80-G-490143.tiff",
-      "Bombardment of Kamaishi, Japan, 14 July 1945 - 80-G-K-6035.jpg"
-     ]
-    },
-    {
-     "entity": "Acute radiation syndrome",
-     "categories": [
-      "Acute radiation syndrome"
-     ],
-     "category_files": 6,
-     "search_files": 7,
-     "counted": 6.5,
-     "clears": false,
-     "examples": [
       "Acute-Radiation-Cell-Survival.png",
       "Acute-Radiation-In-Embryo-Mental-Impairment.png",
       "Acute-Radiation-Mitosis.png",
-      "Death by haematopoietic syndrome of radiation sickness- influence of dose rate.png"
-     ]
-    },
-    {
-     "entity": "509th Composite Group",
-     "categories": [
-      "509th Composite Group",
-      "509th Composite Group memorial"
-     ],
-     "category_files": 3,
-     "search_files": 9,
-     "counted": 6.0,
-     "clears": false,
-     "examples": [
-      "39th Bombardment Group B-29s North Field Guam.jpg",
-      "Agnew 509thHQ.jpg",
-      "Boeing B-29 Superfortress of the 509th Composite Group, in 1945 (76048591).jpg"
+      "Contaminationonskin.jpg"
      ]
     },
     {

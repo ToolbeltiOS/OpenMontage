@@ -1,11 +1,12 @@
 import React, { useMemo } from "react";
-import { interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
+import { AbsoluteFill, Img, interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { geoMercator, geoPath, geoDistance } from "d3-geo";
 import { feature } from "topojson-client";
 import { SYS, TYPE, TRACK, EXPO_OUT, LAYOUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
 import { TerrainBase, TerrainTile } from "./TerrainBase";
 import { TYPE_CLASS } from "../design/layers";
+import { resolveAsset } from "../lib/resolveAsset";
 
 export interface MapMarker {
   lon: number;
@@ -43,6 +44,22 @@ export interface MapRouteProps {
    * a range of hills. Cut a tile with scripts/build_basemap_tile.py.
    */
   basemap?: TerrainTile;
+  /**
+   * A HISTORICAL MAP as the base, instead of modern terrain.
+   *
+   * A route across a 2026 satellite relief is a claim about the present; a
+   * route across the chart the people in the film were actually using is a
+   * claim about them. When the subject predates 1900 the old plate is the
+   * truer base, and the terrain is the fallback for everything else and for
+   * when no suitable plate has been sourced.
+   *
+   * The plate is a sourced asset like any other: it comes through the same
+   * licence filter, and its provenance is recorded where every other
+   * picture's is. `lib/map_era.py` decides which base a project should use.
+   */
+  mapPlate?: string;
+  /** what the plate is, for the caption: "Cook's chart, 1774" */
+  mapPlateCredit?: string;
   /** total basemap drift across the shot, as a fraction of the frame */
   basemap_drift?: number;
   /**
@@ -80,6 +97,8 @@ export const DETAIL_SCALE_THRESHOLD = 2000;
  * element, and the graticule-free coastline keeps the eye on it.
  */
 export const MapRoute: React.FC<MapRouteProps> = ({
+  mapPlate,
+  mapPlateCredit,
   route,
   markers = [],
   center,
@@ -173,7 +192,22 @@ export const MapRoute: React.FC<MapRouteProps> = ({
       sceneIndex={sceneIndex}
       coords={coords}
     >
-      {basemap ? (
+      {mapPlate ? (
+        /* The plate IS the ground, so it takes the sustaining drift the
+           terrain would have taken and nothing is drawn under it. */
+        <AbsoluteFill style={{ overflow: "hidden" }}>
+          <Img
+            src={resolveAsset(mapPlate)}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              filter: "saturate(0.6) brightness(0.52) contrast(1.05)",
+              transform: `scale(${1 + 0.04 * (durationInFrames ? frame / durationInFrames : 0)})`,
+            }}
+          />
+        </AbsoluteFill>
+      ) : basemap ? (
         <TerrainBase
           tile={basemap}
           projection={projection}
@@ -190,12 +224,18 @@ export const MapRoute: React.FC<MapRouteProps> = ({
             as a hairline so the route has an edge to read against. */}
         <path
           d={landPath}
-          fill={basemap ? "none" : "#16161B"}
-          stroke={SYS.rule}
+          fill={basemap || mapPlate ? "none" : "#16161B"}
+          /* ON A HISTORICAL PLATE THE MODERN COASTLINE IS NOT DRAWN AT ALL.
+             The plate has its own coastline, surveyed by hand two centuries
+             earlier, and the two do not coincide. Drawn together they read
+             as a registration error -- and worse, as an assertion that the
+             old survey was wrong, which is not what the cut is saying. The
+             plate is the map; the route is the only thing added to it. */
+          stroke={mapPlate ? "none" : SYS.rule}
           strokeWidth={basemap ? 0.8 : 1}
-          opacity={basemap ? 0.65 : 1}
+          opacity={mapPlate ? 0 : basemap ? 0.65 : 1}
         />
-        {borderPath ? (
+        {borderPath && !mapPlate ? (
           <path d={borderPath} fill="none" stroke={SYS.rule} strokeWidth={0.6} opacity={0.5} />
         ) : null}
         <path

@@ -38,6 +38,9 @@ MIN_WORD_MS = 40
 
 SENTENCE_END = re.compile(r"(?<=[.!?”])\s+")
 
+#: Per-section alignment quality, written to artifacts/alignment_qa.json.
+STATS: dict[str, dict] = {}
+
 
 def sentences(text: str) -> list[str]:
     """Sentence-ish chunks. The aligner wants segments, not one wall of prose."""
@@ -99,6 +102,36 @@ def align_section(section_id: str, text: str, wav: Path, model, metadata,
                 "score": w.get("score"),
             })
     words = [w for w in words if any(c.isalnum() for c in w["word"])]
+
+    # WHAT THE ALIGNER ACTUALLY PLACED, recorded before the repairs hide it.
+    #
+    # `repair_unplaced` spreads an unplaced run evenly and `enforce_floor`
+    # pads every word to 40ms, so by the time the word-duration gate looks,
+    # there is nothing left to see: noah reported "0 of 2687 words under
+    # 40ms" and PASSED while 39 of its 275 subtitle cues ran over the
+    # reading-rate ceiling, one at 47 characters a second. The gate was
+    # measuring the repair, not the alignment. A run of words the aligner
+    # never placed is the thing that matters, and it was never counted.
+    unplaced = [i for i, w in enumerate(words) if w["start"] is None]
+    runs, run = [], []
+    for i in unplaced:
+        if run and i == run[-1] + 1:
+            run.append(i)
+        else:
+            if run:
+                runs.append(len(run))
+            run = [i]
+    if run:
+        runs.append(len(run))
+    STATS[section_id] = {
+        "words": len(words),
+        "placed": len(words) - len(unplaced),
+        "unplaced": len(unplaced),
+        "unplaced_pct": round(100 * len(unplaced) / max(len(words), 1), 2),
+        "longest_unplaced_run": max(runs, default=0),
+        "runs_over_3": sum(1 for r in runs if r > 3),
+    }
+
     words = repair_unplaced(words, total)
     return enforce_floor(words, total)
 
@@ -249,6 +282,26 @@ def main() -> int:
         after_total += len(words)
         print(f"{sid}: {len(words)} words, {short} under {MIN_WORD_MS}ms")
 
+    qa_path = project / "artifacts" / "alignment_qa.json"
+    total_words = sum(v["words"] for v in STATS.values())
+    total_unplaced = sum(v["unplaced"] for v in STATS.values())
+    qa_path.write_text(json.dumps({
+        "sections": STATS,
+        "words": total_words,
+        "unplaced": total_unplaced,
+        "unplaced_pct": round(100 * total_unplaced / max(total_words, 1), 2),
+        "worst_run": max((v["longest_unplaced_run"] for v in STATS.values()),
+                         default=0),
+    }, indent=1) + "\n")
+    print()
+    print("what the aligner placed, before the repairs:")
+    for sid, v in STATS.items():
+        print(f"  {sid:<16} {v['placed']:>4}/{v['words']:<4} placed, "
+              f"{v['unplaced']:>3} unplaced ({v['unplaced_pct']:>5.2f}%), "
+              f"longest run {v['longest_unplaced_run']}")
+    print(f"  {'TOTAL':<16} {total_words - total_unplaced}/{total_words} placed, "
+          f"{total_unplaced} unplaced")
+    print(f"  -> {qa_path.relative_to(ROOT)}")
     print()
     print(f"before: {before_short} of {before_total} words under {MIN_WORD_MS}ms")
     print(f"after:  {after_short} of {after_total} words under {MIN_WORD_MS}ms")

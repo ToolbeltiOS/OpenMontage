@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill, Img, interpolate, useCurrentFrame, useVideoConfig, Easing } from "remotion";
 import { SYS, TYPE, EXPO_OUT, EXPO_IN_OUT, LAYOUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
+import { TextureName, TexturePlate } from "../design/Texture";
 import { resolveAsset } from "../lib/resolveAsset";
 import { TYPE_CLASS } from "../design/layers";
 
@@ -12,6 +13,12 @@ export interface DocumentLine {
 }
 
 export interface DocumentRevealProps {
+  /**
+   * House-library texture behind the scene. Omit for the default; pass
+   * `null` to go back to the flat ground. See `design/Texture.tsx`.
+   */
+  texture?: TextureName | null;
+
   headline?: string;
   lines: DocumentLine[];
   source?: string;
@@ -38,6 +45,7 @@ export interface DocumentRevealProps {
  * floating over it.
  */
 export const DocumentReveal: React.FC<DocumentRevealProps> = ({
+  texture,
   headline,
   lines,
   source,
@@ -57,7 +65,10 @@ export const DocumentReveal: React.FC<DocumentRevealProps> = ({
 
   const light = paper === "light";
   const bg = light ? SYS.paper : "#121116";
-  const ink = light ? SYS.paperInk : SYS.text;
+  // On a paper TEXTURE the document's ink is always the dark one: the
+  // surface is light whatever `paper` said, and the quotation has to be
+  // readable against it.
+  const ink = (light || texture !== null) ? SYS.paperInk : SYS.text;
   const emphasis = light ? "#8A5A1E" : SYS.accent;
 
   const appear = (at: number, frames: number = SYS.unit) =>
@@ -86,7 +97,7 @@ export const DocumentReveal: React.FC<DocumentRevealProps> = ({
   return (
     <SceneShell
       background={SYS.bg}
-      paperInk={light}
+      paperInk={light || texture !== null}
       caption={caption}
       kicker={kicker}
       actNumber={actNumber}
@@ -96,7 +107,16 @@ export const DocumentReveal: React.FC<DocumentRevealProps> = ({
       grain={!light}
     >
       <AbsoluteFill style={{ transform: `scale(${scale})` }}>
-        <AbsoluteFill style={{ backgroundColor: bg }} />
+        {/* THE TEXTURE IS THE DOCUMENT'S OWN PAPER, not a plate behind it.
+            This fill is opaque and full-frame, so a texture in the plate
+            layer was painted over and never appeared at all. A document's
+            surface also has to move with the document as it is revealed,
+            which a plate would not do. */}
+        {texture === null ? (
+          <AbsoluteFill style={{ backgroundColor: bg }} />
+        ) : (
+          <TexturePlate name={texture ?? "parchment"} kind="paper" />
+        )}
         {image ? (
           <Img
             src={resolveAsset(image)}

@@ -95,6 +95,32 @@ class TestFrameOrder:
         assert measured["isolated_black_runs"] == 1
         assert any("on their own" in p for p in problems)
 
+    def test_a_dark_shot_crossing_the_threshold_is_not_a_defect(self, tmp_path):
+        """Noah c110: one frame under, one over, then two seconds under.
+
+        A dark texture shot drifting through BLACK_LUMA produced a 1-frame
+        "isolated" run two frames before a 66-frame hold, and the gate called
+        a frame whose brightest pixel was 192 "a frame from somewhere else".
+        The flicker is the threshold, not the film.
+        """
+        frames = [scene(0, i) for i in range(20)]
+        frames += [np.zeros((270, 480), dtype="uint8")]       # under
+        frames += [np.full((270, 480), 5, dtype="uint8")]     # back over
+        frames += [np.zeros((270, 480), dtype="uint8")] * 66  # and under
+        cuts = [{"in_seconds": 0.0, "out_seconds": 20 / 30},
+                {"in_seconds": 20 / 30, "out_seconds": 88 / 30}]
+        film = render(tmp_path / "threshold.mp4", frames)
+        problems, measured = vfo.check(str(film), cuts)
+        assert measured["isolated_black_runs"] == 0, problems
+
+    def test_a_lone_black_frame_still_fails_after_coalescing(self, tmp_path):
+        """The coalescing must not swallow the defect it sits next to."""
+        frames = two_scenes()
+        frames[25] = np.zeros((270, 480), dtype="uint8")
+        film = render(tmp_path / "lone.mp4", frames)
+        problems, measured = vfo.check(str(film), CUTS)
+        assert measured["isolated_black_runs"] == 1, problems
+
     def test_a_hold_on_black_of_three_frames_or_more_is_allowed(self, tmp_path):
         frames = [scene(0, i) for i in range(30)]
         frames += [np.zeros((270, 480), dtype="uint8")] * 6

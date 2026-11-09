@@ -252,6 +252,50 @@ def upload(yt, listing: dict, video: Path,
     return response["id"]
 
 
+#: YouTube rejects a comment over this. The credits block for a film with a
+#: big bank goes past it — noah's is 12,502 characters against easter-island's
+#: 8,230 — and nothing checked, so the whole block was refused at publish and
+#: the credits were lost to a line in the manual to-do list.
+#:
+#: Trimming it is not available: most of those lines are CC BY or CC BY-SA,
+#: where attribution is a LICENCE OBLIGATION and not a courtesy. So the block
+#: continues into replies on its own comment.
+#:
+#: MEASURED against the live API, because the documented 10,000 is not what it
+#: enforces and the error it gives first is misleading:
+#:
+#:      7,986 chars (60 credit lines)   OK
+#:      9,888 chars (the first split)   400 processingFailure
+#:     11,636 chars (80 credit lines)   400 commentTextTooLong
+#:
+#: `processingFailure` reads like a transient server fault and says to check
+#: the structure of the request — it is neither; it is the length, under a
+#: different name. 8,000 is the largest size proved to post.
+COMMENT_LIMIT = 8000
+
+
+def split_comment(text: str, limit: int = COMMENT_LIMIT) -> list[str]:
+    """The credits block as a comment and its replies, split between lines.
+
+    Never mid-line: every line is one credit, and half a credit attributes
+    nothing. A single line longer than the limit is left over-long rather than
+    cut, because truncating a URL produces a credit that points nowhere — it
+    will be refused and named in the manual list, which is the honest failure.
+    """
+    lines = text.split("\n")
+    parts: list[list[str]] = [[]]
+    room = limit - 40                       # headroom for the part marker
+    for line in lines:
+        current = sum(len(x) + 1 for x in parts[-1])
+        if parts[-1] and current + len(line) + 1 > room:
+            parts.append([])
+        parts[-1].append(line)
+    if len(parts) == 1:
+        return ["\n".join(parts[0])]
+    return [f"({i} of {len(parts)})\n" + "\n".join(part)
+            for i, part in enumerate(parts, start=1)]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--project", required=True)
@@ -380,11 +424,25 @@ def main() -> int:
             f"follows when the film goes public "
             f"({publish_at.astimezone().strftime('%a %d %b %H:%M')})")
     elif listing.get("pinned_comment"):
+        parts = split_comment(listing["pinned_comment"])
         try:
-            comment_id = yt.commentThreads().insert(part="snippet", body={
+            thread = yt.commentThreads().insert(part="snippet", body={
                 "snippet": {"videoId": video_id, "topLevelComment": {"snippet": {
-                    "textOriginal": listing["pinned_comment"]}}}}).execute()["id"]
-            done.append("credits comment posted")
+                    "textOriginal": parts[0]}}}}).execute()
+            comment_id = thread["id"]
+            top_id = thread["snippet"]["topLevelComment"]["id"]
+            done.append("credits comment posted"
+                        + (f" ({len(parts)} parts)" if len(parts) > 1 else ""))
+            for i, part in enumerate(parts[1:], start=2):
+                try:
+                    yt.comments().insert(part="snippet", body={"snippet": {
+                        "parentId": top_id, "textOriginal": part}}).execute()
+                except HttpError as error:
+                    manual.append(
+                        f"credits part {i} of {len(parts)} failed "
+                        f"({error.resp.status}) — the attribution it carries "
+                        f"is a LICENCE OBLIGATION, so post it by hand from "
+                        f"listing.json")
             manual.append("PIN the credits comment (no API for it)")
         except HttpError as error:
             manual.append(f"credits comment failed ({error.resp.status})")
