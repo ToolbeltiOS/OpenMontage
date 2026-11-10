@@ -47,6 +47,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "lib"))
+
+import narration_lexicon as NL  # noqa: E402
 
 VOICE = "bm_george"
 
@@ -78,6 +81,29 @@ def fmt(path: Path) -> str:
         ["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries",
          "stream=sample_rate,channels", "-of", "csv=p=0", str(path)],
         text=True).strip()
+
+
+def lexicon(project: Path) -> dict:
+    """The shared lexicon, with this film's own overriding it.
+
+    WHAT THE RESPELLING IS AND IS NOT. It changes only what is SPOKEN. The
+    script keeps its real spelling, which is what reaches the captions, the
+    listing, the alignment text and the fact gate. A lexicon that rewrote
+    the script would put "tootankahmoon" on screen.
+    """
+    shared = ROOT / "assets" / "narration" / "lexicon.json"
+    film = project / "artifacts" / "lexicon.json"
+    parts = [json.loads(p.read_text()) for p in (shared, film) if p.exists()]
+    merged = NL.merge(*parts) if parts else {"entries": []}
+    problems = NL.validate(merged)
+    if problems:
+        # A respelling with a hyphen in it is READ ALOUD as a pause. Shipping
+        # it is worse than the mispronunciation it was meant to fix, so this
+        # refuses rather than narrating it.
+        for problem in problems:
+            print(f"lexicon: {problem}", file=sys.stderr)
+        raise SystemExit("refusing to synthesise from an unspeakable lexicon")
+    return merged
 
 
 def tts(text: str, dest: Path, speed: float) -> None:
@@ -145,12 +171,21 @@ def main() -> int:
     if not segments:
         raise SystemExit("no segments selected")
 
+    lex = lexicon(project)
+    spoken_names = sorted({e["word"] for e in lex["entries"]})
+    if spoken_names:
+        print(f"lexicon: {len(spoken_names)} name(s) respelled for the voice "
+              f"({', '.join(spoken_names[:6])}"
+              f"{', …' if len(spoken_names) > 6 else ''})")
+
     if args.calibrate:
         sample = [s for s in segments if s["beat"] == "exposition"][:3]
         words = secs = 0
         for seg in sample:
             dest = audio / f"_calib_{seg['id']}.wav"
-            tts(seg["text"], dest, args.body_speed)
+            # the respelled text, or the calibration measures words the film
+            # will never say — a respelling changes a segment's duration
+            tts(NL.apply(seg["text"], lex), dest, args.body_speed)
             d = probe(dest)
             n = len(seg["text"].split())
             words += n
@@ -170,7 +205,7 @@ def main() -> int:
             if dest.exists() and not args.force:
                 continue
             speed = args.body_speed * BEAT_RATE.get(seg["beat"], 1.0)
-            tts(seg["text"], dest, speed)
+            tts(NL.apply(seg["text"], lex), dest, speed)
             print(f"  [{i}/{len(segments)}] {seg['id']} "
                   f"({seg['beat']}, speed {speed:.3f}) -> {probe(dest):.2f}s",
                   flush=True)

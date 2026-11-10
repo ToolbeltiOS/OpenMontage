@@ -930,8 +930,14 @@ it used to carry thirty sentences.
 AFTER EACH ACT, BEFORE WRITING THE NEXT ONE, run:
 
     .venv/bin/python scripts/check_claims.py --project $SLUG --section <act>
+    .venv/bin/python scripts/check_cadence.py --project $SLUG --section <act>
 
-and fix what it reports before continuing. It is the same two checks the gate
+and fix what BOTH report before continuing. The first asks whether the act's
+facts hold up; the second asks whether a voice can say it — mean sentence
+length at most 16 words, at least a fifth of the sentences under 8, nothing
+over 30. Script-director Step 5b has the rewrite rule the numbers come from.
+The lint is a floor and not the goal: no measurement hears rhythm, so read
+the act aloud as well. It is the same two checks the gate
 makes, scoped to one act and cheap enough to run six times. Running it at the
 end instead means composing an act around a claim that was never in the brief
 and finding out when the whole script is done.
@@ -1186,6 +1192,16 @@ lib/reuse_rules.py holds the one-film-one-use rule,
 scripts/synthesize_narration.py synthesises the narration one segment per
 beat and bakes the written air, scripts/measure_music.py measures the music
 library against the playbook's bed criteria.
+
+BEFORE synthesising, run
+
+    .venv/bin/python scripts/build_narration_lexicon.py --project $SLUG
+
+which says each proper noun to the real voice, transcribes it, and respells
+only the ones a transcriber actually misheard. It exits non-zero on a name it
+could not resolve, and the fix for that is a \`pronunciation_guide\` in the
+script — not a respelling you invent. synthesize_narration.py applies the
+result; it changes only what is SPOKEN and never the script's own text.
 
 Write the checkpoint and STOP. Do not build the edit."
 

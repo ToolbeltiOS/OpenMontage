@@ -1,0 +1,54 @@
+{
+ "version": 2,
+ "note": "Respellings for the narration synthesisers. ONE FORM SERVES BOTH ENGINES, AND IT MUST BE LETTERS ONLY.\n\nVersion 1 respelled 19 proper nouns in a hyphenated, capitalised, stress-marked style (\"kar-NAR-von\", \"too-tan-KAH-moon\"). Both engines read those LITERALLY, out loud, mid-sentence, which is why the unmodified Kokoro take beat both lexicon takes by ear on 2026-11-10.\n\nThe obvious fix for Kokoro is misaki's phoneme syntax, [Tutankhamun](/tu\u02d0t\u0259n\u02c8k\u0251\u02d0m\u0259n/), which leaves the written word intact. IT DOES NOT WORK ON THIS PIPELINE AND WAS MEASURED NOT GUESSED: hyperframes tts is kokoro-onnx with an espeak phonemizer, not the kokoro/misaki python pipeline, and it has no phoneme input (--lang selects a phonemizer language). Handed the markdown form it said \"slash second-restress TU-length and T-Schwar, NK letter 251\" aloud. espeak's own bracket notation, [[tu:t@nkA:'mu:n]], is read out just as literally.\n\nWhat does work on both engines is a plain lowercase respelling that looks like an ordinary English word: Kokoro says \"tootankahmoon\" as Tutankhamun. Hence letters only, which tests/lib/test_narration_lexicon.py enforces.\n\nEVERY ENTRY HERE IS A NAME A TRANSCRIBER ACTUALLY MISHEARD in the unmodified take, and every respelling was CHOSEN BY MEASUREMENT: synthesised inside a carrier sentence and transcribed. Guessing does not work. \"guyger\" for Geiger looks right and Kokoro says \"guide your\".\n\nNames pronounced correctly are NOT listed, however foreign they look. Saqqara (\"Sakara\"), haematopoietic (\"hematopoietic\"), Reid, Bethell and Fellowes all came back as a conventional spelling of the right sound, which is a transcriber's orthography, not a mispronunciation.\n\nTWO LIMITS OF THE MEASUREMENT, FOUND WHILE CHOOSING THESE.\n1. A respelling is verified PER SENTENCE and a paragraph-length render can still degrade it. \"tootankahmoon\" transcribes as Tutankhamun both in a carrier sentence and in its own real sentence, but the whole-paragraph Kokoro render of that paragraph came back \"two Tenkamun's\". Per-sentence synthesis does not have the problem. Verify at the grain you synthesise at.\n2. Aspergillus was unverifiable by Kokoro renders and WAS THEN VERIFIED BY CHATTERBOX. Under Kokoro all five candidates transcribed identically (\"a spurgeless flavus\") and the same audio came back as spurgillus, spurgulous and spurgeless across three renders, so the transcriber could not discriminate. The per-sentence Chatterbox render of the same respelling came back \"aspergillus flavors\" - spelled correctly. A respelling the transcriber cannot confirm on one engine may be confirmable on another; run out of engines before calling it unverifiable.\n3. THE SET OF NAMES NEEDING A RESPELLING IS ENGINE-SPECIFIC, AND THIS FILE IS DERIVED FROM ONE ENGINE'S MISTAKES. These six are the names the unmodified Kokoro take misheard. Chatterbox misheard a different set: it says Carnarvon correctly in two sentences of six (\"the fifth Earl of Carnarvon\", \"Carnarvon's death\") and mangles it in the other four (\"canavan\", \"Canavan\", \"Knavon\", \"canavans\"), while Kokoro reads it correctly almost everywhere and never needed an entry. Carnarvon is deliberately NOT listed, because adding an unmeasured respelling to fix one engine would risk the engine that already says it right. If a Chatterbox take is chosen, the respell list must be re-derived from THAT engine's mishearings and will need a per-engine form after all.",
+ "entries": [
+  {
+   "word": "Tutankhamun",
+   "say": "tootankahmoon",
+   "respelled": true,
+   "misheard_as": "shooting Cammon's",
+   "why": "the worst failure in the take: the possessive came out as two unrelated words",
+   "verified": "carrier sentence and real sentence"
+  },
+  {
+   "word": "Gould",
+   "say": "goold",
+   "respelled": true,
+   "misheard_as": "Goode",
+   "why": "final /d/ attached to the vowel; goold holds the /u\u02d0/ and the /d/ apart",
+   "verified": "carrier sentence and real sentence"
+  },
+  {
+   "word": "Weigall",
+   "say": "wygawl",
+   "respelled": true,
+   "misheard_as": "the Uyghal",
+   "why": "/\u02c8wa\u026a\u0261\u0254\u02d0l/: the take put the stress on the second syllable and lost the /wa\u026a/",
+   "verified": "carrier sentence and real sentence"
+  },
+  {
+   "word": "Geiger",
+   "say": "guyguh",
+   "respelled": true,
+   "misheard_as": "Jyga",
+   "why": "both g's are hard; the take softened the first one to /d\u0292/",
+   "verified": "carrier sentence and real sentence"
+  },
+  {
+   "word": "Aspergillus",
+   "say": "asperjillus",
+   "respelled": true,
+   "misheard_as": "a spergulus",
+   "why": "the gill is /d\u0292/, not a hard g; the take also dropped a syllable",
+   "verified": "carrier sentence (Kokoro); real sentence confirmed by Chatterbox"
+  },
+  {
+   "word": "erysipelas",
+   "say": "erryssippelus",
+   "respelled": true,
+   "misheard_as": "ericyplers",
+   "why": "five syllables, stress on the third; the take ran the last two together",
+   "verified": "carrier sentence and real sentence"
+  }
+ ]
+}

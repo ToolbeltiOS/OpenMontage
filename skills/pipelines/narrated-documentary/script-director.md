@@ -109,6 +109,55 @@ Before moving on, answer all four. A no to any one means revise this act now:
 
 Record the answers in the artifact per act. The reviewer reads them.
 
+### Step 5b — The Ear Check (after every act)
+
+The padding check asks whether the act earns its length. This asks whether a
+voice can say it.
+
+Four rounds of voice A/Bs on 2026-11-10 ended with the plain synthesiser
+beating every attempt to improve it. A spectral chain was measured and
+rejected. A per-sentence pause model was built and rejected. A second engine
+was cloned, verified sentence by sentence, and rejected. The fault was never
+in the voice: it was prose in which every sentence ran to about the same
+length with a subordinate clause hanging off it, and nothing for the voice to
+land on. Across the three delivered films, 565 narration sentences contain
+**two questions between them**.
+
+**Rewrite each act for the ear:**
+
+- **Vary the sentence length deliberately.** Some sentences under 8 words.
+  Not a rhythm of alternating long and short — a mix you would actually
+  speak.
+- **One question per paragraph where one is natural.** Where it is not
+  natural, leave it out. A forced question reads worse than the flatness.
+- **A dash before each turn.** The place the argument changes direction is
+  the place a reader's eye and a listener's ear both need a beat.
+- **One subordinate clause per sentence at most.** Two is where the listener
+  loses the subject.
+- **Let the landing line be a fragment.** "Nobody wrote it down." is a
+  sentence for this purpose.
+
+Then run the lint, which measures the three parts of that which are numbers:
+
+```
+.venv/bin/python scripts/check_cadence.py --project <slug> --section <act>
+```
+
+| limit | value |
+| --- | --- |
+| mean sentence length | ≤ 16 words |
+| sentences under 8 words | ≥ 20% |
+| longest sentence | ≤ 30 words |
+
+**The lint is a floor, not the goal.** No measurement hears rhythm. An act can
+pass all three and still read flat, and the only judge of that is reading it
+aloud. What the numbers catch is the specific failure above — an act of
+uniform mid-length sentences — which no other check in this repo can see.
+
+The fact gate is unchanged by any of this. `scripts/check_claims.py` and
+`scripts/check_cadence.py` are separate commands because they fail for
+different reasons and are fixed by different edits.
+
 ### Step 6 — The Ending
 
 An **open question**, not a summary. Do not recap the acts; the viewer just
@@ -123,6 +172,26 @@ emphasis words, pause lengths. For a documentary register the useful instruction
 is usually *slower on the reveal, pause after it*. Add `pronunciation_guides` for
 every proper noun the voice is likely to mangle; archaeological and astronomical
 names are reliably mangled.
+
+**These are now load-bearing.** A guide used to feed only the YouTube
+description. `scripts/build_narration_lexicon.py` is the step that says each
+proper noun to the real voice, transcribes it, and respells only the ones a
+transcriber actually misheard — and the respelling it writes is derived from
+the guide, mechanically: `too-tan-KAH-moon` becomes `tootankahmoon`, which is
+the form that measured correct. A name the voice mangles with no guide to
+convert is reported unresolved and the step exits non-zero, because there is
+nothing safe to invent. Write the guide in dictionary notation as always; do
+**not** write IPA, and do not write the letters-only form yourself.
+
+```
+.venv/bin/python scripts/build_narration_lexicon.py --project <slug>
+```
+
+Run it once the acts are written. It writes `artifacts/lexicon.json` beside
+the script, and `scripts/synthesize_narration.py` applies it on top of
+`assets/narration/lexicon.json` — so the lexicon changes only what is
+**spoken**. The script keeps its real spelling, which is what reaches the
+captions, the listing, the alignment text and the fact gate.
 
 ### Step 8 — Tag Every Paragraph With A Beat
 
