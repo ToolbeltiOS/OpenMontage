@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.wak3up.docs.preflight</string>
+
+    <!-- Thursday 21:00 local time. Weekday 4 is Thursday; 0 is Sunday.
+
+         THE NIGHT BEFORE, NOT THE HOUR BEFORE. The run starts Friday 19:00,
+         and everything this checks takes longer than an hour to fix: an
+         expired YouTube token needs a browser, a missing node_modules needs
+         an npm ci, a Mac on battery needs someone to walk over to it. A
+         check at 18:00 Friday would be a notification that Friday is
+         already lost.
+
+         It picks no topic, opens no model, takes no lock and renders
+         nothing, so it costs nothing to be wrong about and cannot collide
+         with a run that is somehow still going. -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key><integer>4</integer>
+        <key>Hour</key><integer>21</integer>
+        <key>Minute</key><integer>0</integer>
+    </dict>
+
+    <!-- MEASURED 2026-11-10, and the reason the preflight asserts the
+         machine's sleep policy:
+
+           * StartCalendarInterval fires within 3-5 seconds of its minute
+             while the Mac is awake, and honours WorkingDirectory and
+             EnvironmentVariables.
+           * It does NOT wake a sleeping Mac, and an agent that is not there
+             at its time does not catch up when it returns.
+
+         The policy chosen was `sudo pmset -c sleep 0 displaysleep 10` — the
+         Mac never sleeps on mains — rather than a wake per agent. One
+         setting covers every agent there will ever be, and a machine that
+         is simply awake cannot drop a firing at all. The preflight asserts
+         it, because the setting is silent when it is wrong. -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/mac/Developer/wak3up-docs/runner/scripts/run_weekly.sh</string>
+        <string>--preflight</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/mac/Developer/wak3up-docs/runner</string>
+
+    <key>StandardOutPath</key>
+    <string>/Users/mac/Developer/wak3up-docs/runner/logs/com.wak3up.docs.preflight.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/mac/Developer/wak3up-docs/runner/logs/com.wak3up.docs.preflight.err.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>REPO</key>
+        <string>/Users/mac/Developer/wak3up-docs/runner</string>
+        <key>RUN_BRANCH</key>
+        <string>automation</string>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/mac/.local/bin</string>
+        <key>HOME</key>
+        <string>/Users/mac</string>
+        <key>WAK3UP_DOCS_STATE</key>
+        <string>/Users/mac/Developer/wak3up-docs/state</string>
+    </dict>
+
+    <key>Nice</key><integer>5</integer>
+    <key>ProcessType</key><string>Background</string>
+</dict>
+</plist>

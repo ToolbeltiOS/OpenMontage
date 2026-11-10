@@ -738,7 +738,8 @@ thing in the chain is the electricity.
 
 | when | what | where |
 |---|---|---|
-| Fri 22:00 | pick a topic, write the script | `scripts/run_weekly.sh` |
+| Thu 21:00 | preflight: what Friday needs, on Telegram | `scripts/run_weekly.sh --preflight` |
+| Fri 19:00 | pick a topic, write the script | `scripts/run_weekly.sh` |
 | then | **the script gate** — Telegram, waits up to 12h | `scripts/telegram_gate.py` |
 | overnight | render, gate, deliver | `scripts/render_film.py` |
 | then | upload private, scheduled Mon 09:00 | `scripts/publish_doc.py` |

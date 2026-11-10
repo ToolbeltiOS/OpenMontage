@@ -2,7 +2,7 @@
 # The weekly documentary, end to end, unattended except for one approval.
 #
 # WHAT THIS IS
-#   Friday 22:00 a launchd agent runs this. It picks a topic, hands the brief
+#   Friday 19:00 a launchd agent runs this. It picks a topic, hands the brief
 #   to `claude -p` against this repository, and waits at the script gate for a
 #   human. Everything after the gate is mechanical and already gated by a
 #   measurement, so it runs through the night and schedules Monday 09:00.
@@ -43,6 +43,10 @@
 #                                         # unfinished
 #   scripts/run_weekly.sh --brief <path>  # use this brief instead
 #   scripts/run_weekly.sh --dry-run       # prove the hand-offs, render nothing
+#   scripts/run_weekly.sh --preflight     # check what Friday needs and say so
+#                                         # on Telegram. Picks no topic, opens
+#                                         # no model, takes no lock, renders
+#                                         # nothing. Thursday 21:00 by launchd.
 #   RUN_WEEKLY_SMOKE=1 scripts/run_weekly.sh
 #                                         # prove the LAUNCHD path, spend nothing
 #
@@ -68,6 +72,7 @@ BRIEF=""
 RESUME=""
 NEW_FILM=0
 DRY_RUN=0
+PREFLIGHT=0
 GATE_HOURS="${GATE_HOURS:-12}"
 SMOKE="${RUN_WEEKLY_SMOKE:-0}"
 
@@ -129,6 +134,7 @@ while [[ $# -gt 0 ]]; do
     --resume) RESUME="$2"; shift 2 ;;
     --new) NEW_FILM=1; shift ;;
     --dry-run) DRY_RUN=1; shift ;;
+    --preflight) PREFLIGHT=1; shift ;;
     --gate-hours) GATE_HOURS="$2"; shift 2 ;;
     *) echo "unknown argument: $1" >&2; exit 64 ;;
   esac
@@ -297,6 +303,290 @@ RUN_CHARGE="$(pmset -g batt 2>/dev/null | sed -n '2s/.*	\([0-9]*%\);.*/\1/p')"
 say "code: $RUN_ON @ $RUN_HEAD  (expected $RUN_BRANCH, $RUN_DIRTY uncommitted in code, $RUN_DIRTY_ALL in all)"
 say "power: ${RUN_POWER:-unknown} ${RUN_CHARGE:-}"
 
+COMPOSER_MODULES="$REPO/remotion-composer/node_modules"
+
+# ── preflight: what Friday needs, asked on Thursday ──────────────────────
+#
+# EVERY CHECK RUNS. A preflight that stops at the first problem makes you fix
+# one thing a day, and the whole point is to spend Thursday evening fixing
+# everything at once rather than losing Friday to the second one.
+#
+# It picks no topic, opens no model, takes no lock and renders nothing, so it
+# is free to run and cannot collide with a real run.
+#
+# A check earns its place by naming something that HAS failed, or that would
+# fail silently hours in. docs/PREFLIGHT.md carries the reason for each.
+PF_FAIL=0
+PF_LINES=()
+
+#: Set when the Mac could sleep through Friday — on battery, or AC sleep is
+#: not 0. These two are shouted about rather than left in the table: every
+#: other failure costs a stage, and this one costs the night. 19.5 hours of
+#: run #2 went to a Mac asleep on battery, and `caffeinate` cannot hold a
+#: clamshell awake.
+PF_SLEEP_RISK=0
+
+pf_ok()   { PF_LINES+=("PASS  $1 — $2"); printf '  PASS  %s — %s\n' "$1" "$2"; }
+pf_skip() { PF_LINES+=("SKIP  $1 — $2"); printf '  SKIP  %s — %s\n' "$1" "$2"; }
+pf_bad()  {
+  PF_LINES+=("FAIL  $1 — $2")
+  printf '  FAIL  %s — %s\n' "$1" "$2"
+  PF_FAIL=$((PF_FAIL + 1))
+}
+
+preflight() {
+  say "preflight: what Friday needs"
+
+  # ── the tree the film is traced to ─────────────────────────────────────
+  local branch
+  branch="$(git -C "$REPO" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "?")"
+  if [[ "$branch" == "automation" ]]; then
+    pf_ok "branch" "on automation"
+  else
+    pf_bad "branch" "on '$branch', not automation — the runner renders whatever is checked out here"
+  fi
+
+  local dirty
+  dirty="$(code_dirty)"
+  if [[ -z "$dirty" ]]; then
+    pf_ok "code tree" "clean"
+  else
+    pf_bad "code tree" "$(printf '%s\n' "$dirty" | grep -c . ) uncommitted change(s) to code; assert_code_clean refuses mid-run"
+  fi
+
+  # ── the renderer ───────────────────────────────────────────────────────
+  if [[ -L "$COMPOSER_MODULES" ]]; then
+    pf_bad "node_modules" "SYMLINK to $(readlink "$COMPOSER_MODULES") — the renderer would run another tree's install"
+  elif [[ ! -d "$COMPOSER_MODULES" ]]; then
+    pf_bad "node_modules" "missing; npm ci in $REPO/remotion-composer"
+  elif [[ ! -x "$COMPOSER_MODULES/.bin/remotion" ]]; then
+    pf_bad "node_modules" "present but no remotion binary — a partial install renders nothing"
+  else
+    pf_ok "node_modules" "real directory, remotion present"
+  fi
+
+  # ── power ──────────────────────────────────────────────────────────────
+  #
+  # 19.5 hours of run #2 were lost to a Mac asleep on battery, and
+  # `caffeinate` cannot hold a clamshell awake.
+  local ps_out
+  ps_out="$(pmset -g ps 2>/dev/null)"
+  if [[ "$ps_out" == *"AC Power"* ]]; then
+    pf_ok "power" "on mains"
+  else
+    pf_bad "power" "on BATTERY (${RUN_CHARGE:-?}) — the sleep policy below only applies on AC, so on battery this Mac sleeps after a minute"
+    PF_SLEEP_RISK=1
+  fi
+
+  local health
+  health="$(pmset -g batt 2>/dev/null | grep -o "'[A-Za-z ]*'" | head -1 | tr -d "'")"
+  if [[ -z "$health" || "$health" == "AC Power" || "$health" == "Battery Power" ]]; then
+    pf_ok "battery" "reporting normally"
+  else
+    pf_ok "battery" "$health"
+  fi
+
+  # ── will the Mac be AWAKE when launchd fires? ──────────────────────────
+  #
+  # MEASURED 2026-11-10, and this is the check the others assume.
+  # StartCalendarInterval fires 3-5 seconds after its minute while the Mac is
+  # awake, honouring WorkingDirectory and EnvironmentVariables — and it does
+  # NOT wake a sleeping Mac. An agent that is not there at its time does not
+  # catch up when it comes back.
+  # THE POLICY, decided 2026-11-10: the Mac never sleeps on AC. Not a wake
+  # per agent — one setting covers every agent there will ever be, and a
+  # machine that is simply awake cannot drop a firing.
+  #
+  # This asserts the setting rather than trusting that someone ran the
+  # command: `sudo pmset -c sleep 0` does not survive every macOS update or
+  # a new machine, and the failure it prevents is silent — launchd fires a
+  # calendar job within five seconds when the Mac is awake and not at all
+  # while it sleeps.
+  #
+  # Read from the AC POWER section specifically. The battery section on this
+  # machine says `sleep 1`, so a parser that takes the first `sleep` line
+  # reads the wrong policy and passes a Mac that sleeps after a minute.
+  local ac_sleep
+  ac_sleep="$(pmset -g custom 2>/dev/null | awk '
+      /^AC Power:/ {ac = 1; next}
+      /^[^ ]/      {ac = 0}
+      ac && $1 == "sleep" {print $2; exit}')"
+  if [[ "$ac_sleep" == "0" ]]; then
+    pf_ok "sleep policy" "AC sleep 0 — the Mac stays awake on mains"
+  else
+    pf_bad "sleep policy" "AC sleep is '${ac_sleep:-unreadable}', not 0 — the Mac sleeps mid-run and launchd does not wake it. Fix: sudo pmset -c sleep 0 displaysleep 10"
+    PF_SLEEP_RISK=1
+  fi
+
+  # ── the agents themselves ──────────────────────────────────────────────
+  local label loaded missing=0 agents
+  agents="$(launchctl list 2>/dev/null)"
+  for label in com.wak3up.docs.weekly com.wak3up.docs.metrics \
+               com.wak3up.docs.tripwire com.wak3up.docs.afterpublish; do
+    if [[ "$agents" == *"	$label"* ]]; then
+      loaded=1
+    else
+      loaded=0
+      missing=$((missing + 1))
+      pf_bad "agent $label" "not loaded — it will never fire"
+    fi
+  done
+  [[ "$missing" == "0" ]] && pf_ok "agents" "all four loaded"
+
+  # ── disk ───────────────────────────────────────────────────────────────
+  #
+  # A film is about 12 GB of plate, look, type and delivery, and a full disk
+  # fails at the mux with the render already paid for.
+  local free_gb
+  free_gb="$(df -g "$REPO" 2>/dev/null | awk 'NR==2 {print $4}')"
+  if [[ -n "$free_gb" && "$free_gb" -ge 40 ]]; then
+    pf_ok "disk" "${free_gb} GB free"
+  else
+    pf_bad "disk" "${free_gb:-?} GB free, under the 40 GB a film needs"
+  fi
+
+  # ── the interpreter every check below needs ────────────────────────────
+  if [[ -x "$PY" ]]; then
+    pf_ok "python" "$("$PY" -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>/dev/null)"
+  else
+    pf_bad "python" "no $PY — this tree has no .venv, and the checks below cannot run"
+    pf_skip "telegram" "no interpreter"
+    pf_skip "youtube" "no interpreter"
+    pf_skip "pixazo" "no interpreter"
+    local body_early verdict_early
+    body_early="$(printf '%s\n' "${PF_LINES[@]}")"
+    verdict_early="<b>Preflight: $PF_FAIL thing(s) to fix before Friday</b>"
+    say "preflight: $PF_FAIL failure(s)"
+    notify "$verdict_early
+
+<pre>$body_early</pre>"
+    return 1
+  fi
+
+  # ── Telegram: BOTH bots, because one working is not both ───────────────
+  local tg
+  tg="$("$PY" - <<'PY' 2>/dev/null
+import json, os, urllib.request
+from pathlib import Path
+env = Path.home() / "Developer" / "wak3up-docs" / ".env"
+vals = {}
+if env.exists():
+    for line in env.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, _, v = line.partition("=")
+            vals[k.strip()] = v.strip().strip('"').strip("'")
+out = []
+for name, key in (("notify", "TELEGRAM_DOCS_BOT_TOKEN"),
+                  ("gate", "TELEGRAM_BOT_TOKEN")):
+    token = os.environ.get(key) or vals.get(key, "")
+    if not token:
+        out.append(f"{name}:no token")
+        continue
+    try:
+        with urllib.request.urlopen(
+                f"https://api.telegram.org/bot{token}/getMe", timeout=15) as r:
+            body = json.load(r)
+        out.append(f"{name}:" + ("ok" if body.get("ok") else "refused"))
+    except Exception as exc:                       # noqa: BLE001
+        out.append(f"{name}:{type(exc).__name__}")
+print(" ".join(out))
+PY
+)"
+  if [[ "$tg" == *"notify:ok"* && "$tg" == *"gate:ok"* ]]; then
+    pf_ok "telegram" "both bots answer"
+  else
+    pf_bad "telegram" "${tg:-no answer} — the gate bot and the notify bot are separate tokens"
+  fi
+
+  # ── YouTube ────────────────────────────────────────────────────────────
+  if [[ -x "$PY" ]] && "$PY" "$REPO/scripts/check_youtube_auth.py" >/dev/null 2>&1; then
+    pf_ok "youtube" "token valid and refreshing"
+  else
+    pf_bad "youtube" "scripts/check_youtube_auth.py says no — six months of disuse expires it"
+  fi
+
+  # ── Pixazo, key and cap ────────────────────────────────────────────────
+  local px
+  px="$(REPO="$REPO" "$PY" - <<'PY' 2>/dev/null
+import os, sys
+from pathlib import Path
+sys.path.insert(0, str(Path(os.environ["REPO"]) / "lib"))
+import pixazo_quota as q
+used = q.used_this_month()
+cap = int(q.MONTHLY_FREE_IMAGES * q.CEILING)
+ok, why = q.check(1)
+print(f"{'ok' if ok else 'full'} {used}/{cap}")
+PY
+)"
+  if [[ "$px" == ok* ]]; then
+    pf_ok "pixazo" "${px#ok } images used this month"
+  else
+    pf_bad "pixazo" "${px:-unreadable} — a refusal mid-run wastes the stage that asked"
+  fi
+
+  # ── the 2.5D path, CONDITIONAL ON USE ──────────────────────────────────
+  #
+  # Asserted only when the pipeline can actually reach it. Nothing in the
+  # weekly chain references the builder today, so a run that authors no 2.5D
+  # cut must not be blocked by a dependency it never touches.
+  if grep -qE 'build_25d_cuts|render_25d' "$REPO/scripts/run_weekly.sh" \
+       "$REPO"/pipeline_defs/*.yaml 2>/dev/null; then
+    local depth_py="$REPO/.venv-depth/bin/python" ver
+    if [[ ! -x "$depth_py" ]]; then
+      pf_bad "2.5D interpreter" "no $depth_py; DepthFlow needs typing.Self and the pipeline venv is 3.10"
+    else
+      ver="$("$depth_py" -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>/dev/null)"
+      if [[ "${ver%%.*}" -ge 3 && "${ver#*.}" -ge 11 ]]; then
+        pf_ok "2.5D interpreter" "python $ver"
+      else
+        pf_bad "2.5D interpreter" "python $ver, under the 3.11 DepthFlow needs"
+      fi
+    fi
+    if compgen -G "$HOME/.cache/huggingface/**/*Depth-Anything-V2-Small*" >/dev/null 2>&1; then
+      pf_ok "depth weights" "in the HF cache"
+    else
+      pf_bad "depth weights" "not in ~/.cache/huggingface — a 95 MB download mid-run is a surprise"
+    fi
+  else
+    pf_skip "2.5D" "nothing in the weekly chain reaches the builder, so its dependencies are not required tonight"
+  fi
+
+  # ── say so ─────────────────────────────────────────────────────────────
+  local body verdict loud=""
+  body="$(printf '%s\n' "${PF_LINES[@]}")"
+  if [[ "$PF_FAIL" == "0" ]]; then
+    verdict="<b>Preflight: ready for Friday</b>"
+  else
+    verdict="<b>Preflight: $PF_FAIL thing(s) to fix before Friday</b>"
+  fi
+  if [[ "$PF_SLEEP_RISK" == "1" ]]; then
+    loud="
+<b>⚠ THIS MAC CAN SLEEP THROUGH FRIDAY.</b>
+launchd fires a calendar agent within five seconds while the Mac is awake,
+and not at all while it sleeps. Plug in, and:
+<code>sudo pmset -c sleep 0 displaysleep 10</code>
+"
+  fi
+  say "preflight: $PF_FAIL failure(s), sleep risk $PF_SLEEP_RISK"
+  notify "$verdict
+$loud
+<pre>$body</pre>
+
+Fix tonight and re-run: <code>scripts/run_weekly.sh --preflight</code>"
+  [[ "$PF_FAIL" == "0" ]] && return 0 || return 1
+}
+
+# ── preflight exits here: no lock, no caffeinate, no topic, no model ─────
+#
+# BEFORE the fail-fast guards below, not after. They call `fail()`, which
+# exits on the first problem — right for a run that must not start, wrong for
+# a check whose whole job is to list everything that needs fixing tonight.
+if [[ "$PREFLIGHT" == "1" ]]; then
+  preflight
+  exit $?
+fi
+
 if [[ "$RUN_ON" != "$RUN_BRANCH" ]]; then
   notify "<b>Weekly run refused to start</b>
 The checkout at $REPO is on <b>$RUN_ON</b>, not <b>$RUN_BRANCH</b>.
@@ -446,6 +736,13 @@ stage_done() {
 
 # ── the renderer's own dependencies ──────────────────────────────────────
 #
+# `COMPOSER_MODULES` is set above, where the preflight can reach it, and
+# re-derived here so THIS BLOCK STAYS SELF-CONTAINED:
+# tests/automation/test_node_modules_is_real.py slices it out and executes it
+# against a fake REPO, which is the only way a start check gets exercised
+# without breaking a real tree.
+COMPOSER_MODULES="${COMPOSER_MODULES:-$REPO/remotion-composer/node_modules}"
+#
 # WHY THIS IS A START CHECK AND NOT A COMMENT.
 #
 # `runner/remotion-composer/node_modules` was a SYMLINK into the dev
@@ -460,7 +757,6 @@ stage_done() {
 # It is checked at the START, because the alternative is discovering it
 # four hours in: the plate pass is the first thing that needs the renderer
 # and the first thing that would fail.
-COMPOSER_MODULES="$REPO/remotion-composer/node_modules"
 if [[ -L "$COMPOSER_MODULES" ]]; then
   fail "node_modules" "$COMPOSER_MODULES is a SYMLINK to $(readlink "$COMPOSER_MODULES").
 The renderer would run whatever is installed in that tree, not what this

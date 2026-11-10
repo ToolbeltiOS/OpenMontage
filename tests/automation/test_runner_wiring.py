@@ -343,8 +343,20 @@ class TestSmokeMode:
 #: launchd Weekday: 0 (or 7) Sunday, 1 Monday ... 5 Friday.
 AGENT_SCHEDULE = {
     "com.wak3up.docs.weekly": {"Weekday": 5, "Hour": 19, "Minute": 0},
+    "com.wak3up.docs.preflight": {"Weekday": 4, "Hour": 21, "Minute": 0},
     "com.wak3up.docs.metrics": {"Weekday": 2, "Hour": 9, "Minute": 0},
     "com.wak3up.docs.tripwire": {"Weekday": 0, "Hour": 12, "Minute": 0},
+}
+
+#: And what the PROSE says, which is the other half of the same drift. The
+#: three disagreements above were a plist contradicting its own comment; on
+#: 2026-11-10 it was the reverse — the weekly plist and this table both said
+#: Friday 19:00, correctly and deliberately, while run_weekly.sh's header and
+#: the README's timetable both still said 22:00. A schedule nobody can read
+#: off the documentation is the same defect whichever side is stale.
+SCHEDULE_IN_PROSE = {
+    "scripts/run_weekly.sh": "Friday 19:00",
+    "README.md": "Fri 19:00",
 }
 
 #: The agent that runs every hour instead, and so has no calendar at all.
@@ -364,6 +376,41 @@ class TestEveryAgentRunsWhenItSaysItDoes:
         d = plistlib.loads((ROOT / "launchd" / f"{label}.plist").read_bytes())
         assert d.get("StartInterval") == INTERVAL_AGENTS[label]
         assert "StartCalendarInterval" not in d
+
+    @pytest.mark.parametrize("path,text", sorted(SCHEDULE_IN_PROSE.items()))
+    def test_the_prose_says_the_same_hour_as_the_plist(self, path, text):
+        """The documentation is the other half of the schedule.
+
+        Whoever is deciding whether to wait for a film reads the README, not
+        a plist. On 2026-11-10 the README promised Friday 22:00 for a run
+        that had been starting at 19:00 since the hour was deliberately
+        moved, and run_weekly.sh's own header said the same.
+        """
+        body = (ROOT / path).read_text()
+        assert text in body, f"{path} no longer states the run's hour as {text!r}"
+        assert "22:00" not in body, (
+            f"{path} still says 22:00 somewhere; the weekly agent fires at "
+            f"19:00 and this is how the two drifted apart")
+
+    def test_the_preflight_runs_the_night_before(self):
+        """Not the hour before: everything it checks takes longer to fix."""
+        weekly = AGENT_SCHEDULE["com.wak3up.docs.weekly"]
+        pre = AGENT_SCHEDULE["com.wak3up.docs.preflight"]
+        assert pre["Weekday"] == weekly["Weekday"] - 1, (
+            "the preflight is not the day before the run")
+        assert pre["Hour"] >= 18, (
+            "a preflight in the small hours is one nobody reads in time")
+
+    def test_the_preflight_agent_asks_for_preflight_and_nothing_else(self):
+        """A plist that ran the real thing would make a film every Thursday."""
+        d = plistlib.loads(
+            (ROOT / "launchd" / "com.wak3up.docs.preflight.plist").read_bytes())
+        args = [str(a) for a in d["ProgramArguments"]]
+        assert args[-1] == "--preflight", args
+        assert args[-2].endswith("run_weekly.sh"), args
+        assert d.get("RunAtLoad") is False, (
+            "RunAtLoad would fire a preflight every time the agent is "
+            "loaded, which is every login")
 
     def test_the_table_covers_every_agent_on_disk(self):
         """So a fifth agent cannot be added without a time being stated."""

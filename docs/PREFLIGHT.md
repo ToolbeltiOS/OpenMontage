@@ -1,11 +1,67 @@
 # What Friday needs before it starts
 
-Collected during merge week for **item 9**: `run_weekly.sh --preflight`,
-run by launchd on Thursday 21:00, which checks everything a run depends on
-and Telegrams a pass/fail WITHOUT picking a topic or opening a model.
+**BUILT 2026-11-10.** `run_weekly.sh --preflight`, run by
+`launchd/com.wak3up.docs.preflight.plist` on Thursday 21:00, which checks
+everything a run depends on and Telegrams a pass/fail WITHOUT picking a
+topic, opening a model, taking the lock or rendering anything.
 
 A preflight check earns its place by naming something that has actually
 failed, or that would fail silently hours in.
+
+## Two things the building of it measured
+
+**1. `cmd | grep -q` under `set -o pipefail` reports a MATCH as a failure.**
+`grep -q` exits on its first hit, the producer gets SIGPIPE, and pipefail
+takes the pipeline's status from the producer. Measured, five runs of each:
+
+    launchctl list | grep -q '<TAB>com.wak3up.docs.weekly$'        141, 141, 141, 141, 141
+    launchctl list | grep -q '<TAB>com.wak3up.docs.afterpublish$'  0, 0, 0, 0, 0
+
+Both agents were loaded. The difference is position: `weekly` is the FIRST
+line of the output and `afterpublish` the last, so only the first cuts the
+producer off mid-write. The first version of this preflight reported two
+loaded agents as "not loaded" and a scheduled wake as absent. Checks capture
+their output and match it in bash now, and
+`tests/automation/test_preflight.py` refuses a `| grep -q` anywhere in the
+script.
+
+**2. StartCalendarInterval does not wake a sleeping Mac, and this one has no
+wake set for any agent hour.** Measured with a throwaway agent:
+
+  * While the Mac is awake it fires **3 to 5 seconds** after its minute,
+    three firings out of three, and honours `WorkingDirectory` and
+    `EnvironmentVariables`.
+  * An agent that is **not loaded** at its scheduled time does **not** run
+    when it is loaded afterwards — the firing is dropped, not deferred.
+  * `pmset -g sched` on this machine lists exactly one repeating wake,
+    `wakepoweron at 8:55AM Monday`, which belongs to something else. Nothing
+    wakes it for Friday 19:00, Thursday 21:00, Tuesday 09:00 or Sunday 12:00.
+
+What was NOT measured: a real sleep/wake cycle. Unloading an agent resets
+launchd's record of it, so the second bullet is evidence about an unloaded
+agent and not about a sleeping machine, and the documented behaviour for a
+missed calendar job across sleep is that it runs on wake. Either way the
+conclusion for Friday is the same: the run happens late or not at all.
+
+## The policy, decided 2026-11-10
+
+    sudo pmset -c sleep 0 displaysleep 10
+
+**The Mac never sleeps on mains.** Not a `pmset repeat` wake per agent: one
+setting covers every agent there will ever be, including ones not written
+yet, and a machine that is simply awake cannot drop a firing at all. The
+display still sleeps after ten minutes, which is the part nobody needs.
+
+The preflight **asserts** it rather than trusting that it was run, reading
+the `sleep` value from the **AC Power** section of `pmset -g custom`. The
+battery section of this machine says `sleep 1`, so a parser that takes the
+first `sleep` line it finds reads the wrong policy and passes a Mac that
+sleeps a minute after the lid closes.
+
+Being on battery and having AC sleep set to anything but 0 are the only two
+failures that get a line **above** the table in the Thursday message rather
+than a row inside it. Every other failure costs a stage; these two cost the
+night, and 19.5 hours of run #2 went exactly that way.
 
 ## The list
 
