@@ -126,6 +126,32 @@ def spectrum(y, sr: int = SR):
     return acc, freqs
 
 
+#: The repo root, so a report's repo-relative bed path resolves the same way
+#: from any working directory.
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def resolve(path: str) -> str:
+    """A bed path from an EDL or a mix report, made findable.
+
+    `mix_report.json` records a bed repo-relative (see
+    `mix_audio.report_track`), and this used to resolve whatever it was
+    handed against the CURRENT WORKING DIRECTORY. Re-mixing king-tut from
+    its own report therefore died on `exit status 254` while the beds sat in
+    projects/king-tut/assets/music/candidates/trimmed the whole time.
+
+    Absolute paths are returned untouched: a bed from outside the repo is
+    recorded absolute on purpose, and rewriting it would lose the one fact
+    the report is trying to carry.
+    """
+    if not path or os.path.isabs(path):
+        return path
+    if os.path.exists(path):
+        return path                      # already correct for this cwd
+    rooted = os.path.join(ROOT, path)
+    return rooted if os.path.exists(rooted) else path
+
+
 def brightness(path: str, eq: str | None = None) -> dict[str, Any]:
     """Centroid and high-band share of one track."""
     import numpy as np
@@ -167,7 +193,7 @@ def check(beds: list[dict[str, Any]]) -> tuple[list[str], dict[str, Any]]:
     problems: list[str] = []
     rows: list[dict[str, Any]] = []
     for bed in beds:
-        path = bed.get("path") or bed.get("track")
+        path = resolve(bed.get("path") or bed.get("track"))
         row = brightness(path)
         row["name"] = bed.get("name")
         row["after_eq"] = brightness(path, BED_EQ)["energy_above_4k_pct"]

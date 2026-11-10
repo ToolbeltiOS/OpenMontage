@@ -146,6 +146,24 @@ def short_term(x: np.ndarray, sr: int = 48000,
 EVENT_WINDOWS = {"risers": (-2.4, 0.3), "impacts": (-0.2, 2.0),
                  "stings": (-0.2, 3.0)}
 
+#: Carried into every NEW report. Reports written before this date measured
+#: a riser over a nominal window that ran 0.3 s past the hit, and measured
+#: its LEVEL from the summed design layer, in which the ambience floor is
+#: louder than a riser for most of a 2.7 s ramp. Those figures described the
+#: ambience. The delivered reports are left exactly as they were.
+MEASUREMENT_WINDOW_CHANGED = {
+    "date": "2026-11-10",
+    "events": "the bed reference now spans the event's own stem — the same "
+              "extent sound_design placed it against — instead of a nominal "
+              "window that ran past the hit",
+    "level": "an event's level is measured from its own stem, not from the "
+             "loudest window of the summed design layer",
+    "why": "a 2 dB change to riser_peak used to move the reported riser "
+           "reading by 0.0 dB; it now moves it by 2 dB, and "
+           "tests/lib/test_sfx_riser_window.py asserts that with a "
+           "counter-control",
+}
+
 
 def events(spec: dict[str, Any] | None) -> list[dict[str, Any]]:
     """The one-shots the owner's rule is about, with the window each occupies.
@@ -249,14 +267,35 @@ def check(design: np.ndarray, bed: np.ndarray, sr: int = 48000,
     problems: list[str] = []
     event_rows: list[dict[str, Any]] = []
     for ev in events(spec):
-        sel = (t >= ev["from"]) & (t <= ev["to"])
+        stem = by_event.get((ev["kind"], round(float(ev["at_seconds"]), 2)))
+
+        # THE BED REFERENCE SPANS THE EVENT ITSELF WHEN THE EVENT IS KNOWN.
+        #
+        # `sound_design.build` places an element against
+        # `bed_reference(at/SR, (at + len(a))/SR)` — the bed's loudest window
+        # over the element's OWN extent. EVENT_WINDOWS is a guess at that
+        # extent made before the element exists, and for a riser it guessed
+        # 0.3 s past the hit, which is bed the placement never saw. The two
+        # ends then measure different instants and `excess_db` stops being
+        # equal to the playbook offset, which is the exact bug that made the
+        # layer refuse its own table (see sound_design.bed_reference).
+        #
+        # With a stem the extent is not a guess, so it is not guessed.
+        ref_from, ref_to = ev["from"], ev["to"]
+        if stem is not None:
+            ref_from = float(stem["at_sample"]) / sr
+            ref_to = ref_from + len(stem["samples"]) / sr
+
+        sel = (t >= ref_from) & (t <= ref_to)
+        if not sel.any():
+            # A stem shorter than one short-term window falls back to the
+            # nominal span rather than dropping the event silently.
+            sel = (t >= ev["from"]) & (t <= ev["to"])
         if not sel.any():
             continue
         idx = np.flatnonzero(sel)
         bed_ref_i = idx[int(np.argmax(b[sel]))]
         bed_ref = float(b[bed_ref_i])
-
-        stem = by_event.get((ev["kind"], round(float(ev["at_seconds"]), 2)))
         if stem is not None:
             # The event alone, in a window of its own, so `argmax` cannot
             # find the floor instead of the event.
@@ -369,6 +408,12 @@ def check(design: np.ndarray, bed: np.ndarray, sr: int = 48000,
         "bed_median_lufs_for_the_hole_test": round(bed_median, 2),
         "hole_threshold_lufs": round(bed_floor, 2),
         "hole_below_median_db": HOLE_BELOW_MEDIAN_DB,
+        # THE FOUR DELIVERED REPORTS ARE NOT REWRITTEN. Ruled 2026-11-09.
+        # Their -6.6 dB riser figures are what the gate measured on the day,
+        # and a report edited after the fact is no longer a record of its
+        # run. A reader comparing an old report with a new one gets the one
+        # fact they need from the NEW one, and neither is altered.
+        "measurement_window_changed": MEASUREMENT_WINDOW_CHANGED,
         "events_checked": len(event_rows),
         "events_over_the_bed": sum(1 for r in event_rows
                                    if r["excess_db"] > TOLERANCE_DB),

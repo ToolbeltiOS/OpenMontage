@@ -276,6 +276,27 @@ Nothing essential in the last 20 seconds. The outro CTA is 10 seconds maximum.
 - Ducking at act boundaries only, so the bed fights every sentence.
 - A cut whose only reason is that the clip was already downloaded.
 
+## A Bed Is Named So It Can Be Found Again
+
+`music.beds[].track` is the path **relative to the project's music directory**
+— `trimmed/bed_dark_drone.wav`. `lib/build_render_props.py` resolves it
+against that directory, so it works on any clone.
+
+**Do not write an absolute `path`.** king-tut's EDL carries
+`/Users/mac/Developer/wak3up-docs/runner/projects/king-tut/assets/...`, which
+is not merely long: it names a worktree. easter-island's and they-said-it's
+name `/Users/mac/wak3up/assets/ambient_sources/`, which is outside the repo
+altogether, so neither film can be re-mixed from a clone at all. A `path` key
+is for a bed that genuinely lives outside the project, and then it is a fact
+worth stating rather than a convenience.
+
+Which bed covers which span is a **decision, made by ear**, and it is the one
+fact in the mix that cannot be recovered from anything else — the candidates
+are all still on disk and nothing else says which three were chosen.
+`.gitignore` un-ignores `artifacts/edit_decisions.json` for exactly this
+reason, beside `script.json` and `listing.json`. The audio stays ignored; a
+bed is tens of megabytes and regenerable from the candidates.
+
 ## The Bed Level Comes From The Playbook
 
 Never write a music level into the EDL by hand. `audio.music_under_speech_lufs`

@@ -602,6 +602,41 @@ def condition_bed(src: str, dst: str, name: str,
     }
 
 
+def report_track(path: str) -> dict:
+    """How a bed is recorded in `mix_report.json`, so it can be found again.
+
+    IT USED TO BE `os.path.basename`, AND THE REPORT COULD NOT REPRODUCE ITS
+    OWN MIX. `scripts/export_excerpts.py` calls this report the authority for
+    what the mix was made of, and `lib/music_brightness.py` resolves a span's
+    track against the CURRENT WORKING DIRECTORY. Measured 2026-11-09:
+    re-mixing king-tut from its own report died on
+    `ffmpeg ... bed_cinematic_quiet.wav ... exit status 254`, while the three
+    beds sat in projects/king-tut/assets/music/candidates/trimmed/ the whole
+    time. An authority that cannot be followed back to the files is a record
+    of names, not of inputs.
+
+    A bed inside the repo is recorded repo-relative, which is reproducible on
+    any clone. A bed OUTSIDE the repo cannot be made repo-relative and is
+    recorded absolute AND FLAGGED, because that is a real property of the mix
+    and not a formatting detail: easter-island's and they-said-it's beds came
+    from /Users/mac/wak3up/assets/ambient_sources, so those two films cannot
+    be re-mixed from a clone no matter how the path is written. Saying so is
+    the whole value of the field.
+    """
+    full = os.path.abspath(path)
+    try:
+        inside = os.path.relpath(full, ROOT)
+    except ValueError:                       # different drive, Windows only
+        inside = None
+    if inside and not inside.startswith(os.pardir):
+        return {"track": inside, "track_in_repo": True,
+                "track_name": os.path.basename(full)}
+    return {"track": full, "track_in_repo": False,
+            "track_name": os.path.basename(full),
+            "why": "outside the repo, so this film cannot be re-mixed from a "
+                   "clone; the path is recorded as it was used"}
+
+
 def bed_spread(bed: str, spans: list[dict], crossfade: float
                ) -> tuple[float | None, list[tuple[str, float | None]]]:
     """Integrated loudness of the delivered bed inside each span, and the spread.
@@ -1268,7 +1303,7 @@ def main() -> int:
     report = {
         "output": out_path,
         "spans": [{"name": sp["name"], "acts": sp.get("acts"),
-                   "track": os.path.basename(sp["track"]),
+                   **report_track(sp["track"]),
                    "start": sp["start"], "end": sp["end"]} for sp in spans],
         "under_speech_lufs": under_speech,
         "gap_target_lufs": GAP_TARGET_LUFS,

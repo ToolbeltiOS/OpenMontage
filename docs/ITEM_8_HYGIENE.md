@@ -123,3 +123,74 @@ being overwritten by noah's (see commit "The Nov 6 run's own output, which
 only the runner worktree had"). That one is not a measurement problem and is
 bigger than hygiene: it touches `render_film.py`'s report naming and every
 reader of it.
+
+---
+
+## Done 2026-11-10, with two corrections to this file
+
+### Item 1 was already fixed, and the prescribed fix was wrong
+
+The defect — "a 2 dB change to `riser_peak` moves the reported reading by
+0.0 dB" — **was resolved by the stems work** that landed with the
+asset-library merge, not by the window change prescribed above. An event's
+level now comes from its own stem, so `argmax` cannot find the ambience
+instead of the riser. `tests/lib/test_sfx_riser_window.py` asserts it: a
+2 dB change moves the reading 2 dB, a 6 dB change moves it 6, and the
+**counter-control** measures the same audio the old way and shows it not
+moving at all and reading 10 dB too loud.
+
+**The prescribed fix would have broken something.** "Site it at the riser's
+peak window — the last 0.5 s before the hit" was written before the stems
+fix. Narrowing the window narrows the **bed reference** too, and
+`sound_design.build` places an element against the bed's loudest window over
+the element's OWN extent. Gate and placement would then measure different
+instants, `excess_db` would stop equalling the playbook offset, and that is
+precisely the bug that once made the layer refuse its own table (see
+`sound_design.bed_reference`).
+
+What was actually wrong with the window was smaller and in the other
+direction: it ran to `at_seconds + 0.3`, which is 0.3 s **past** the hit, so
+the gate could take its bed reference from music the placement never saw.
+The fix is that **when a stem is present the bed reference spans the stem**,
+which makes the two identical by construction rather than by coincidence. A
+test places a bed spike 0.3 s after the hit — inside the old window, outside
+the stem, and clear of the 200 ms a 400 ms window straddles — and asserts
+the fixed gate does not see it while the old path does.
+
+New reports carry `measurement_window_changed`. The four delivered reports
+are untouched, and a test asserts they contain no such key.
+
+### Item 2: the EDL was already un-ignored
+
+"the music EDL, which is gitignored" is **stale**.
+`!projects/*/artifacts/edit_decisions.json` has been in `.gitignore` since
+`59c42e9` "Track the decision records; keep the bytes out", and the bed
+selection lives in that file as `music.beds`. The rule this file asked for
+already existed.
+
+What is actually missing is narrower, and measured 2026-11-10:
+
+| film | EDL on disk | in git |
+| --- | --- | --- |
+| easter-island | yes | **yes** |
+| they-said-it-couldnt-be-built | yes | **yes** |
+| king-tut | runner worktree only | no |
+| noah | **nowhere** | no |
+
+So two of four bed selections are in git. noah's EDL does not exist on any
+disk here, and nothing can be committed for it. king-tut's exists only in
+the runner worktree and is **not committed, deliberately** — its three
+`path` fields are worktree-absolute
+(`/Users/mac/Developer/wak3up-docs/runner/projects/king-tut/...`), so
+committing it as it stands would put a path naming one worktree into the
+shared history, and normalising it first would edit a delivered film's
+artifact. That is a call for the owner, not a hygiene fix.
+
+The report half is done: `mix_audio.report_track` records a bed
+repo-relative when it is inside the repo, and absolute **and flagged** when
+it is not — easter-island's and they-said-it's beds come from
+`/Users/mac/wak3up/assets/ambient_sources/`, so those two films cannot be
+re-mixed from a clone however the path is written, and the flag says so.
+`music_brightness.resolve` resolves a repo-relative path against the repo
+root instead of the working directory, which was the reader's half of the
+same defect.
