@@ -169,6 +169,83 @@ the reason `undated event` recorded on the cut. What is *not* fine is a
 `map_route` slot with no `claim_id`: that is declining to say what the scene
 is about, and the buildability check fails it.
 
+### 5c. An `illustration` Slot Is The Picture Nobody Took
+
+Some slots describe something no archive holds: a ship under construction on
+dry land, a traveller standing before a wall in the second century, teams
+hauling a statue on a sledge. The honest options used to be a text card or a
+still of something else. There is a third now — a generated engraving — and
+it is the most dangerous asset class in the film, so it is the most
+constrained.
+
+```json
+{ "slot_id": "act2_s014", "treatment": "graphic", "component": "illustration",
+  "prompt": "a very large wooden vessel under construction on dry land, timber frames and scaffolding, workers with adzes and bow drills, ancient near-eastern dress",
+  "props": { "image": "assets/library/illustrations/ark-build.png",
+             "subject": "Ark under construction" } }
+```
+
+**TWO FIELDS, AND THEY ARE NOT THE SAME SENTENCE.**
+
+- **`subject`** is the LABEL THE VIEWER READS. At most **40 characters**,
+  title case: *Ark under construction*, *Unworked blocks at Tiryns*. The
+  component renders the strip `ILLUSTRATION — <subject>` for the whole hold,
+  not a label that fades after three seconds, because the one thing this
+  scene must communicate is that nobody photographed it. A viewer who misses
+  that label has been shown a drawing and allowed to read it as evidence.
+- **`prompt`** is what the picture is OF, in full, and what generated it. It
+  is slot-level and the component never receives it.
+
+**Why the split.** `subject` used to be the full sentence, and the strip is
+`nowrap` with an ellipsis at 20px — so a delivered frame read
+`ILLUSTRATION — A VERY LARGE WOODEN VESSEL UNDER CONSTRUCTION ON DRY LAND,
+TIMBER FRA…`. The label was cut off mid-word. One field cannot be both the
+thing a viewer reads in a second and the record of what was asked for.
+
+The buildability check refuses a slot missing either, and
+`tests/automation/test_illustration_slot_class.py` refuses a subject that
+would not fit the strip at its rendered width.
+
+**THREE THINGS AN ILLUSTRATION MAY NOT BE.** Written as refusals because the
+tempting uses are all the same mistake — using a drawing where the film is
+making a claim about what something looked like:
+
+1. **Not evidence, and not a still of record.** `lib/illustration_spec.py`
+   refuses a slot tagged `evidence` or `stills_of_record` outright. If the
+   narration says *this is what it looked like*, an illustration is a lie
+   with a label on it.
+2. **Not a person who existed.** A face nobody recorded is a fabrication of a
+   real individual.
+3. **Not a substitute for a still you could have sourced.** Ask the asset
+   director first. An illustration is for a slot the archive *cannot* fill,
+   not one that is harder to fill.
+
+**The owner approves every one, and nothing else lets it through.** The script
+gate shows each illustration and the owner approves it there.
+`build_render_props.py` calls `demote_unapproved()` on every render: an
+illustration cut whose subject is not in `approved.json` falls back to
+`annotated_still` if the slot has a path and `text_card` if it does not, with
+the reason recorded on the cut. The approval is not a formality you can skip
+by authoring the cut anyway.
+
+**And the approval has to reach the film.** `lib/verify_approved_use.py` is a
+BLOCKING delivery gate in both directions: an illustration approved for this
+project that no cut references fails, and a cut referencing one that was not
+approved fails. This is the third guard of its kind in this project — a
+`texture` field that was never forwarded, camera props the renderer never
+read, and three illustrations approved at the gate that appeared in no cut —
+so it is checked on the render and not on your plan.
+
+**Budget.** Generation is capped at 600 images a month across the whole
+pipeline (`lib/pixazo_quota.py`, 80% of a 750 free tier), and the cap is
+per-film as well. Two or three illustrations in a twenty-minute film is the
+shape to aim for; a film carried by drawings is a different kind of film and
+not this one.
+
+**It counts as a graphic in the mix**, not as a still, because it moves: the
+component takes a parallax push like any authored scene. It does not relieve
+the stills cap.
+
 ### 6. Compute The Visual Mix And State Slideshow Risk
 
 Count the slots by treatment and record real percentages in

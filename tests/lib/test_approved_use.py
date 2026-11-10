@@ -171,20 +171,56 @@ def test_a_missing_props_file_fails_rather_than_passes(bank, tmp_path):
 # The real state of this repository, which is the revocation and not a FAIL.
 
 class TestTheRealStateOnThisBranch:
-    def test_the_noah_approvals_are_revoked_not_waived(self):
-        """`approved.json` is empty, and that is the fix of 2026-11-01.
+    def test_noah_has_no_approvals_and_that_is_the_fix_of_2026_11_01(self):
+        """It asserted the whole file was empty, and that was right UNTIL the
+        planner could consume an approval.
 
-        If this list ever refills, it is because someone re-approved
-        illustrations the planner still cannot consume — which is the fault,
-        not the fix. Merge-week item 1 is an illustration slot class in the
-        scene planner; until that exists, an approval cannot reach a film.
+        The reason the file was empty was never emptiness: it was that an
+        approval the planner cannot consume is a claim the film does not
+        honour, so noah's three were REVOKED rather than waived. The
+        illustration slot class landed on 2026-11-09 — contract entry,
+        buildability, both director skills — and two illustrations were
+        approved at the real Telegram gate for `illustration-slice`, which
+        is a slice label and not a published film.
+
+        So the invariant moves to where it always belonged: NOAH carries no
+        approval, because noah references none. The general form of that is
+        `verify_approved_use`, which is blocking in both directions on every
+        delivery; this one guards the specific film whose approvals were
+        revoked.
         """
+        assert V.approved_for("noah") == [], (
+            "noah has illustration approvals again and its cuts reference "
+            "none of them — the condition revoked on 2026-11-01. See "
+            "projects/noah/artifacts/illustration_approvals.json")
+        # NOT asserted on approved.json's `note`. It used to carry the
+        # revocation's reasoning, and `record_approval` REWRITES that field
+        # with its own provenance line every time the gate records an
+        # approval — so the first real approval after the revocation erased
+        # the sentence. Nothing was lost that matters: the reasoning lives in
+        # the file the note pointed at, which is tracked and is asserted by
+        # test_the_revocation_keeps_its_reasoning_and_its_pictures. A test
+        # resting on a field another function owns is a test that fails for
+        # the wrong reason.
+        record = ROOT / "projects" / "noah" / "artifacts" / \
+            "illustration_approvals.json"
+        assert "revoked" in json.loads(record.read_text())["state"]
+
+    def test_no_approval_names_a_published_film(self):
+        """The general rule, cheap to state and easy to breach by accident.
+
+        An approval recorded against a delivered film is a promise its cuts
+        have to keep, and the four published films are not being re-rendered
+        to keep it. An approval for a slice or a film in progress is fine.
+        """
+        published = {"noah", "king-tut", "easter-island",
+                     "they-said-it-couldnt-be-built"}
         approved = json.loads(V.APPROVED_PATH.read_text(encoding="utf-8"))
-        assert approved["approved"] == [], (
-            "illustrations are approved again while the planner has no "
-            "illustration slot class — see projects/noah/artifacts/"
-            "illustration_approvals.json")
-        assert "REVOKED" in approved["note"]
+        named = {a.get("project") for a in approved.get("approved", [])}
+        assert not (named & published), (
+            f"approvals name published films: {sorted(named & published)} — "
+            f"verify_approved_use is blocking, so their next delivery fails "
+            f"unless a cut references each one")
 
     def test_the_revocation_keeps_its_reasoning_and_its_pictures(self):
         """Revoked is not deleted: the provenance of the three files stays."""

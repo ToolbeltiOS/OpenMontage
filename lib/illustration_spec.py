@@ -140,6 +140,42 @@ def full_prompt(subject: str) -> str:
 #: Where the gate records what it showed and the person approved.
 APPROVED = Path("assets/library/illustrations/approved.json")
 
+#: What the pictures are, and what made them.
+MANIFEST = Path("assets/library/illustrations/manifest.json")
+
+
+def _identities(root: Path | None = None) -> list[set[str]]:
+    """Every name that identifies one illustration.
+
+    AN APPROVAL RECORDS THE TEXT THE OWNER WAS SHOWN, and that text changed.
+    Until 2026-11-09 `subject` was the full descriptive line and the strip
+    rendered it, badly: at 20px with 0.16em tracking a sixty-character line
+    hit the strip's ellipsis, so the viewer read "a very large wooden vessel
+    under construction on dry land, timber fra…". `subject` is a short
+    on-screen label now and the full line lives in `prompt`, where it always
+    also lived, and in `subject_was`.
+
+    So an approval taken before the split names the long line and an
+    approval taken after names the short one, and both are approvals of the
+    same picture. Matching on any of a picture's names keeps a real approval
+    valid across the rename. Rewriting the approval instead is not
+    available: approvals are written by `record_approval` from a Telegram
+    reply and never by hand, which is the whole reason they can be trusted.
+    """
+    import json
+
+    path = (root or Path(".")) / MANIFEST
+    if not path.exists():
+        return []
+    out = []
+    for asset in json.loads(path.read_text()).get("assets", []):
+        names = {asset.get(key) for key in ("subject", "subject_was", "prompt")}
+        names.discard(None)
+        names.discard("")
+        if names:
+            out.append(names)
+    return out
+
 
 def approved_record(root: Path | None = None) -> dict:
     path = (root or Path(".")) / APPROVED
@@ -178,6 +214,11 @@ def usable(subject: str, root: Path | None = None) -> tuple[bool, str]:
     ok = {a["subject"] for a in approved_record(root).get("approved", [])}
     if subject in ok:
         return True, "approved at the script gate"
+    # The same picture under another of its names — see `_identities`.
+    for names in _identities(root):
+        if subject in names and names & ok:
+            return True, ("approved at the script gate, under the longer "
+                          "subject line it was shown as")
     return False, (f"not approved at the script gate — an illustration is "
                    f"the one picture nobody sourced, so it is used only if "
                    f"it was shown and approved")

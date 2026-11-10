@@ -79,6 +79,12 @@ def check_slot(slot: dict[str, Any], contract: dict[str, Any]) -> list[str]:
                 f"claim's date decides whether the route is drawn on a "
                 f"historical chart or on terrain, and it cannot be inferred "
                 f"from the description")
+        elif key == "prompt":
+            problems.append(
+                f"{sid}: {comp} names no prompt — `subject` is the short "
+                f"label the viewer reads and cannot also be the record of "
+                f"what the picture is of. A generated asset with no prompt "
+                f"cannot be licence-checked after the fact")
         else:
             problems.append(f"{sid}: {comp} requires slot field {key!r}")
 

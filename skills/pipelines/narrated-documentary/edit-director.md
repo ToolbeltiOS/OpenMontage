@@ -193,6 +193,58 @@ before the renderer sees it, so the composition is unchanged.
 `layer` is a STRING — `primary`, `overlay` or `background`. Two earlier
 films wrote it as an integer and their artifacts no longer match the schema.
 
+### 7c. An Illustration Cut Carries Its Subject
+
+An `illustration` cut is a scene nobody photographed, and the scene planner
+has already decided which slots get one. Your job is to carry both of its
+required props through, because losing either turns a labelled drawing into
+an unlabelled one:
+
+```json
+{
+  "id": "c041",
+  "in_seconds": 182.4,
+  "out_seconds": 190.933,
+  "layer": "primary",
+  "source": "act2_s014",
+  "transition_in": "dissolve",
+  "transition_duration": 0.5,
+  "reason": "meaning_change | act2_s014 | the archive holds nothing of this",
+  "beat": "exposition",
+  "register": "quiet",
+  "internal_motion": true,
+  "scene": {
+    "type": "illustration",
+    "treatment": "graphic",
+    "act": "act2",
+    "actNumber": "02",
+    "image": "assets/library/illustrations/ark-build.png",
+    "subject": "Ark under construction",
+    "parallax": true
+  }
+}
+```
+
+**`subject` is the label, not the description.** At most 40 characters,
+title case — the scene plan already chose it, and you carry it through. The
+component renders `ILLUSTRATION — <subject>` across the whole hold at 20px,
+`nowrap`, with an ellipsis, so a long line is cut off mid-word on screen;
+the full description is the slot's `prompt` and does not belong here. A cut
+that drops the subject renders an illustration the viewer may read as a
+photograph, and `Explainer.tsx` will not save you: it falls back to `title`
+and then to an empty string rather than failing.
+
+**Do not retime it shorter than the label can be read.** The strip is up for
+the whole cut, so the cut has to be long enough to read it — treat the
+subject line like a lower third, not like a caption.
+
+**Do not promote a cut to `illustration` yourself.** The scene planner owns
+that decision, the owner approves each one at the script gate, and
+`build_render_props.py` demotes any cut whose subject is not in
+`approved.json` back to `annotated_still` or `text_card`. Authoring the type
+on a slot that was never approved produces a cut that silently becomes
+something else.
+
 ### 8. Reserve The Ending
 
 Nothing essential in the last 20 seconds. The outro CTA is 10 seconds maximum.

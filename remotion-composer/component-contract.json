@@ -33,6 +33,31 @@
    },
    "purpose": "default for cross-section / diagram slots \u2014 a real still with timed annotations"
   },
+  "illustration": {
+   "required": [
+    "image",
+    "subject"
+   ],
+   "optional": [
+    "parallax",
+    "parallaxFrom",
+    "parallaxTo",
+    "caption",
+    "source",
+    "title",
+    "kicker",
+    "actNumber",
+    "actTitle",
+    "sceneIndex",
+    "coords"
+   ],
+   "subject_note": "REQUIRED, and it is the LABEL THE VIEWER READS, not a description. At most 40 characters, title case. Illustration.tsx renders the strip ILLUSTRATION - <subject> across the whole hold at 20px with 0.16em tracking, nowrap and an ellipsis, so a long line is TRUNCATED on screen: before 2026-11-09 the subject was the full descriptive sentence and a delivered frame read \"...ON DRY LAND, TIMBER FRA...\". The full sentence is . Explainer falls back to cut.title and then to an empty string, so a missing subject renders an UNLABELLED illustration, which is the failure this slot type exists to prevent.",
+   "purpose": "a scene nobody photographed - a generated engraving for a slot the archive cannot fill. Falls back to annotated_still if the slot has a path and text_card if it does not; see lib/illustration_spec.demote_unapproved.",
+   "slot_required": [
+    "prompt"
+   ],
+   "prompt_note": "SLOT-LEVEL, not a prop: Illustration.tsx never receives it. It is what the picture is OF, in full, and what generated it \u2014 the provenance behind a frame nobody photographed. Required at authoring time because the short subject cannot carry it and because a generated asset with no record of what was asked for cannot be licence-checked afterwards."
+  },
   "schematic": {
    "required": [
     "layers"

@@ -1,4 +1,17 @@
 {
- "approved": [],
- "note": "Written by scripts/telegram_gate.py from the illustrations it CONFIRMED DELIVERED and the person then approved. An illustration that failed to upload is not here, because the approval did not cover it. The three noah approvals of 2026-10-31 were REVOKED on 2026-11-01: they were approved at the gate and then consumed by nothing, because no stage of the planner or the render path reads this file. The pictures and their provenance stay in manifest.json; the revocation and its reasoning are in projects/noah/artifacts/illustration_approvals.json. Revoked rather than waived: there is no waiver mechanism, because a gate with an exemption for the case that triggered it is not a gate."
+ "approved": [
+  {
+   "subject": "a Greek traveller in a himation standing before the colossal unworked limestone blocks of the Tiryns citadel wall, scale of a man against the masonry, second century AD",
+   "project": "illustration-slice",
+   "attempt": 1,
+   "approved_at": "2026-11-09T19:32:17"
+  },
+  {
+   "subject": "a very large wooden vessel under construction on dry land, timber frames and scaffolding, workers with adzes and bow drills, ancient near-eastern dress",
+   "project": "illustration-slice",
+   "attempt": 1,
+   "approved_at": "2026-11-09T19:32:17"
+  }
+ ],
+ "note": "Written by scripts/telegram_gate.py from the illustrations it CONFIRMED DELIVERED and the person then approved. An illustration that failed to upload is not here, because the approval did not cover it."
 }

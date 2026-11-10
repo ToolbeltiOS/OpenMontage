@@ -61,8 +61,18 @@ def approved_for(project: str, approved_path: Path | None = None,
     """
     approved = _load(approved_path or APPROVED_PATH) or {}
     manifest = _load(manifest_path or MANIFEST_PATH) or {}
-    by_subject = {a.get("subject"): a.get("path")
-                  for a in (manifest.get("assets") or [])}
+    # A PICTURE ANSWERS TO EVERY NAME IT HAS HAD. `subject` became a short
+    # on-screen label on 2026-11-09 and the full line it used to carry moved
+    # to `prompt` and `subject_was`; an approval records the text the owner
+    # was shown AT THE TIME, so one taken before the split names the long
+    # line. Keyed on only the current subject, a real approval would read as
+    # "approved illustration has no manifest entry" and fail the delivery.
+    by_subject = {}
+    for a in (manifest.get("assets") or []):
+        for key in ("subject", "subject_was", "prompt"):
+            name = a.get(key)
+            if name:
+                by_subject.setdefault(name, a.get("path"))
     out = []
     for row in (approved.get("approved") or []):
         if row.get("project") != project:
@@ -99,8 +109,10 @@ def check(project: str, props_path: Path | None = None,
           approved_path: Path | None = None,
           manifest_path: Path | None = None):
     """Returns (ok, problems, summary)."""
-    props_path = props_path or (ROOT / "projects" / project / "artifacts"
-                                / "render_props.json")
+    # Coerced, because a blocking gate that dies on `str` instead of `Path`
+    # fails the delivery with an AttributeError rather than a verdict.
+    props_path = Path(props_path) if props_path else (
+        ROOT / "projects" / project / "artifacts" / "render_props.json")
     problems: list[str] = []
     if not props_path.exists():
         return False, [f"no render props at {props_path}"], {}
