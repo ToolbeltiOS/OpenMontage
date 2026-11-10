@@ -212,47 +212,78 @@ class TestTheAudioRevisionIsStatedOnce:
                 f"a blocking check")
 
     def test_the_owner_s_spacing_between_the_one_shots_is_preserved(self):
-        """They were shifted as a group, by the 12 dB the gate measured.
+        """2 and 2, which is what 6 dB of room allows.
 
-        riser -2, impact +4, sting +8 was the owner's table; the gate refused
-        it and the three moved down together. The SPACING is the owner's
-        decision and must survive the shift.
+        THIS TABLE HAS BEEN SHIFTED THREE TIMES AND THE SPACING HAS CHANGED
+        WITH IT, so the history is the test.
 
-        IT DID NOT SURVIVE THE SECOND SHIFT, and this test is how that was
-        found. `d05353a` on `asset-library` (2026-10-31) lowered impact -6 to
-        -8 and sting -2 to -5 and left riser at -12, for a measured reason:
-        the one-shot is PLACED against the bed's minimum over its own span
-        but CHECKED against the bed's level at the instant it plays, two
-        different windows, and on the noah mix the boundary sting came out
-        +0.5 dB OVER the bed and the impact at 817.3s +0.4 dB, so
-        lib/mix_audio.py refused the layer. The margin was right; moving two
-        of the three was not. It left the spacing at 4 and 3, and this test
-        failed on that branch for nine days.
+        riser -2, impact +4, sting +8 was the owner's first table, spacing
+        6 and 4. The gate refused it: nothing may be louder than the bed at
+        that instant, and these were over it.
 
-        RESOLVED BY THE OWNER 2026-11-09, at the asset-library merge, as the
-        full group shift: -14 / -8 / -4, which is the original table moved
-        down by exactly 12 dB. The impact keeps the margin the measurement
-        asked for, the spacing comes back, and the direction matches the
-        owner's standing note that the SFX were too loud.
+        It came down to -12 / -6 / -2, spacing kept. Then on 2026-10-31 a
+        measured problem moved two of the three to -8 and -5 and left riser
+        alone, compressing the spacing to 4 and 3 — see
+        docs/ITEM_8_HYGIENE.md for why the measurement was right and the
+        asymmetry it exposed. That was corrected on 2026-11-09 as a full
+        group shift to -14 / -8 / -4.
 
-        WHAT IT COSTS, recorded because it is the one number that got worse:
-        the sting now sits about 1.5 dB under the bed on the measurement that
-        refused it at -2, where -5 would have sat 2.5 dB under. The owner
-        accepted that by ear on a 30-second A/B of king-tut's busiest act
-        boundary, old levels against these, with the fallback on record: if
-        the riser disappears under the bed at -14, the sting goes back to -5
-        and the second assertion here becomes 3.
+        AND THAT TABLE WAS INAUDIBLE BY CONSTRUCTION, which is what this
+        version fixes. Not because it was quiet against the bed, but because
+        it was quiet against the FLOOR: ambience sat at -10 and room_tone at
+        -12, so every one-shot was under the continuous texture it was
+        supposed to cut through. The floor went to -18 and -22, and the
+        one-shots came up to the ceiling the owner's rule sets: -6 / -4 / -2,
+        spacing 2 and 2.
+
+        Two decibels of separation is not much, and it is not a preference.
+        The rule allows nothing above the bed, the sting wants to be the
+        loudest of the three, and -2 is as close to the line as the
+        min-versus-instant asymmetry used to permit — now that placement and
+        the gate read the SAME reference, -2 measures -2. Three events inside
+        the 6 dB that leaves is 2 and 2.
+
+        If the rule is ever relaxed, this is the test that should be revisited
+        first: the spacing is a consequence of the ceiling, not a decision
+        taken apart from it.
         """
         off = self._playbook()["audio"]["sound_design"][
             "levels_relative_to_music_bed_db"]
-        assert off["impact_peak"] - off["riser_peak"] == 6
-        assert off["sting_peak"] - off["impact_peak"] == 4
+        assert off["impact_peak"] - off["riser_peak"] == 2
+        assert off["sting_peak"] - off["impact_peak"] == 2
 
-    def test_the_ambience_and_room_tone_are_the_owner_s_numbers_untouched(self):
+    def test_the_floor_is_below_every_one_shot(self):
+        """The change that made the one-shots audible, as an invariant.
+
+        A continuous texture fills silence; it is not meant to be heard as a
+        sound. When ambience was -10 and the loudest one-shot was -4 the
+        margin was 6 dB in the right direction, but the RISER at -14 was 4 dB
+        UNDER the ambience — competing with the room it was supposed to rise
+        out of. Every gate passed and nothing was audible.
+
+        So the floor must sit below the quietest one-shot, not just below the
+        loudest. Anything else is a table that reads sensibly and cannot be
+        heard.
+        """
         off = self._playbook()["audio"]["sound_design"][
             "levels_relative_to_music_bed_db"]
-        assert off["ambience"] == -10          # -6 shipped, the owner cut 4
-        assert off["room_tone"] == -12         # never asked to move
+        floor = max(off["ambience"], off["room_tone"])
+        quietest = min(off["riser_peak"], off["impact_peak"], off["sting_peak"])
+        assert floor < quietest, (
+            f"the floor is at {floor:+d} and the quietest one-shot at "
+            f"{quietest:+d}: the floor is louder than an event it sits under")
+
+    def test_the_ambience_and_room_tone_are_a_floor_and_not_a_layer(self):
+        """-18 and -22, lowered 2026-11-09 from -10 and -12.
+
+        The old numbers were the owner's, and they were not wrong about the
+        sound they wanted — they were wrong in combination with a one-shot
+        table 4 dB below them. See test_the_floor_is_below_every_one_shot.
+        """
+        off = self._playbook()["audio"]["sound_design"][
+            "levels_relative_to_music_bed_db"]
+        assert off["ambience"] == -18
+        assert off["room_tone"] == -22
 
     def test_the_sfx_gate_is_named_as_a_blocking_check(self):
         pb = self._playbook()

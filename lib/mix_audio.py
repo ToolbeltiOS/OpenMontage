@@ -900,7 +900,8 @@ def speech_envelope(voice: np.ndarray) -> np.ndarray:
     return np.repeat(flag, hop)[:len(mono)]
 
 
-def build_sound_design(total: float, bed: np.ndarray):
+def build_sound_design(total: float, bed: np.ndarray,
+                       stems_out: list | None = None):
     """Render the sound-design layer, if this project has a spec for one.
 
     Returns (samples, report). A project without a spec gets (None, a report
@@ -964,7 +965,7 @@ def build_sound_design(total: float, bed: np.ndarray):
     samples, report = build_design(
         spec, total, bed_db, playbook,
         os.path.join(PROJ, "assets", "audio", "sound_design"),
-        bed_curve=(bed_times, bed_st))
+        bed_curve=(bed_times, bed_st), stems_out=stems_out)
     report["present"] = True
     return samples, report
 
@@ -1198,7 +1199,10 @@ def main() -> int:
     # The sound-design layer rides the SAME envelope as the music. A second
     # ducker on the same voice would fight the first one, and the floor would
     # pump where the bed does not.
-    design, design_report = build_sound_design(total, bed)
+    # The one-shots' own stems, so the SFX gate measures each event instead
+    # of whatever is loudest in its window. See verify_sfx_level.check.
+    design_stems: list[dict] = []
+    design, design_report = build_sound_design(total, bed, design_stems)
     design_ducked = (fit_to_length(design, n)[:, None] * duck
                      if design is not None else None)
 
@@ -1217,7 +1221,21 @@ def main() -> int:
         if os.path.exists(spec_path):
             with open(spec_path, encoding="utf-8") as fh:
                 spec = json.load(fh)
-        sfx_problems, sfx_report = check_sfx(design_ducked, bed_ducked, SR, spec)
+        # THE STEMS GET THE SAME DUCK THE LAYER GETS. The excess is
+        # duck-invariant — both layers are multiplied by the same envelope —
+        # but the absolute figures in the report are not, and a report whose
+        # design_lufs is un-ducked while its bed_lufs is ducked is two
+        # different films in one row.
+        ducked_stems = []
+        for stem in design_stems:
+            at = int(stem["at_sample"])
+            body = np.asarray(stem["samples"], dtype=np.float32)
+            env = duck[at:at + len(body), 0]
+            if len(env) < len(body):
+                body = body[:len(env)]
+            ducked_stems.append({**stem, "samples": body * env})
+        sfx_problems, sfx_report = check_sfx(design_ducked, bed_ducked, SR,
+                                             spec, stems=ducked_stems)
         sfx_report["checked"] = True
         print(f"sound design against the bed: "
               f"{sfx_report['events_over_the_bed']} of "

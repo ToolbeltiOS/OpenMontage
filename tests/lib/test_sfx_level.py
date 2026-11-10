@@ -235,12 +235,30 @@ class TestTheOffsetsAndTheGateAreInOneUnit:
             "names are a promise the code does not keep")
 
     def test_and_against_the_bed_in_their_own_moment(self):
+        """And against the bed's LOUDEST window in that moment.
+
+        It was the quietest, and the two ends of the rule then measured
+        different instants: placement took the bed's floor in the event's
+        window, this gate took the bed where the event was loudest. A sting
+        placed 2 dB under the quiet end measured +0.5 dB over the loud end
+        and the layer was refused for obeying its own table. Changed
+        2026-11-09 so both read the same number — see
+        `sound_design.bed_reference`, and
+        tests/lib/test_sfx_stem_measurement.py, which asserts the
+        consequence: excess_db comes out equal to the playbook offset.
+        """
         import inspect
 
         from lib import sound_design as sd
 
+        src = inspect.getsource(sd.build)
         assert "bed_curve" in inspect.signature(sd.build).parameters
-        assert "bed_under(" in inspect.getsource(sd.build)
+        assert "bed_reference(" in src, (
+            "one-shots are no longer placed against a per-event bed reading")
+        assert "live.max()" in src, (
+            "bed_reference is not taking the bed's LOUDEST window; if it has "
+            "gone back to min(), placement and this gate are measuring "
+            "different instants again")
 
     def test_the_loudness_helper_measures_peak_or_median_on_request(self):
         from lib import sound_design as sd

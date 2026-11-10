@@ -912,40 +912,36 @@ audio:
     # If this is too quiet by ear, the thing to relax is the gate, not the
     # levels: the levels are now derived from it.
     levels_relative_to_music_bed_db:
-      ambience: -10                      # the per-act bed: wind, stone, sea, desert
-      room_tone: -12                     # under every silence, always present
-      # THE THREE ONE-SHOTS MOVE AS A GROUP, AND THE SPACING IS THE OWNER'S.
+      # A CONTINUOUS TEXTURE FILLS SILENCE; IT IS NOT MEANT TO BE HEARD AS A
+      # SOUND. Lowered 2026-11-09 from ambience -10 and room_tone -12, which
+      # is the change that makes the one-shots audible — and the reason they
+      # were not. At -10 the ambience was LOUDER than every one-shot in the
+      # table below it: a riser at -14 was competing with the room it was
+      # supposed to rise out of, and losing by 4 dB. Nothing in the table was
+      # over the bed, every gate passed, and the result was inaudible by
+      # construction. The floor is now 8 and 10 dB further down, which is
+      # headroom for the events rather than gain on them.
+      ambience: -18                      # the per-act bed: wind, stone, sea, desert
+      room_tone: -22                     # under every silence, always present
       #
-      # The owner's table was riser -2, impact +4, sting +8 — spacing 6 and 4.
-      # It has now been shifted down twice, and BOTH times all three moved
-      # together, because the spacing is a decision about how the three
-      # relate and the shift is a decision about the ceiling.
+      # THE ONE-SHOTS GO AS HIGH AS THE OWNER'S RULE ALLOWS, AND NO HIGHER.
       #
-      # LOWERED 2026-10-31, from -6 and -2, because the old values could not
-      # pass the ceiling they are graded against. The one-shot is PLACED
-      # against the bed's minimum over its own span; the ceiling is CHECKED
-      # by comparing the one-shot's loudest 400 ms window with the bed's
-      # level at the instant it plays. Those are two different windows, so a
-      # -2 dB sting has 2 dB of headroom against a measurement that can move
-      # by more than that: on the noah mix the boundary sting came out +0.5
-      # dB over the bed and the impact at 817.3s +0.4 dB, and
-      # lib/mix_audio.py refused the layer — correctly. The fix is margin,
-      # not a looser ceiling.
+      # The rule is "no SFX event louder than the bed at that instant" and it
+      # is blocking in lib/verify_sfx_level.py. It has refused a table once
+      # already: riser -2, impact +4, sting +8 was asked for, and a sting
+      # nominally 2 dB under the bed measured +0.5 dB OVER it, because
+      # PLACEMENT used the bed's quietest window in the event span while the
+      # GATE measured against the bed at the loudest instant. Two references,
+      # so no offset could be trusted.
       #
-      # THAT CHANGE MOVED ONLY TWO OF THE THREE, and compressed the spacing
-      # from 6 and 4 to 4 and 3. Corrected 2026-11-09, at the asset-library
-      # merge: the group is now the owner's original table shifted down by
-      # exactly 12 dB, which keeps the margin the measurement asked for on
-      # impact and gives the spacing back. The owner's standing note is that
-      # the SFX were too loud, so the shift is downward by design.
-      #
-      # The sting's margin is the one number this costs: -4 sits about 1.5 dB
-      # under the bed on the measurement that refused it at -2, where -5
-      # would sit 2.5 dB under. Accepted by ear on a 30-second A/B of the
-      # busiest act boundary of king-tut, old levels against these.
-      riser_peak: -14                    # at the top of the riser, into the landing
-      impact_peak: -8                    # the low hit on a hard cut at a reveal
-      sting_peak: -4                     # the act boundary, under the fade to black
+      # Both now read the bed at its LOUDEST instant in the event's own
+      # window, so an offset means what it says: an event placed 2 dB under
+      # the bed measures 2 dB under it. That is what lets these sit this
+      # close to the ceiling. Spacing is 2 and 2, which is as much separation
+      # as 6 dB of room allows.
+      riser_peak: -6                     # at the top of the riser, into the landing
+      impact_peak: -4                    # the low hit on a hard cut at a reveal
+      sting_peak: -2                     # the act boundary, under the fade to black
     unit: >
       LUFS, K-weighted, against the bed's median short-term window. It was
       broadband RMS, which is the wrong unit for a table that is checked by a
@@ -987,15 +983,27 @@ audio:
     riser:
       max_seconds: 2.0
       into: landing_line
+      # ONE PER ACT, and the riser is NOT a boundary element: it ends on the
+      # first word of the landing line, which is mid-act. An act has one
+      # landing to lead into, so a second riser is leading somewhere else.
+      max_per_act: 1
       rule: "A soft riser, no more than two seconds, ending ON the first word
              of the landing line. It never crosses the line it is leading to."
     impact:
-      on: hard_cut_at_reveal
+      # QUOTED, BECAUSE YAML 1.1 READS A BARE `on` AS THE BOOLEAN TRUE. This
+      # key and the sting's were `on:`, so both arrived in Python as the key
+      # `True` and could not be read by the name written here. Nothing read
+      # them, which is the only reason it never broke — a declared field
+      # nobody can address is the same defect as one nobody consumes.
+      "on": hard_cut_at_reveal
       max_per_act: 2
       rule: "A low impact lands with the picture on the cut into a reveal, not
              after it. At most two per act; three is a trailer."
     sting:
-      on: act_boundary
+      "on": act_boundary
+      # The prose said "one per boundary" from the start; this is the same
+      # sentence in a form check_spec can enforce.
+      max_per_boundary: 1
       rule: "One per boundary, under the fade through black, timed to the music
              crossfade at 2.5s. The act card is already silent furniture — the
              sting is what makes the silence deliberate."

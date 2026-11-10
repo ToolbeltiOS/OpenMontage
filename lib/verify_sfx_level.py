@@ -58,6 +58,26 @@ HOP_S = 0.100
 #: deciding how much louder than the bed is acceptable, which is not its call.
 TOLERANCE_DB = 0.0
 
+#: How far a placed one-shot may sit from the level it was asked to sit at.
+#:
+#: THIS IS THE CHECK THAT WOULD HAVE CAUGHT FOUR FILMS OF SILENT RISERS.
+#: Everything about a riser was right on paper — the spec named it, the
+#: playbook priced it, `sound_design` placed it, the level table applied to
+#: it and the report printed a level for it. What nobody asked was whether
+#: the element that came out measured anything like the number it was given.
+#: king-tut's riser.mp3 ends in eight seconds of silence, the slice that
+#: keeps "the top of the riser" took the silence, `_to_level` returned the
+#: array unscaled because its source measured under its -110 guard, and a
+#: riser targeted at -54 LUFS was delivered at -120. Five per film, four
+#: films, every gate green.
+#:
+#: 3 dB is loose on purpose. The target is set from the element's loudest
+#: 400 ms measured in isolation, and this measures it again inside the event
+#: window after ducking and summing with its own neighbours, so a decibel or
+#: so of honest disagreement is expected. A failure of placement is not off
+#: by a decibel; it is off by sixty.
+PLACEMENT_TOLERANCE_DB = 3.0
+
 #: Windows quieter than this carry nothing to compare — both layers are
 #: effectively absent and the ratio between two silences is not a finding.
 FLOOR_LUFS = -70.0
@@ -161,7 +181,8 @@ def _layers_at(spec: dict[str, Any] | None, t: float) -> str:
 
 
 def check(design: np.ndarray, bed: np.ndarray, sr: int = 48000,
-          spec: dict[str, Any] | None = None
+          spec: dict[str, Any] | None = None,
+          stems: list[dict[str, Any]] | None = None
           ) -> tuple[list[str], dict[str, Any]]:
     """Problems and measurements for the two finished layers.
 
@@ -173,8 +194,29 @@ def check(design: np.ndarray, bed: np.ndarray, sr: int = 48000,
     --------------------------------------------------------------
     1. EVENTS — risers, impacts, stings. The owner's rule is written about
        these ("no SFX event louder than the bed at that instant"), and it is
-       applied strictly: the loudest 400 ms of the design layer inside the
-       event's own window, against the bed in that same window.
+       applied strictly: the loudest 400 ms of the EVENT, against the bed at
+       its loudest window in the same span.
+
+       `stems` IS THE EVENT ITSELF, and without it this check cannot do what
+       it says. It used to take the loudest 400 ms of the SUMMED design layer
+       inside the window and call that the event's level. The layer is a sum
+       of the event and whatever continuous floor is playing under it, and
+       with ambience at -10 against a riser at -14 the loudest thing in a
+       riser's window was the ambience. Measured 2026-11-09 on two full mixes
+       of king-tut differing ONLY in `riser_peak`, -12 against -14: every
+       riser row came back design_lufs -45.2, excess -6.6, identical to the
+       decimal, while the placement report showed the riser moving -52.0 ->
+       -54.0 dB. A reading that does not move when the thing it names moves
+       is not a measurement of that thing.
+
+       `lib/sound_design.py` hands the stems over now. Without them this
+       falls back to the summed layer and SAYS SO in the report, rather than
+       reporting a number of unstated provenance.
+
+       The bed reference is its LOUDEST window in the span, which is the same
+       number `sound_design.bed_reference` placed the event against — so
+       `excess_db` comes out equal to the playbook offset, and an offset
+       finally means what it says.
 
     2. CONTINUOUS LAYERS — ambience and room tone. These are not events, they
        run for whole acts, and the playbook governs them with an offset from
@@ -200,6 +242,10 @@ def check(design: np.ndarray, bed: np.ndarray, sr: int = 48000,
     bed_median = float(np.median(live_bed)) if len(live_bed) else FLOOR_LUFS
     bed_floor = bed_median - HOLE_BELOW_MEDIAN_DB
 
+    by_event = {}
+    for stem in (stems or []):
+        by_event[(stem["kind"], round(float(stem["at_seconds"]), 2))] = stem
+
     problems: list[str] = []
     event_rows: list[dict[str, Any]] = []
     for ev in events(spec):
@@ -207,20 +253,92 @@ def check(design: np.ndarray, bed: np.ndarray, sr: int = 48000,
         if not sel.any():
             continue
         idx = np.flatnonzero(sel)
-        i = idx[int(np.argmax(d[sel]))]
-        excess = float(d[i] - b[i])
-        row = {**ev, "at_measured_seconds": round(float(t[i]), 2),
-               "design_lufs": round(float(d[i]), 1),
-               "bed_lufs": round(float(b[i]), 1),
-               "excess_db": round(excess, 1)}
+        bed_ref_i = idx[int(np.argmax(b[sel]))]
+        bed_ref = float(b[bed_ref_i])
+
+        stem = by_event.get((ev["kind"], round(float(ev["at_seconds"]), 2)))
+        if stem is not None:
+            # The event alone, in a window of its own, so `argmax` cannot
+            # find the floor instead of the event.
+            lo_s = max(int(ev["from"] * sr), 0)
+            hi_s = min(int(ev["to"] * sr), n)
+            alone = np.zeros(max(hi_s - lo_s, 1), dtype=np.float32)
+            at = int(stem["at_sample"])
+            body = np.asarray(stem["samples"], dtype=np.float32)
+            a0 = max(at, lo_s)
+            a1 = min(at + len(body), hi_s)
+            if a1 > a0:
+                alone[a0 - lo_s:a1 - lo_s] = body[a0 - at:a1 - at]
+            _, s = short_term(alone, sr)
+            live = s[s > FLOOR_LUFS]
+            measured = float(live.max()) if live.size else FLOOR_LUFS
+            measured_at = float(ev["at_seconds"])
+            source = "stem"
+
+            # DID THE ELEMENT LAND WHERE IT WAS PUT?
+            target = stem.get("target_db")
+            asset = stem.get("asset") or ev.get("path") or "its asset"
+            if target is not None:
+                drift = measured - float(target)
+                row_placement = {"target_db": round(float(target), 1),
+                                 "placement_error_db": round(drift, 1)}
+                if measured <= FLOOR_LUFS:
+                    problems.append(
+                        f"the {ev['kind']} at {ev['at_seconds']:.2f}s is "
+                        f"SILENT: it was placed at {float(target):.1f} LUFS "
+                        f"and measures nothing at all in its own window. Its "
+                        f"asset is {asset}. An element that cannot be heard "
+                        f"was still priced, reported and gated — check "
+                        f"whether the file ends in silence, because the slice "
+                        f"that keeps the top of a riser takes the end of the "
+                        f"file.")
+                elif abs(drift) > PLACEMENT_TOLERANCE_DB:
+                    problems.append(
+                        f"the {ev['kind']} at {ev['at_seconds']:.2f}s was "
+                        f"placed at {float(target):.1f} LUFS and measures "
+                        f"{measured:.1f}, {drift:+.1f} dB off — over the "
+                        f"{PLACEMENT_TOLERANCE_DB:.0f} dB this check allows. "
+                        f"Its asset is {asset}. A level that was applied and "
+                        f"did not arrive is a number in the report that "
+                        f"describes nothing.")
+            else:
+                row_placement = {"target_db": None,
+                                 "placement_error_db": None}
+        else:
+            i = idx[int(np.argmax(d[sel]))]
+            measured = float(d[i])
+            measured_at = float(t[i])
+            source = "summed design layer — no stem was handed over, so this "\
+                     "is the loudest thing in the window and not necessarily "\
+                     "the event"
+
+        if stem is None:
+            # No stem, so placement cannot be checked for this event. An
+            # event the spec names and the build never placed is itself the
+            # fault, and it is reported rather than skipped.
+            row_placement = {"target_db": None, "placement_error_db": None}
+            if stems is not None:
+                problems.append(
+                    f"the {ev['kind']} at {ev['at_seconds']:.2f}s is in the "
+                    f"spec and was never placed: the build handed over stems "
+                    f"and none of them is this event. Its asset is "
+                    f"{ev.get('path') or 'unnamed'}.")
+
+        excess = measured - bed_ref
+        row = {**ev, "at_measured_seconds": round(measured_at, 2),
+               "design_lufs": round(measured, 1),
+               "bed_lufs": round(bed_ref, 1),
+               "excess_db": round(excess, 1),
+               "measured_from": source,
+               **row_placement}
         event_rows.append(row)
         if excess > TOLERANCE_DB:
             problems.append(
                 f"the {ev['kind']} at {ev['at_seconds']:.2f}s measures "
-                f"{d[i]:.1f} LUFS against the bed's {b[i]:.1f} at "
-                f"{t[i]:.2f}s — {excess:+.1f} dB over it. An event louder "
-                f"than the bed is an event the viewer notices as a sound "
-                f"effect rather than as the film.")
+                f"{measured:.1f} LUFS against the bed's {bed_ref:.1f} at "
+                f"{t[bed_ref_i]:.2f}s — {excess:+.1f} dB over it. An event "
+                f"louder than the bed is an event the viewer notices as a "
+                f"sound effect rather than as the film.")
 
     event_span = np.zeros(m, dtype=bool)
     for ev in events(spec):
@@ -256,6 +374,23 @@ def check(design: np.ndarray, bed: np.ndarray, sr: int = 48000,
                                    if r["excess_db"] > TOLERANCE_DB),
         "worst_event": (max(event_rows, key=lambda r: r["excess_db"])
                         if event_rows else None),
+        # THE PLACEMENT CHECK HAS TO APPEAR IN ITS OWN REPORT, three-state:
+        # a blocking check that is silently skipped when its input is absent
+        # is a gate nobody can tell is off. `stems is None` is a caller that
+        # did not hand the events over, which is not the same as a clean run.
+        "placement_checked": stems is not None,
+        "events_silent": sum(1 for r in event_rows
+                             if r.get("target_db") is not None
+                             and r["design_lufs"] <= FLOOR_LUFS),
+        "events_off_their_target": sum(
+            1 for r in event_rows
+            if r.get("placement_error_db") is not None
+            and abs(r["placement_error_db"]) > PLACEMENT_TOLERANCE_DB),
+        "worst_placement_error_db": (
+            max((r["placement_error_db"] for r in event_rows
+                 if r.get("placement_error_db") is not None),
+                key=abs, default=None)),
+        "placement_tolerance_db": PLACEMENT_TOLERANCE_DB,
         "events": event_rows,
         "continuous_windows_over_the_bed": int(over.sum()),
         "continuous_seconds_over_the_bed": round(float(over.sum()) * HOP_S, 1),
@@ -296,6 +431,15 @@ def main() -> int:
     print(f"{measured['windows']} windows of {measured['window_seconds']}s; "
           f"sound design median {measured['design_median_lufs']} LUFS, bed "
           f"{measured['bed_median_lufs']} LUFS")
+    if not measured["placement_checked"]:
+        print("placement: NOT CHECKED — the caller handed over no stems, so "
+              "nothing verified that the one-shots arrived at the levels they "
+              "were placed at")
+    else:
+        print(f"placement: {measured['events_silent']} silent, "
+              f"{measured['events_off_their_target']} off target by more than "
+              f"{measured['placement_tolerance_db']:.0f} dB (worst "
+              f"{measured['worst_placement_error_db']})")
     print(f"events: {measured['events_over_the_bed']} of "
           f"{measured['events_checked']} over the bed"
           + (f", worst {measured['worst_event']['kind']} at "

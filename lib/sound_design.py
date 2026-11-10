@@ -117,6 +117,33 @@ def _loudness(a: np.ndarray, peak: bool) -> float:
     return float(live.max() if peak else np.median(live))
 
 
+#: Anything this far under an element's own peak is its tail, not its sound.
+#: Generous on purpose: the job is to find where a file STOPS, not to gate a
+#: level, and a decaying reverb is still the sound.
+SILENCE_UNDER_PEAK_DB = 60.0
+
+
+def _trim_trailing_silence(a: np.ndarray,
+                           under_peak_db: float = SILENCE_UNDER_PEAK_DB
+                           ) -> np.ndarray:
+    """The array up to its last audible sample.
+
+    A one-shot's level is set from its loudest window and its placement from
+    its length, so trailing silence in the source file moves the sound
+    without changing any number anybody reads. See the riser case in `build`.
+    """
+    if not len(a):
+        return a
+    mono = a.mean(axis=1) if a.ndim > 1 else a
+    peak = float(np.max(np.abs(mono)))
+    if peak <= 0.0:
+        return a
+    audible = np.flatnonzero(np.abs(mono) > peak * (10 ** (-under_peak_db / 20)))
+    if not audible.size:
+        return a
+    return a[:int(audible[-1]) + 1]
+
+
 def _to_level(a: np.ndarray, target_db: float, peak: bool = False) -> np.ndarray:
     """Scale to a target K-weighted loudness. Silence stays silence.
 
@@ -268,7 +295,8 @@ def _ramp(n: int, shape: str) -> np.ndarray:
 # ───────────────────────────── building ──────────────────────────────────
 def build(spec: dict[str, Any], total_seconds: float, music_bed_db: float,
           playbook: dict[str, Any], assets_dir: str,
-          bed_curve: tuple[np.ndarray, np.ndarray] | None = None
+          bed_curve: tuple[np.ndarray, np.ndarray] | None = None,
+          stems_out: list[dict[str, Any]] | None = None
           ) -> tuple[np.ndarray, dict]:
     """Render the whole sound-design layer, and report what went into it.
 
@@ -342,8 +370,28 @@ def build(spec: dict[str, Any], total_seconds: float, music_bed_db: float,
                      "level_db": round(music_bed_db + off["ambience"], 1)})
 
     # one-shots: risers into landings, impacts on reveal cuts, stings on acts
-    def bed_under(lo: float, hi: float) -> float:
-        """The bed's quietest short-term window between lo and hi seconds."""
+    def bed_reference(lo: float, hi: float) -> float:
+        """The bed at its LOUDEST short-term window between lo and hi.
+
+        IT WAS THE QUIETEST, AND THAT IS THE BUG THAT REFUSED A TABLE. The
+        owner's rule is "no SFX event louder than the bed at that instant",
+        and lib/verify_sfx_level.py applies it by finding the event's loudest
+        moment and comparing it with the bed THERE. Placing against the bed's
+        quietest window in the same span meant the two were measuring
+        different instants, so an offset was not a statement about anything:
+        a sting placed 2 dB under the quiet end of the window measured +0.5 dB
+        over the loud end, and the layer was refused for obeying its own
+        table.
+
+        Both ends read the same number now. An event placed at
+        `bed_reference + off` measures `off` against that reference, so -2
+        means 2 dB under the bed and the gate agrees.
+
+        It is the STRICTER of the two choices, which is why it is safe: the
+        loudest window is the highest bar the rule can be read as setting, so
+        an event that clears it clears the rule at every other instant in its
+        window too.
+        """
         if bed_curve is None:
             return music_bed_db
         times, lufs = bed_curve
@@ -352,7 +400,7 @@ def build(spec: dict[str, Any], total_seconds: float, music_bed_db: float,
             return music_bed_db
         live = lufs[sel]
         live = live[live > -70.0]
-        return float(live.min()) if live.size else music_bed_db
+        return float(live.max()) if live.size else music_bed_db
 
     for kind, peak_key in (("risers", "riser_peak"),
                            ("impacts", "impact_peak"),
@@ -361,6 +409,26 @@ def build(spec: dict[str, Any], total_seconds: float, music_bed_db: float,
             a = _read(asset_path(one))
             if kind == "risers":
                 cap = int(sd["riser"]["max_seconds"] * SR)
+                # TRAILING SILENCE FIRST, OR "THE TOP OF THE RISER" IS THE
+                # SILENCE AFTER IT.
+                #
+                # Taking the last `cap` seconds is right for a file that ends
+                # on its peak and wrong for one that does not, and king-tut's
+                # does not: riser.mp3 is 10.03s with its swell in the first
+                # five — loudest sample at 3.98s — and silence to the end.
+                # `a[-cap:]` took 8.0-10.0s, which is -105 dBFS. `_to_level`
+                # then hit its own `cur < -110` silence guard and returned the
+                # array UNSCALED, so the level table never applied to a riser
+                # at all and every riser in every film was silent.
+                #
+                # It hid for four films because nothing could see it: the SFX
+                # gate measured the summed design layer, where the ambience
+                # it was buried under answered for it, and no gate asks
+                # whether an element that was placed can be heard. Found
+                # 2026-11-09 by measuring a riser's own stem and getting
+                # -70.0 LUFS — the gate's floor — out of both tables of an
+                # A/B that was supposed to compare them.
+                a = _trim_trailing_silence(a)
                 if len(a) > cap:
                     a = a[-cap:]            # keep the top of the riser, not its start
                 a *= _ramp(len(a), "in")
@@ -368,12 +436,36 @@ def build(spec: dict[str, Any], total_seconds: float, music_bed_db: float,
                 at = int(float(one["at_seconds"]) * SR) - len(a)
             else:
                 at = int(float(one["at_seconds"]) * SR)
-            here = bed_under(at / SR, (at + len(a)) / SR)
+            here = bed_reference(at / SR, (at + len(a)) / SR)
             a = _to_level(a, here + off[peak_key], peak=True)
             lo = max(at, 0)
             hi = min(at + len(a), n)
             if hi > lo:
                 out[lo:hi] += a[lo - at: hi - at]
+                # (d) THE EVENT'S OWN STEM, for the gate.
+                #
+                # The gate used to measure the SUMMED design layer inside an
+                # event's window and call the answer the event's level. The
+                # layer is a sum: with ambience at -10 and a riser at -14 the
+                # loudest thing in a riser's window was the ambience, so the
+                # reported riser level did not move when the riser moved —
+                # two full mixes differing only in riser_peak reported the
+                # same -45.2 LUFS to the decimal. Handing the stems over lets
+                # it measure the event itself.
+                if stems_out is not None:
+                    stems_out.append({
+                        "kind": kind[:-1],
+                        "at_seconds": float(one["at_seconds"]),
+                        "at_sample": lo,
+                        # What this element was ASKED to be, so the gate can
+                        # check that it got there. Placement can fail
+                        # silently: `_to_level` returns an array unscaled
+                        # when its source measures under -110, which is how
+                        # a riser whose asset ended in silence was placed at
+                        # a target of -54 and delivered -120.
+                        "target_db": round(here + off[peak_key], 1),
+                        "asset": one.get("path"),
+                        "samples": a[lo - at: hi - at].copy()})
             used.append({"element": kind[:-1], "at_seconds": one["at_seconds"],
                          **_prov(one),
                          "bed_here_db": round(here, 1),
@@ -452,9 +544,29 @@ def check_spec(spec: dict[str, Any], playbook: dict[str, Any]) -> list[str]:
     if sd["ambience"]["per_act"] and len(acts) < 2:
         problems.append("ambience is per act; fewer than two acts carry one")
 
+    # HOW MANY ONE-SHOTS, AND WHERE. Added 2026-11-09, with the levels that
+    # finally made them audible: three events that cannot be heard cost
+    # nothing, and three that can are a budget.
+    #
+    # Each cap is counted against the field the spec already uses to say
+    # where the event belongs — a riser's `act`, a sting's `boundary`, an
+    # impact's `act` and `cut` — so the rule is checked on the authored
+    # intent and needs no times, no tolerance and no act-span derivation.
+    # An earlier attempt at this derived boundary TIMES from the ambience
+    # spans and got the last one wrong by ten seconds, because the outro has
+    # no ambience of its own and merged into act 4.
+
     per_act_impacts: dict[Any, int] = {}
     for imp in spec.get("impacts", []):
         prov(imp, f"impact@{imp.get('at_seconds')}")
+        # An impact lands ON a reveal cut. Naming the cut is how the spec
+        # says which reveal, and an impact that names none is a hit placed
+        # by hand at a time nobody can check against the edit.
+        if not imp.get("cut"):
+            problems.append(
+                f"impact@{imp.get('at_seconds')}: names no cut. An impact "
+                f"lands with the picture on the cut into a reveal, so it has "
+                f"to say which cut that is")
         per_act_impacts[imp.get("act")] = per_act_impacts.get(imp.get("act"), 0) + 1
     for act, count in per_act_impacts.items():
         if count > sd["impact"]["max_per_act"]:
@@ -462,15 +574,51 @@ def check_spec(spec: dict[str, Any], playbook: dict[str, Any]) -> list[str]:
                 f"act {act}: {count} impacts, over the "
                 f"{sd['impact']['max_per_act']} ceiling — three is a trailer")
 
+    per_act_risers: dict[Any, int] = {}
     for r in spec.get("risers", []):
         prov(r, f"riser@{r.get('at_seconds')}")
         if float(r.get("seconds", 0)) > sd["riser"]["max_seconds"]:
             problems.append(
                 f"riser@{r.get('at_seconds')}: {r.get('seconds')}s, over the "
                 f"{sd['riser']['max_seconds']}s ceiling")
+        # ONE RISER PER ACT, INTO ITS LANDING LINE. The riser is not a
+        # boundary element: the playbook's own rule is that it ends ON the
+        # first word of the landing line, and a landing line is mid-act. An
+        # act has one landing to lead into; a second riser is leading into
+        # something that is not the landing.
+        if not r.get("into"):
+            problems.append(
+                f"riser@{r.get('at_seconds')}: names no landing. A riser "
+                f"ends on the first word of the line it leads to, so it has "
+                f"to say which line that is")
+        per_act_risers[r.get("act")] = per_act_risers.get(r.get("act"), 0) + 1
+    for act, count in per_act_risers.items():
+        if count > sd["riser"]["max_per_act"]:
+            problems.append(
+                f"act {act}: {count} risers, over the "
+                f"{sd['riser']['max_per_act']} ceiling. One per act, into "
+                f"its landing line — an act has one landing to lead into")
 
+    per_boundary_stings: dict[Any, int] = {}
     for st in spec.get("stings", []):
         prov(st, f"sting@{st.get('at_seconds')}")
+        # ONE STING PER BOUNDARY, and the sting is the boundary element.
+        # Counted on the `boundary` label rather than on a time, because the
+        # label is what the planner authored and two stings on one boundary
+        # is the thing being refused however far apart they land.
+        if not st.get("boundary"):
+            problems.append(
+                f"sting@{st.get('at_seconds')}: names no boundary. A sting "
+                f"marks an act boundary, so it has to say which one")
+            continue
+        per_boundary_stings[st["boundary"]] = \
+            per_boundary_stings.get(st["boundary"], 0) + 1
+    for boundary, count in per_boundary_stings.items():
+        if count > sd["sting"]["max_per_boundary"]:
+            problems.append(
+                f"boundary {boundary}: {count} stings, over the "
+                f"{sd['sting']['max_per_boundary']} ceiling — the second is "
+                f"heard as a repeat, not as a transition")
 
     return problems
 

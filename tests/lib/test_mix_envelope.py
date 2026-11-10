@@ -222,12 +222,26 @@ class TestTheFloorIsReferencedToTheUnduckedBed:
             "explanation needs rechecking")
 
     def test_the_mixer_passes_the_unducked_bed(self):
+        """Matched on the ARGUMENT, not on the whole call.
+
+        It asserted the literal `build_sound_design(total, bed)`, which broke
+        the day the call grew a third argument for the one-shot stems — a
+        rename of something the test does not care about. What it is
+        protecting is which BED goes in: the un-ducked one, because the layer
+        it builds is multiplied by the same envelope a few lines later and
+        referencing it to a bed that is already ducked ducks the floor twice.
+        """
         import inspect
+        import re
 
         src = inspect.getsource(mx.main)
-        assert "build_sound_design(total, bed)" in src, (
-            "the floor is being referenced to the ducked bed again")
-        assert "build_sound_design(total, bed_ducked)" not in src
+        call = re.search(r"build_sound_design\(([^)]*)\)", src)
+        assert call, "main() no longer calls build_sound_design"
+        args = [a.strip() for a in call.group(1).split(",")]
+        assert args[1] == "bed", (
+            f"the floor is being referenced to {args[1]!r} and not the "
+            f"un-ducked bed")
+        assert "bed_ducked" not in call.group(1)
 
     def test_and_says_why_in_the_source(self):
         import inspect
