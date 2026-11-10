@@ -149,3 +149,126 @@ class TestKingTutsEdlIsCommittedAndPortable:
                 v = cut.get(key)
                 if isinstance(v, str) and ("assets/" in v):
                     assert v.startswith("projects/king-tut/"), (key, v)
+
+
+class TestKingTutsArtifactsAreTrackedOnTheAllowListsTerms:
+    """Decisions are normalised. Records are not. Nothing else is added.
+
+    Ruled by the owner 2026-11-10. king-tut was the one delivered film whose
+    artifacts were in no history at all — they existed only in the runner
+    worktree, which is a deploy target.
+
+    The split is the whole point. `script.json`, `scene_plan.json`,
+    `asset_bank.json` and the rest say what was CHOSEN, and a worktree path
+    inside them is spelling rather than substance, so it is normalised.
+    `publish.json` and `renders/mix_report.json` say what HAPPENED, and a
+    record edited after the fact is no longer a record of its run — the same
+    ruling that left the four delivered mix reports' riser figures alone.
+    """
+
+    PROJECT = ROOT / "projects" / "king-tut"
+
+    DECISIONS = ("artifacts/edit_decisions.json", "artifacts/asset_bank.json",
+                 "artifacts/derived_assets.json", "artifacts/scene_plan.json",
+                 "artifacts/listing.json", "artifacts/narration_plan.json",
+                 "artifacts/research_brief.json", "artifacts/script.json",
+                 "artifacts/sound_design.json")
+    RECORDS = ("artifacts/publish.json", "renders/mix_report.json")
+
+    @staticmethod
+    def _absolutes(obj) -> list[str]:
+        found: list[str] = []
+
+        def walk(o):
+            if isinstance(o, dict):
+                for v in o.values():
+                    walk(v)
+            elif isinstance(o, list):
+                for v in o:
+                    walk(v)
+            elif isinstance(o, str) and o.startswith("/"):
+                found.append(o)
+
+        walk(obj)
+        return found
+
+    @pytest.mark.parametrize("rel", DECISIONS)
+    def test_a_decision_carries_no_absolute_path(self, rel):
+        path = self.PROJECT / rel
+        if not path.exists():
+            pytest.skip(f"{rel} is not in this worktree")
+        assert self._absolutes(json.loads(path.read_text())) == [], rel
+
+    @pytest.mark.parametrize("rel", DECISIONS)
+    def test_a_decision_names_no_worktree(self, rel):
+        path = self.PROJECT / rel
+        if not path.exists():
+            pytest.skip(f"{rel} is not in this worktree")
+        blob = path.read_text()
+        for naming in ("wak3up-docs/runner", "wak3up-docs/fix-render-finalise"):
+            assert naming not in blob, (rel, naming)
+
+    def test_the_mix_report_was_NOT_normalised(self):
+        """The control for the split. If this ever passes empty, a later
+        tidy-up has rewritten a record of a run that already happened."""
+        path = self.PROJECT / "renders" / "mix_report.json"
+        if not path.exists():
+            pytest.skip("king-tut's mix report is not in this worktree")
+        assert "/Users/mac/Developer/wak3up-docs/runner/" in path.read_text()
+
+    def test_the_publish_record_keeps_its_own_words(self):
+        """Its one absolute path is inside an error message about what the
+        run could not find. Normalising it would edit the message."""
+        path = self.PROJECT / "artifacts" / "publish.json"
+        if not path.exists():
+            pytest.skip("king-tut's publish record is not in this worktree")
+        assert "/Users/mac/Developer/wak3up-docs/runner/" in path.read_text()
+
+
+class TestTheAllowListWasNotWidenedForOneFilm:
+    """`.gitignore` ignores `projects/**` and un-ignores the decisions.
+
+    The temptation when one film is missing from history is to loosen the
+    pattern. The rule did not change: king-tut had nothing in the allow-list
+    that the other films do not, and four allow-listed names it simply does
+    not have (texture_screening, run1_assignment, metadata,
+    demo_act2_props), which stay absent rather than being invented.
+    """
+
+    def test_the_allow_list_is_exactly_this(self):
+        rules = [ln for ln in (ROOT / ".gitignore").read_text().splitlines()
+                 if ln.startswith("!projects/*/artifacts/")]
+        assert sorted(rules) == sorted([
+            # the directory itself, without which none of the files below is
+            # reachable past the `projects/**` ignore
+            "!projects/*/artifacts/",
+            "!projects/*/artifacts/edit_decisions.json",
+            "!projects/*/artifacts/sound_design.json",
+            "!projects/*/artifacts/narration_plan.json",
+            "!projects/*/artifacts/scene_plan.json",
+            "!projects/*/artifacts/research_brief.json",
+            "!projects/*/artifacts/asset_bank*.json",
+            "!projects/*/artifacts/texture_screening.json",
+            "!projects/*/artifacts/run1_assignment.json",
+            "!projects/*/artifacts/metadata.json",
+            "!projects/*/artifacts/publish.json",
+            "!projects/*/artifacts/script.json",
+            "!projects/*/artifacts/derived_assets.json",
+            "!projects/*/artifacts/listing.json",
+            "!projects/*/artifacts/demo_act2_props.json",
+        ])
+
+    def test_projects_are_ignored_by_default(self):
+        rules = (ROOT / ".gitignore").read_text().splitlines()
+        assert "projects/**" in rules
+
+    def test_the_audio_and_images_stay_out(self):
+        """A bed is tens of megabytes and regenerable from the candidates."""
+        rules = (ROOT / ".gitignore").read_text()
+        assert "!projects/*/assets/" not in rules
+
+    def test_only_the_renders_mix_report_is_let_through(self):
+        rules = [ln for ln in (ROOT / ".gitignore").read_text().splitlines()
+                 if ln.startswith("!projects/*/renders")]
+        assert sorted(rules) == ["!projects/*/renders/",
+                                 "!projects/*/renders/mix_report.json"]

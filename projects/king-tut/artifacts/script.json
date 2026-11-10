@@ -1,0 +1,1536 @@
+{
+ "version": "1.0",
+ "title": "King Tut: The Part Nobody Can Explain",
+ "total_duration_seconds": 1186.4,
+ "voice_performance": {
+  "performance_intent": "A researcher reading out what the record actually says, at night, to somebody who already knows the legend. Authority comes from attribution \u2014 a name, a journal and a date under every claim \u2014 and never from volume. The film's register is serious about the unexplained and never sneers at an alternative account.",
+  "pacing_profile": "contemplative",
+  "energy_curve": "Flat and withheld through the cold open. Act one is procedural and lands once. Act two carries the only real wonder in the film. Act three cools. Act four rises through the survey figures and then drops, hard, at the two coffins, and does not come back up.",
+  "pause_policy": "Every pause is written into the text as [air 1.5s], [air 2.5s] or [air 4.0s] and synthesised as real silence by scripts/synthesize_narration.py. The synthesiser invents none of its own: run #1 asked for pauses in prose and delivered thirteen seconds of silence in twenty minutes.",
+  "sample_section_id": "act1",
+  "provider_notes": {
+   "kokoro": "150 wpm baseline, calibrated per run with --calibrate. A landing reads at about 0.85 of the body rate and a reveal at about 0.9; speed is a multiplier on kokoro's measured natural rate, not a wpm figure. The outro's first line takes 0.76."
+  }
+ },
+ "sections": [
+  {
+   "id": "cold_open",
+   "label": "COLD OPEN",
+   "text": "[beat: reveal | awe]\nAt Abydos, seventy-six kings are carved along one wall of the temple of Seti the First. Where the list reaches the Eighteenth Dynasty it steps from Amenhotep the Third straight to Horemheb, with nothing in between.\n[air 1.5s]\n\n[beat: exposition | tension]\nFive rulers were taken out of that record, and one of them is the most famous Egyptian who ever lived. The men who opened his tomb were studied as a cohort; the result came back at nought point nine five. The blade against his body is made of metal his kingdom could not make.\n[air 1.5s]\n\n[beat: landing | quiet]\n[framing] Four cases, and only one of them is closed.\n[air 2.5s]",
+   "paragraphs": [
+    {
+     "text": "At Abydos, seventy-six kings are carved along one wall of the temple of Seti the First. Where the list reaches the Eighteenth Dynasty it steps from Amenhotep the Third straight to Horemheb, with nothing in between.",
+     "claims": [
+      "c49"
+     ],
+     "beat": "reveal",
+     "register": "awe",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "Five rulers were taken out of that record, and one of them is the most famous Egyptian who ever lived. The men who opened his tomb were studied as a cohort; the result came back at nought point nine five. The blade against his body is made of metal his kingdom could not make.",
+     "claims": [
+      "c49",
+      "c16",
+      "c20"
+     ],
+     "beat": "exposition",
+     "register": "tension",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "[framing] Four cases, and only one of them is closed.",
+     "beat": "landing",
+     "register": "quiet",
+     "air_after_seconds": 2.5
+    }
+   ],
+   "start_seconds": 0.0,
+   "end_seconds": 45.1,
+   "delivery_cues": {
+    "pace": "slow",
+    "energy": "low, withheld",
+    "emphasis_words": [
+     "seventy-six",
+     "nothing",
+     "could not make",
+     "one"
+    ],
+    "pause_after_seconds": 2.5,
+    "delivery_note": "Read the king-list sentence as a fact being reported, not as a revelation. The arresting thing is the gap on the wall, and the gap does the work if the voice does not reach for it."
+   },
+   "pronunciation_guides": [
+    {
+     "word": "Tutankhamun",
+     "phonetic": "too-tan-KAH-mun"
+    },
+    {
+     "word": "Abydos",
+     "phonetic": "uh-BY-doss"
+    },
+    {
+     "word": "Horemheb",
+     "phonetic": "HOR-em-heb"
+    },
+    {
+     "word": "Amenhotep",
+     "phonetic": "ah-men-HOH-tep"
+    },
+    {
+     "word": "Akhenaten",
+     "phonetic": "ah-ken-AH-ten"
+    },
+    {
+     "word": "Smenkhkare",
+     "phonetic": "smenk-KAH-ray"
+    },
+    {
+     "word": "Neferneferuaten",
+     "phonetic": "nef-er-nef-er-oo-AH-ten"
+    },
+    {
+     "word": "Nefertiti",
+     "phonetic": "nef-er-TEE-tee"
+    },
+    {
+     "word": "Ankhesenamun",
+     "phonetic": "ankh-es-en-AH-mun"
+    },
+    {
+     "word": "Tiye",
+     "phonetic": "TEE-yeh"
+    },
+    {
+     "word": "Ay",
+     "phonetic": "eye"
+    },
+    {
+     "word": "Tushratta",
+     "phonetic": "tush-RAH-tah"
+    },
+    {
+     "word": "Mitanni",
+     "phonetic": "mih-TAH-nee"
+    },
+    {
+     "word": "Naqada",
+     "phonetic": "nah-KAH-dah"
+    },
+    {
+     "word": "Saqqara",
+     "phonetic": "sah-KAR-ah"
+    },
+    {
+     "word": "Karnak",
+     "phonetic": "KAR-nak"
+    },
+    {
+     "word": "Carnarvon",
+     "phonetic": "kar-NAR-vun"
+    },
+    {
+     "word": "Aspergillus flavus",
+     "phonetic": "ass-per-JIL-us FLAY-vus"
+    },
+    {
+     "word": "erysipelas",
+     "phonetic": "eh-rih-SIP-eh-lass"
+    },
+    {
+     "word": "haematopoietic",
+     "phonetic": "hee-mat-oh-poy-ET-ik"
+    },
+    {
+     "word": "Plasmodium falciparum",
+     "phonetic": "plaz-MOH-dee-um fal-SIP-uh-rum"
+    },
+    {
+     "word": "K\u00f6hler",
+     "phonetic": "KER-ler"
+    },
+    {
+     "word": "avascular",
+     "phonetic": "ay-VASS-kyoo-lar"
+    },
+    {
+     "word": "Eldamaty",
+     "phonetic": "el-dah-MAH-tee"
+    },
+    {
+     "word": "Comelli",
+     "phonetic": "koh-MEL-ee"
+    },
+    {
+     "word": "Matsui",
+     "phonetic": "mat-SOO-ee"
+    },
+    {
+     "word": "Takafumi",
+     "phonetic": "tah-kah-FOO-mee"
+    },
+    {
+     "word": "Weigall",
+     "phonetic": "WY-gawl"
+    },
+    {
+     "word": "Legrain",
+     "phonetic": "luh-GRAN"
+    },
+    {
+     "word": "Zahi Hawass",
+     "phonetic": "ZAH-hee hah-WASS"
+    },
+    {
+     "word": "Factum Arte",
+     "phonetic": "FAK-tum AR-tay"
+    },
+    {
+     "word": "Giza",
+     "phonetic": "GEE-zah"
+    }
+   ]
+  },
+  {
+   "id": "title_sequence",
+   "label": "TITLE",
+   "text": "",
+   "paragraphs": [],
+   "start_seconds": 45.1,
+   "end_seconds": 52.1
+  },
+  {
+   "id": "act1",
+   "label": "ACT ONE \u2014 WHAT KILLED THE MEN WHO OPENED IT",
+   "text": "[beat: transition | doubt]\nThe chronology is not the part anyone disputes. The first step of a staircase came out of the valley floor on the fourth of November, nineteen twenty-two, and the excavators reached the antechamber three weeks later. Five months after that, on the fifth of April, nineteen twenty-three, the man who had paid for the whole search was dead.\n[air 1.5s]\n\n[beat: exposition | quiet]\nGeorge Herbert, the fifth Earl of Carnarvon, bought the concession for the Valley of the Kings in nineteen fourteen and funded Howard Carter from then on. Carter had been digging there since the turn of the century. Carnarvon was bitten by a mosquito, cut the bite while shaving, and the wound turned septic. The Lancet gave the cause as pneumonia supervening on facial erysipelas.\n[air 2.5s]\n\n[beat: exposition | tension]\nThen it kept going. George Jay Gould died that May, after a fever that followed his visit. The radiologist who was to X-ray the mummy, Sir Archibald Douglas-Reid, died the following January. Arthur Mace. Mervyn Herbert. Richard Bethell. Arthur Callender. Harry Burton. Howard Carter himself died of lymphoma.\n[air 1.5s]\n\n[beat: exposition | doubt]\nThere was never a curse written in that tomb. Not over the door, not on a lintel, not anywhere in the record of what was found. What there was instead was a newspaper contract. In January of nineteen twenty-three Carnarvon sold exclusive access to The Times, and every other paper on earth was shut out of the largest story of the decade and had to find a different one. Arthur Weigall of the Daily Mail said he had watched Carnarvon joking as he went in, and had given him six weeks. Arthur Conan Doyle proposed that the Earl had been killed by elementals, created by Tutankhamun's priests to guard the tomb.\n[air 2.5s]\n\n[beat: exposition | doubt]\nUnderneath the newspapers, two physical mechanisms were put forward, and both are serious. The first is mould. Toxic spores of Aspergillus flavus may have contributed to some of the deaths, Carnarvon's among them. The link has never been established, and for him specifically it is disputed.\n[air 1.5s]\n\n[beat: exposition | tension]\nThe second is radiation, and it is still being argued now. In two thousand and twenty-four, in the Journal of Scientific Exploration, Ross Fellowes set out the case that radioactive material inside sealed Egyptian tombs could account for what happened to the men who went in. He points to Geiger readings at Giza and radon at Saqqara, and he writes that both contemporary and ancient Egyptian populations are characterised by unusually high incidences of haematopoietic cancers. The journal is not a peer-reviewed venue of standing, and no one has replicated the work.\n[air 2.5s]\n\n[beat: exposition | doubt]\nThat is the claim at its strongest. What it has never had is a control group.\n[air 1.5s]\n\n[beat: exposition | quiet]\nIn December of two thousand and two the BMJ published a historical cohort study by Mark Nelson. He went through Carter's own diaries and identified forty-four Westerners who were in Egypt on the relevant dates, twenty-five of whom had been in a position to be exposed. Then he went and found their obituaries.\n[air 1.5s]\n\n[beat: reveal | resolution]\nMean survival after exposure was twenty point eight years. For the unexposed it was twenty-eight point nine. The probability that the difference between those two numbers amounted to anything came back as nought point nine five. Adjusted for age and sex, the odds of dying within ten years of exposure were one point three eight, on an interval running from nought point two to nine point six.\n[air 4.0s]\n\n[beat: landing | quiet]\nThe only variable that showed any effect on how long these people lived was sex. Lady Evelyn Herbert, who went in beside her father, outlived every man who entered that tomb.\n[air 2.5s]\n\n[beat: exposition | doubt]\nA letter in The Lancet the following June reached the same place from the medical side: unlikely that Carnarvon's death was related to the tomb, and the mycotoxin theory refuted. Of the fifty-eight people present at the opening, eight died within a dozen years.\n[air 1.5s]\n\n[beat: landing | doubt]\n[framing] So the first case closes, and it closes cleanly. What it does not explain is the room. Everyone standing in that burial chamber was standing somewhere that had been broken into twice within a few years of the funeral, repacked by officials, floored over with limestone chips, tunnelled through again, and sealed.\n[air 2.5s]",
+   "paragraphs": [
+    {
+     "text": "The chronology is not the part anyone disputes. The first step of a staircase came out of the valley floor on the fourth of November, nineteen twenty-two, and the excavators reached the antechamber three weeks later. Five months after that, on the fifth of April, nineteen twenty-three, the man who had paid for the whole search was dead.",
+     "claims": [
+      "c01",
+      "c07"
+     ],
+     "beat": "transition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "George Herbert, the fifth Earl of Carnarvon, bought the concession for the Valley of the Kings in nineteen fourteen and funded Howard Carter from then on. Carter had been digging there since the turn of the century. Carnarvon was bitten by a mosquito, cut the bite while shaving, and the wound turned septic. The Lancet gave the cause as pneumonia supervening on facial erysipelas.",
+     "claims": [
+      "c02",
+      "c07",
+      "c08"
+     ],
+     "beat": "exposition",
+     "register": "quiet",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "Then it kept going. George Jay Gould died that May, after a fever that followed his visit. The radiologist who was to X-ray the mummy, Sir Archibald Douglas-Reid, died the following January. Arthur Mace. Mervyn Herbert. Richard Bethell. Arthur Callender. Harry Burton. Howard Carter himself died of lymphoma.",
+     "claims": [
+      "c12",
+      "c13"
+     ],
+     "beat": "exposition",
+     "register": "tension",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "There was never a curse written in that tomb. Not over the door, not on a lintel, not anywhere in the record of what was found. What there was instead was a newspaper contract. In January of nineteen twenty-three Carnarvon sold exclusive access to The Times, and every other paper on earth was shut out of the largest story of the decade and had to find a different one. Arthur Weigall of the Daily Mail said he had watched Carnarvon joking as he went in, and had given him six weeks. Arthur Conan Doyle proposed that the Earl had been killed by elementals, created by Tutankhamun's priests to guard the tomb.",
+     "claims": [
+      "c06",
+      "c09",
+      "c10",
+      "c11"
+     ],
+     "beat": "exposition",
+     "register": "doubt",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "Underneath the newspapers, two physical mechanisms were put forward, and both are serious. The first is mould. Toxic spores of Aspergillus flavus may have contributed to some of the deaths, Carnarvon's among them. The link has never been established, and for him specifically it is disputed.",
+     "claims": [
+      "c14"
+     ],
+     "beat": "exposition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "The second is radiation, and it is still being argued now. In two thousand and twenty-four, in the Journal of Scientific Exploration, Ross Fellowes set out the case that radioactive material inside sealed Egyptian tombs could account for what happened to the men who went in. He points to Geiger readings at Giza and radon at Saqqara, and he writes that both contemporary and ancient Egyptian populations are characterised by unusually high incidences of haematopoietic cancers. The journal is not a peer-reviewed venue of standing, and no one has replicated the work.",
+     "claims": [
+      "c15"
+     ],
+     "beat": "exposition",
+     "register": "tension",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "That is the claim at its strongest. What it has never had is a control group.",
+     "claims": [
+      "c15"
+     ],
+     "beat": "exposition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "In December of two thousand and two the BMJ published a historical cohort study by Mark Nelson. He went through Carter's own diaries and identified forty-four Westerners who were in Egypt on the relevant dates, twenty-five of whom had been in a position to be exposed. Then he went and found their obituaries.",
+     "claims": [
+      "c16"
+     ],
+     "beat": "exposition",
+     "register": "quiet",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "Mean survival after exposure was twenty point eight years. For the unexposed it was twenty-eight point nine. The probability that the difference between those two numbers amounted to anything came back as nought point nine five. Adjusted for age and sex, the odds of dying within ten years of exposure were one point three eight, on an interval running from nought point two to nine point six.",
+     "claims": [
+      "c16",
+      "c17"
+     ],
+     "beat": "reveal",
+     "register": "resolution",
+     "air_after_seconds": 4.0
+    },
+    {
+     "text": "The only variable that showed any effect on how long these people lived was sex. Lady Evelyn Herbert, who went in beside her father, outlived every man who entered that tomb.",
+     "claims": [
+      "c17"
+     ],
+     "beat": "landing",
+     "register": "quiet",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "A letter in The Lancet the following June reached the same place from the medical side: unlikely that Carnarvon's death was related to the tomb, and the mycotoxin theory refuted. Of the fifty-eight people present at the opening, eight died within a dozen years.",
+     "claims": [
+      "c18",
+      "c19"
+     ],
+     "beat": "exposition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "[framing] So the first case closes, and it closes cleanly. What it does not explain is the room. Everyone standing in that burial chamber was standing somewhere that had been broken into twice within a few years of the funeral, repacked by officials, floored over with limestone chips, tunnelled through again, and sealed.",
+     "claims": [
+      "c05",
+      "c43"
+     ],
+     "beat": "landing",
+     "register": "doubt",
+     "air_after_seconds": 2.5
+    }
+   ],
+   "start_seconds": 52.1,
+   "end_seconds": 350.4,
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "level, procedural, warming only at the result",
+    "emphasis_words": [
+     "never",
+     "control group",
+     "nought point nine five",
+     "sex"
+    ],
+    "pause_after_seconds": 2.5,
+    "delivery_note": "Fellowes's paragraph is read straight \u2014 no irony on 'Journal of Scientific Exploration'. The sentence about the venue is information, not a verdict. Slow into the survival figures and stop dead after the interval."
+   },
+   "pronunciation_guides": [
+    {
+     "word": "Tutankhamun",
+     "phonetic": "too-tan-KAH-mun"
+    },
+    {
+     "word": "Abydos",
+     "phonetic": "uh-BY-doss"
+    },
+    {
+     "word": "Horemheb",
+     "phonetic": "HOR-em-heb"
+    },
+    {
+     "word": "Amenhotep",
+     "phonetic": "ah-men-HOH-tep"
+    },
+    {
+     "word": "Akhenaten",
+     "phonetic": "ah-ken-AH-ten"
+    },
+    {
+     "word": "Smenkhkare",
+     "phonetic": "smenk-KAH-ray"
+    },
+    {
+     "word": "Neferneferuaten",
+     "phonetic": "nef-er-nef-er-oo-AH-ten"
+    },
+    {
+     "word": "Nefertiti",
+     "phonetic": "nef-er-TEE-tee"
+    },
+    {
+     "word": "Ankhesenamun",
+     "phonetic": "ankh-es-en-AH-mun"
+    },
+    {
+     "word": "Tiye",
+     "phonetic": "TEE-yeh"
+    },
+    {
+     "word": "Ay",
+     "phonetic": "eye"
+    },
+    {
+     "word": "Tushratta",
+     "phonetic": "tush-RAH-tah"
+    },
+    {
+     "word": "Mitanni",
+     "phonetic": "mih-TAH-nee"
+    },
+    {
+     "word": "Naqada",
+     "phonetic": "nah-KAH-dah"
+    },
+    {
+     "word": "Saqqara",
+     "phonetic": "sah-KAR-ah"
+    },
+    {
+     "word": "Karnak",
+     "phonetic": "KAR-nak"
+    },
+    {
+     "word": "Carnarvon",
+     "phonetic": "kar-NAR-vun"
+    },
+    {
+     "word": "Aspergillus flavus",
+     "phonetic": "ass-per-JIL-us FLAY-vus"
+    },
+    {
+     "word": "erysipelas",
+     "phonetic": "eh-rih-SIP-eh-lass"
+    },
+    {
+     "word": "haematopoietic",
+     "phonetic": "hee-mat-oh-poy-ET-ik"
+    },
+    {
+     "word": "Plasmodium falciparum",
+     "phonetic": "plaz-MOH-dee-um fal-SIP-uh-rum"
+    },
+    {
+     "word": "K\u00f6hler",
+     "phonetic": "KER-ler"
+    },
+    {
+     "word": "avascular",
+     "phonetic": "ay-VASS-kyoo-lar"
+    },
+    {
+     "word": "Eldamaty",
+     "phonetic": "el-dah-MAH-tee"
+    },
+    {
+     "word": "Comelli",
+     "phonetic": "koh-MEL-ee"
+    },
+    {
+     "word": "Matsui",
+     "phonetic": "mat-SOO-ee"
+    },
+    {
+     "word": "Takafumi",
+     "phonetic": "tah-kah-FOO-mee"
+    },
+    {
+     "word": "Weigall",
+     "phonetic": "WY-gawl"
+    },
+    {
+     "word": "Legrain",
+     "phonetic": "luh-GRAN"
+    },
+    {
+     "word": "Zahi Hawass",
+     "phonetic": "ZAH-hee hah-WASS"
+    },
+    {
+     "word": "Factum Arte",
+     "phonetic": "FAK-tum AR-tay"
+    },
+    {
+     "word": "Giza",
+     "phonetic": "GEE-zah"
+    }
+   ]
+  },
+  {
+   "id": "act2",
+   "label": "ACT TWO \u2014 THE IRON THAT CAME DOWN",
+   "text": "[beat: transition | awe]\nFive thousand three hundred and ninety-eight objects came out of that tomb, and Carter spent ten years writing them down. Among them, wrapped in the bandages against the body, was a dagger with a gold hilt and an iron blade.\n[air 1.5s]\n\n[beat: exposition | awe]\nAn iron blade should not be there. Egypt shows no evidence of smelting iron until the sixth century BC, seven hundred years after this burial. Iron existed there before that, but only as a curiosity: the oldest known piece comes from a Naqada burial of about thirty-four hundred BC, and that iron had fallen out of the sky too.\n[air 2.5s]\n\n[beat: exposition | doubt]\nFor most of a century nobody could say where this blade's iron had come from. An analysis in the nineteen nineties concluded that its metals did not match most iron meteorites. The question simply sat there.\n[air 1.5s]\n\n[beat: exposition | quiet]\nIn two thousand and sixteen Daniela Comelli and her colleagues took a portable X-ray fluorescence instrument into the Egyptian Museum in Cairo and measured the blade without cutting it. The blade is about eleven per cent nickel and six tenths of one per cent cobalt.\n[air 1.5s]\n\n[beat: exposition | awe]\nTerrestrial iron does not run at eleven per cent nickel. Iron meteorites do. Of twenty candidate meteorites within two thousand kilometres of the Red Sea, Comelli found one, named Kharga, whose nickel and cobalt she called possibly consistent with the blade. Possibly. She was careful; the headlines were not.\n[air 2.5s]\n\n[beat: exposition | tension]\nAnd that is where every account of this object stopped for six years. Then Takafumi Matsui and three colleagues went back to the same museum with a scanning instrument and asked a different question. Not what the metal was. How anybody had shaped it.\n[air 1.5s]\n\n[beat: reveal | tension]\nThey ruled out cold working. They ruled out hot working. What is left, and what they concluded, is that the blade was forged with heat at low temperature: a real technique, needing a real smith, applied to meteoric iron seven centuries before there is any sign in Egypt that anyone there could smelt iron at all.\n[air 4.0s]\n\n[beat: landing | quiet]\nSomebody knew how to do this. We do not know who.\n[air 2.5s]\n\n[beat: exposition | doubt]\nMatsui's team offered a suggestion, and offered it as a suggestion. The plaster holding the gold hilt together carries calcium and no sulfur: a lime plaster common in the Mitanni and Hittite regions and not in Egypt. And in the Amarna letters, King Tushratta of Mitanni records sending an iron dagger with a gold sheath to Amenhotep the Third as a marriage gift.\n[air 1.5s]\n\n[beat: exposition | doubt]\nThat is an adhesive and a letter. It is not a chain of custody, and the authors never say it is. It is the best answer available to a question that is still open.\n[air 1.5s]\n\n[beat: landing | doubt]\n[framing] The second case half-closes and then opens somewhere worse. The metal is explained. The mask that lay over the face of the same body is ten point two three kilograms of twenty-three carat gold, and nobody has ever wondered whether Egypt could make that. It is the blade that should not exist, and the sky turns out to be the easy part.\n[air 2.5s]",
+   "paragraphs": [
+    {
+     "text": "Five thousand three hundred and ninety-eight objects came out of that tomb, and Carter spent ten years writing them down. Among them, wrapped in the bandages against the body, was a dagger with a gold hilt and an iron blade.",
+     "claims": [
+      "c04",
+      "c26"
+     ],
+     "beat": "transition",
+     "register": "awe",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "An iron blade should not be there. Egypt shows no evidence of smelting iron until the sixth century BC, seven hundred years after this burial. Iron existed there before that, but only as a curiosity: the oldest known piece comes from a Naqada burial of about thirty-four hundred BC, and that iron had fallen out of the sky too.",
+     "claims": [
+      "c22"
+     ],
+     "beat": "exposition",
+     "register": "awe",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "For most of a century nobody could say where this blade's iron had come from. An analysis in the nineteen nineties concluded that its metals did not match most iron meteorites. The question simply sat there.",
+     "claims": [
+      "c20",
+      "c27"
+     ],
+     "beat": "exposition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "In two thousand and sixteen Daniela Comelli and her colleagues took a portable X-ray fluorescence instrument into the Egyptian Museum in Cairo and measured the blade without cutting it. The blade is about eleven per cent nickel and six tenths of one per cent cobalt.",
+     "claims": [
+      "c20",
+      "c21"
+     ],
+     "beat": "exposition",
+     "register": "quiet",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "Terrestrial iron does not run at eleven per cent nickel. Iron meteorites do. Of twenty candidate meteorites within two thousand kilometres of the Red Sea, Comelli found one, named Kharga, whose nickel and cobalt she called possibly consistent with the blade. Possibly. She was careful; the headlines were not.",
+     "claims": [
+      "c20",
+      "c27"
+     ],
+     "beat": "exposition",
+     "register": "awe",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "And that is where every account of this object stopped for six years. Then Takafumi Matsui and three colleagues went back to the same museum with a scanning instrument and asked a different question. Not what the metal was. How anybody had shaped it.",
+     "claims": [
+      "c23"
+     ],
+     "beat": "exposition",
+     "register": "tension",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "They ruled out cold working. They ruled out hot working. What is left, and what they concluded, is that the blade was forged with heat at low temperature: a real technique, needing a real smith, applied to meteoric iron seven centuries before there is any sign in Egypt that anyone there could smelt iron at all.",
+     "claims": [
+      "c22",
+      "c24"
+     ],
+     "beat": "reveal",
+     "register": "tension",
+     "air_after_seconds": 4.0
+    },
+    {
+     "text": "Somebody knew how to do this. We do not know who.",
+     "claims": [
+      "c24"
+     ],
+     "beat": "landing",
+     "register": "quiet",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "Matsui's team offered a suggestion, and offered it as a suggestion. The plaster holding the gold hilt together carries calcium and no sulfur: a lime plaster common in the Mitanni and Hittite regions and not in Egypt. And in the Amarna letters, King Tushratta of Mitanni records sending an iron dagger with a gold sheath to Amenhotep the Third as a marriage gift.",
+     "claims": [
+      "c25"
+     ],
+     "beat": "exposition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "That is an adhesive and a letter. It is not a chain of custody, and the authors never say it is. It is the best answer available to a question that is still open.",
+     "claims": [
+      "c25"
+     ],
+     "beat": "exposition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "[framing] The second case half-closes and then opens somewhere worse. The metal is explained. The mask that lay over the face of the same body is ten point two three kilograms of twenty-three carat gold, and nobody has ever wondered whether Egypt could make that. It is the blade that should not exist, and the sky turns out to be the easy part.",
+     "claims": [
+      "c20",
+      "c22",
+      "c52"
+     ],
+     "beat": "landing",
+     "register": "doubt",
+     "air_after_seconds": 2.5
+    }
+   ],
+   "start_seconds": 350.4,
+   "end_seconds": 573.0,
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "quiet wonder, no awe-voice",
+    "emphasis_words": [
+     "should not be there",
+     "Possibly",
+     "low temperature",
+     "who"
+    ],
+    "pause_after_seconds": 2.5,
+    "delivery_note": "'Possibly.' is its own sentence and takes its own beat. The forging conclusion is the film's second reveal: drop the rate about ten per cent across it and let the four seconds after it stand empty."
+   },
+   "pronunciation_guides": [
+    {
+     "word": "Tutankhamun",
+     "phonetic": "too-tan-KAH-mun"
+    },
+    {
+     "word": "Abydos",
+     "phonetic": "uh-BY-doss"
+    },
+    {
+     "word": "Horemheb",
+     "phonetic": "HOR-em-heb"
+    },
+    {
+     "word": "Amenhotep",
+     "phonetic": "ah-men-HOH-tep"
+    },
+    {
+     "word": "Akhenaten",
+     "phonetic": "ah-ken-AH-ten"
+    },
+    {
+     "word": "Smenkhkare",
+     "phonetic": "smenk-KAH-ray"
+    },
+    {
+     "word": "Neferneferuaten",
+     "phonetic": "nef-er-nef-er-oo-AH-ten"
+    },
+    {
+     "word": "Nefertiti",
+     "phonetic": "nef-er-TEE-tee"
+    },
+    {
+     "word": "Ankhesenamun",
+     "phonetic": "ankh-es-en-AH-mun"
+    },
+    {
+     "word": "Tiye",
+     "phonetic": "TEE-yeh"
+    },
+    {
+     "word": "Ay",
+     "phonetic": "eye"
+    },
+    {
+     "word": "Tushratta",
+     "phonetic": "tush-RAH-tah"
+    },
+    {
+     "word": "Mitanni",
+     "phonetic": "mih-TAH-nee"
+    },
+    {
+     "word": "Naqada",
+     "phonetic": "nah-KAH-dah"
+    },
+    {
+     "word": "Saqqara",
+     "phonetic": "sah-KAR-ah"
+    },
+    {
+     "word": "Karnak",
+     "phonetic": "KAR-nak"
+    },
+    {
+     "word": "Carnarvon",
+     "phonetic": "kar-NAR-vun"
+    },
+    {
+     "word": "Aspergillus flavus",
+     "phonetic": "ass-per-JIL-us FLAY-vus"
+    },
+    {
+     "word": "erysipelas",
+     "phonetic": "eh-rih-SIP-eh-lass"
+    },
+    {
+     "word": "haematopoietic",
+     "phonetic": "hee-mat-oh-poy-ET-ik"
+    },
+    {
+     "word": "Plasmodium falciparum",
+     "phonetic": "plaz-MOH-dee-um fal-SIP-uh-rum"
+    },
+    {
+     "word": "K\u00f6hler",
+     "phonetic": "KER-ler"
+    },
+    {
+     "word": "avascular",
+     "phonetic": "ay-VASS-kyoo-lar"
+    },
+    {
+     "word": "Eldamaty",
+     "phonetic": "el-dah-MAH-tee"
+    },
+    {
+     "word": "Comelli",
+     "phonetic": "koh-MEL-ee"
+    },
+    {
+     "word": "Matsui",
+     "phonetic": "mat-SOO-ee"
+    },
+    {
+     "word": "Takafumi",
+     "phonetic": "tah-kah-FOO-mee"
+    },
+    {
+     "word": "Weigall",
+     "phonetic": "WY-gawl"
+    },
+    {
+     "word": "Legrain",
+     "phonetic": "luh-GRAN"
+    },
+    {
+     "word": "Zahi Hawass",
+     "phonetic": "ZAH-hee hah-WASS"
+    },
+    {
+     "word": "Factum Arte",
+     "phonetic": "FAK-tum AR-tay"
+    },
+    {
+     "word": "Giza",
+     "phonetic": "GEE-zah"
+    }
+   ]
+  },
+  {
+   "id": "act3",
+   "label": "ACT THREE \u2014 THE BODY ARGUES WITH ITSELF",
+   "text": "[beat: transition | tension]\nHe came to the throne at about eight or nine years old and he was dead at about nineteen, after a reign of roughly nine years. Nothing survives that says how.\n[air 1.5s]\n\n[beat: exposition | doubt]\nSo it has been argued over, four times in sixty years, and each argument took apart the one before it. In nineteen sixty-eight the body was X-rayed, and the film showed two fragments of bone loose inside the skull. For three decades that was a murder: a blow to the back of the head, a boy king killed.\n[air 1.5s]\n\n[beat: exposition | quiet]\nLater imaging dismantled it. The fragments are loose. They are not set into embalming resin, which they would have to be if they had been there when it was poured. They almost certainly came away during the unwrapping, by our hands and nobody else's. There is no thinning of the bone and no calcified membrane.\n[air 2.5s]\n\n[beat: exposition | tension]\nWhat the scanning did find, in two thousand and five, was a compound fracture of the left leg. The edges are ragged. There is embalming substance inside the wound, which means the break happened before the mummification rather than after it. And there is no healing at all, which means it happened very shortly before he died.\n[air 1.5s]\n\n[beat: exposition | doubt]\nA fracture like that invites a story, and two have been told. Benson Harer argued for a chariot: the front wall of the chest and the ribs are missing, which would fit a crushing injury. Chris Naunton, then running the Egypt Exploration Society, went further \u2014 working from tissue samples held by Robert Connolly at Liverpool and from crash investigators who modelled the impact, he arrived at a chariot striking him on his knees.\n[air 1.5s]\n\n[beat: exposition | tension]\nNaunton's other claim is the stranger one, and he did not invent it. He found it in Carter's own notes. The body had burned. A hurried embalming left flammable oils soaked through the linen; the oils reacted with oxygen; and the mummy cooked inside its own coffin at over two hundred degrees, some time after the lid went on.\n[air 2.5s]\n\n[beat: reveal | doubt]\nExcept that the missing chest is not evidence of a chariot. Photographs taken at the end of Carter's work show the chest wall there, intact, with a beaded collar across it. The collar is gone. So is the chest. The current reading is that robbers took the collar and the chest came away with it, and that those robbers were working in the twentieth century.\n[air 4.0s]\n\n[beat: landing | quiet]\nThe injury that was supposed to have killed him is damage somebody did to him afterwards.\n[air 2.5s]\n\n[beat: exposition | quiet]\nThe published cause of death is genetic. In February of two thousand and ten, in the Journal of the American Medical Association, Zahi Hawass and his colleagues reported testing for three genes specific to Plasmodium falciparum and finding malaria tropica in four of the mummies, his among them, with signs of repeated infection by the most severe strain. They diagnosed K\u00f6hler disease as well. They concluded that avascular bone necrosis together with the malaria was the likeliest cause, and that nothing they found would have killed him alone.\n[air 1.5s]\n\n[beat: exposition | doubt]\nSpecialists called that conclusion insufficiently substantiated. The same study's parentage result has the same shape: the father is the body in tomb KV fifty-five, either Akhenaten or Smenkhkare and no one can say which, and the mother is a woman known only as the Younger Lady. Both, the genetics suggest, were children of Amenhotep the Third and Tiye. Which would make his parents full siblings.\n[air 1.5s]\n\n[beat: landing | doubt]\n[framing] The third case does not close in either direction. A hundred and sixty-seven centimetres of body, a piece of the left pelvis missing, and four readings of it that each took apart the last. Almost everything we believe about how he died is an argument about damage, and we cannot always say who did the damage, or when.\n[air 2.5s]",
+   "paragraphs": [
+    {
+     "text": "He came to the throne at about eight or nine years old and he was dead at about nineteen, after a reign of roughly nine years. Nothing survives that says how.",
+     "claims": [
+      "c28"
+     ],
+     "beat": "transition",
+     "register": "tension",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "So it has been argued over, four times in sixty years, and each argument took apart the one before it. In nineteen sixty-eight the body was X-rayed, and the film showed two fragments of bone loose inside the skull. For three decades that was a murder: a blow to the back of the head, a boy king killed.",
+     "claims": [
+      "c33"
+     ],
+     "beat": "exposition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "Later imaging dismantled it. The fragments are loose. They are not set into embalming resin, which they would have to be if they had been there when it was poured. They almost certainly came away during the unwrapping, by our hands and nobody else's. There is no thinning of the bone and no calcified membrane.",
+     "claims": [
+      "c33"
+     ],
+     "beat": "exposition",
+     "register": "quiet",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "What the scanning did find, in two thousand and five, was a compound fracture of the left leg. The edges are ragged. There is embalming substance inside the wound, which means the break happened before the mummification rather than after it. And there is no healing at all, which means it happened very shortly before he died.",
+     "claims": [
+      "c34"
+     ],
+     "beat": "exposition",
+     "register": "tension",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "A fracture like that invites a story, and two have been told. Benson Harer argued for a chariot: the front wall of the chest and the ribs are missing, which would fit a crushing injury. Chris Naunton, then running the Egypt Exploration Society, went further \u2014 working from tissue samples held by Robert Connolly at Liverpool and from crash investigators who modelled the impact, he arrived at a chariot striking him on his knees.",
+     "claims": [
+      "c35",
+      "c36",
+      "c37"
+     ],
+     "beat": "exposition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "Naunton's other claim is the stranger one, and he did not invent it. He found it in Carter's own notes. The body had burned. A hurried embalming left flammable oils soaked through the linen; the oils reacted with oxygen; and the mummy cooked inside its own coffin at over two hundred degrees, some time after the lid went on.",
+     "claims": [
+      "c36"
+     ],
+     "beat": "exposition",
+     "register": "tension",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "Except that the missing chest is not evidence of a chariot. Photographs taken at the end of Carter's work show the chest wall there, intact, with a beaded collar across it. The collar is gone. So is the chest. The current reading is that robbers took the collar and the chest came away with it, and that those robbers were working in the twentieth century.",
+     "claims": [
+      "c35"
+     ],
+     "beat": "reveal",
+     "register": "doubt",
+     "air_after_seconds": 4.0
+    },
+    {
+     "text": "The injury that was supposed to have killed him is damage somebody did to him afterwards.",
+     "claims": [
+      "c35"
+     ],
+     "beat": "landing",
+     "register": "quiet",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "The published cause of death is genetic. In February of two thousand and ten, in the Journal of the American Medical Association, Zahi Hawass and his colleagues reported testing for three genes specific to Plasmodium falciparum and finding malaria tropica in four of the mummies, his among them, with signs of repeated infection by the most severe strain. They diagnosed K\u00f6hler disease as well. They concluded that avascular bone necrosis together with the malaria was the likeliest cause, and that nothing they found would have killed him alone.",
+     "claims": [
+      "c29",
+      "c30"
+     ],
+     "beat": "exposition",
+     "register": "quiet",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "Specialists called that conclusion insufficiently substantiated. The same study's parentage result has the same shape: the father is the body in tomb KV fifty-five, either Akhenaten or Smenkhkare and no one can say which, and the mother is a woman known only as the Younger Lady. Both, the genetics suggest, were children of Amenhotep the Third and Tiye. Which would make his parents full siblings.",
+     "claims": [
+      "c31",
+      "c32"
+     ],
+     "beat": "exposition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "[framing] The third case does not close in either direction. A hundred and sixty-seven centimetres of body, a piece of the left pelvis missing, and four readings of it that each took apart the last. Almost everything we believe about how he died is an argument about damage, and we cannot always say who did the damage, or when.",
+     "claims": [
+      "c33",
+      "c35",
+      "c38"
+     ],
+     "beat": "landing",
+     "register": "doubt",
+     "air_after_seconds": 2.5
+    }
+   ],
+   "start_seconds": 573.0,
+   "end_seconds": 846.4,
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "patient, slightly cooler than act two",
+    "emphasis_words": [
+     "loose",
+     "before",
+     "afterwards",
+     "insufficiently substantiated"
+    ],
+    "pause_after_seconds": 2.5,
+    "delivery_note": "Four theories arrive and three are dismantled. None of the dismantling is a gotcha \u2014 read each as the next measurement, not as a correction of the last person."
+   },
+   "pronunciation_guides": [
+    {
+     "word": "Tutankhamun",
+     "phonetic": "too-tan-KAH-mun"
+    },
+    {
+     "word": "Abydos",
+     "phonetic": "uh-BY-doss"
+    },
+    {
+     "word": "Horemheb",
+     "phonetic": "HOR-em-heb"
+    },
+    {
+     "word": "Amenhotep",
+     "phonetic": "ah-men-HOH-tep"
+    },
+    {
+     "word": "Akhenaten",
+     "phonetic": "ah-ken-AH-ten"
+    },
+    {
+     "word": "Smenkhkare",
+     "phonetic": "smenk-KAH-ray"
+    },
+    {
+     "word": "Neferneferuaten",
+     "phonetic": "nef-er-nef-er-oo-AH-ten"
+    },
+    {
+     "word": "Nefertiti",
+     "phonetic": "nef-er-TEE-tee"
+    },
+    {
+     "word": "Ankhesenamun",
+     "phonetic": "ankh-es-en-AH-mun"
+    },
+    {
+     "word": "Tiye",
+     "phonetic": "TEE-yeh"
+    },
+    {
+     "word": "Ay",
+     "phonetic": "eye"
+    },
+    {
+     "word": "Tushratta",
+     "phonetic": "tush-RAH-tah"
+    },
+    {
+     "word": "Mitanni",
+     "phonetic": "mih-TAH-nee"
+    },
+    {
+     "word": "Naqada",
+     "phonetic": "nah-KAH-dah"
+    },
+    {
+     "word": "Saqqara",
+     "phonetic": "sah-KAR-ah"
+    },
+    {
+     "word": "Karnak",
+     "phonetic": "KAR-nak"
+    },
+    {
+     "word": "Carnarvon",
+     "phonetic": "kar-NAR-vun"
+    },
+    {
+     "word": "Aspergillus flavus",
+     "phonetic": "ass-per-JIL-us FLAY-vus"
+    },
+    {
+     "word": "erysipelas",
+     "phonetic": "eh-rih-SIP-eh-lass"
+    },
+    {
+     "word": "haematopoietic",
+     "phonetic": "hee-mat-oh-poy-ET-ik"
+    },
+    {
+     "word": "Plasmodium falciparum",
+     "phonetic": "plaz-MOH-dee-um fal-SIP-uh-rum"
+    },
+    {
+     "word": "K\u00f6hler",
+     "phonetic": "KER-ler"
+    },
+    {
+     "word": "avascular",
+     "phonetic": "ay-VASS-kyoo-lar"
+    },
+    {
+     "word": "Eldamaty",
+     "phonetic": "el-dah-MAH-tee"
+    },
+    {
+     "word": "Comelli",
+     "phonetic": "koh-MEL-ee"
+    },
+    {
+     "word": "Matsui",
+     "phonetic": "mat-SOO-ee"
+    },
+    {
+     "word": "Takafumi",
+     "phonetic": "tah-kah-FOO-mee"
+    },
+    {
+     "word": "Weigall",
+     "phonetic": "WY-gawl"
+    },
+    {
+     "word": "Legrain",
+     "phonetic": "luh-GRAN"
+    },
+    {
+     "word": "Zahi Hawass",
+     "phonetic": "ZAH-hee hah-WASS"
+    },
+    {
+     "word": "Factum Arte",
+     "phonetic": "FAK-tum AR-tay"
+    },
+    {
+     "word": "Giza",
+     "phonetic": "GEE-zah"
+    }
+   ]
+  },
+  {
+   "id": "act4",
+   "label": "ACT FOUR \u2014 WHAT IS STILL ON THE OTHER SIDE",
+   "text": "[beat: transition | doubt]\n[framing] Which leaves the fourth, and the fourth is the one nobody has shut. It begins with a measurement that is not in dispute. The tomb is the wrong size.\n[air 1.5s]\n\n[beat: exposition | quiet]\nThe corridor runs eight metres. The antechamber is seven point nine by three point six. The burial chamber, four by six point four. It is smaller and less decorated than the royal tombs around it, and its plan is the plan of a private tomb, elaborated afterwards to look royal. The reading most Egyptologists accept is that it was not built for him. It may have been built for Ay, and enlarged in a hurry when a pharaoh of nineteen died before his own tomb was ready.\n[air 2.5s]\n\n[beat: exposition | doubt]\nIn two thousand and fifteen Nicholas Reeves looked at Factum Arte's high-resolution scans of the burial chamber and saw something in the plaster. On the west wall and the north wall, he argued, there are partitions nobody had noticed, and behind them two chambers. In one, he proposed, lies the burial of Neferneferuaten, whom he identifies with Nefertiti.\n[air 1.5s]\n\n[beat: exposition | tension]\nThe Ministry of Antiquities sent radar in later that year, and it appeared to show voids. Then radar went back in two thousand and sixteen and found nothing. And again two years after that, and found nothing. That is where this story is usually left.\n[air 2.5s]\n\n[beat: exposition | doubt]\nIt is left too early. Seven major campaigns have examined that tomb since Reeves published. In September of two thousand and twenty-six a review led by Mamdouh Eldamaty of Ain Shams University, a former antiquities minister, working with the GBG Group in Cambridge and the Amarna Royal Tombs Project, pulled two field seasons together and argued for something larger than Reeves had.\n[air 1.5s]\n\n[beat: reveal | awe]\nNot two rooms behind a wall. A corridor roughly two metres wide, and five or six further chambers, reaching twenty-five to thirty metres north of anything we know. The microgravity survey took more than twelve hundred readings across about thirty-five square metres of floor. One feature, which they call anomaly seven, is a pocket of low density wrapped around a square of something denser. George Ballard, who read the geophysics, said it could be a chamber with objects in it.\n[air 4.0s]\n\n[beat: landing | quiet]\nAnd then he said the other thing, which is the reason this is still a question rather than an answer.\n[air 2.5s]\n\n[beat: exposition | doubt]\nThe measurements, Ballard conceded, were taken under conditions approaching the limits of what ground-penetrating radar and microgravity surveys can accurately reveal. The review says as much in its own words: the geophysics has reached the limits of remote methods. It does not show that Nefertiti is back there. It does not say who used those rooms, or when they were cut. And if the corridor is real it may be packed with rubble, which is exactly what an instrument hunting voids would miss.\n[air 1.5s]\n\n[beat: exposition | tension]\nThere is one way left to find out, and it needs a permit. If the Supreme Council of Antiquities grants one, work beyond the wall could begin this month. Everything they already have is above ground: the Grand Egyptian Museum opened a year ago with all five thousand three hundred and ninety-eight objects in one building, for the first time since the tomb was found.\n[air 1.5s]\n\n[beat: exposition | quiet]\nHe is a strange man to have become the most visible Egyptian in the world. In his third year on the throne he ended Aten's supremacy, gave Amun his cult back, and had it cut into a stela that Georges Legrain found at Karnak. Horemheb later carved his own names over the top of his, and erased the figure of his queen. Then the king lists dropped him. That is the wall at Abydos.\n[air 2.5s]\n\n[beat: exposition | quiet]\nThere is one more thing in that treasury that nobody stole and nobody explains. In an open wooden box, two small coffins. Two infant girls, one born at about twenty-five weeks and twenty-five centimetres long, the other near term at thirty-six. His daughters. The inscriptions do not give their names. They call each of them a nameless Osiris.\n[air 2.5s]\n\n[beat: landing | resolution]\nThe DNA says he was their father, to better than ninety-nine point nine per cent. It cannot say who their mother was. There is a partial profile from a woman in a nearby tomb that might be hers, and it is not strong enough to stand.\n[air 2.5s]\n\n[beat: landing | quiet]\nSo there is a corridor nobody has walked down, two children nobody has named, and a permit sitting on a desk in Cairo. The question was never whether we would understand Tutankhamun. It is what his successors were trying to take off that wall, and whether a gravity meter has just found it.",
+   "paragraphs": [
+    {
+     "text": "[framing] Which leaves the fourth, and the fourth is the one nobody has shut. It begins with a measurement that is not in dispute. The tomb is the wrong size.",
+     "claims": [
+      "c41"
+     ],
+     "beat": "transition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "The corridor runs eight metres. The antechamber is seven point nine by three point six. The burial chamber, four by six point four. It is smaller and less decorated than the royal tombs around it, and its plan is the plan of a private tomb, elaborated afterwards to look royal. The reading most Egyptologists accept is that it was not built for him. It may have been built for Ay, and enlarged in a hurry when a pharaoh of nineteen died before his own tomb was ready.",
+     "claims": [
+      "c41",
+      "c42",
+      "c28"
+     ],
+     "beat": "exposition",
+     "register": "quiet",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "In two thousand and fifteen Nicholas Reeves looked at Factum Arte's high-resolution scans of the burial chamber and saw something in the plaster. On the west wall and the north wall, he argued, there are partitions nobody had noticed, and behind them two chambers. In one, he proposed, lies the burial of Neferneferuaten, whom he identifies with Nefertiti.",
+     "claims": [
+      "c44"
+     ],
+     "beat": "exposition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "The Ministry of Antiquities sent radar in later that year, and it appeared to show voids. Then radar went back in two thousand and sixteen and found nothing. And again two years after that, and found nothing. That is where this story is usually left.",
+     "claims": [
+      "c45"
+     ],
+     "beat": "exposition",
+     "register": "tension",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "It is left too early. Seven major campaigns have examined that tomb since Reeves published. In September of two thousand and twenty-six a review led by Mamdouh Eldamaty of Ain Shams University, a former antiquities minister, working with the GBG Group in Cambridge and the Amarna Royal Tombs Project, pulled two field seasons together and argued for something larger than Reeves had.",
+     "claims": [
+      "c46"
+     ],
+     "beat": "exposition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "Not two rooms behind a wall. A corridor roughly two metres wide, and five or six further chambers, reaching twenty-five to thirty metres north of anything we know. The microgravity survey took more than twelve hundred readings across about thirty-five square metres of floor. One feature, which they call anomaly seven, is a pocket of low density wrapped around a square of something denser. George Ballard, who read the geophysics, said it could be a chamber with objects in it.",
+     "claims": [
+      "c46",
+      "c47"
+     ],
+     "beat": "reveal",
+     "register": "awe",
+     "air_after_seconds": 4.0
+    },
+    {
+     "text": "And then he said the other thing, which is the reason this is still a question rather than an answer.",
+     "claims": [
+      "c48"
+     ],
+     "beat": "landing",
+     "register": "quiet",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "The measurements, Ballard conceded, were taken under conditions approaching the limits of what ground-penetrating radar and microgravity surveys can accurately reveal. The review says as much in its own words: the geophysics has reached the limits of remote methods. It does not show that Nefertiti is back there. It does not say who used those rooms, or when they were cut. And if the corridor is real it may be packed with rubble, which is exactly what an instrument hunting voids would miss.",
+     "claims": [
+      "c48"
+     ],
+     "beat": "exposition",
+     "register": "doubt",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "There is one way left to find out, and it needs a permit. If the Supreme Council of Antiquities grants one, work beyond the wall could begin this month. Everything they already have is above ground: the Grand Egyptian Museum opened a year ago with all five thousand three hundred and ninety-eight objects in one building, for the first time since the tomb was found.",
+     "claims": [
+      "c48",
+      "c51",
+      "c04"
+     ],
+     "beat": "exposition",
+     "register": "tension",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "He is a strange man to have become the most visible Egyptian in the world. In his third year on the throne he ended Aten's supremacy, gave Amun his cult back, and had it cut into a stela that Georges Legrain found at Karnak. Horemheb later carved his own names over the top of his, and erased the figure of his queen. Then the king lists dropped him. That is the wall at Abydos.",
+     "claims": [
+      "c50",
+      "c49"
+     ],
+     "beat": "exposition",
+     "register": "quiet",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "There is one more thing in that treasury that nobody stole and nobody explains. In an open wooden box, two small coffins. Two infant girls, one born at about twenty-five weeks and twenty-five centimetres long, the other near term at thirty-six. His daughters. The inscriptions do not give their names. They call each of them a nameless Osiris.",
+     "claims": [
+      "c39"
+     ],
+     "beat": "exposition",
+     "register": "quiet",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "The DNA says he was their father, to better than ninety-nine point nine per cent. It cannot say who their mother was. There is a partial profile from a woman in a nearby tomb that might be hers, and it is not strong enough to stand.",
+     "claims": [
+      "c40"
+     ],
+     "beat": "landing",
+     "register": "resolution",
+     "air_after_seconds": 2.5
+    },
+    {
+     "text": "So there is a corridor nobody has walked down, two children nobody has named, and a permit sitting on a desk in Cairo. The question was never whether we would understand Tutankhamun. It is what his successors were trying to take off that wall, and whether a gravity meter has just found it.",
+     "claims": [
+      "c46",
+      "c48",
+      "c49"
+     ],
+     "beat": "landing",
+     "register": "quiet",
+     "air_after_seconds": 0.0
+    }
+   ],
+   "start_seconds": 846.4,
+   "end_seconds": 1176.9,
+   "delivery_cues": {
+    "pace": "measured",
+    "energy": "rising through the survey, falling at the coffins",
+    "emphasis_words": [
+     "wrong size",
+     "nothing",
+     "anomaly seven",
+     "limits",
+     "nameless"
+    ],
+    "pause_after_seconds": 4.0,
+    "delivery_note": "The reveal is a list of measurements and must not be performed as a discovery; Ballard's caveat is what the act is actually about. The last two paragraphs drop almost to a whisper and do not come back up."
+   },
+   "pronunciation_guides": [
+    {
+     "word": "Tutankhamun",
+     "phonetic": "too-tan-KAH-mun"
+    },
+    {
+     "word": "Abydos",
+     "phonetic": "uh-BY-doss"
+    },
+    {
+     "word": "Horemheb",
+     "phonetic": "HOR-em-heb"
+    },
+    {
+     "word": "Amenhotep",
+     "phonetic": "ah-men-HOH-tep"
+    },
+    {
+     "word": "Akhenaten",
+     "phonetic": "ah-ken-AH-ten"
+    },
+    {
+     "word": "Smenkhkare",
+     "phonetic": "smenk-KAH-ray"
+    },
+    {
+     "word": "Neferneferuaten",
+     "phonetic": "nef-er-nef-er-oo-AH-ten"
+    },
+    {
+     "word": "Nefertiti",
+     "phonetic": "nef-er-TEE-tee"
+    },
+    {
+     "word": "Ankhesenamun",
+     "phonetic": "ankh-es-en-AH-mun"
+    },
+    {
+     "word": "Tiye",
+     "phonetic": "TEE-yeh"
+    },
+    {
+     "word": "Ay",
+     "phonetic": "eye"
+    },
+    {
+     "word": "Tushratta",
+     "phonetic": "tush-RAH-tah"
+    },
+    {
+     "word": "Mitanni",
+     "phonetic": "mih-TAH-nee"
+    },
+    {
+     "word": "Naqada",
+     "phonetic": "nah-KAH-dah"
+    },
+    {
+     "word": "Saqqara",
+     "phonetic": "sah-KAR-ah"
+    },
+    {
+     "word": "Karnak",
+     "phonetic": "KAR-nak"
+    },
+    {
+     "word": "Carnarvon",
+     "phonetic": "kar-NAR-vun"
+    },
+    {
+     "word": "Aspergillus flavus",
+     "phonetic": "ass-per-JIL-us FLAY-vus"
+    },
+    {
+     "word": "erysipelas",
+     "phonetic": "eh-rih-SIP-eh-lass"
+    },
+    {
+     "word": "haematopoietic",
+     "phonetic": "hee-mat-oh-poy-ET-ik"
+    },
+    {
+     "word": "Plasmodium falciparum",
+     "phonetic": "plaz-MOH-dee-um fal-SIP-uh-rum"
+    },
+    {
+     "word": "K\u00f6hler",
+     "phonetic": "KER-ler"
+    },
+    {
+     "word": "avascular",
+     "phonetic": "ay-VASS-kyoo-lar"
+    },
+    {
+     "word": "Eldamaty",
+     "phonetic": "el-dah-MAH-tee"
+    },
+    {
+     "word": "Comelli",
+     "phonetic": "koh-MEL-ee"
+    },
+    {
+     "word": "Matsui",
+     "phonetic": "mat-SOO-ee"
+    },
+    {
+     "word": "Takafumi",
+     "phonetic": "tah-kah-FOO-mee"
+    },
+    {
+     "word": "Weigall",
+     "phonetic": "WY-gawl"
+    },
+    {
+     "word": "Legrain",
+     "phonetic": "luh-GRAN"
+    },
+    {
+     "word": "Zahi Hawass",
+     "phonetic": "ZAH-hee hah-WASS"
+    },
+    {
+     "word": "Factum Arte",
+     "phonetic": "FAK-tum AR-tay"
+    },
+    {
+     "word": "Giza",
+     "phonetic": "GEE-zah"
+    }
+   ]
+  },
+  {
+   "id": "outro",
+   "label": "OUTRO",
+   "text": "[beat: landing | resolution]\nFour questions, and one of them ended tonight.\n[air 1.5s]\n\n[beat: exposition | resolution]\nIf you want to be here when that wall finally opens, subscribe.",
+   "paragraphs": [
+    {
+     "text": "Four questions, and one of them ended tonight.",
+     "beat": "landing",
+     "register": "resolution",
+     "air_after_seconds": 1.5
+    },
+    {
+     "text": "If you want to be here when that wall finally opens, subscribe.",
+     "beat": "exposition",
+     "register": "resolution",
+     "air_after_seconds": 0.0
+    }
+   ],
+   "start_seconds": 1176.9,
+   "end_seconds": 1186.4,
+   "delivery_cues": {
+    "pace": "slow",
+    "energy": "low",
+    "emphasis_words": [
+     "one",
+     "opens"
+    ],
+    "delivery_note": "First line at about 0.76 of the body rate as a landing. The ask runs at the body speed and is tied to the wall, not to the channel."
+   }
+  }
+ ],
+ "metadata": {
+  "project_id": "king-tut",
+  "pipeline": "narrated-documentary",
+  "playbook": "wak3up-documentary",
+  "research_brief_ref": "projects/king-tut/artifacts/research_brief.json",
+  "proposal_packet_ref": "projects/king-tut/artifacts/proposal_packet.json",
+  "narration_plan_ref": "projects/king-tut/artifacts/narration_plan.json",
+  "built_by": "projects/king-tut/build_script.py",
+  "generation_mode": "outline_first_then_act_by_act",
+  "outline_ref": "proposal_packet.metadata.act_structure.run_of_show \u2014 written and approved before any prose, with the per-act claim assignment taken from research_brief.metadata.act_assignment. Each act was then drafted against the outline, the previous act's text and its own assigned claim ids, and scripts/check_claims.py was run on it before the next act was started.",
+  "measured": {
+   "words": 2686,
+   "wpm": 150,
+   "speech_seconds": 1074.4,
+   "planned_air_seconds": 105.0,
+   "air_pct_of_runtime": 8.9,
+   "total_seconds": 1186.4,
+   "paragraphs": 52,
+   "beats_by_type": {
+    "reveal": 5,
+    "exposition": 32,
+    "landing": 11,
+    "transition": 4
+   },
+   "air_gaps": 50,
+   "longest_air_seconds": 4.0,
+   "duration_measurement": "speech_plus_planned_air",
+   "note": "total_seconds is speech plus written air plus the title sequence's own band; it is not words divided by wpm. Measured narration runtime replaces this figure after the assets stage, and if the measured value is more than ten per cent off, the script comes back here rather than the visuals being stretched to hide it."
+  },
+  "per_section": {
+   "cold_open": {
+    "paragraphs": 3,
+    "words": 99,
+    "air_seconds": 5.5,
+    "span_seconds": 45.1,
+    "beats": [
+     "reveal|awe",
+     "exposition|tension",
+     "landing|quiet"
+    ]
+   },
+   "title_sequence": {
+    "paragraphs": 0,
+    "words": 0,
+    "air_seconds": 0,
+    "span_seconds": 7.0,
+    "beats": []
+   },
+   "act1": {
+    "paragraphs": 12,
+    "words": 682,
+    "air_seconds": 25.5,
+    "span_seconds": 298.3,
+    "beats": [
+     "transition|doubt",
+     "exposition|quiet",
+     "exposition|tension",
+     "exposition|doubt",
+     "exposition|doubt",
+     "exposition|tension",
+     "exposition|doubt",
+     "exposition|quiet",
+     "reveal|resolution",
+     "landing|quiet",
+     "exposition|doubt",
+     "landing|doubt"
+    ]
+   },
+   "act2": {
+    "paragraphs": 11,
+    "words": 499,
+    "air_seconds": 23.0,
+    "span_seconds": 222.6,
+    "beats": [
+     "transition|awe",
+     "exposition|awe",
+     "exposition|doubt",
+     "exposition|quiet",
+     "exposition|awe",
+     "exposition|tension",
+     "reveal|tension",
+     "landing|quiet",
+     "exposition|doubt",
+     "exposition|doubt",
+     "landing|doubt"
+    ]
+   },
+   "act3": {
+    "paragraphs": 11,
+    "words": 626,
+    "air_seconds": 23.0,
+    "span_seconds": 273.4,
+    "beats": [
+     "transition|tension",
+     "exposition|doubt",
+     "exposition|quiet",
+     "exposition|tension",
+     "exposition|doubt",
+     "exposition|tension",
+     "reveal|doubt",
+     "landing|quiet",
+     "exposition|quiet",
+     "exposition|doubt",
+     "landing|doubt"
+    ]
+   },
+   "act4": {
+    "paragraphs": 13,
+    "words": 760,
+    "air_seconds": 26.5,
+    "span_seconds": 330.5,
+    "beats": [
+     "transition|doubt",
+     "exposition|quiet",
+     "exposition|doubt",
+     "exposition|tension",
+     "exposition|doubt",
+     "reveal|awe",
+     "landing|quiet",
+     "exposition|doubt",
+     "exposition|tension",
+     "exposition|quiet",
+     "exposition|quiet",
+     "landing|resolution",
+     "landing|quiet"
+    ]
+   },
+   "outro": {
+    "paragraphs": 2,
+    "words": 20,
+    "air_seconds": 1.5,
+    "span_seconds": 9.5,
+    "beats": [
+     "landing|resolution",
+     "exposition|resolution"
+    ]
+   }
+  },
+  "bands": {
+   "narrated_word_band": [
+    2500,
+    2700
+   ],
+   "duration_band_seconds": [
+    1140,
+    1260
+   ],
+   "air_pct_band": [
+    8,
+    15
+   ],
+   "act_count_band": [
+    4,
+    5
+   ],
+   "act_count": 4,
+   "cold_open_max_seconds": 46,
+   "cold_open_seconds": 45.1,
+   "outro_max_seconds": 10,
+   "framing_max_pct": 5.0
+  },
+  "deviation_from_the_approved_outline": {
+   "what": "Per-act word counts moved against the proposal's targets while the film total stayed inside the band.",
+   "planned": {
+    "cold_open": 95,
+    "act1": 670,
+    "act2": 645,
+    "act3": 630,
+    "act4": 580,
+    "outro": 40
+   },
+   "actual": {
+    "cold_open": 99,
+    "title_sequence": 0,
+    "act1": 682,
+    "act2": 499,
+    "act3": 626,
+    "act4": 760,
+    "outro": 20
+   },
+   "why": "Act 4 came out longest rather than shortest. Its material is the only genuinely open case in the film and it carries both the 2026 survey figures and the closing image, and the two could not both be cut to 580 words without dropping either Ballard's caveat or the coffins. Act 2's ledger is the thinnest in the film at ten entries, so it came in short rather than being padded to its target. The film total is 2,686 words against a 2,500-2,700 band and 1,186 seconds against an 1,140-1,260 band. Recorded rather than quietly rebalanced, because the outline was approved with different numbers in it."
+  },
+  "padding_checks": {
+   "act1": {
+    "new_information": "Nelson's actual numbers \u2014 20.8 years against 28.9 at p = 0.95, and an odds ratio of 1.38 on an interval from 0.20 to 9.6 \u2014 which the popular account of the curse never carries. Plus the mechanism behind the legend's spread: one paper held an exclusive and every other paper needed a different story.",
+    "no_restatement": "Nothing earlier to restate; this is the first act. The chronology paragraph is the only setup in the film and it is four sentences.",
+    "earned_length": "Twenty per cent shorter loses either the radiation hypothesis or the cohort method, and the act's whole shape is claim-then-test. Losing either leaves a list of deaths, which is the thing the channel's Shorts already did.",
+    "ledger_density": "18 ledger entries across 682 words \u2014 one per 38 words, well inside the one-per-150 floor.",
+    "verdict": "pass"
+   },
+   "act2": {
+    "new_information": "The 2022 manufacture study. Low-temperature heat forging, the sulfur-free lime plaster on the hilt, and the Amarna letter recording an iron dagger sent from Mitanni \u2014 set against the seven-century gap before Egypt shows any iron smelting.",
+    "no_restatement": "The mask reappears in the closing paragraph, in one clause, as a contrast with the blade rather than as a description. It is a callback, not a recap.",
+    "earned_length": "Twenty per cent shorter loses either Comelli's hedge about Kharga or the fact that the 1990s analysis said the opposite \u2014 and with them the act's honesty about how the determination was reached.",
+    "ledger_density": "10 entries across 499 words \u2014 one per 50 words.",
+    "verdict": "pass"
+   },
+   "act3": {
+    "new_information": "That the murder, chariot and combustion theses each rest on damage done after 1922 or on an absence that photographs show was present in 1926 \u2014 and that the published cause of death was called insufficiently substantiated by specialists.",
+    "no_restatement": "Act 1 was about the men who opened the tomb; this is about the body inside it. The only shared material is Carter's 1926 photographs, used here as evidence rather than as chronology.",
+    "earned_length": "Twenty per cent shorter means dropping one of the four readings, and the act's point is that there are four and that each dismantled the last. Three readings is an argument; four is a pattern.",
+    "ledger_density": "11 entries across 626 words \u2014 one per 57 words.",
+    "verdict": "pass"
+   },
+   "act4": {
+    "new_information": "The September 2026 geophysical review: a two-metre corridor, anomaly seven, more than twelve hundred microgravity readings over thirty-five square metres, a proposed complex reaching thirty metres north, and Ballard's concession that the measurements sit at the limits of the method. Then the two unnamed infants, which nothing earlier touches.",
+    "no_restatement": "The Abydos wall returns in the penultimate paragraph. That is deliberate and it is one sentence \u2014 the cold open stated the omission without explaining it, and this is the explanation, which is new information rather than a repeat.",
+    "earned_length": "Twenty per cent shorter loses either Ballard's caveat or the coffins. Without the caveat the act asserts a discovery the authors explicitly do not claim; without the coffins the film ends on geophysics instead of on a question about people.",
+    "ledger_density": "14 entries across 760 words \u2014 one per 54 words.",
+    "verdict": "pass"
+   }
+  },
+  "contested_claims_narrated_as_contested": {
+   "c15": "Fellowes's radiation hypothesis \u2014 voiced in full, attributed by name, with the journal's standing stated as part of the fact. No sneer and no endorsement.",
+   "c14": "Aspergillus flavus \u2014 'may have contributed', 'has never been established', 'for him specifically it is disputed'.",
+   "c27": "Kharga \u2014 Comelli's own 'possibly consistent' is kept, and the narration says so: 'She was careful; the headlines were not.'",
+   "c25": "The Mitanni origin \u2014 'offered a suggestion, and offered it as a suggestion', then 'that is an adhesive and a letter. It is not a chain of custody.'",
+   "c31": "The published cause of death \u2014 'Specialists called that conclusion insufficiently substantiated.' Neither reading is asserted.",
+   "c32": "KV55 \u2014 'either Akhenaten or Smenkhkare and no one can say which'.",
+   "c35": "The chariot thesis \u2014 stated at full strength as Harer's, then answered with the 1926 photographs.",
+   "c36": "Naunton's combustion claim \u2014 attributed, and the narration says he found it in Carter's own notes rather than inventing it. The act does not adjudicate it.",
+   "c40": "The infants' maternity \u2014 'it is not strong enough to stand.'",
+   "c44": "Reeves \u2014 'he argued', 'he proposed', 'whom he identifies with Nefertiti'.",
+   "c46": "Eldamaty \u2014 'argued for something larger than Reeves had'.",
+   "c47": "Anomaly seven \u2014 'said it could be a chamber with objects in it'."
+  },
+  "ledger_entries_not_spent": {
+   "ids": [
+    "c03",
+    "c52_partial",
+    "c53"
+   ],
+   "why": "c03 (the 'wonderful things' exchange) was cut because the act 1 chronology paragraph does not need it and the quotation is itself disputed between two wordings \u2014 it would cost two sentences to narrate honestly. c53 (the 2014 beard incident) is a good fact about museum handling and belongs to no act in this film. Both stay in the brief: an unspent ledger entry is not a defect, and an unsourced sentence is."
+  },
+  "ending": {
+   "mode": "open_question",
+   "text": "It is what his successors were trying to take off that wall, and whether a gravity meter has just found it.",
+   "why_it_is_a_real_question": "The ledger marks it open: the 2026 review's own authors say remote methods have reached their limit, the radar record disagrees with itself across three campaigns, and the permit has not been granted. No recap of the acts precedes it."
+  },
+  "gates_run": {
+   "lib/script_beats.py": "PASS \u2014 52 beats, 2,686 words, 105.0s air (8.9%), 50 gaps, longest 4.0s, one 4s gap in every act",
+   "scripts/check_claims.py (per section)": "PASS \u2014 cold_open, act1, act2, act3, act4 all 0 uncovered and 0 unknown; outro exempt by section type",
+   "lib/verify_fact_coverage.py": "PASS \u2014 174 sentences, 104 need a claim, 0 uncovered, 0 cited ids that do not resolve, framing 2.87% against a 5% ceiling"
+  }
+ }
+}

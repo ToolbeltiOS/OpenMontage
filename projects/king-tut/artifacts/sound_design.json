@@ -1,0 +1,254 @@
+{
+ "version": "1.0",
+ "project_id": "king-tut",
+ "room_tone": {
+  "path": "room_tone.mp3",
+  "provider": "pixabay",
+  "url": "https://pixabay.com/sound-effects/",
+  "licence": "Pixabay Content License",
+  "title": "Bedroom Room Tone",
+  "attribution": "kai_audio",
+  "why": "under every silence, the whole film. Written air with nothing under it reads as a dropout - the viewer checks whether the audio broke."
+ },
+ "ambience": [
+  {
+   "path": "ambience_stone.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "dripping cave",
+   "attribution": "StratosFearStudios",
+   "act": "cold_open",
+   "palette": "stone",
+   "start_seconds": 0.0,
+   "end_seconds": 51.92,
+   "why": "the temple hall at Abydos, and the sealed chamber the film is about to open"
+  },
+  {
+   "path": "ambience_desert.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Desert Sand Dunes",
+   "attribution": "DRAGON-STUDIO",
+   "act": "act1",
+   "palette": "desert",
+   "start_seconds": 51.92,
+   "end_seconds": 371.38,
+   "why": "the Valley of the Kings, outdoors, where the staircase came out of the floor"
+  },
+  {
+   "path": "ambience_stone.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "dripping cave",
+   "attribution": "StratosFearStudios",
+   "act": "act2",
+   "palette": "stone",
+   "start_seconds": 371.38,
+   "end_seconds": 605.5,
+   "why": "inside the wrappings and inside the museum - the two enclosed places the blade has been"
+  },
+  {
+   "path": "ambience_wind.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Low ambient 01",
+   "attribution": "freesound_community",
+   "act": "act3",
+   "palette": "wind",
+   "start_seconds": 605.5,
+   "end_seconds": 884.71,
+   "why": "the Theban hills over the imaging act; the only act whose subject is a body on a table rather than a room"
+  },
+  {
+   "path": "ambience_desert.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Desert Sand Dunes",
+   "attribution": "DRAGON-STUDIO",
+   "act": "act4",
+   "palette": "desert",
+   "start_seconds": 884.71,
+   "end_seconds": 1226.26,
+   "why": "the valley again, and Cairo - the act ends above ground"
+  }
+ ],
+ "stings": [
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 51.92,
+   "boundary": "title_sequence->act1",
+   "why": "under the fade through black, timed to the 2.5s music crossfade at that boundary"
+  },
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 371.38,
+   "boundary": "act1->act2",
+   "why": "under the fade through black, timed to the 2.5s music crossfade at that boundary"
+  },
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 605.5,
+   "boundary": "act2->act3",
+   "why": "under the fade through black, timed to the 2.5s music crossfade at that boundary"
+  },
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 884.71,
+   "boundary": "act3->act4",
+   "why": "under the fade through black, timed to the 2.5s music crossfade at that boundary"
+  },
+  {
+   "path": "sting.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Cinematic Low Hit",
+   "attribution": "Universfield",
+   "at_seconds": 1215.52,
+   "boundary": "act4->outro",
+   "why": "under the fade through black, timed to the 2.5s music crossfade at that boundary"
+  }
+ ],
+ "impacts": [
+  {
+   "path": "impact.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Riser Hit sfx 001",
+   "attribution": "AudioPapkin",
+   "at_seconds": 268.64,
+   "act": "act1",
+   "cut": "c039",
+   "why": "lands WITH the picture on the hard cut into the act's reveal, not after it"
+  },
+  {
+   "path": "impact.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Riser Hit sfx 001",
+   "attribution": "AudioPapkin",
+   "at_seconds": 496.2,
+   "act": "act2",
+   "cut": "c069",
+   "why": "lands WITH the picture on the hard cut into the act's reveal, not after it"
+  },
+  {
+   "path": "impact.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Riser Hit sfx 001",
+   "attribution": "AudioPapkin",
+   "at_seconds": 742.49,
+   "act": "act3",
+   "cut": "c102",
+   "why": "lands WITH the picture on the hard cut into the act's reveal, not after it"
+  },
+  {
+   "path": "impact.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Riser Hit sfx 001",
+   "attribution": "AudioPapkin",
+   "at_seconds": 1002.26,
+   "act": "act4",
+   "cut": "c135",
+   "why": "lands WITH the picture on the hard cut into the act's reveal, not after it"
+  }
+ ],
+ "risers": [
+  {
+   "path": "riser.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Riser Hole",
+   "attribution": "SoundReality",
+   "at_seconds": 36.31,
+   "seconds": 2.0,
+   "act": "cold_open",
+   "into": "c005",
+   "why": "two seconds, ending ON the first word of the landing line; it never crosses the line it leads to"
+  },
+  {
+   "path": "riser.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Riser Hole",
+   "attribution": "SoundReality",
+   "at_seconds": 302.56,
+   "seconds": 2.0,
+   "act": "act1",
+   "into": "c041",
+   "why": "two seconds, ending ON the first word of the landing line; it never crosses the line it leads to"
+  },
+  {
+   "path": "riser.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Riser Hole",
+   "attribution": "SoundReality",
+   "at_seconds": 524.72,
+   "seconds": 2.0,
+   "act": "act2",
+   "into": "c071",
+   "why": "two seconds, ending ON the first word of the landing line; it never crosses the line it leads to"
+  },
+  {
+   "path": "riser.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Riser Hole",
+   "attribution": "SoundReality",
+   "at_seconds": 772.42,
+   "seconds": 2.0,
+   "act": "act3",
+   "into": "c104",
+   "why": "two seconds, ending ON the first word of the landing line; it never crosses the line it leads to"
+  },
+  {
+   "path": "riser.mp3",
+   "provider": "pixabay",
+   "url": "https://pixabay.com/sound-effects/",
+   "licence": "Pixabay Content License",
+   "title": "Riser Hole",
+   "attribution": "SoundReality",
+   "at_seconds": 1039.65,
+   "seconds": 2.0,
+   "act": "act4",
+   "into": "c137",
+   "why": "two seconds, ending ON the first word of the landing line; it never crosses the line it leads to"
+  }
+ ]
+}

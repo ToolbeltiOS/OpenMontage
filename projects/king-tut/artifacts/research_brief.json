@@ -1,0 +1,1366 @@
+{
+ "version": "1.0",
+ "topic": "King Tut \u2014 the parts of the Tutankhamun story that remain genuinely unexplained: the curse, the meteoric dagger, the body, and the tomb's geometry",
+ "research_date": "2026-11-06",
+ "landscape": {
+  "existing_content": [
+   {
+    "title": "The Curse of King Tut: Unexplained Deaths After the Tomb Opening #Shorts",
+    "url": "https://youtube.com/shorts/TJpQyJoQSfw",
+    "source": "youtube",
+    "angle": "curse-first: the chain of deaths after the tomb was opened, told as an unresolved sequence",
+    "what_it_covers": "Carnarvon's death and the run of deaths that followed, as the channel's own best-performing King Tut short",
+    "what_it_misses": "Never names a mechanism or a test. The viewer is left with a list and no instrument \u2014 no mould hypothesis, no radiation hypothesis, no cohort study.",
+    "engagement_signal": "627 views, the channel's best of two King Tut shorts; mean engagement 1.92% across both"
+   },
+   {
+    "title": "They Hid This Meteorite Dagger in King Tut #Shorts",
+    "url": "https://youtube.com/shorts/av9BowfzU3U",
+    "source": "youtube",
+    "angle": "object-first: one artefact whose material should not have existed in Egypt at that date",
+    "what_it_covers": "The iron dagger's meteoritic composition, framed as a thing that was hidden",
+    "what_it_misses": "Stops at 'it came from space'. Does not reach the harder and better question the 2022 study asks \u2014 not what the metal is, but who could forge it when Egypt could not smelt iron for another seven centuries.",
+    "engagement_signal": "342 median views across the pair; the dagger framing is the channel's second-strongest King Tut hook"
+   },
+   {
+    "title": "Curse of the pharaohs (encyclopedia treatment)",
+    "url": "https://en.wikipedia.org/wiki/Curse_of_the_pharaohs",
+    "source": "encyclopedia",
+    "angle": "catalogue-and-correct: lists the deaths, then lists the refutations",
+    "what_it_covers": "Carnarvon's medical cause, the Aspergillus flavus hypothesis, Conan Doyle's 'elementals', the 2003 Lancet letter, and the absence of any inscribed curse",
+    "what_it_misses": "Flat register. Treats the alternative accounts as errors to be cleared away rather than as claims with proponents and evidence, so there is no case to follow and no moment where the answer arrives.",
+    "engagement_signal": "high traffic reference page; no narrative"
+   },
+   {
+    "title": "Nicholas Reeves, 'The Burial of Nefertiti?' and the decade of radar that followed",
+    "url": "https://en.wikipedia.org/wiki/Tomb_of_Tutankhamun",
+    "source": "academic and press cycle, 2015-2026",
+    "angle": "architectural: the tomb's shape is wrong for a king, therefore it is part of something larger",
+    "what_it_covers": "Reeves's reading of the Factum Arte scans, three radar campaigns, and the 2026 geophysical review",
+    "what_it_misses": "Covered almost entirely as a Nefertiti story. The structural claim \u2014 that KV62 predates Tutankhamun's burial \u2014 is the stronger and less reported half, and it survives even if Nefertiti is not behind the wall.",
+    "engagement_signal": "eleven years of recurring press cycles, most recently September 2026"
+   }
+  ],
+  "saturated_angles": [
+   "biography from birth to burial \u2014 the boy king introduced from scratch",
+   "'the curse debunked': a corrective video whose whole shape is a refutation",
+   "treasure tour of the gold mask and the grave goods",
+   "Akhenaten-and-the-Amarna-heresy as the main spine, with Tutankhamun as a footnote",
+   "'top ten facts about King Tut'"
+  ],
+  "underserved_gaps": [
+   "The dagger's real anomaly is metallurgical, not cosmic. Meteoric iron explains the material; it does not explain who heat-forged it when Egypt had no iron smelting for another seven hundred years. Almost no treatment reaches the 2022 manufacture study.",
+   "The curse has three named mechanisms with named proponents \u2014 mould, radiation, and infection \u2014 and exactly one of them has ever been tested against a cohort. Nobody puts the hypothesis and the test in the same frame.",
+   "The two infant daughters in the treasury are the quietest unexplained thing in the tomb and are almost never mentioned.",
+   "The 2026 microgravity review is three weeks old in content terms and essentially unreported outside archaeology press, and it carries a date \u2014 November 2026 \u2014 at which a decade-old question could be settled.",
+   "His name is absent from the Abydos king list. The film can open on a king who was deliberately removed from the record and then found more intact than any other."
+  ]
+ },
+ "trending": {
+  "recent_developments": [
+   {
+    "headline": "New scans point to possible hidden chambers beyond Tutankhamun's tomb, supporting the Nefertiti hypothesis",
+    "url": "https://archaeologymag.com/2026/09/scans-point-to-hidden-chambers-beyond-tutankhamuns-tomb/",
+    "date": "2026-09-22",
+    "relevance": "The newest primary development and the film's open ending. Eldamaty's team proposes a corridor and five or six chambers extending 25-30 m north of KV62, from 2023 and 2024 field seasons, and says remote methods have reached their limit."
+   },
+   {
+    "headline": "Hidden chambers near Tutankhamun's tomb: microgravity anomalies and a two-metre corridor",
+    "url": "https://thedebrief.org/striking-new-evidence-of-hidden-chambers-near-tutankhamuns-tomb-could-help-solve-a-longstanding-archaeological-mystery/",
+    "date": "2026-09-19",
+    "relevance": "Supplies the measured detail: more than 1,200 microgravity readings over about 35 square metres, 'anomaly 7', and the November 2026 date at which digging could begin if permission is granted."
+   },
+   {
+    "headline": "Grand Egyptian Museum opens with the complete Tutankhamun collection shown together for the first time",
+    "url": "https://www.nationalgeographic.com/travel/article/what-to-know-about-opening-of-the-grand-egyptian-museum-cairo",
+    "date": "2025-11-01",
+    "relevance": "One year old this week. 5,398 objects in one building for the first time since 1922, with public access dated to the 103rd anniversary of the first step. Gives the film a present tense and a reason the objects are being re-examined now."
+   }
+  ],
+  "timeliness_window": "weeks \u2014 the 2026 geophysical review names November 2026 as the earliest date investigation could begin, so the film's closing question has a live clock on it"
+ },
+ "data_points": [
+  {
+   "id": "c01",
+   "claim": "Excavation uncovered the first step of the tomb's entrance staircase on 4 November 1922, and the excavators reached the antechamber on 26 November 1922.",
+   "source_url": "https://en.wikipedia.org/wiki/Tomb_of_Tutankhamun",
+   "source_name": "Wikipedia, Tomb of Tutankhamun",
+   "credibility": "secondary_source",
+   "kind": "date",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "expected",
+   "usable_as": "script_anchor, timeline",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Discovery_of_the_tomb_of_Tutankhamun"
+   ]
+  },
+  {
+   "id": "c02",
+   "claim": "Howard Carter had worked in the Valley of the Kings since 1900 and began clearing it down to bedrock in 1917. The 5th Earl of Carnarvon funded the work, having bought the valley concession in 1914, and agreed to fund one final season after Carter offered to pay for that section himself.",
+   "source_url": "https://en.wikipedia.org/wiki/Discovery_of_the_tomb_of_Tutankhamun",
+   "source_name": "Wikipedia, Discovery of the tomb of Tutankhamun",
+   "credibility": "secondary_source",
+   "kind": "event",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "script_anchor"
+  },
+  {
+   "id": "c03",
+   "claim": "Asked by Carnarvon whether he could see anything, Carter's best-known published account gives his reply as \"Yes, wonderful things.\" His own notes record a different wording, \"Yes, it is wonderful,\" and accounts differ on the exact words.",
+   "source_url": "https://en.wikipedia.org/wiki/Discovery_of_the_tomb_of_Tutankhamun",
+   "source_name": "Wikipedia, Discovery of the tomb of Tutankhamun",
+   "credibility": "secondary_source",
+   "kind": "quote",
+   "confidence": "contested",
+   "contested": true,
+   "surprise_factor": "notable",
+   "usable_as": "hook, script_anchor",
+   "notes": "The most quoted sentence in the story is not securely the sentence that was said. Narrate as two versions, never as one."
+  },
+  {
+   "id": "c04",
+   "claim": "The tomb's contents are numbered at 5,398 objects, and Carter took ten years to catalogue them.",
+   "source_url": "https://en.wikipedia.org/wiki/KV62",
+   "source_name": "Wikipedia, KV62",
+   "credibility": "secondary_source",
+   "kind": "figure",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "stat_card",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tomb_of_Tutankhamun"
+   ]
+  },
+  {
+   "id": "c05",
+   "claim": "Carter and Carnarvon formally opened the burial chamber on 16 February 1923. The sarcophagus lid was raised on 12 February 1924. The anatomists Douglas Derry and Saleh Bey Hamdi began examining the mummy on 11 November 1925, and the examination took eight days.",
+   "source_url": "https://en.wikipedia.org/wiki/Discovery_of_the_tomb_of_Tutankhamun",
+   "source_name": "Wikipedia, Discovery of the tomb of Tutankhamun",
+   "credibility": "secondary_source",
+   "kind": "date",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "expected",
+   "usable_as": "timeline"
+  },
+  {
+   "id": "c06",
+   "claim": "On 9 January 1923 Carnarvon signed a contract with The Times giving its reporter Arthur Merton exclusive press access to the tomb. Other outlets criticised the monopoly, and it was ended under the 1924-25 settlement.",
+   "source_url": "https://en.wikipedia.org/wiki/Discovery_of_the_tomb_of_Tutankhamun",
+   "source_name": "Wikipedia, Discovery of the tomb of Tutankhamun",
+   "credibility": "secondary_source",
+   "kind": "event",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor",
+   "notes": "The mechanism behind the curse's spread: every paper but one was locked out of the story and had to find another one."
+  },
+  {
+   "id": "c07",
+   "claim": "Lord Carnarvon died on 5 April 1923, about five months after the first step was found. The Lancet gave the cause as \"pneumonia supervening on [facial] erysipelas\" \u2014 a streptococcal skin infection.",
+   "source_url": "https://en.wikipedia.org/wiki/Curse_of_the_pharaohs",
+   "source_name": "Wikipedia, Curse of the pharaohs",
+   "credibility": "secondary_source",
+   "kind": "date",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "hook, script_anchor",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tutankhamun"
+   ]
+  },
+  {
+   "id": "c08",
+   "claim": "Carnarvon was bitten by a mosquito, later cut the bite while shaving, and the wound became infected, causing blood poisoning.",
+   "source_url": "https://en.wikipedia.org/wiki/Curse_of_the_pharaohs",
+   "source_name": "Wikipedia, Curse of the pharaohs",
+   "credibility": "secondary_source",
+   "kind": "event",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "script_anchor"
+  },
+  {
+   "id": "c09",
+   "claim": "No curse was found inscribed anywhere in the tomb, despite the popular misconception that one was. Later accounts, such as Henry Field's, claimed an inscribed curse existed, but none has ever been documented there.",
+   "source_url": "https://en.wikipedia.org/wiki/Curse_of_the_pharaohs",
+   "source_name": "Wikipedia, Curse of the pharaohs",
+   "credibility": "secondary_source",
+   "kind": "claim",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor, closing_punch",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Discovery_of_the_tomb_of_Tutankhamun"
+   ]
+  },
+  {
+   "id": "c10",
+   "claim": "Arthur Weigall, covering the excavation for the Daily Mail, claimed he heard Carnarvon joking as he entered the tomb and said he gave him six weeks to live.",
+   "source_url": "https://en.wikipedia.org/wiki/Discovery_of_the_tomb_of_Tutankhamun",
+   "source_name": "Wikipedia, Discovery of the tomb of Tutankhamun",
+   "credibility": "secondary_source",
+   "kind": "name",
+   "confidence": "probable",
+   "contested": true,
+   "surprise_factor": "surprising",
+   "usable_as": "hook, script_anchor",
+   "notes": "Weigall's own account of his own prediction, made after the death it predicted. Attribute it to him; do not narrate it as a thing that was heard."
+  },
+  {
+   "id": "c11",
+   "claim": "Arthur Conan Doyle suggested that Carnarvon's death was caused by \"elementals\" created by Tutankhamun's priests to guard the tomb.",
+   "source_url": "https://en.wikipedia.org/wiki/Curse_of_the_pharaohs",
+   "source_name": "Wikipedia, Curse of the pharaohs",
+   "credibility": "secondary_source",
+   "kind": "quote",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor"
+  },
+  {
+   "id": "c12",
+   "claim": "Deaths later gathered into the curse: George Jay Gould I on 16 May 1923 after a fever that followed his visit; the radiologist Sir Archibald Douglas-Reid on 15 January 1924, aged fifty-two; A. C. Mace in April 1928; Mervyn Herbert on 26 May 1929, reportedly of malarial pneumonia; Captain Richard Bethell on 15 November 1929; Arthur Callender on 12 December 1936; Harry Burton on 27 June 1940.",
+   "source_url": "https://en.wikipedia.org/wiki/Curse_of_the_pharaohs",
+   "source_name": "Wikipedia, Curse of the pharaohs",
+   "credibility": "secondary_source",
+   "kind": "date",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "timeline, script_anchor"
+  },
+  {
+   "id": "c13",
+   "claim": "Howard Carter died on 2 March 1939 of lymphoma, aged sixty-four \u2014 sixteen years after Carnarvon, and after spending more time inside the tomb than anyone alive.",
+   "source_url": "https://en.wikipedia.org/wiki/Curse_of_the_pharaohs",
+   "source_name": "Wikipedia, Curse of the pharaohs",
+   "credibility": "secondary_source",
+   "kind": "date",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "counterintuitive",
+   "usable_as": "script_anchor, closing_punch",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tutankhamun"
+   ],
+   "notes": "Wikipedia's text gives sixty-four; its New York Times citation gives sixty-six. Use the age only with the lymphoma, or avoid the number."
+  },
+  {
+   "id": "c14",
+   "claim": "Toxic spores of the mould Aspergillus flavus may have contributed to some of the deaths, including Carnarvon's, Gould's and Mace's. The link is disputed, at least for Carnarvon.",
+   "source_url": "https://en.wikipedia.org/wiki/Curse_of_the_pharaohs",
+   "source_name": "Wikipedia, Curse of the pharaohs",
+   "credibility": "secondary_source",
+   "kind": "claim",
+   "confidence": "contested",
+   "contested": true,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor"
+  },
+  {
+   "id": "c15",
+   "claim": "In 2024, in the Journal of Scientific Exploration, Ross Fellowes argued that radioactive material in sealed Egyptian tombs could account for the excavators' deaths, citing Geiger readings at Giza, radon at Saqqara, and his statement that \"both contemporary and ancient Egypt populations are characterized by unusually high incidences of hematopoietic cancers.\" The journal is not a mainstream peer-reviewed venue and the claim has not been independently replicated.",
+   "source_url": "https://uk.news.yahoo.com/curse-behind-king-tutankhamun-tomb-061537006.html",
+   "source_name": "Yahoo News UK, reporting Ross Fellowes, Journal of Scientific Exploration (2024)",
+   "credibility": "anecdotal",
+   "kind": "claim",
+   "confidence": "contested",
+   "contested": true,
+   "surprise_factor": "counterintuitive",
+   "usable_as": "script_anchor",
+   "sources": [
+    "https://www.pressreader.com/usa/new-york-post/20240428/281496461352354"
+   ],
+   "notes": "This is the strongest living form of the curse claim and it has a named proponent, so the playbook requires it be voiced in full and attributed. The venue's standing is part of the fact, not an aside."
+  },
+  {
+   "id": "c16",
+   "claim": "Mark R. Nelson's \"The mummy's curse: historical cohort study\", published in the BMJ on 21 December 2002, identified forty-four Westerners whom Carter's diaries placed in Egypt at the relevant dates, twenty-five of them potentially exposed. Mean survival after exposure was 20.8 years for the exposed against 28.9 for the unexposed, with standard deviations of 15.2 and 13.6, and a p-value of 0.95.",
+   "source_url": "https://doi.org/10.1136/bmj.325.7378.1482",
+   "source_name": "Nelson MR, \"The mummy's curse: historical cohort study\", BMJ 2002;325:1482-1484",
+   "credibility": "primary_source",
+   "kind": "figure",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "counterintuitive",
+   "usable_as": "hook, stat_card, script_anchor",
+   "sources": [
+    "https://daily.jstor.org/was-it-really-a-mummys-curse/"
+   ],
+   "notes": "Two sources, as the playbook requires for a hook figure: the BMJ record and JSTOR Daily's summary, which independently gives forty-four and twenty-five. The p-value of 0.95 is the film's single most useful number \u2014 it is not a small effect, it is no effect at all."
+  },
+  {
+   "id": "c17",
+   "claim": "Adjusted for age and sex, Nelson found exposure did not add risk of early death within ten years: an odds ratio of 1.38, with a confidence interval running from 0.20 to 9.6. The only variable that appeared to affect life expectancy was sex \u2014 Lady Evelyn Herbert outlived every man who entered the tomb.",
+   "source_url": "https://daily.jstor.org/was-it-really-a-mummys-curse/",
+   "source_name": "JSTOR Daily, \"Was It Really a Mummy's Curse?\", summarising Nelson (BMJ, 2002)",
+   "credibility": "secondary_source",
+   "kind": "figure",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "surprising",
+   "usable_as": "stat_card, closing_punch",
+   "sources": [
+    "https://doi.org/10.1136/bmj.325.7378.1482"
+   ],
+   "notes": "The interval crosses one by a factor of five in each direction, which is the honest reading: the study cannot exclude an effect, it can only say it did not find one."
+  },
+  {
+   "id": "c18",
+   "claim": "A letter by Ann M. Cox in The Lancet on 7 June 2003 concluded it was unlikely that Carnarvon's death was related to the tomb, and refuted the mycotoxin theory.",
+   "source_url": "https://en.wikipedia.org/wiki/Curse_of_the_pharaohs",
+   "source_name": "Wikipedia, Curse of the pharaohs, citing Cox AM, The Lancet (7 June 2003)",
+   "credibility": "secondary_source",
+   "kind": "claim",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "script_anchor"
+  },
+  {
+   "id": "c19",
+   "claim": "Of fifty-eight people present at the opening of the tomb, only eight died within a dozen years.",
+   "source_url": "https://en.wikipedia.org/wiki/Tutankhamun",
+   "source_name": "Wikipedia, Tutankhamun",
+   "credibility": "secondary_source",
+   "kind": "figure",
+   "confidence": "probable",
+   "contested": false,
+   "surprise_factor": "surprising",
+   "usable_as": "stat_card",
+   "notes": "A different population from Nelson's forty-four. Do not merge the two counts in one sentence."
+  },
+  {
+   "id": "c20",
+   "claim": "The blade of Tutankhamun's iron dagger is mostly iron with about eleven per cent nickel and six-tenths of a per cent cobalt, a composition consistent with known iron meteorites. Since the 1960s a high nickel content has been treated as the signature of meteoric origin.",
+   "source_url": "https://en.wikipedia.org/wiki/Tutankhamun%27s_meteoric_iron_dagger",
+   "source_name": "Wikipedia, Tutankhamun's meteoric iron dagger",
+   "credibility": "secondary_source",
+   "kind": "figure",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "counterintuitive",
+   "usable_as": "hook, stat_card, script_anchor",
+   "sources": [
+    "https://eos.org/articles/pharaohs-iron-dagger-made-from-a-meteorite-study-confirms"
+   ]
+  },
+  {
+   "id": "c21",
+   "claim": "The meteoritic origin was established by Daniela Comelli and colleagues in \"The meteoritic origin of Tutankhamun's iron dagger blade\", published in Meteoritics & Planetary Science in 2016, volume 51, issue 7, page 1301, using non-destructive X-ray fluorescence.",
+   "source_url": "https://doi.org/10.1111/maps.12664",
+   "source_name": "Comelli D et al., Meteoritics & Planetary Science 51(7):1301 (2016)",
+   "credibility": "primary_source",
+   "kind": "name",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "script_anchor, evidence_card",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tutankhamun%27s_meteoric_iron_dagger"
+   ]
+  },
+  {
+   "id": "c22",
+   "claim": "Evidence for iron smelting in Egypt begins only in the sixth century BC. The earliest known metallic iron from Egypt comes from a Naqada II burial of about 3400 BC, and a 2013 study found that iron, too, was of meteorite origin.",
+   "source_url": "https://en.wikipedia.org/wiki/Tutankhamun%27s_meteoric_iron_dagger",
+   "source_name": "Wikipedia, Tutankhamun's meteoric iron dagger",
+   "credibility": "secondary_source",
+   "kind": "date",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "counterintuitive",
+   "usable_as": "script_anchor, closing_punch",
+   "notes": "This is the real anomaly and the pivot of the act: the metal is explained, the metalwork is not."
+  },
+  {
+   "id": "c23",
+   "claim": "In 2022, Takafumi Matsui, Ryota Moriwaki, Eissa Zidan and Tomoko Arai published \"The manufacture and origin of the Tutankhamen meteoritic iron dagger\" in Meteoritics & Planetary Science, having examined the blade non-destructively at the Egyptian Museum in Cairo in 2020 with a portable scanning X-ray fluorescence instrument.",
+   "source_url": "https://doi.org/10.1111/maps.13787",
+   "source_name": "Matsui T, Moriwaki R, Zidan E, Arai T, Meteoritics & Planetary Science (2022)",
+   "credibility": "primary_source",
+   "kind": "name",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "script_anchor, evidence_card",
+   "sources": [
+    "https://www.astronomy.com/science/a-new-origin-story-for-king-tuts-meteorite-dagger/"
+   ]
+  },
+  {
+   "id": "c24",
+   "claim": "Matsui's team ruled out both cold working and hot working and concluded that the blade was made by low-temperature heat forging.",
+   "source_url": "https://www.astronomy.com/science/a-new-origin-story-for-king-tuts-meteorite-dagger/",
+   "source_name": "Astronomy magazine, \"A new origin story for King Tut's meteorite dagger\", reporting Matsui et al. (2022)",
+   "credibility": "secondary_source",
+   "kind": "claim",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor",
+   "sources": [
+    "https://doi.org/10.1111/maps.13787"
+   ]
+  },
+  {
+   "id": "c25",
+   "claim": "The plaster on the dagger's gold hilt is calcium-bearing and lacks sulfur, a kind of lime plaster prevalent in the Mitanni and Hittite regions rather than in Egypt, and the Amarna letters record King Tushratta of Mitanni sending an iron dagger with a gold sheath as a marriage gift to Amenhotep III. The authors put this forward as support for a Mitanni origin, not as a settled finding.",
+   "source_url": "https://www.astronomy.com/science/a-new-origin-story-for-king-tuts-meteorite-dagger/",
+   "source_name": "Astronomy magazine, reporting Matsui et al. (2022)",
+   "credibility": "secondary_source",
+   "kind": "claim",
+   "confidence": "contested",
+   "contested": true,
+   "surprise_factor": "counterintuitive",
+   "usable_as": "script_anchor",
+   "sources": [
+    "https://phys.org/news/2022-02-year-old-tablets-king-tut-ancient.pdf"
+   ],
+   "notes": "A tentative inference drawn from an adhesive and a letter. Narrate as a proposal with its reasoning on show."
+  },
+  {
+   "id": "c26",
+   "claim": "The dagger is dated to about 1330 BC and the blade was recorded at Luxor in 1925. It was among iron objects wrapped with the mummy.",
+   "source_url": "https://en.wikipedia.org/wiki/Tutankhamun%27s_meteoric_iron_dagger",
+   "source_name": "Wikipedia, Tutankhamun's meteoric iron dagger",
+   "credibility": "secondary_source",
+   "kind": "date",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "expected",
+   "usable_as": "script_anchor"
+  },
+  {
+   "id": "c27",
+   "claim": "An analysis in 1994 had concluded that the blade's metals did not match most iron meteorites, and Comelli's team retested it with a newer instrument. Of twenty candidate iron meteorites within two thousand kilometres of the Red Sea, only one \u2014 named Kharga \u2014 had nickel and cobalt contents that Comelli described as possibly consistent with the blade.",
+   "source_url": "https://eos.org/articles/pharaohs-iron-dagger-made-from-a-meteorite-study-confirms",
+   "source_name": "Eos (AGU), \"Pharaoh's iron dagger made from a meteorite, study confirms\" (2016)",
+   "credibility": "secondary_source",
+   "kind": "figure",
+   "confidence": "probable",
+   "contested": true,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor",
+   "notes": "\"Possibly consistent\" is Comelli's own hedge and press coverage hardened it. Keep the hedge in the narration."
+  },
+  {
+   "id": "c28",
+   "claim": "Tutankhamun became pharaoh at about eight or nine years old and died at around nineteen, after a reign of roughly nine years; the highest securely attested regnal year is Year 9. He ruled about 1332 to 1323 BC.",
+   "source_url": "https://en.wikipedia.org/wiki/Tutankhamun",
+   "source_name": "Wikipedia, Tutankhamun",
+   "credibility": "secondary_source",
+   "kind": "figure",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "expected",
+   "usable_as": "script_anchor, lower_third"
+  },
+  {
+   "id": "c29",
+   "claim": "The genetic study of his family is Zahi Hawass and colleagues, \"Ancestry and Pathology in King Tutankhamun's Family\", published in JAMA on 17 February 2010, volume 303, issue 7, pages 638 to 647.",
+   "source_url": "https://doi.org/10.1001/jama.2010.121",
+   "source_name": "Hawass Z, Gad YZ, Ismail S, et al., JAMA 303(7):638-647 (17 February 2010)",
+   "credibility": "primary_source",
+   "kind": "name",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "script_anchor, evidence_card"
+  },
+  {
+   "id": "c30",
+   "claim": "Genetic testing for the STEVOR, AMA1 and MSP1 genes specific to Plasmodium falciparum found indications of malaria tropica in four mummies, Tutankhamun's among them, and suggested repeated infection with the most severe strain. Several pathologies including K\u00f6hler disease II were diagnosed, none of which alone would have caused death, and the authors concluded that avascular bone necrosis together with the malarial infection was the most likely cause.",
+   "source_url": "https://doi.org/10.1001/jama.2010.121",
+   "source_name": "Hawass Z et al., JAMA 303(7):638-647 (2010)",
+   "credibility": "primary_source",
+   "kind": "claim",
+   "confidence": "probable",
+   "contested": false,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tutankhamun"
+   ]
+  },
+  {
+   "id": "c31",
+   "claim": "Specialists disputed the malaria conclusion as insufficiently substantiated.",
+   "source_url": "https://en.wikipedia.org/wiki/Tutankhamun",
+   "source_name": "Wikipedia, Tutankhamun, on reactions to Hawass et al. (2010)",
+   "credibility": "secondary_source",
+   "kind": "claim",
+   "confidence": "contested",
+   "contested": true,
+   "surprise_factor": "notable",
+   "usable_as": "script_anchor",
+   "notes": "The cause of death is contested in both directions. Neither the malaria reading nor its rejection may be narrated as settled."
+  },
+  {
+   "id": "c32",
+   "claim": "DNA testing identified his father as the mummy in tomb KV55, thought to be either Akhenaten or Smenkhkare, and the woman known as the Younger Lady, found in KV35, as his mother. The genetic results suggest his parents were full siblings, both children of Amenhotep III and Tiye.",
+   "source_url": "https://en.wikipedia.org/wiki/Tutankhamun",
+   "source_name": "Wikipedia, Tutankhamun, citing Hawass et al. (2010)",
+   "credibility": "secondary_source",
+   "kind": "name",
+   "confidence": "probable",
+   "contested": true,
+   "surprise_factor": "counterintuitive",
+   "usable_as": "script_anchor",
+   "sources": [
+    "https://doi.org/10.1001/jama.2010.121"
+   ],
+   "notes": "The KV55 identification is itself unresolved between two candidates. Say so."
+  },
+  {
+   "id": "c33",
+   "claim": "An X-ray taken in 1968 showed two bone fragments inside the skull, which led to a theory that he had been killed by a blow to the head. Later X-ray and CT analysis rejected it: the fragments are loose rather than embedded in embalming resin, and most likely came from the modern unwrapping, and no bone thinning or calcified membranes were found.",
+   "source_url": "https://en.wikipedia.org/wiki/Tutankhamun",
+   "source_name": "Wikipedia, Tutankhamun, citing Hawass & Saleem (2016), pp. 101-102",
+   "credibility": "secondary_source",
+   "kind": "date",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor",
+   "notes": "The murder thesis closes on this. The act must still say what the closure does not explain."
+  },
+  {
+   "id": "c34",
+   "claim": "The CT scan carried out in 2005 showed a compound fracture of the left leg. Its ragged edges and the embalming substances found in the wound indicate the break happened before mummification, and the absence of healing suggests it occurred shortly before death. The Egyptologist Raymond Johnson suggested it may have happened during a military campaign.",
+   "source_url": "https://en.wikipedia.org/wiki/Tutankhamun",
+   "source_name": "Wikipedia, Tutankhamun, citing Hawass & Saleem (2016), pp. 96-97",
+   "credibility": "secondary_source",
+   "kind": "date",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor, evidence_card"
+  },
+  {
+   "id": "c35",
+   "claim": "The mummy's missing front chest wall and ribs prompted a chariot-accident hypothesis, argued by Benson Harer in 2017. Photographs taken at the end of Carter's work in 1926 show the chest wall intact with a beaded collar in place, so the loss is now attributed to robbers who took the collar, and the beaded skullcap was already missing by 1968.",
+   "source_url": "https://en.wikipedia.org/wiki/Tutankhamun",
+   "source_name": "Wikipedia, Tutankhamun, citing Harer (2017) and Hawass & Saleem (2016), p. 95",
+   "credibility": "secondary_source",
+   "kind": "claim",
+   "confidence": "contested",
+   "contested": true,
+   "surprise_factor": "counterintuitive",
+   "usable_as": "script_anchor"
+  },
+  {
+   "id": "c36",
+   "claim": "In 2013 the Egyptologist Chris Naunton, then director of the Egypt Exploration Society, proposed that a hasty embalming left flammable oils soaked into the linen, which reacted with oxygen and cooked the body inside the sarcophagus at temperatures above two hundred degrees Celsius. The work was presented in a Channel 4 documentary and was not published in a peer-reviewed journal.",
+   "source_url": "https://www.channel4.com/press/news/egyptologist-unearths-clues-tutankhamuns-botched-mummification",
+   "source_name": "Channel 4 press release, \"Egyptologist unearths clues on Tutankhamun's botched mummification\" (2013)",
+   "credibility": "secondary_source",
+   "kind": "claim",
+   "confidence": "contested",
+   "contested": true,
+   "surprise_factor": "counterintuitive",
+   "usable_as": "hook, script_anchor",
+   "sources": [
+    "https://www.livescience.com/40925-king-tuts-death-spontaneous-combustion.html"
+   ],
+   "notes": "Naunton began from references to the body's burned condition in Carter's own records, which is why the claim is not merely sensational."
+  },
+  {
+   "id": "c37",
+   "claim": "Naunton's investigation began with tissue samples held by the Egyptologist Robert Connolly at the University of Liverpool, and used crash investigators to model the injuries, producing a reconstruction in which a chariot struck him while he was on his knees.",
+   "source_url": "https://www.livescience.com/40925-king-tuts-death-spontaneous-combustion.html",
+   "source_name": "Live Science, \"Crashed and Burned: How King Tut Died\" (2013)",
+   "credibility": "secondary_source",
+   "kind": "name",
+   "confidence": "contested",
+   "contested": true,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor"
+  },
+  {
+   "id": "c38",
+   "claim": "The mummy stands about a hundred and sixty-seven centimetres tall, and a section of the left pelvis is missing.",
+   "source_url": "https://en.wikipedia.org/wiki/Tutankhamun",
+   "source_name": "Wikipedia, Tutankhamun",
+   "credibility": "secondary_source",
+   "kind": "figure",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "script_anchor"
+  },
+  {
+   "id": "c39",
+   "claim": "Two infant mummies, numbered 317a and 317b, were found by Carter in 1922 in an open wooden box in the tomb's treasury. The smaller was born prematurely at about five to six months, measuring 25.75 centimetres when Derry examined it in 1932, with a 2008 CT estimate of twenty-five weeks; the larger measured 36.1 centimetres with a 2008 estimate of thirty-seven weeks. Their names are unknown, because the inscriptions refer only to a nameless \"Osiris\".",
+   "source_url": "https://en.wikipedia.org/wiki/317a_and_317b_mummies",
+   "source_name": "Wikipedia, 317a and 317b mummies",
+   "credibility": "secondary_source",
+   "kind": "figure",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "counterintuitive",
+   "usable_as": "script_anchor, closing_punch"
+  },
+  {
+   "id": "c40",
+   "claim": "The Tutankhamun Family Project's testing of the two infants, carried out between 2007 and 2009, produced only partial profiles. These supported Tutankhamun's paternity at 99.98 per cent for 317a and 99.99 per cent for 317b. A partial profile from the mummy known as KV21A suggested she was their mother, but the result was not statistically significant enough to confirm it.",
+   "source_url": "https://en.wikipedia.org/wiki/317a_and_317b_mummies",
+   "source_name": "Wikipedia, 317a and 317b mummies",
+   "credibility": "secondary_source",
+   "kind": "figure",
+   "confidence": "probable",
+   "contested": true,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor",
+   "notes": "The source gives the probabilities to eight decimal places; the narration rounds them and must not imply more precision about the MOTHER, which is the part that failed."
+  },
+  {
+   "id": "c41",
+   "claim": "KV62 is smaller and less extensively decorated than other royal tombs of its time. Its corridor runs eight metres, the antechamber is 7.9 by 3.6 metres, the annexe 4.4 by 2.6, the burial chamber 4 by 6.4, and the treasury 4.8 by 3.8.",
+   "source_url": "https://en.wikipedia.org/wiki/KV62",
+   "source_name": "Wikipedia, KV62",
+   "credibility": "secondary_source",
+   "kind": "figure",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "surprising",
+   "usable_as": "stat_card, script_anchor",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tomb_of_Tutankhamun"
+   ]
+  },
+  {
+   "id": "c42",
+   "claim": "The tomb probably originated as a tomb for a non-royal individual, possibly intended for Ay, and was enlarged after Tutankhamun died prematurely. Its design resembles non-royal tombs of the period, elaborated to look royal, and the burial chamber and treasury may have been added during that adaptation.",
+   "source_url": "https://en.wikipedia.org/wiki/KV62",
+   "source_name": "Wikipedia, KV62",
+   "credibility": "secondary_source",
+   "kind": "claim",
+   "confidence": "probable",
+   "contested": true,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor"
+  },
+  {
+   "id": "c43",
+   "claim": "The tomb was robbed twice within a few years of the burial. After the first robbery officials repaired and repacked the goods and filled the outer corridor with limestone chips; a second group of robbers tunnelled through that fill, and the tomb was resealed after a second hasty restoration.",
+   "source_url": "https://en.wikipedia.org/wiki/Tomb_of_Tutankhamun",
+   "source_name": "Wikipedia, Tomb of Tutankhamun",
+   "credibility": "secondary_source",
+   "kind": "event",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor"
+  },
+  {
+   "id": "c44",
+   "claim": "In 2015 Nicholas Reeves argued, from Factum Arte's high-resolution scans, that the west and north walls of the burial chamber carry previously unnoticed plaster partitions, and suggested they conceal two chambers, one of them holding the burial of Neferneferuaten, whom he identifies with Nefertiti.",
+   "source_url": "https://en.wikipedia.org/wiki/Tomb_of_Tutankhamun",
+   "source_name": "Wikipedia, Tomb of Tutankhamun, on Reeves (2015)",
+   "credibility": "secondary_source",
+   "kind": "name",
+   "confidence": "contested",
+   "contested": true,
+   "surprise_factor": "counterintuitive",
+   "usable_as": "hook, script_anchor",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Nicholas_Reeves"
+   ]
+  },
+  {
+   "id": "c45",
+   "claim": "A ground-penetrating radar survey commissioned by the Ministry of Antiquities later in 2015 seemed to show voids behind the walls. Follow-up radar examinations in 2016 and in 2018 found no such voids.",
+   "source_url": "https://en.wikipedia.org/wiki/KV62",
+   "source_name": "Wikipedia, KV62",
+   "credibility": "secondary_source",
+   "kind": "date",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "timeline, script_anchor",
+   "sources": [
+    "https://en.wikipedia.org/wiki/Tomb_of_Tutankhamun"
+   ]
+  },
+  {
+   "id": "c46",
+   "claim": "In September 2026 a review led by Mamdouh Eldamaty of Ain Shams University, a former Egyptian antiquities minister, working with the GBG Group of Cambridge, Egypt's National Research Institute for Astronomy and Geophysics and the Amarna Royal Tombs Project, drew on field seasons in 2023 and 2024 to propose a long corridor and five or six further chambers reaching some twenty-five to thirty metres north of the known tomb. Seven major campaigns have examined the tomb since 2015.",
+   "source_url": "https://archaeologymag.com/2026/09/scans-point-to-hidden-chambers-beyond-tutankhamuns-tomb/",
+   "source_name": "Archaeology Magazine, 22 September 2026, on Eldamaty et al. (2026), \"An Archaeo-Geophysical Review and Assessment of the Structure and Morphology of Tutankhamun's Tomb (KV 62)\"",
+   "credibility": "secondary_source",
+   "kind": "name",
+   "confidence": "contested",
+   "contested": true,
+   "surprise_factor": "counterintuitive",
+   "usable_as": "hook, script_anchor, closing_punch",
+   "sources": [
+    "https://thedebrief.org/striking-new-evidence-of-hidden-chambers-near-tutankhamuns-tomb-could-help-solve-a-longstanding-archaeological-mystery/"
+   ]
+  },
+  {
+   "id": "c47",
+   "claim": "The microgravity survey took more than twelve hundred readings over an area of about thirty-five square metres. One feature, which the team calls anomaly seven, is a low-density zone surrounding a square-shaped area of denser material; the geophysics specialist George Ballard suggested it could indicate a chamber filled with objects. The proposed corridor is about two metres wide and may be filled with rubble.",
+   "source_url": "https://thedebrief.org/striking-new-evidence-of-hidden-chambers-near-tutankhamuns-tomb-could-help-solve-a-longstanding-archaeological-mystery/",
+   "source_name": "The Debrief, 19 September 2026, reporting Eldamaty et al. (2026)",
+   "credibility": "secondary_source",
+   "kind": "figure",
+   "confidence": "contested",
+   "contested": true,
+   "surprise_factor": "surprising",
+   "usable_as": "stat_card, script_anchor"
+  },
+  {
+   "id": "c48",
+   "claim": "Ballard concedes that the measurements were taken under \"conditions approaching the limits of what ground-penetrating radar and microgravity surveys can accurately reveal\", and the study states that the geophysical work has reached the limits of remote methods. The findings do not prove Nefertiti was buried beyond the tomb, and they do not establish who used the proposed rooms or when they were built. If the Supreme Council of Antiquities grants permission, investigation could begin as early as November 2026.",
+   "source_url": "https://thedebrief.org/striking-new-evidence-of-hidden-chambers-near-tutankhamuns-tomb-could-help-solve-a-longstanding-archaeological-mystery/",
+   "source_name": "The Debrief, 19 September 2026, quoting George Ballard; and Archaeology Magazine, 22 September 2026",
+   "credibility": "secondary_source",
+   "kind": "quote",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "closing_punch",
+   "sources": [
+    "https://archaeologymag.com/2026/09/scans-point-to-hidden-chambers-beyond-tutankhamuns-tomb/"
+   ]
+  },
+  {
+   "id": "c49",
+   "claim": "The Abydos King List, seventy-six kings carved on a wall of the Temple of Seti I, runs directly from Amenhotep III to Horemheb. Akhenaten, Smenkhkare, Neferneferuaten, Tutankhamun and Ay are all omitted, apparently removed for reasons of political propaganda or as a form of damnatio memoriae.",
+   "source_url": "https://en.wikipedia.org/wiki/Abydos_King_List",
+   "source_name": "Wikipedia, Abydos King List",
+   "credibility": "secondary_source",
+   "kind": "figure",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "counterintuitive",
+   "usable_as": "hook, script_anchor, closing_punch"
+  },
+  {
+   "id": "c50",
+   "claim": "In his third regnal year Tutankhamun ended Aten's position as supreme god, restored Amun to supremacy and lifted the ban on Amun's cult. The Restoration Stela recording it was found in July 1905 by Georges Legrain at Karnak and is catalogued as Cairo CG 34183; under Horemheb the stela's nomen and prenomen were replaced with his own, and the figure of Ankhesenamun was erased.",
+   "source_url": "https://en.wikipedia.org/wiki/Tutankhamun",
+   "source_name": "Wikipedia, Tutankhamun",
+   "credibility": "secondary_source",
+   "kind": "date",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor, document_reveal"
+  },
+  {
+   "id": "c51",
+   "claim": "The Grand Egyptian Museum opened officially on 1 November 2025, with public access from 4 November 2025 \u2014 a date chosen to fall on the hundred and third anniversary of the discovery \u2014 showing the complete Tutankhamun collection of 5,398 objects together for the first time since 1922. The collection had previously been split between the Military Museum in the Citadel, the Egyptian Museum in Tahrir and the Luxor Museum.",
+   "source_url": "https://www.nationalgeographic.com/travel/article/what-to-know-about-opening-of-the-grand-egyptian-museum-cairo",
+   "source_name": "National Geographic, \"The Grand Egyptian Museum is opening in full\" (2025)",
+   "credibility": "secondary_source",
+   "kind": "date",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "script_anchor, why_now",
+   "sources": [
+    "https://allafrica.com/stories/202509220038.html"
+   ],
+   "notes": "Object counts vary in press coverage between about five thousand and five thousand six hundred; 5,398 is the figure that matches the tomb's own catalogue total."
+  },
+  {
+   "id": "c52",
+   "claim": "The gold mask weighs 10.23 kilograms, stands fifty-four centimetres tall, and is mainly twenty-three-karat gold alloyed with copper. It was found on 28 October 1925, when the team opened the innermost of the three coffins.",
+   "source_url": "https://en.wikipedia.org/wiki/Mask_of_Tutankhamun",
+   "source_name": "Wikipedia, Mask of Tutankhamun",
+   "credibility": "secondary_source",
+   "kind": "figure",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "notable",
+   "usable_as": "stat_card, script_anchor"
+  },
+  {
+   "id": "c53",
+   "claim": "In August 2014 the mask's beard, which weighs 2.5 kilograms, came away when the mask was taken from its display case for cleaning. Museum staff reattached it with quick-drying epoxy, leaving it off-centre. The damage was noticed in January 2015, and a German-Egyptian team reattached the beard with beeswax.",
+   "source_url": "https://en.wikipedia.org/wiki/Mask_of_Tutankhamun",
+   "source_name": "Wikipedia, Mask of Tutankhamun",
+   "credibility": "secondary_source",
+   "kind": "date",
+   "confidence": "established",
+   "contested": false,
+   "surprise_factor": "surprising",
+   "usable_as": "script_anchor"
+  }
+ ],
+ "audience_insights": {
+  "common_questions": [
+   "Was the curse of King Tut real, and did the people who opened the tomb actually die early?",
+   "Where did Tutankhamun's iron dagger come from, if Egypt could not make iron?",
+   "How did Tutankhamun actually die \u2014 was he murdered?",
+   "Is there really a hidden chamber behind the wall of his tomb, and is Nefertiti in it?",
+   "Why is his tomb so small if he was a pharaoh?",
+   "Why was his name left off the Egyptian king lists?"
+  ],
+  "misconceptions": [
+   {
+    "myth": "A curse was carved over the door of the tomb.",
+    "reality": "No curse was found inscribed anywhere in the tomb. The inscription appears in later accounts, not in the record of what was there.",
+    "source": "https://en.wikipedia.org/wiki/Curse_of_the_pharaohs"
+   },
+   {
+    "myth": "Everyone who entered the tomb died young.",
+    "reality": "Of fifty-eight people present at the opening, eight died within a dozen years, and Howard Carter \u2014 who spent more time inside it than anyone \u2014 lived until 1939. Nelson's cohort found mean survival of 20.8 years for the exposed against 28.9 for the unexposed, at p = 0.95.",
+    "source": "https://doi.org/10.1136/bmj.325.7378.1482"
+   },
+   {
+    "myth": "The meteoric dagger proves contact with something not of this world.",
+    "reality": "Meteoric iron is iron that fell as a meteorite; Egyptians had been working it since about 3400 BC. The genuinely unexplained part is the metalwork \u2014 the blade was heat-forged at low temperature seven centuries before Egypt shows any evidence of iron smelting.",
+    "source": "https://en.wikipedia.org/wiki/Tutankhamun%27s_meteoric_iron_dagger"
+   },
+   {
+    "myth": "The hidden chamber behind Tutankhamun's wall was disproved and the story is over.",
+    "reality": "Radar in 2016 and 2018 found no voids behind the burial chamber walls, and that part of Reeves's claim is in serious trouble. The 2026 geophysical review makes a different and still-live claim about a complex beyond the tomb, and says remote methods have reached their limit.",
+    "source": "https://archaeologymag.com/2026/09/scans-point-to-hidden-chambers-beyond-tutankhamuns-tomb/"
+   }
+  ],
+  "knowledge_level": "This audience already knows the outline: boy king, gold mask, 1922, curse. What they have not been given is a mechanism or a test for any of it. They can be trusted with a p-value, a confidence interval and a forging temperature, provided each arrives attached to a named person and a dated paper. They will not sit through an introduction to who Tutankhamun was.",
+  "pain_points": [
+   "Curse videos list deaths and never name a mechanism, so there is nothing to believe or disbelieve.",
+   "Debunking videos sneer, which reads as a different kind of unseriousness.",
+   "Nobody says plainly which of these questions is actually closed and which is still open."
+  ]
+ },
+ "expert_voices": [
+  {
+   "name": "Mark R. Nelson",
+   "title_or_affiliation": "Monash University; author of the BMJ historical cohort study (2002)",
+   "position": "Exposure to the tomb had no detectable effect on survival: mean survival after exposure 20.8 years against 28.9, p = 0.95, and an adjusted odds ratio for death within ten years of 1.38 with an interval from 0.20 to 9.6.",
+   "source_url": "https://doi.org/10.1136/bmj.325.7378.1482",
+   "contrarian": false
+  },
+  {
+   "name": "Ross Fellowes",
+   "title_or_affiliation": "Independent researcher, published in the Journal of Scientific Exploration (2024)",
+   "position": "Radioactive material in sealed Egyptian tombs could account for the excavators' illnesses and deaths, citing Geiger readings at Giza, radon at Saqqara and high rates of haematopoietic cancer in Egyptian populations.",
+   "source_url": "https://uk.news.yahoo.com/curse-behind-king-tutankhamun-tomb-061537006.html",
+   "contrarian": true
+  },
+  {
+   "name": "Takafumi Matsui",
+   "title_or_affiliation": "Chiba Institute of Technology; lead author, Meteoritics & Planetary Science (2022)",
+   "position": "The dagger blade was made by low-temperature heat forging, and the lime plaster on its gold hilt points away from Egypt and towards the Mitanni region.",
+   "source_url": "https://doi.org/10.1111/maps.13787",
+   "contrarian": false
+  },
+  {
+   "name": "Nicholas Reeves",
+   "title_or_affiliation": "Egyptologist; proposed the hidden-chamber reading of KV62 in 2015",
+   "position": "The west and north walls of the burial chamber carry plaster partitions concealing further chambers, one of them Nefertiti's burial.",
+   "source_url": "https://en.wikipedia.org/wiki/Nicholas_Reeves",
+   "contrarian": true
+  },
+  {
+   "name": "Mamdouh Eldamaty",
+   "title_or_affiliation": "Ain Shams University; former Egyptian Minister of Antiquities; lead author of the 2026 geophysical review",
+   "position": "KV62 predates Tutankhamun's burial and formed part of a larger royal complex, with a corridor and further chambers extending twenty-five to thirty metres north.",
+   "source_url": "https://archaeologymag.com/2026/09/scans-point-to-hidden-chambers-beyond-tutankhamuns-tomb/",
+   "contrarian": true
+  },
+  {
+   "name": "George Ballard",
+   "title_or_affiliation": "Geophysics specialist, GBG Group",
+   "position": "Anomaly seven may be a chamber filled with objects \u2014 but the measurements were taken under conditions approaching the limits of what radar and microgravity can accurately reveal.",
+   "source_url": "https://thedebrief.org/striking-new-evidence-of-hidden-chambers-near-tutankhamuns-tomb-could-help-solve-a-longstanding-archaeological-mystery/",
+   "contrarian": false
+  },
+  {
+   "name": "Chris Naunton",
+   "title_or_affiliation": "Egyptologist, then director of the Egypt Exploration Society",
+   "position": "A hasty embalming left oils in the linen that reacted with oxygen and cooked the body inside the sarcophagus above two hundred degrees Celsius.",
+   "source_url": "https://www.channel4.com/press/news/egyptologist-unearths-clues-tutankhamuns-botched-mummification",
+   "contrarian": true
+  },
+  {
+   "name": "Zahi Hawass",
+   "title_or_affiliation": "Egyptologist; first author, JAMA (2010)",
+   "position": "Avascular bone necrosis together with malaria tropica is the most likely cause of death; no single diagnosed pathology would have killed him.",
+   "source_url": "https://doi.org/10.1001/jama.2010.121",
+   "contrarian": false
+  }
+ ],
+ "angles_discovered": [
+  {
+   "name": "Four questions, one of which is still open",
+   "hook": "A king erased from his own country's king lists was found more intact than any other, and a century later the arguments about him are not about who he was but about what is still behind his wall.",
+   "type": "narrative",
+   "why_now": "The September 2026 geophysical review puts a live date on the last of the four questions: if the Supreme Council of Antiquities grants permission, investigation could begin as early as November 2026. The Grand Egyptian Museum has been open exactly one year, with all 5,398 objects in one building for the first time since 1922.",
+   "grounded_in": [
+    "c49",
+    "c16",
+    "c20",
+    "c22",
+    "c30",
+    "c44",
+    "c46",
+    "c47",
+    "c48",
+    "c51"
+   ]
+  },
+  {
+   "name": "The curse had three mechanisms and one test",
+   "hook": "Mould, radiation, a mosquito bite. Three explanations for the deaths, each with a named proponent, and exactly one of them was ever measured against a cohort.",
+   "type": "contrarian",
+   "why_now": "Fellowes's radiation paper is from 2024 and is the living form of the claim; the only cohort study of it is twenty-four years old and almost never quoted with its numbers.",
+   "grounded_in": [
+    "c07",
+    "c08",
+    "c14",
+    "c15",
+    "c16",
+    "c17",
+    "c18",
+    "c19"
+   ]
+  },
+  {
+   "name": "The metal is explained; the metalwork is not",
+   "hook": "Everyone stops at 'the dagger came from space'. The harder fact is that somebody heat-forged it seven hundred years before Egypt could smelt iron at all.",
+   "type": "data_driven",
+   "why_now": "The 2022 manufacture study is the first to ask how rather than what, and almost no popular treatment has reached it.",
+   "grounded_in": [
+    "c20",
+    "c21",
+    "c22",
+    "c23",
+    "c24",
+    "c25",
+    "c27"
+   ]
+  },
+  {
+   "name": "The tomb is the wrong shape for the man in it",
+   "hook": "A pharaoh was buried in roughly a hundred square metres of rooms that look like a private tomb with royal decoration painted over it \u2014 and three radar campaigns in eleven years disagree about what is behind the walls.",
+   "type": "evergreen",
+   "why_now": "Seven campaigns since 2015, two of which found nothing where the first found voids, and a 2026 review that says remote sensing has run out of road.",
+   "grounded_in": [
+    "c41",
+    "c42",
+    "c43",
+    "c44",
+    "c45",
+    "c46",
+    "c47",
+    "c48"
+   ]
+  },
+  {
+   "name": "The quietest thing in the treasury",
+   "hook": "Two infant daughters in an unmarked wooden box, their names given as nobody, and a DNA test that could confirm the father and not the mother.",
+   "type": "narrative",
+   "why_now": "Evergreen, and essentially absent from popular coverage; it is the strongest closing image available and it is genuinely unresolved.",
+   "grounded_in": [
+    "c39",
+    "c40",
+    "c32"
+   ]
+  }
+ ],
+ "visual_references": [
+  {
+   "description": "Harry Burton's 1922-1925 excavation photographs \u2014 the sealed doorway, the antechamber as found, the shrine-like boxes in the treasury",
+   "url": "https://commons.wikimedia.org/wiki/Category:Discovery_of_the_tomb_of_Tutankhamun",
+   "what_works": "Burton lit for the record rather than for effect, so the frames carry the register the playbook wants: sourced, unsentimental, and dated. Twenty-seven files in the Commons category for the discovery alone."
+  },
+  {
+   "description": "Wikimedia Commons categories for Akhenaten, the Amarna Period and the Eighteenth Dynasty",
+   "url": "https://commons.wikimedia.org/wiki/Category:Amarna_Period",
+   "what_works": "Fifty-seven bitmap files each for Akhenaten, the Amarna Period and the Eighteenth Dynasty, measured by the topic picker. Reliefs and statuary photograph flat and take a parallax move well."
+  },
+  {
+   "description": "Grand Egyptian Museum collection photography",
+   "url": "https://commons.wikimedia.org/wiki/Category:Collections_of_the_Grand_Egyptian_Museum",
+   "what_works": "Sixty files, modern, well-lit and in copyright-clear categories \u2014 the one source of present-tense imagery for a film whose other material is a century old."
+  },
+  {
+   "description": "The Abydos king list wall in the Temple of Seti I",
+   "url": "https://commons.wikimedia.org/wiki/Category:Abydos_King_List",
+   "what_works": "A single photograph carries the film's strongest structural claim: the cartouche of Amenhotep III next to the cartouche of Horemheb, with nothing between them. It is a document reveal that needs no graphic."
+  }
+ ],
+ "sources": [
+  {
+   "url": "https://en.wikipedia.org/wiki/Tutankhamun",
+   "title": "Wikipedia, Tutankhamun",
+   "used_for": "Encyclopedia pull for the subject; reign, parentage, pathology, the 1968 X-ray, the 2005 CT scan, the Restoration Stela",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Tomb_of_Tutankhamun",
+   "title": "Wikipedia, Tomb of Tutankhamun",
+   "used_for": "Discovery dates, the two ancient robberies, object counts, the radar sequence",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/KV62",
+   "title": "Wikipedia, KV62",
+   "used_for": "Encyclopedia pull for the tomb; room dimensions, the non-royal-origin reading, the radar results",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Discovery_of_the_tomb_of_Tutankhamun",
+   "title": "Wikipedia, Discovery of the tomb of Tutankhamun",
+   "used_for": "Encyclopedia pull for the discovery; the dated sequence, Carter's funding, the Times contract, the 'wonderful things' exchange, Weigall",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Curse_of_the_pharaohs",
+   "title": "Wikipedia, Curse of the pharaohs",
+   "used_for": "Encyclopedia pull for the curse; Carnarvon's cause of death, the chain of deaths, Aspergillus flavus, Conan Doyle, the Lancet letter, the absence of an inscription",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://doi.org/10.1136/bmj.325.7378.1482",
+   "title": "Nelson MR, 'The mummy's curse: historical cohort study', BMJ 2002;325:1482-1484",
+   "used_for": "The cohort test of the curse: numbers, survival means, p-value",
+   "reliability": "primary"
+  },
+  {
+   "url": "https://daily.jstor.org/was-it-really-a-mummys-curse/",
+   "title": "JSTOR Daily, 'Was It Really a Mummy's Curse?'",
+   "used_for": "Second source for Nelson's cohort sizes; the odds ratio and interval; Lady Evelyn Herbert",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Tutankhamun%27s_meteoric_iron_dagger",
+   "title": "Wikipedia, Tutankhamun's meteoric iron dagger",
+   "used_for": "Encyclopedia pull for the dagger; composition, dating, the Naqada II iron, the sixth-century-BC smelting horizon",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://doi.org/10.1111/maps.12664",
+   "title": "Comelli D et al., 'The meteoritic origin of Tutankhamun's iron dagger blade', Meteoritics & Planetary Science 51(7):1301 (2016)",
+   "used_for": "The meteoritic determination and its method",
+   "reliability": "primary"
+  },
+  {
+   "url": "https://doi.org/10.1111/maps.13787",
+   "title": "Matsui T et al., 'The manufacture and origin of the Tutankhamen meteoritic iron dagger', Meteoritics & Planetary Science (2022)",
+   "used_for": "The manufacture study: low-temperature heat forging, the hilt plaster, the Mitanni proposal",
+   "reliability": "primary"
+  },
+  {
+   "url": "https://www.astronomy.com/science/a-new-origin-story-for-king-tuts-meteorite-dagger/",
+   "title": "Astronomy, 'A new origin story for King Tut's meteorite dagger'",
+   "used_for": "Readable account of the 2022 study's method and conclusions",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://eos.org/articles/pharaohs-iron-dagger-made-from-a-meteorite-study-confirms",
+   "title": "Eos (AGU), 'Pharaoh's iron dagger made from a meteorite, study confirms'",
+   "used_for": "The 1994 contrary analysis; the twenty candidate meteorites and the Kharga match",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://doi.org/10.1001/jama.2010.121",
+   "title": "Hawass Z, Gad YZ, Ismail S, et al., 'Ancestry and Pathology in King Tutankhamun's Family', JAMA 303(7):638-647 (2010)",
+   "used_for": "The family DNA study; malaria tropica, K\u00f6hler disease II, the cause-of-death conclusion",
+   "reliability": "primary"
+  },
+  {
+   "url": "https://www.channel4.com/press/news/egyptologist-unearths-clues-tutankhamuns-botched-mummification",
+   "title": "Channel 4, 'Egyptologist unearths clues on Tutankhamun's botched mummification'",
+   "used_for": "Naunton's combustion and chariot claims, as stated by the broadcaster",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://www.livescience.com/40925-king-tuts-death-spontaneous-combustion.html",
+   "title": "Live Science, 'Crashed and Burned: How King Tut Died'",
+   "used_for": "The 200 \u00b0C figure, Connolly's tissue samples, and the note that the work was unpublished",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/317a_and_317b_mummies",
+   "title": "Wikipedia, 317a and 317b mummies",
+   "used_for": "Encyclopedia pull for the two infants; measurements, Derry's 1932 examination, the 2007-2009 DNA result",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Abydos_King_List",
+   "title": "Wikipedia, Abydos King List",
+   "used_for": "Encyclopedia pull for the king list; the seventy-six kings and the omission of the Amarna rulers",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Nicholas_Reeves",
+   "title": "Wikipedia, Nicholas Reeves",
+   "used_for": "Encyclopedia pull for the proponent of the hidden-chamber reading",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://archaeologymag.com/2026/09/scans-point-to-hidden-chambers-beyond-tutankhamuns-tomb/",
+   "title": "Archaeology Magazine, 'New scans point to possible hidden chambers beyond Tutankhamun's tomb' (22 September 2026)",
+   "used_for": "The 2026 review: team, institutions, field seasons, the 25-30 m extension, the limits-of-remote-methods statement",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://thedebrief.org/striking-new-evidence-of-hidden-chambers-near-tutankhamuns-tomb-could-help-solve-a-longstanding-archaeological-mystery/",
+   "title": "The Debrief, 'Striking new evidence of hidden chambers near Tutankhamun's tomb' (19 September 2026)",
+   "used_for": "The 1,200 microgravity readings over 35 m\u00b2, anomaly seven, the two-metre corridor, Ballard's quote, the November 2026 date",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://uk.news.yahoo.com/curse-behind-king-tutankhamun-tomb-061537006.html",
+   "title": "Yahoo News UK, on Ross Fellowes, Journal of Scientific Exploration (2024)",
+   "used_for": "The radiation hypothesis in its proponent's own words",
+   "reliability": "anecdotal"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Mask_of_Tutankhamun",
+   "title": "Wikipedia, Mask of Tutankhamun",
+   "used_for": "Encyclopedia pull for the mask; weight, karat, discovery date, the 2014 beard incident",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://www.nationalgeographic.com/travel/article/what-to-know-about-opening-of-the-grand-egyptian-museum-cairo",
+   "title": "National Geographic, 'The Grand Egyptian Museum is opening in full'",
+   "used_for": "Encyclopedia-equivalent pull for the museum; opening dates and the complete collection",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Akhenaten",
+   "title": "Wikipedia, Akhenaten",
+   "used_for": "Encyclopedia pull for the named father-candidate and the Amarna religious context",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Ankhesenamun",
+   "title": "Wikipedia, Ankhesenamun",
+   "used_for": "Encyclopedia pull for the named queen and presumed mother of 317a and 317b",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Ay_(pharaoh)",
+   "title": "Wikipedia, Ay (pharaoh)",
+   "used_for": "Encyclopedia pull for the named successor and the tomb's possible original owner",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Horemheb",
+   "title": "Wikipedia, Horemheb",
+   "used_for": "Encyclopedia pull for the named usurper of the Restoration Stela and the king list successor",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/George_Herbert,_5th_Earl_of_Carnarvon",
+   "title": "Wikipedia, George Herbert, 5th Earl of Carnarvon",
+   "used_for": "Encyclopedia pull for the named financier whose death started the curse story",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Howard_Carter",
+   "title": "Wikipedia, Howard Carter",
+   "used_for": "Encyclopedia pull for the named excavator",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Grand_Egyptian_Museum",
+   "title": "Wikipedia, Grand Egyptian Museum",
+   "used_for": "Encyclopedia pull for the museum named in the film's present tense",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Eighteenth_Dynasty_of_Egypt",
+   "title": "Wikipedia, Eighteenth Dynasty of Egypt",
+   "used_for": "Encyclopedia pull for the dynasty named in the lower thirds",
+   "reliability": "secondary"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Amarna_letters",
+   "title": "Wikipedia, Amarna letters",
+   "used_for": "Encyclopedia pull for the correspondence cited in the Mitanni-origin proposal",
+   "reliability": "secondary"
+  }
+ ],
+ "gaps": [
+  {
+   "looked_for": "A primary, fetchable copy of Nelson's BMJ paper rather than its abstract and secondary summaries",
+   "why_it_matters": "The survival means and the p-value are the film's central number. They are confirmed by two independent reports of the same abstract, but nothing in this brief rests on reading the full methods.",
+   "closest_available": "The BMJ DOI record plus JSTOR Daily's summary, which independently gives the cohort sizes and the odds ratio"
+  },
+  {
+   "looked_for": "The named originator of the Aspergillus hypothesis and the date it was first proposed",
+   "why_it_matters": "The playbook requires an alternative claim be attributed to its strongest proponent. Without a name, the mould hypothesis can only be narrated as a hypothesis that exists and is disputed \u2014 it cannot be given a proponent, so it is the weaker of the two curse mechanisms in the act and is written that way.",
+   "closest_available": "Wikipedia's statement that A. flavus spores 'may have contributed' and that the link is disputed, with Cox's 2003 Lancet letter against it"
+  },
+  {
+   "looked_for": "The Eldamaty 2026 paper itself, and any independent peer response to it",
+   "why_it_matters": "The film's closing question rests on it. The brief cites two reports of the same work and its own stated caveats; no replication or peer critique could be found, and the script says so rather than implying consensus.",
+   "closest_available": "Archaeology Magazine and The Debrief, both September 2026, and the authors' own statement that remote methods have reached their limit"
+  },
+  {
+   "looked_for": "Who the mother of 317a and 317b actually was",
+   "why_it_matters": "This is the film's last image and it has to stay a question. The DNA confirmed the father to better than 99.9 per cent and failed to confirm the mother; no later work closing this was found.",
+   "closest_available": "The non-significant KV21A partial profile"
+  },
+  {
+   "looked_for": "A dated, attributable statement of how much radiation was actually measured inside KV62",
+   "why_it_matters": "Fellowes's claim is about Egyptian tombs generally, with readings from Giza and Saqqara. No measurement from inside Tutankhamun's own tomb could be sourced, so the narration may not say that his tomb was measured.",
+   "closest_available": "The Giza Geiger readings and Saqqara radon reported second-hand"
+  },
+  {
+   "looked_for": "A royalty-clear photograph of the dagger's blade at macro scale showing the troilite inclusions",
+   "why_it_matters": "The act 2 reveal wants the metal itself, not a museum-case wide shot. If none exists in Commons the slot becomes a cross-section diagram, which the playbook permits.",
+   "closest_available": "Wikimedia Commons holdings for the dagger as a whole object"
+  }
+ ],
+ "research_summary": "The King Tut audience has been given the outline a hundred times and a mechanism never. What this research turns up is that the four questions the channel's own Shorts keep circling \u2014 the curse, the dagger, the body, the tomb \u2014 are each a case with a named proponent, a named instrument and a dated verdict, and that they do not all end the same way. The curse closes: Nelson's 2002 cohort found mean survival of 20.8 years against 28.9 at p = 0.95, which is not a weak effect but no effect, and the radiation claim that revived it in 2024 sits in a journal outside peer review. The dagger half-closes and reopens somewhere better: the metal is meteoritic and that was settled in 2016, but the 2022 manufacture study shows it was heat-forged at low temperature seven centuries before Egypt has any evidence of iron smelting, which is a harder question than the one the internet asks. The body stays contested in both directions \u2014 malaria and avascular necrosis is the published reading and specialists called it insufficiently substantiated. And the tomb is genuinely open, with a date on it: a September 2026 review proposes a corridor and five or six chambers reaching thirty metres north, concedes that remote sensing has reached its limit, and says digging could begin as early as this month. The through-line that makes this a film rather than four segments is in the Abydos king list, where seventy-six kings run straight from Amenhotep III to Horemheb with Tutankhamun deliberately left out: the most intact pharaoh we have is the one his own successors tried to delete, and everything we argue about is what they failed to take away.",
+ "metadata": {
+  "project_id": "king-tut",
+  "pipeline": "narrated-documentary",
+  "playbook": "wak3up-documentary",
+  "topic_brief": "artifacts/topic_briefs.json (brief 0, entity 'King Tut')",
+  "angle_constraint_from_topic_picker": "The Shorts that performed on King Tut keep returning to: king, curse, unexplained, deaths. The film has to answer that, not introduce the subject.",
+  "ledger_size": 53,
+  "ledger_id_range": "c01-c53",
+  "contested_claims": [
+   "c03",
+   "c10",
+   "c14",
+   "c15",
+   "c25",
+   "c27",
+   "c31",
+   "c32",
+   "c35",
+   "c36",
+   "c37",
+   "c40",
+   "c42",
+   "c44",
+   "c46",
+   "c47"
+  ],
+  "named_entities_with_encyclopedia_pull": [
+   "Tutankhamun",
+   "Howard Carter",
+   "George Herbert, 5th Earl of Carnarvon",
+   "KV62",
+   "Curse of the pharaohs",
+   "Tutankhamun's meteoric iron dagger",
+   "Mask of Tutankhamun",
+   "317a and 317b mummies",
+   "Abydos King List",
+   "Akhenaten",
+   "Ankhesenamun",
+   "Ay (pharaoh)",
+   "Horemheb",
+   "Nicholas Reeves",
+   "Grand Egyptian Museum",
+   "Eighteenth Dynasty of Egypt",
+   "Amarna letters",
+   "Amarna Period",
+   "Discovery of the tomb of Tutankhamun"
+  ],
+  "named_entities_sourced_to_a_dated_paper_instead": [
+   "Mark R. Nelson (BMJ 2002)",
+   "Ross Fellowes (JSE 2024)",
+   "Ann M. Cox (Lancet 2003)",
+   "Daniela Comelli (MAPS 2016)",
+   "Takafumi Matsui (MAPS 2022)",
+   "Zahi Hawass (JAMA 2010)",
+   "Chris Naunton (Channel 4, 2013)",
+   "Robert Connolly (Live Science, 2013)",
+   "Mamdouh Eldamaty (2026)",
+   "George Ballard (The Debrief, 2026)",
+   "Benson Harer (2017)",
+   "Raymond Johnson",
+   "Douglas Derry",
+   "Georges Legrain",
+   "Arthur Weigall",
+   "Arthur Conan Doyle",
+   "Tushratta",
+   "Lady Evelyn Herbert"
+  ],
+  "duration_carry_check": "Fifty-three ledger entries against a 2,500-2,700 word budget is roughly one claim per fifty narrated words, well inside the playbook's one-per-150 floor. Each of the four acts has at least eleven entries assigned and can carry four to five minutes without restatement. The thinnest act is act 3, which is also the one with the most contested material, so its length comes from holding two readings open rather than from adding claims.",
+  "act_assignment": {
+   "cold_open": [
+    "c49",
+    "c16",
+    "c20",
+    "c46"
+   ],
+   "title_sequence": [],
+   "act1": [
+    "c01",
+    "c02",
+    "c03",
+    "c05",
+    "c06",
+    "c07",
+    "c08",
+    "c09",
+    "c10",
+    "c11",
+    "c12",
+    "c13",
+    "c14",
+    "c15",
+    "c16",
+    "c17",
+    "c18",
+    "c19"
+   ],
+   "act2": [
+    "c04",
+    "c20",
+    "c21",
+    "c22",
+    "c23",
+    "c24",
+    "c25",
+    "c26",
+    "c27",
+    "c52"
+   ],
+   "act3": [
+    "c28",
+    "c29",
+    "c30",
+    "c31",
+    "c32",
+    "c33",
+    "c34",
+    "c35",
+    "c36",
+    "c37",
+    "c38"
+   ],
+   "act4": [
+    "c39",
+    "c40",
+    "c41",
+    "c42",
+    "c43",
+    "c44",
+    "c45",
+    "c46",
+    "c47",
+    "c48",
+    "c49",
+    "c50",
+    "c51",
+    "c53"
+   ],
+   "outro": []
+  }
+ }
+}

@@ -1,0 +1,660 @@
+{
+ "output": "/Users/mac/Developer/wak3up-docs/runner/projects/king-tut/renders/mix_final.wav",
+ "spans": [
+  {
+   "name": "open_act1",
+   "acts": [
+    "cold_open",
+    "title_sequence",
+    "act1"
+   ],
+   "track": "bed_cinematic_quiet.wav",
+   "start": 0.0,
+   "end": 371.39
+  },
+  {
+   "name": "act2_act3",
+   "acts": [
+    "act2",
+    "act3"
+   ],
+   "track": "bed_dark_drone.wav",
+   "start": 371.39,
+   "end": 884.71
+  },
+  {
+   "name": "act4_outro",
+   "acts": [
+    "act4",
+    "outro"
+   ],
+   "track": "bed_drone_minimal.wav",
+   "start": 884.71,
+   "end": 1226.26
+  }
+ ],
+ "under_speech_lufs": -33.0,
+ "gap_target_lufs": -30.0,
+ "gap_rise_db_max": 3.0,
+ "boundary_target_lufs": -27.0,
+ "duck": {
+  "rise_ramp_seconds": 1.5,
+  "dezipper_ms": 30,
+  "gap_seconds": 1.5,
+  "measured_edges": {
+   "peak_db": 6.0,
+   "regions": 25,
+   "rise_10_90_s_median": 0.68,
+   "rise_10_90_s_slowest": 0.89,
+   "fall_90_10_s_median": 0.68,
+   "fall_90_10_s_slowest": 0.89,
+   "authored_ramp_s": 1.5,
+   "expected_10_90_s": 0.89
+  },
+  "superseded": {
+   "attack_ms": 150,
+   "release_ms": 900,
+   "why": "a one-pole cannot be asked for a ramp length; measured, 1200 ms gave a 2.64 s rise and a 0.33 s fall"
+  }
+ },
+ "eq": "highpass=f=120,highpass=f=120,highshelf=f=3500:g=-6:width_type=q:width=0.7,lowpass=f=5000,lowpass=f=5000",
+ "bed_conditioning": {
+  "beds": [
+   {
+    "name": "open_act1",
+    "source_lufs": -17.0,
+    "source_lra_lu": 2.2,
+    "window": null,
+    "compressor_threshold_db": -17.0,
+    "compressor_passes": 1,
+    "lra_lu": 1.7,
+    "spread_5_95_lu": 3.14,
+    "hole_db": 4.88,
+    "levelled_to_lufs": -33.0,
+    "in_film_lufs": -33.0
+   },
+   {
+    "name": "act2_act3",
+    "source_lufs": -18.7,
+    "source_lra_lu": 1.5,
+    "window": null,
+    "compressor_threshold_db": -18.7,
+    "compressor_passes": 1,
+    "lra_lu": 1.1,
+    "spread_5_95_lu": 2.82,
+    "hole_db": 3.62,
+    "levelled_to_lufs": -33.0,
+    "in_film_lufs": -33.0
+   },
+   {
+    "name": "act4_outro",
+    "source_lufs": -21.8,
+    "source_lra_lu": 5.2,
+    "window": null,
+    "compressor_threshold_db": -21.8,
+    "compressor_passes": 1,
+    "lra_lu": 3.9,
+    "spread_5_95_lu": 4.25,
+    "hole_db": 5.43,
+    "levelled_to_lufs": -33.0,
+    "in_film_lufs": -33.0
+   }
+  ],
+  "spread_lu": 0.0,
+  "spread_ceiling_lu": 1.5,
+  "lra_ceiling_lu": 6.0,
+  "eq": "highpass=f=120,highpass=f=120,highshelf=f=3500:g=-6:width_type=q:width=0.7,lowpass=f=5000,lowpass=f=5000",
+  "compressor": {
+   "ratio": 2.0,
+   "attack_ms": 50,
+   "release_ms": 500,
+   "knee_db": 6.0
+  }
+ },
+ "brightness": {
+  "ceiling_pct": 10.0,
+  "high_hz": 4000.0,
+  "beds": [
+   {
+    "track": "bed_cinematic_quiet.wav",
+    "path": "/Users/mac/Developer/wak3up-docs/runner/projects/king-tut/assets/music/candidates/trimmed/bed_cinematic_quiet.wav",
+    "seconds": 117.6,
+    "spectral_centroid_hz": 381.3,
+    "energy_above_4k_pct": 0.02,
+    "energy_above_8k_pct": 0.002,
+    "measured_after_eq": false,
+    "name": "open_act1",
+    "after_eq": 0.0
+   },
+   {
+    "track": "bed_dark_drone.wav",
+    "path": "/Users/mac/Developer/wak3up-docs/runner/projects/king-tut/assets/music/candidates/trimmed/bed_dark_drone.wav",
+    "seconds": 168.0,
+    "spectral_centroid_hz": 325.1,
+    "energy_above_4k_pct": 0.09,
+    "energy_above_8k_pct": 0.002,
+    "measured_after_eq": false,
+    "name": "act2_act3",
+    "after_eq": 0.03
+   },
+   {
+    "track": "bed_drone_minimal.wav",
+    "path": "/Users/mac/Developer/wak3up-docs/runner/projects/king-tut/assets/music/candidates/trimmed/bed_drone_minimal.wav",
+    "seconds": 105.0,
+    "spectral_centroid_hz": 90.8,
+    "energy_above_4k_pct": 0.01,
+    "energy_above_8k_pct": 0.0,
+    "measured_after_eq": false,
+    "name": "act4_outro",
+    "after_eq": 0.01
+   }
+  ],
+  "worst_pct": 0.09
+ },
+ "sfx_against_the_bed": {
+  "windows": 12259,
+  "window_seconds": 0.4,
+  "bed_median_lufs_for_the_hole_test": -38.86,
+  "hole_threshold_lufs": -44.86,
+  "hole_below_median_db": 6.0,
+  "events_checked": 14,
+  "events_over_the_bed": 0,
+  "worst_event": {
+   "kind": "sting",
+   "at_seconds": 51.92,
+   "from": 51.72,
+   "to": 54.92,
+   "path": "sting.mp3",
+   "at_measured_seconds": 52.2,
+   "design_lufs": -34.3,
+   "bed_lufs": -32.2,
+   "excess_db": -2.1
+  },
+  "events": [
+   {
+    "kind": "riser",
+    "at_seconds": 36.31,
+    "from": 33.910000000000004,
+    "to": 36.61,
+    "path": "riser.mp3",
+    "at_measured_seconds": 34.5,
+    "design_lufs": -45.2,
+    "bed_lufs": -38.6,
+    "excess_db": -6.6
+   },
+   {
+    "kind": "sting",
+    "at_seconds": 51.92,
+    "from": 51.72,
+    "to": 54.92,
+    "path": "sting.mp3",
+    "at_measured_seconds": 52.2,
+    "design_lufs": -34.3,
+    "bed_lufs": -32.2,
+    "excess_db": -2.1
+   },
+   {
+    "kind": "impact",
+    "at_seconds": 268.64,
+    "from": 268.44,
+    "to": 270.64,
+    "path": "impact.mp3",
+    "at_measured_seconds": 270.3,
+    "design_lufs": -43.5,
+    "bed_lufs": -39.2,
+    "excess_db": -4.3
+   },
+   {
+    "kind": "riser",
+    "at_seconds": 302.56,
+    "from": 300.16,
+    "to": 302.86,
+    "path": "riser.mp3",
+    "at_measured_seconds": 301.8,
+    "design_lufs": -42.9,
+    "bed_lufs": -36.1,
+    "excess_db": -6.8
+   },
+   {
+    "kind": "sting",
+    "at_seconds": 371.38,
+    "from": 371.18,
+    "to": 374.38,
+    "path": "sting.mp3",
+    "at_measured_seconds": 371.7,
+    "design_lufs": -36.4,
+    "bed_lufs": -32.5,
+    "excess_db": -3.9
+   },
+   {
+    "kind": "impact",
+    "at_seconds": 496.2,
+    "from": 496.0,
+    "to": 498.2,
+    "path": "impact.mp3",
+    "at_measured_seconds": 497.8,
+    "design_lufs": -44.4,
+    "bed_lufs": -39.7,
+    "excess_db": -4.7
+   },
+   {
+    "kind": "riser",
+    "at_seconds": 524.72,
+    "from": 522.32,
+    "to": 525.02,
+    "path": "riser.mp3",
+    "at_measured_seconds": 523.9,
+    "design_lufs": -43.3,
+    "bed_lufs": -35.2,
+    "excess_db": -8.1
+   },
+   {
+    "kind": "sting",
+    "at_seconds": 605.5,
+    "from": 605.3,
+    "to": 608.5,
+    "path": "sting.mp3",
+    "at_measured_seconds": 605.8,
+    "design_lufs": -35.5,
+    "bed_lufs": -32.1,
+    "excess_db": -3.5
+   },
+   {
+    "kind": "impact",
+    "at_seconds": 742.49,
+    "from": 742.29,
+    "to": 744.49,
+    "path": "impact.mp3",
+    "at_measured_seconds": 744.2,
+    "design_lufs": -44.6,
+    "bed_lufs": -39.7,
+    "excess_db": -4.8
+   },
+   {
+    "kind": "riser",
+    "at_seconds": 772.42,
+    "from": 770.02,
+    "to": 772.7199999999999,
+    "path": "riser.mp3",
+    "at_measured_seconds": 771.9,
+    "design_lufs": -42.6,
+    "bed_lufs": -36.0,
+    "excess_db": -6.6
+   },
+   {
+    "kind": "sting",
+    "at_seconds": 884.71,
+    "from": 884.51,
+    "to": 887.71,
+    "path": "sting.mp3",
+    "at_measured_seconds": 885.0,
+    "design_lufs": -36.7,
+    "bed_lufs": -33.6,
+    "excess_db": -3.2
+   },
+   {
+    "kind": "impact",
+    "at_seconds": 1002.26,
+    "from": 1002.06,
+    "to": 1004.26,
+    "path": "impact.mp3",
+    "at_measured_seconds": 1003.9,
+    "design_lufs": -44.3,
+    "bed_lufs": -37.4,
+    "excess_db": -6.9
+   },
+   {
+    "kind": "riser",
+    "at_seconds": 1039.65,
+    "from": 1037.25,
+    "to": 1039.95,
+    "path": "riser.mp3",
+    "at_measured_seconds": 1038.9,
+    "design_lufs": -42.4,
+    "bed_lufs": -34.5,
+    "excess_db": -8.0
+   },
+   {
+    "kind": "sting",
+    "at_seconds": 1215.52,
+    "from": 1215.32,
+    "to": 1218.52,
+    "path": "sting.mp3",
+    "at_measured_seconds": 1215.8,
+    "design_lufs": -35.5,
+    "bed_lufs": -30.8,
+    "excess_db": -4.8
+   }
+  ],
+  "continuous_windows_over_the_bed": 0,
+  "continuous_seconds_over_the_bed": 0.0,
+  "worst_continuous_excess_db": null,
+  "worst_continuous_at_seconds": null,
+  "windows_excluded_as_a_hole_in_the_bed": 0,
+  "seconds_excluded_as_a_hole_in_the_bed": 0.0,
+  "design_median_lufs": -46.82,
+  "bed_median_lufs": -38.86,
+  "tolerance_db": 0.0,
+  "checked": true
+ },
+ "narration": {
+  "lufs": -16.0,
+  "lra": 2.7,
+  "peak_dbfs": -1.5
+ },
+ "air": {
+  "source": "narration_plan",
+  "air_planned": true,
+  "planned_air_seconds": 105.0,
+  "segments": 53,
+  "act_boundaries": [
+   44.92,
+   51.92,
+   371.39,
+   605.5,
+   884.71,
+   1215.52
+  ],
+  "realised_air_seconds": 68.4,
+  "realised_gaps": 24,
+  "air_threshold_s": 1.5,
+  "pauses_over_0_6s": 50,
+  "pause_seconds_total": 102.1,
+  "longest_realised_gap_s": 9.35,
+  "air_pct_of_total": 5.6
+ },
+ "sound_design": {
+  "elements": [
+   {
+    "element": "room_tone",
+    "path": "room_tone.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "crest": {
+     "crest_db": 1.1,
+     "limit_db": 3.0,
+     "held": false,
+     "passes": 0,
+     "crest_after_db": 1.1,
+     "inside_the_limit": true,
+     "passes_available": 10
+    },
+    "level_db": -50.9
+   },
+   {
+    "element": "ambience",
+    "act": "cold_open",
+    "palette": "stone",
+    "path": "ambience_stone.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "crest": {
+     "crest_db": 6.6,
+     "limit_db": 3.0,
+     "held": true,
+     "passes": 7,
+     "crest_after_db": 3.1,
+     "inside_the_limit": true,
+     "passes_available": 10
+    },
+    "level_db": -48.9
+   },
+   {
+    "element": "ambience",
+    "act": "act1",
+    "palette": "desert",
+    "path": "ambience_desert.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "crest": {
+     "crest_db": 14.1,
+     "limit_db": 3.0,
+     "held": true,
+     "passes": 10,
+     "crest_after_db": 3.1,
+     "inside_the_limit": true,
+     "passes_available": 10
+    },
+    "level_db": -48.9
+   },
+   {
+    "element": "ambience",
+    "act": "act2",
+    "palette": "stone",
+    "path": "ambience_stone.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "crest": {
+     "crest_db": 6.9,
+     "limit_db": 3.0,
+     "held": true,
+     "passes": 6,
+     "crest_after_db": 3.1,
+     "inside_the_limit": true,
+     "passes_available": 10
+    },
+    "level_db": -48.9
+   },
+   {
+    "element": "ambience",
+    "act": "act3",
+    "palette": "wind",
+    "path": "ambience_wind.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "crest": {
+     "crest_db": 6.4,
+     "limit_db": 3.0,
+     "held": true,
+     "passes": 4,
+     "crest_after_db": 3.0,
+     "inside_the_limit": true,
+     "passes_available": 10
+    },
+    "level_db": -48.9
+   },
+   {
+    "element": "ambience",
+    "act": "act4",
+    "palette": "desert",
+    "path": "ambience_desert.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "crest": {
+     "crest_db": 14.2,
+     "limit_db": 3.0,
+     "held": true,
+     "passes": 5,
+     "crest_after_db": 3.1,
+     "inside_the_limit": true,
+     "passes_available": 10
+    },
+    "level_db": -48.9
+   },
+   {
+    "element": "riser",
+    "at_seconds": 36.31,
+    "path": "riser.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -40.0,
+    "bed_median_db": -38.9,
+    "level_db": -52.0
+   },
+   {
+    "element": "riser",
+    "at_seconds": 302.56,
+    "path": "riser.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -39.8,
+    "bed_median_db": -38.9,
+    "level_db": -51.8
+   },
+   {
+    "element": "riser",
+    "at_seconds": 524.72,
+    "path": "riser.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -39.7,
+    "bed_median_db": -38.9,
+    "level_db": -51.7
+   },
+   {
+    "element": "riser",
+    "at_seconds": 772.42,
+    "path": "riser.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -39.7,
+    "bed_median_db": -38.9,
+    "level_db": -51.7
+   },
+   {
+    "element": "riser",
+    "at_seconds": 1039.65,
+    "path": "riser.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -37.3,
+    "bed_median_db": -38.9,
+    "level_db": -49.3
+   },
+   {
+    "element": "impact",
+    "at_seconds": 268.64,
+    "path": "impact.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -39.9,
+    "bed_median_db": -38.9,
+    "level_db": -45.9
+   },
+   {
+    "element": "impact",
+    "at_seconds": 496.2,
+    "path": "impact.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -40.9,
+    "bed_median_db": -38.9,
+    "level_db": -46.9
+   },
+   {
+    "element": "impact",
+    "at_seconds": 742.49,
+    "path": "impact.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -40.4,
+    "bed_median_db": -38.9,
+    "level_db": -46.4
+   },
+   {
+    "element": "impact",
+    "at_seconds": 1002.26,
+    "path": "impact.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -39.5,
+    "bed_median_db": -38.9,
+    "level_db": -45.5
+   },
+   {
+    "element": "sting",
+    "at_seconds": 51.92,
+    "path": "sting.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -38.8,
+    "bed_median_db": -38.9,
+    "level_db": -40.8
+   },
+   {
+    "element": "sting",
+    "at_seconds": 371.38,
+    "path": "sting.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -40.6,
+    "bed_median_db": -38.9,
+    "level_db": -42.6
+   },
+   {
+    "element": "sting",
+    "at_seconds": 605.5,
+    "path": "sting.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -40.1,
+    "bed_median_db": -38.9,
+    "level_db": -42.1
+   },
+   {
+    "element": "sting",
+    "at_seconds": 884.71,
+    "path": "sting.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -40.9,
+    "bed_median_db": -38.9,
+    "level_db": -42.9
+   },
+   {
+    "element": "sting",
+    "at_seconds": 1215.52,
+    "path": "sting.mp3",
+    "provider": "pixabay",
+    "url": "https://pixabay.com/sound-effects/",
+    "licence": "Pixabay Content License",
+    "bed_here_db": -40.8,
+    "bed_median_db": -38.9,
+    "level_db": -42.8
+   }
+  ],
+  "unit": "LUFS, K-weighted: peak 400 ms window for the one-shots, median window for ambience and room tone",
+  "music_bed_db": -38.9,
+  "offsets_db": {
+   "ambience": -10,
+   "room_tone": -12,
+   "riser_peak": -12,
+   "impact_peak": -6,
+   "sting_peak": -2
+  },
+  "measured_db": -38.4,
+  "peak_dbfs": -22.0,
+  "seconds": 1226.3,
+  "present": true
+ },
+ "bed_under_speech": {
+  "lufs": -33.0,
+  "lra": 2.3,
+  "peak_dbfs": -18.1
+ },
+ "final": {
+  "lufs": -14.0,
+  "lra": 2.8,
+  "peak_dbfs": -1.5
+ },
+ "note": "LRA is recorded on the FILM, not targeted; it IS a ceiling on each BED."
+}

@@ -1,0 +1,23 @@
+{
+ "project": "king-tut",
+ "video_id": "d8e1wVEqCUs",
+ "url": "https://www.youtube.com/watch?v=d8e1wVEqCUs",
+ "title": "King Tut: The Part Nobody Can Explain",
+ "uploaded": "2026-11-08T06:17:28.528082+00:00",
+ "public_immediately": false,
+ "publish_at": "2026-11-09T14:00:00+00:00",
+ "playlist_id": "PLGLHDmJ31GMo",
+ "comment_id": "UgyBZv2Hfs05x1CPLp14AaABAg",
+ "done": [
+  "uploaded private, scheduled 2026-11-09T14:00:00+00:00",
+  "added to 'Documentaries'",
+  "credits comment posted 2026-11-09T15:34:44.696294+00:00",
+  "custom thumbnail set (c001, approved on telegram)"
+ ],
+ "manual": [
+  "no caption file at /Users/mac/Developer/wak3up-docs/runner/projects/king-tut/artifacts/captions.en.srt",
+  "set the End Screen (no API)",
+  "confirm the Altered content disclosure is ON in Studio \u2014 the narration is synthesised and the API does not return containsSyntheticMedia, so it cannot be verified from here",
+  "PIN the credits comment (no API for it)"
+ ]
+}
