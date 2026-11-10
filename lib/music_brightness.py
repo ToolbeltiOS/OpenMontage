@@ -126,30 +126,12 @@ def spectrum(y, sr: int = SR):
     return acc, freqs
 
 
-#: The repo root, so a report's repo-relative bed path resolves the same way
-#: from any working directory.
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#: One implementation, in lib/repo_paths.py. It is re-exported here because
+#: `check()` resolves EDL and mix-report bed paths, and because the tests for
+#: this behaviour were written against this name.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-
-def resolve(path: str) -> str:
-    """A bed path from an EDL or a mix report, made findable.
-
-    `mix_report.json` records a bed repo-relative (see
-    `mix_audio.report_track`), and this used to resolve whatever it was
-    handed against the CURRENT WORKING DIRECTORY. Re-mixing king-tut from
-    its own report therefore died on `exit status 254` while the beds sat in
-    projects/king-tut/assets/music/candidates/trimmed the whole time.
-
-    Absolute paths are returned untouched: a bed from outside the repo is
-    recorded absolute on purpose, and rewriting it would lose the one fact
-    the report is trying to carry.
-    """
-    if not path or os.path.isabs(path):
-        return path
-    if os.path.exists(path):
-        return path                      # already correct for this cwd
-    rooted = os.path.join(ROOT, path)
-    return rooted if os.path.exists(rooted) else path
+from repo_paths import ROOT, resolve  # noqa: E402,F401
 
 
 def brightness(path: str, eq: str | None = None) -> dict[str, Any]:

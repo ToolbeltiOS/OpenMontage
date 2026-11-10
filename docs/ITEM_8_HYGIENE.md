@@ -174,17 +174,54 @@ What is actually missing is narrower, and measured 2026-11-10:
 | --- | --- | --- |
 | easter-island | yes | **yes** |
 | they-said-it-couldnt-be-built | yes | **yes** |
-| king-tut | runner worktree only | no |
-| noah | **nowhere** | no |
+| king-tut | runner worktree only | **yes, normalised 2026-11-10** |
+| noah | **nowhere** | no, and **unrecoverable** |
 
-So two of four bed selections are in git. noah's EDL does not exist on any
-disk here, and nothing can be committed for it. king-tut's exists only in
-the runner worktree and is **not committed, deliberately** — its three
-`path` fields are worktree-absolute
-(`/Users/mac/Developer/wak3up-docs/runner/projects/king-tut/...`), so
-committing it as it stands would put a path naming one worktree into the
-shared history, and normalising it first would edit a delivered film's
-artifact. That is a call for the owner, not a hygiene fix.
+### king-tut: committed, paths normalised, decisions untouched
+
+Ruled by the owner 2026-11-10: *the beds chosen are the decision, the path
+spelling isn't, and a worktree-absolute path in shared history is worse than
+a normalised copy.*
+
+**There were seventy such paths, not three.** The three bed `path` fields
+plus sixty-seven `cuts[].source`, `.image` and `.backgroundSrc` entries, all
+carrying the same `/Users/mac/Developer/wak3up-docs/runner/` prefix.
+Normalising the three beds and committing sixty-seven worktree-absolute
+image paths would have committed the thing the ruling objects to, so the
+rule was applied to all seventy.
+
+Only the prefix moved. The normalisation was verified by putting the prefix
+back and comparing the result to the original file key for key and value for
+value — it round-trips exactly — and
+`tests/lib/test_repo_paths.py` asserts the bed names, bed tracks, the three
+rejections with their reasons, and the cut count are all unchanged, with no
+absolute path and no worktree name left anywhere in the file.
+
+All seventy resolve to a real file in the worktree that holds the assets.
+That is what `lib/repo_paths.resolve` is for, and it is wired into
+`build_render_props` for cut sources and bed paths as a **fallback only**: it
+rewrites a relative path that does not already resolve and leaves everything
+else alone, so it can repair a broken path and cannot change a film that
+already renders.
+
+### noah: the bed selection is unrecoverable
+
+Recorded 2026-11-10 on the owner's ruling that there is nothing to do.
+
+noah's `edit_decisions.json` **exists on no disk here** — not in the dev
+worktree, not in the runner worktree. Its published film carries the mix, so
+the beds were chosen and used, but *which bed covered which span* was never
+written to a file that survived, and that selection was made by ear.
+
+It cannot be reconstructed. `renders/mix_report.json` records only the bare
+basenames the old report format wrote (item 8.2 above), the music candidates
+on disk are the whole pool rather than the three picks, and nothing else in
+the repo states the mapping. The film can be re-watched; the decision behind
+its music cannot be read back.
+
+This is the cost the `.gitignore` rule was added to stop, one film too late.
+The rule — `!projects/*/artifacts/edit_decisions.json`, since `59c42e9` —
+now holds for every film after noah, and king-tut's is in git as of today.
 
 The report half is done: `mix_audio.report_track` records a bed
 repo-relative when it is inside the repo, and absolute **and flagged** when

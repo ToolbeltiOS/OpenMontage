@@ -26,6 +26,9 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "lib"))
+
+from repo_paths import resolve as resolve_repo_path  # noqa: E402
 
 #: Run #1's slug, kept as the default so every existing caller keeps building
 #: the film it always built. A second film passes --project.
@@ -218,7 +221,8 @@ def music_spans(music_dir: str, ed: dict, offsets: list[float],
         track = bed["track"]
         if track in banned:
             raise SystemExit(f"bed {track!r} is on the rejected list in the EDL")
-        path = bed.get("path") or os.path.join(music_dir, track)
+        path = resolve_repo_path(bed.get("path") or
+                                 os.path.join(music_dir, track))
         if not os.path.exists(path):
             missing.append(track)
             continue
@@ -596,6 +600,12 @@ def main() -> int:
             src = cut.get(key)
             if not isinstance(src, str):
                 continue
+            # An EDL records its inputs REPO-RELATIVE, so that the artifact
+            # can be read in any worktree. king-tut's carried seventy paths
+            # naming one worktree of one clone. This only rewrites a relative
+            # path that does not already resolve, so a working film cannot
+            # change — see lib/repo_paths.resolve.
+            src = cut[key] = resolve_repo_path(src)
             new = proxy_image(src)
             if new == src:
                 new = proxy_video(src)
