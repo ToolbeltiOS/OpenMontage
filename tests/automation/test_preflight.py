@@ -287,3 +287,52 @@ class TestTheSleepPolicy:
         assert "pmset repeat" not in body, (
             "a per-agent wake was added; the decision of 2026-11-10 was "
             "`sudo pmset -c sleep 0` instead")
+
+
+class TestTheAgentCheckCoversEveryAgent:
+    """Including the one doing the asking.
+
+    The check was a hardcoded list of four labels, written the same day a
+    fifth agent was added — the preflight's own. So it reported "all four
+    loaded" on a machine with five, and the single agent it could not vouch
+    for was the one whose job is vouching. test_runner_wiring.py already
+    refuses a plist no schedule table covers; this is the runtime half.
+    """
+
+    def test_it_iterates_the_launchd_directory(self):
+        body = source()
+        assert 'for plist in "$REPO"/launchd/com.wak3up.docs.*.plist' in body, (
+            "the agent check names agents instead of reading the directory, "
+            "so the next agent added will not be checked")
+
+    def test_no_hardcoded_agent_list_remains(self):
+        """A leftover list would silently shadow the directory walk.
+
+        Code lines only. The comment above the loop quotes the old
+        behaviour — "all four loaded" — on purpose, and a test that reads
+        prose fails on its own explanation.
+        """
+        code = "\n".join(line for line in source().splitlines()
+                         if not line.lstrip().startswith("#"))
+        for label in ("com.wak3up.docs.weekly com.wak3up.docs.metrics",
+                      "all four loaded"):
+            assert label not in code, f"stale hardcoded agent list: {label!r}"
+
+    def test_the_count_it_reports_is_counted_not_written(self):
+        body = source()
+        assert '"all $(ls "$REPO"/launchd/com.wak3up.docs.*.plist' in body
+
+    def test_every_plist_on_disk_would_be_reached(self):
+        """The glob and the test table have to see the same set."""
+        import plistlib
+
+        on_disk = sorted(p.stem for p in
+                         (ROOT / "launchd").glob("com.wak3up.docs.*.plist"))
+        assert len(on_disk) >= 5, on_disk
+        assert "com.wak3up.docs.preflight" in on_disk
+        for stem in on_disk:
+            d = plistlib.loads((ROOT / "launchd" / f"{stem}.plist").read_bytes())
+            assert d.get("Label") == stem, (
+                f"{stem}.plist carries Label {d.get('Label')!r}; the preflight "
+                f"matches `launchctl list` on the LABEL, so a filename that "
+                f"disagrees with it reads as an agent that is not loaded")

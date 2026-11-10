@@ -419,10 +419,19 @@ preflight() {
   fi
 
   # ── the agents themselves ──────────────────────────────────────────────
-  local label loaded missing=0 agents
+  # EVERY AGENT ON DISK, not a list written here.
+  #
+  # It WAS a list written here, of four, and the preflight agent itself was
+  # the fifth — so the check reported "all four loaded" on a machine with
+  # five, and the one agent it could not vouch for was the one doing the
+  # asking. tests/automation/test_runner_wiring.py already refuses a plist
+  # that no schedule table covers, for the same reason; this is the runtime
+  # half of it.
+  local label loaded missing=0 agents plist
   agents="$(launchctl list 2>/dev/null)"
-  for label in com.wak3up.docs.weekly com.wak3up.docs.metrics \
-               com.wak3up.docs.tripwire com.wak3up.docs.afterpublish; do
+  for plist in "$REPO"/launchd/com.wak3up.docs.*.plist; do
+    [[ -e "$plist" ]] || continue
+    label="$(basename "$plist" .plist)"
     if [[ "$agents" == *"	$label"* ]]; then
       loaded=1
     else
@@ -431,7 +440,8 @@ preflight() {
       pf_bad "agent $label" "not loaded — it will never fire"
     fi
   done
-  [[ "$missing" == "0" ]] && pf_ok "agents" "all four loaded"
+  [[ "$missing" == "0" ]] && pf_ok "agents" \
+    "all $(ls "$REPO"/launchd/com.wak3up.docs.*.plist 2>/dev/null | wc -l | tr -d ' ') loaded"
 
   # ── disk ───────────────────────────────────────────────────────────────
   #
