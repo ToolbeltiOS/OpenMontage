@@ -98,6 +98,32 @@ FACT_BACKEND="${FACT_BACKEND:-spacy}"
 #: "MAX_RESUMES" appeared in the file.
 MAX_RESUMES="${MAX_RESUMES:-6}"
 
+#: WALL-CLOCK CAPS PER STAGE, IN MINUTES. These are the real guard. The SDK
+#: turn caps above are kept only as a runaway stop.
+#:
+#: WHY: SDK TURNS AND WORK ARE UNRELATED, measured on 2026-11-11. The script
+#: stage did the most work of any stage that day — 209 transcript turns, 32
+#: minutes, $18.86 — inside 15 of its 120 SDK turns. The proposal stage blew
+#: its cap of 25 on 50 transcript turns and $2.91. The transcript-to-SDK
+#: ratio across four stages ran from 1.6 to 13.9, so a cap in SDK turns is
+#: close to unrelated to either cost or effort, and no amount of measuring
+#: will make it track them.
+#:
+#: Cost tracks TIME, because a `claude -p` stage re-reads its context every
+#: turn and the bill is context times turns. 32 minutes bought $18.86; 9
+#: minutes bought $2.91. A wall clock is therefore the honest budget, and it
+#: is also the thing that matters on a Friday night: a stage that has not
+#: finished in an hour is not about to.
+#:
+#: The owner's numbers, 2026-11-11. A stage with no entry here is not
+#: wall-capped — `notes` is the only one, because it edits one file.
+WALL_RESEARCH="${WALL_RESEARCH:-25}"
+WALL_PROPOSAL="${WALL_PROPOSAL:-20}"
+WALL_SCRIPT="${WALL_SCRIPT:-60}"
+WALL_SCENE_PLAN="${WALL_SCENE_PLAN:-40}"
+WALL_ASSETS="${WALL_ASSETS:-60}"
+WALL_EDIT="${WALL_EDIT:-60}"
+
 #: HOW MANY TURNS EACH MODEL STAGE MAY TAKE. A `claude -p` stage pays for
 #: its whole context on every turn, so its cost is the context size times
 #: the turn count — quadratic in turns, not linear. Measured on the
@@ -680,16 +706,96 @@ fi
 # must not cost it.
 #
 # $1 stage name   $2 log basename   $3 prompt   $4 turn cap (0 = uncapped)
+# Did this stage finish, whatever the exit code says? The checkpoint is the
+# authority: lib/checkpoint.py will not write a gated stage `completed`
+# without its artifact passing that artifact's own schema, which is a
+# stronger statement than "the process exited 0". Used by BOTH cap rules.
+# The script gate said no, or nobody answered. RECORD IT.
+#
+# Until 2026-11-11 the three abort paths wrote NOTHING: `say "aborted by
+# reply"` and exit 0. Verified by running the real gate block and replying
+# "no" — no checkpoint, no note, nothing on disk. And a refused film is not
+# merely stopped, it is ABANDONED SILENTLY: unfinished_film.py will not
+# resume it because the script was never approved, and the topic picker
+# excludes any subject that has a directory under projects/, so the subject
+# never comes up again either. The only trace was a line in a log nobody
+# reads and a Telegram message from the gate.
+#
+# A `failed` checkpoint carries the reason and does not require the
+# artifact, so resume_state.py reports the stage as not done WITH the cause.
+# This is deliberately not fatal: the run is already stopping in an orderly
+# way, and failing to write a record is not a reason to crash instead.
+record_gate_outcome() {
+  local why="$1"
+  "$PY" "$REPO/scripts/write_checkpoint.py" --project "$SLUG" \
+    --stage script --status failed --error "$why" >/dev/null \
+    || say "WARNING: could not record the gate outcome ($why)"
+  notify "<b>script gate: the film stopped here</b>
+project: <code>$SLUG</code>
+reason: $why
+
+Recorded in <code>checkpoint_script.json</code> as failed, with that reason,
+so the next run can see why rather than finding a project directory and no
+explanation.
+
+NOTHING RESUMES THIS BY ITSELF. The script was never approved, so
+unfinished_film.py leaves it alone, and the topic picker skips the subject
+while projects/$SLUG exists. To start it again, delete that directory; to
+try the same script again, re-fire with
+<code>scripts/run_weekly.sh --resume $SLUG</code>."
+}
+
+stage_finished_anyway() {
+  "$PY" "$REPO/scripts/resume_state.py" --project "$SLUG" \
+    --is-done "$1" >/dev/null 2>&1
+}
+
 claude_stage() {
   local name="$1" base="$2" prompt="$3" cap="${4:-0}"
   local attempt=1 resumes=0 rc t0 t1 classified kind secs resets back
+  local wall_var wall_min wall_s cpid wpid marker
   local -a args
+
+  # THE WALL CAP. macOS ships no timeout(1) and no gtimeout, so the watchdog
+  # is built here: run claude in the background, and a second background
+  # process that sleeps the budget and then signals it. The marker file is
+  # how the two are told apart afterwards — a TERM'd claude and a claude that
+  # failed on its own both come back non-zero.
+  wall_var="WALL_$(printf '%s' "$name" | tr '[:lower:]-' '[:upper:]_')"
+  wall_min="${!wall_var:-0}"
+  wall_s=$(( wall_min * 60 ))
+
   while true; do
     args=(-p "$prompt" --permission-mode acceptEdits --output-format json)
     (( cap > 0 )) && args+=(--max-turns "$cap")
+    marker="$base.timedout"
+    rm -f "$marker"
     t0=$(date +%s)
-    claude "${args[@]}" > "$base.json" 2> "$base.err"
+    # ONE INVOCATION OF claude, ALWAYS. tests/automation/test_runner_wiring.py
+    # requires exactly one, and it is right to: two call sites are two sets
+    # of flags that drift. So the stage is always backgrounded and waited
+    # on, and the watchdog is the only thing conditional on a wall cap.
+    claude "${args[@]}" > "$base.json" 2> "$base.err" &
+    cpid=$!
+    wpid=""
+    if (( wall_s > 0 )); then
+      (
+        sleep "$wall_s"
+        if kill -0 "$cpid" 2>/dev/null; then
+          : > "$marker"
+          kill -TERM "$cpid" 2>/dev/null
+          sleep 10
+          kill -KILL "$cpid" 2>/dev/null
+        fi
+      ) &
+      wpid=$!
+    fi
+    wait "$cpid"
     rc=$?
+    if [[ -n "$wpid" ]]; then
+      kill "$wpid" 2>/dev/null
+      wait "$wpid" 2>/dev/null
+    fi
     t1=$(date +%s)
 
     "$PY" "$REPO/scripts/stage_usage.py" "$base.json" \
@@ -739,6 +845,46 @@ it stopped:
       return 10
     fi
 
+    # ── WALL_CLOCK DECISION (sliced out and executed by
+    # tests/automation/test_wall_clock_cap.py — keep the markers) ──
+    if [[ -e "$marker" ]]; then
+      rm -f "$marker"
+      # THE SAME RULE AS THE TURN CAP: a stage that finished and then ran
+      # over the clock is not a failed stage. The checkpoint is the
+      # authority, and it says whether the artifact exists and passes its
+      # own schema.
+      if stage_finished_anyway "$name"; then
+        say "$name: over its ${wall_min}-minute wall cap AFTER checkpointing completed — warning, not failing"
+        notify "<b>stage ran over its clock, but had already finished</b>
+stage: $name
+wall cap: $wall_min minutes
+
+It checkpointed <code>completed</code> before the clock ran out, so the work
+is done and the next stage can read it. The run CARRIES ON.
+
+Worth a look: a stage that needs its whole budget has no margin, and the
+next film on a harder topic may not finish. $base.log has what it was doing."
+        return 0
+      fi
+      say "$name: NO completed checkpoint after ${wall_min} minutes — FAILING"
+      notify "<b>stage ran out of time</b>
+stage: $name
+wall cap: $wall_min minutes
+checkpoint: <b>not completed</b>
+
+The wall clock is the real budget, because cost tracks TIME and not SDK
+turns — measured 2026-11-11, the script stage spent \$18.86 over 32 minutes
+inside 15 of its 120 turns. A stage that has not finished in its budget is
+not about to.
+
+Nothing is lost that was checkpointed. Read $base.log for what it was doing,
+then either fix the cause or raise this stage's budget deliberately:
+
+<code>$wall_var=$(( wall_min * 2 )) scripts/run_weekly.sh --resume $SLUG</code>"
+      return 11
+    fi
+    # ── END WALL_CLOCK DECISION ──
+
     # ── MAX_TURNS DECISION (sliced out and executed by
     # tests/automation/test_cap_hit_after_finishing.py — keep the markers) ──
     if [[ "$kind" == "max_turns" ]]; then
@@ -758,8 +904,7 @@ it stopped:
       # The checkpoint is the authority, not the exit code: a `completed`
       # checkpoint cannot be written without the artifact passing its own
       # schema, which is a stronger statement than "the process exited 0".
-      if "$PY" "$REPO/scripts/resume_state.py" --project "$SLUG" \
-           --is-done "$name" >/dev/null 2>&1; then
+      if stage_finished_anyway "$name"; then
         say "$name: hit the ${cap}-turn cap AFTER checkpointing completed — warning, not failing"
         notify "<b>stage overran its cap, but had already finished</b>
 stage: $name
@@ -1291,9 +1436,15 @@ while true; do
                   "the gate was approved but the checkpoint could not be \
 written, so a resume would ask again"
         break ;;
-    2)  say "aborted by reply"; exit 0 ;;
-    3)  say "aborted: no reply"; exit 0 ;;
-    4)  say "aborted: second round of notes"; exit 0 ;;
+    2)  say "aborted by reply"
+        record_gate_outcome "refused at the script gate"
+        exit 0 ;;
+    3)  say "aborted: no reply"
+        record_gate_outcome "no reply at the script gate within ${GATE_HOURS}h — silence is not approval"
+        exit 0 ;;
+    4)  say "aborted: second round of notes"
+        record_gate_outcome "a second round of notes at the script gate; one round is the limit"
+        exit 0 ;;
     10) say "notes received — applying"
         ATTEMPT=2
         if [[ "$DRY_RUN" != "1" ]]; then

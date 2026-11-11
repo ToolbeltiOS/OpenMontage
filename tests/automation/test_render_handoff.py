@@ -201,7 +201,7 @@ class TestEveryModelStageIsCapped:
         block = runner[runner.index('if [[ "$kind" == "max_turns" ]]'):
                        runner.index("# ── END MAX_TURNS DECISION ──")]
         assert "FAILING" in block and "not resuming" in block
-        assert "resume_state.py" in block, (
+        assert "stage_finished_anyway" in block, (
             "the cap rule no longer consults the checkpoint, so a stage that "
             "finished and overran would be failed again")
         assert "sleep" not in block, (

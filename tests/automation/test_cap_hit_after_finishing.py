@@ -39,32 +39,26 @@ def the_decision() -> str:
     assert START in text, "the max_turns decision block is gone or renamed"
     assert END in text, "the END marker is gone — the slice is unbounded"
     block = text[text.index(START):text.index(END)]
-    assert "resume_state.py" in block, (
+    assert "stage_finished_anyway" in block, (
         "the block no longer consults the checkpoint, so this test would "
         "pass against a version that failed every overrun")
     return block
 
 
 def run_decision(tmp_path: Path, *, checkpoint_done: bool) -> subprocess.CompletedProcess:
-    """Execute the REAL block with a stubbed resume_state.
+    """Execute the REAL block with `stage_finished_anyway` stubbed.
 
-    `--is-done` exits 0 when the stage is complete and 1 when it is not,
-    which is the only thing the decision reads.
+    That helper is the single predicate both cap rules consult — it asks
+    resume_state.py whether the stage checkpointed `completed`. Stubbing the
+    predicate rather than $PY keeps this test about the DECISION, which is
+    what has the two branches in it.
     """
-    fake_py = tmp_path / "python"
-    fake_py.write_text(textwrap.dedent(f"""\
-        #!/bin/sh
-        # stands in for $PY; the decision only ever calls resume_state.py
-        exit {0 if checkpoint_done else 1}
-        """))
-    fake_py.chmod(0o755)
-
     harness = tmp_path / "decide.sh"
     harness.write_text(
         "set -uo pipefail\n"
         'say()    { echo "SAY: $*"; }\n'
         'notify() { echo "NOTIFY: $*"; }\n'
-        f'PY="{fake_py}"\n'
+        f'stage_finished_anyway() {{ return {0 if checkpoint_done else 1}; }}\n'
         f'REPO="{tmp_path}"\n'
         'SLUG="a-film"\n'
         'name="proposal"\n'
