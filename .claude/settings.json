@@ -12,6 +12,7 @@
       "Bash(ffprobe:*)",
       "Bash(ls:*)",
       "Bash(cat:*)",
+      "Bash(echo:*)",
       "Bash(head:*)",
       "Bash(tail:*)",
       "Bash(grep:*)",

@@ -156,8 +156,13 @@ class TestTheComposeStageHasNoModel:
 
 
 class TestEveryModelStageIsCapped:
-    #: The owner's caps, 2026-11-07.
-    CAPS = {"script": 60, "scene_plan": 40, "assets": 30, "edit": 30}
+    #: The owner's caps. research/proposal/script replaced a single
+    #: `script: 60` on 2026-11-11, after the rehearsal that measured where
+    #: those 60 turns went: research 7–34, proposal 36–66, first script at
+    #: 77, cap at 61 with two of six sections written. 120 is six sections
+    #: at the ~20 turns each that rehearsal actually took.
+    CAPS = {"research": 30, "proposal": 25, "script": 120,
+            "scene_plan": 40, "assets": 30, "edit": 30}
 
     @pytest.mark.parametrize("stage,cap", sorted(CAPS.items()))
     def test_the_cap_is_defined(self, runner, stage, cap):

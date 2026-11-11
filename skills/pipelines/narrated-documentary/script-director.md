@@ -131,6 +131,21 @@ script gate.
 .venv/bin/python scripts/check_claims.py --project <slug> --section <act>
 ```
 
+**Read the verdict from the command's own last two lines.** It prints
+`CLAIMS: PASS` or `CLAIMS: FAIL`, then `VOICE: PASS` or `VOICE: FAIL`, and
+every violation above them with the sentence that broke it.
+
+**Do not append `; echo "RC=$?"`.** A chained `echo` is a second command and
+the permission layer judges it separately from the first, so the whole line
+is refused — the 2026-11-11 rehearsal had exactly that denied and spent
+turns working out why. The same goes for piping the output into anything.
+One command, and read what it says.
+
+For the same reason, do not reach for `python - <<'PY'` to inspect an
+artifact. `docs/STAGE_CONTRACT.md` forbids a stage authoring programs, and
+a heredoc is a program. Read a slice of a large artifact with a script that
+already exists, or with `python -c`.
+
 `scripts/check_cadence.py` prints the same violations with a per-section
 table when you want the numbers rather than the gate.
 

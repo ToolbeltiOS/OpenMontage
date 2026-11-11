@@ -116,7 +116,27 @@ MAX_RESUMES="${MAX_RESUMES:-6}"
 #: deliberately tighter than that, because most of those turns were a loop
 #: — 48 edits to one agent-authored build_scene_plan.py, read back 13 times
 #: — and docs/STAGE_CONTRACT.md now tells the stage not to author programs.
-TURNS_SCRIPT="${TURNS_SCRIPT:-60}"
+#: RESEARCH, PROPOSAL AND SCRIPT ARE THREE STAGES AND THREE CAPS.
+#:
+#: They were one stage with one cap of 60, and the 2026-11-11 rehearsal
+#: showed where that went: research took transcript turns 7–34, the proposal
+#: 36–66, the script was first written at turn 77, and the cap landed at 61
+#: SDK turns with the cold open and act 1 done and acts 2–4 empty. The lint
+#: loop — the thing the cap was suspected of — cost 8 turns of 99.
+#:
+#: 120 IS MEASURED, NOT ROUND. That rehearsal wrote two sections and linted
+#: them in about twenty turns each, and a film is six sections (cold open,
+#: four acts, outro): 6 x 20 = 120. Research and proposal no longer compete
+#: for it, because they are their own stages with their own caps, sized from
+#: the same transcript: research used 28 turns of its own and proposal 31,
+#: so 30 and 25 are those numbers with the research/proposal overlap that
+#: the single stage was paying for taken out.
+#:
+#: If a cap is hit the stage FAILS and is not resumed, which is the point: a
+#: cap raised to make a run pass measures nothing.
+TURNS_RESEARCH="${TURNS_RESEARCH:-30}"
+TURNS_PROPOSAL="${TURNS_PROPOSAL:-25}"
+TURNS_SCRIPT="${TURNS_SCRIPT:-120}"
 TURNS_SCENE_PLAN="${TURNS_SCENE_PLAN:-40}"
 TURNS_ASSETS="${TURNS_ASSETS:-30}"
 TURNS_EDIT="${TURNS_EDIT:-30}"
@@ -866,111 +886,229 @@ power: ${RUN_POWER:-unknown} ${RUN_CHARGE:-}
 log: $LOGDIR"
 fi
 
-# ── 2. the film, up to the script ────────────────────────────────────────
-require_power "the script stage"
-PROMPT="$LOGDIR/prompt.txt"
-cat > "$PROMPT" <<PROMPTEOF
-Make this week's documentary, from research through to the script, and stop.
+stage_preamble() {
+  local stage="$1" cap="$2" skill="$3"
+  cat <<PRE
+You are the $stage stage of projects/$SLUG, and nothing else.
 
-Pipeline:  pipeline_defs/narrated-documentary.yaml  (read YOUR stages only)
-Project:   $SLUG
-Brief:     $BRIEF  (take the first brief)
+YOUR CONTRACT IS docs/STAGE_CONTRACT.md. Read it, and read it INSTEAD of
+AGENT_GUIDE.md: that file is 48 KB written for an agent driving a whole
+production conversationally, and a single stage pays for every byte of it
+again on every turn.
 
-YOUR CONTRACT IS docs/STAGE_CONTRACT.md. Read it first, and read it INSTEAD
-OF AGENT_GUIDE.md — that file is 48 KB written for an agent driving a
-production conversationally with a human present, and you pay for every byte
-of it again on every turn. The 2026-11-06 script stage read it once at turn
-20 and carried it for 288 more.
-
-THEN run this and obey what it says:
+FIRST, before anything else, run this and obey what it says:
 
     .venv/bin/python scripts/resume_state.py --project $SLUG
 
-This stage can be RE-ENTERED after a usage limit, and when it is, the work
-already on disk is finished work. Do not rebuild a stage it marks [x]: read
-that stage's artifact and carry on from the first one it does not mark.
-Rebuilding spends the run twice and overwrites a result that was fine.
+A stage it marks [x] is FINISHED. Read its artifact and carry on. Do not
+rebuild it.
 
-YOU HAVE $TURNS_SCRIPT TURNS. At the cap the stage fails and is not resumed.
-If you are going to run out, stop and write what you have with a note of
-what is missing — a partial artifact can be re-entered, a stage that dies
-mid-thought leaves nothing.
+YOU HAVE $cap TURNS. At the cap this stage FAILS and is not resumed. If you
+are going to run out, stop and write what you have with a note of what is
+missing: a partial artifact can be re-entered, a stage that dies mid-thought
+leaves nothing. Spending turns on a loop is what the cap is for — the stage
+this replaced edited one file it had written itself 48 times and read it
+back 13 times.
 
-INSTEAD OF THE TWO BIGGEST FILES, read their digests. The playbook is 44 KB
-and the script stage uses nine of its twenty-three sections; the research
-brief is 72 KB and most of each data point is a URL you never read:
+READ THESE, AND NOT MORE:
 
-    .venv/bin/python scripts/playbook_digest.py --stage script
+    .venv/bin/python scripts/playbook_digest.py --stage $stage
+    skills/pipelines/narrated-documentary/$skill
+
+The playbook is 44 KB of twenty-three sections and this stage uses a
+handful; the digest is generated from the same file so it cannot drift. Read
+a SLICE of a large artifact with python, never \`cat\`: scene_plan.json is
+329 KB, edit_decisions.json 288 KB and render_props.json 425 KB on a real
+film, and reading one whole costs you 80–110 K tokens on every later turn.
+
+DO NOT edit lib/, scripts/, schemas/, styles/, remotion-composer/src/ or
+config.yaml. The runner refuses to start when they are dirty, so an edit
+here stops next week's run — the 2026-11-06 stages left seven such files
+modified and the next run refused. If shared code is wrong, and twice now it
+genuinely has been, SAY SO IN YOUR CLOSING REPORT with the file, the line
+and the cause, and work around it.
+
+AUTO-APPROVE YOUR OWN GATE. pipeline_defs/narrated-documentary.yaml marks
+scene_plan and assets human_approval_default: true, and lib/checkpoint.py
+refuses to write a gated stage \`completed\` without human_approved=True. The
+ONLY human gate in this pipeline is the script gate. It is handled outside
+this process, it is not yours to wait for or to approve, and depending on
+which stage you are it may be ahead of you or behind you. Either way it is
+not your business. So write your checkpoint
+\`completed\` with human_approved=True and say in your closing report what a
+reviewer would have wanted to look at. A checkpoint left \`awaiting_human\`
+stops the film: the next stage reads resume_state.py, does not see yours as
+finished, and builds it again.
+
+DO NOT render the film and do not wait for a render. That is not a stage.
+PRE
+}
+
+# $1 stage  $2 cap  $3 director skill  $4 what this stage must produce
+pipeline_stage() {
+  local stage="$1" cap="$2" skill="$3" body="$4"
+  if stage_done "$stage"; then
+    say "$stage: already finished — skipping"
+    return 0
+  fi
+  if [[ "$DRY_RUN" == "1" ]]; then
+    say "dry run: skipping the $stage stage"
+    return 0
+  fi
+  require_power "the $stage stage"
+  say "$stage (claude -p, $cap turns)"
+  claude_stage "$stage" "$LOGDIR/${stage}_stage" \
+    "$(stage_preamble "$stage" "$cap" "$skill")
+
+$body" "$cap" \
+    || fail "$stage stage" "$(tail -20 "$LOGDIR/${stage}_stage.log" 2>/dev/null \
+                             || tail -20 "$LOGDIR/${stage}_stage.err")"
+}
+
+# ── 2. research, proposal, script — THREE STAGES, THREE CAPS ─────────────
+#
+# They were one `claude -p` with one cap of 60 and it could not finish. The
+# 2026-11-11 rehearsal, with the voice lint in place, spent transcript turns
+# 7–34 on research and 36–66 on the proposal, wrote its first script at turn
+# 77, and hit the cap at 61 SDK turns with the cold open and act 1 written
+# and acts 2, 3, 4 and the outro empty. The prose it did write was good —
+# three blocking violations in 73 sentences against a budget of six — so the
+# rules were never the problem. The bundling was.
+#
+# Each stage now starts from an EMPTY CONTEXT and reads the previous stage's
+# DIGEST, not its transcript. That is the saving: a context that carried the
+# research conversation into the proposal and both into the script was paying
+# 57 K tokens a turn for conversation it could have read in 4 KB.
+
+pipeline_stage research "$TURNS_RESEARCH" research-director.md \
+"Produce projects/$SLUG/artifacts/research_brief.json for this subject, and
+stop.
+
+Subject:   $TOPIC
+Brief:     $BRIEF  (take the first brief — the angle, the recurring words
+           and the source titles are the starting point, not the answer)
+
+Validate it against schemas/artifacts/research_brief.schema.json.
+
+EVERY DATA POINT NEEDS AN EXPLICIT \`id\` AND A \`source_url\`. The script
+stage cites those ids and the fact gate resolves them: easter-island shipped
+citing fifty-four ids against a fifteen-entry ledger, and forty-two of them
+had never existed. An id you do not write here is a sentence that cannot be
+written later.
+
+Mark a contested claim contested rather than asserting it. The register of
+this channel is a researcher reading rival accounts and refusing to pick,
+and that only works if the brief knows which accounts are rivals.
+
+Write the checkpoint and STOP. Do not write a proposal and do not write a
+word of script."
+
+pipeline_stage proposal "$TURNS_PROPOSAL" proposal-director.md \
+"Produce projects/$SLUG/artifacts/proposal_packet.json and decision_log.json
+from the research brief, and stop.
+
+READ THE BRIEF AS A DIGEST, NOT WHOLE. It is 72 KB on a real film and most
+of each data point is a URL you will never read:
+
     .venv/bin/python scripts/brief_digest.py --project $SLUG
 
-The digests are generated from those files, not copies of them, so they
+Validate the packet against schemas/artifacts/proposal_packet.schema.json.
+
+The concept you select is what the script stage will write, and it reads
+your decision through scripts/proposal_digest.py — the chosen concept, its
+rationale, the act structure it implies, the register, the duration and the
+claim ids it rests on. Anything the writer needs must be in THOSE fields.
+A decision recorded only in your closing report does not reach them.
+
+Say which concepts you rejected and why in the decision log. A concept that
+ran out of ledger before twenty minutes is the usual reason and it is worth
+writing down.
+
+Write the checkpoint and STOP. Do not write a word of script."
+
+# ── 2a. the script ───────────────────────────────────────────────────────
+require_power "the script stage"
+PROMPT="$LOGDIR/prompt.txt"
+cat > "$PROMPT" <<PROMPTEOF
+$(stage_preamble script "$TURNS_SCRIPT" script-director.md)
+
+Write projects/$SLUG/artifacts/script.json and the hero style frames to
+projects/$SLUG/renders/style/, and stop. Do not render the film.
+
+YOU DID NOT DO THE RESEARCH OR CHOOSE THE CONCEPT. Two stages did that
+before you, from their own empty contexts, and you read their decisions as
+DIGESTS rather than as the files:
+
+    .venv/bin/python scripts/brief_digest.py --project $SLUG
+    .venv/bin/python scripts/proposal_digest.py --project $SLUG
+
+The digests are generated from the real artifacts, not copies, so they
 cannot drift. The fact gate reads the REAL brief, so a digest can never let
-an unsourced sentence through. If a digest is missing something this stage
-needs, that is a bug in the digest script — say so in your closing report.
-
-Every gate in the pipeline is auto-approved EXCEPT the script gate, which is
-a human one and is handled outside this process — do not wait for it and do
-not approve it yourself.
-
-Write the script to projects/$SLUG/artifacts/script.json and the hero style
-frames to projects/$SLUG/renders/style/. Do not render the film.
-
-EVERY FACTUAL SENTENCE MUST BE ATTRIBUTED, and this is checked before the
-human sees the script. A sentence carrying a date, a number, a proper noun or
-a quotation needs a claim id in its PARAGRAPH's claims list, and that claim
-must exist in the research brief's data_points with a source_url.
+an unsourced sentence through. If a digest is missing something you need,
+that is a bug in the digest script — say so in your closing report and work
+around it. Do not read proposal_packet.json whole: it is 31 KB and you would
+carry it on every turn after.
 
 Write the script's sections with a \`paragraphs\` list, each entry
-{"text": "...", "claims": ["c07", "c12"]}, and give every data point in the
-research brief an explicit \`id\`. A section-level \`source_ref\` naming a bag
-of ids DOES NOT COVER ANYTHING any more: it attributes a whole act to a list,
-so it cannot say which sentence rests on which claim, and one resolving id in
-it used to carry thirty sentences.
+{"text": "...", "claims": ["c07", "c12"]}. A section-level \`source_ref\`
+naming a bag of ids DOES NOT COVER ANYTHING any more: it attributes a whole
+act to a list, so it cannot say which sentence rests on which claim, and one
+resolving id in it used to carry thirty sentences.
+
+EVERY FACTUAL SENTENCE MUST BE ATTRIBUTED, and this is checked before the
+human sees the script. A sentence carrying a date, a number, a proper noun
+or a quotation needs a claim id in its PARAGRAPH's claims list, and that
+claim must exist in the research brief's data_points with a source_url.
+
+Do not invent a claim id, and do not renumber one to something that happens
+to exist. If a sentence needs a source the brief does not have, cut the
+sentence — you cannot add to the brief from here, because the research stage
+is finished and its artifact is the ledger the gate resolves against.
 
 AFTER EACH ACT, BEFORE WRITING THE NEXT ONE, run:
 
     .venv/bin/python scripts/check_claims.py --project $SLUG --section <act>
 
-and fix everything it reports before continuing. It prints TWO verdicts and
-both block. CLAIMS asks whether the act's facts hold up. VOICE asks whether
-a voice can say it: sentences at most 20 words and never over 28, a mean of
-15, a fifth of them under 8, one idea per sentence, contractions, figures as
-words, attribution leading rather than trailing, a question in the act, and
-a landing line of 8 words or fewer. Every violation is printed with the
-sentence that broke it.
+and fix everything it reports before continuing. It prints two verdicts and
+both block. CLAIMS asks whether the act's citations resolve. VOICE asks
+whether a voice can say it.
 
-Script-director Step 5b, \"Write For The Voice\", is the rule the numbers come
-from. \`scripts/check_cadence.py --project \$SLUG\` prints the same violations
-with a per-section table when you want the numbers rather than the gate.
+READ THE VERDICT FROM ITS OWN LAST TWO LINES — it prints \`CLAIMS: PASS\` or
+\`CLAIMS: FAIL\` and \`VOICE: PASS\` or \`VOICE: FAIL\`. DO NOT append
+\`; echo "RC=\$?"\` or any other command: \`echo\` chained after a command is
+a second command, the permission layer judges it separately, and the
+2026-11-11 rehearsal had exactly that denied and spent turns recovering.
+One command, and read what it says.
 
-The lint is a floor and not the goal: no measurement hears rhythm, so read
-the act aloud as well. It is the same two checks the gate
-makes, scoped to one act and cheap enough to run six times. Running it at the
-end instead means composing an act around a claim that was never in the brief
-and finding out when the whole script is done.
+VOICE IS A BUDGET, NOT ZERO. The whole film may carry six blocking
+violations, and none at all on a landing line or over the 28-word hard
+maximum. Contractions are advisory: reported, never counted. So fix the
+worst and let a tendency stand — do not spend this stage's turns chasing a
+clean sheet the gate does not ask for. Script-director Step 5b, "Write For
+The Voice", is the rule the numbers come from.
+
+The budget is a WHOLE-FILM number, so \`--section\` cannot judge it: run
+
+    .venv/bin/python scripts/check_claims.py --project $SLUG
+
+once the last act is written, for the verdict that counts.
 
 A sentence that counts or signposts the FILM's own structure rather than
-saying anything about the world — "Four questions", "The bones first" — takes
-a \`[framing]\` marker inline at the head of the sentence. The gate cannot
-infer it: it cannot tell "four questions", meaning the film's four acts, from
-"four tablets", which is a fact. You write it, and it is reviewable at the
-script gate like any other sentence you wrote.
+saying anything about the world — "Four questions", "The bones first" —
+takes a \`[framing]\` marker inline at the head of the sentence. The gate
+cannot infer it: it cannot tell "four questions", meaning the film's four
+acts, from "four tablets", which is a fact. You write it, and it is
+reviewable at the script gate like any other sentence you wrote.
 
-A marker is not a licence. A [framing] sentence is skipped only if it carries
-no proper noun, no number of ten or more, and no date; one that names or
-counts something real is checked like any other. No more than 5% of the
-film's sentences may be framing.
-
-Do not invent a claim id, and do not renumber one to something that happens
-to exist. If a sentence needs a source the brief does not have, either
-research it and add the data point — with a source_url — or cut the sentence.
-easter-island shipped citing fifty-four ids against a fifteen-claim ledger;
-forty-two of them had never existed.
+A marker is not a licence. A [framing] sentence is skipped only if it
+carries no proper noun, no number of ten or more, and no date; one that
+names or counts something real is checked like any other. No more than 5% of
+the film's sentences may be framing.
 PROMPTEOF
 
-# The owner's angle constraint, if this subject has one, as instruction rather
-# than as a field three keys deep in a file the prompt said to "take the first
-# brief" from. Prints nothing when there is no constraint.
+# The owner's angle constraint, if this subject has one, as instruction
+# rather than as a field three keys deep in a file. Prints nothing when
+# there is no constraint.
 "$PY" "$REPO/scripts/angle_brief.py" --brief "$BRIEF" >> "$PROMPT" 2>/dev/null || true
 
 if stage_done script; then
@@ -1097,83 +1235,6 @@ fi
 
 # What a stage is told before its own instructions. Everything here is about
 # NOT carrying what the other stages need.
-stage_preamble() {
-  local stage="$1" cap="$2" skill="$3"
-  cat <<PRE
-You are the $stage stage of projects/$SLUG, and nothing else.
-
-YOUR CONTRACT IS docs/STAGE_CONTRACT.md. Read it, and read it INSTEAD of
-AGENT_GUIDE.md: that file is 48 KB written for an agent driving a whole
-production conversationally, and a single stage pays for every byte of it
-again on every turn.
-
-FIRST, before anything else, run this and obey what it says:
-
-    .venv/bin/python scripts/resume_state.py --project $SLUG
-
-A stage it marks [x] is FINISHED. Read its artifact and carry on. Do not
-rebuild it.
-
-YOU HAVE $cap TURNS. At the cap this stage FAILS and is not resumed. If you
-are going to run out, stop and write what you have with a note of what is
-missing: a partial artifact can be re-entered, a stage that dies mid-thought
-leaves nothing. Spending turns on a loop is what the cap is for — the stage
-this replaced edited one file it had written itself 48 times and read it
-back 13 times.
-
-READ THESE, AND NOT MORE:
-
-    .venv/bin/python scripts/playbook_digest.py --stage $stage
-    skills/pipelines/narrated-documentary/$skill
-
-The playbook is 44 KB of twenty-three sections and this stage uses a
-handful; the digest is generated from the same file so it cannot drift. Read
-a SLICE of a large artifact with python, never \`cat\`: scene_plan.json is
-329 KB, edit_decisions.json 288 KB and render_props.json 425 KB on a real
-film, and reading one whole costs you 80–110 K tokens on every later turn.
-
-DO NOT edit lib/, scripts/, schemas/, styles/, remotion-composer/src/ or
-config.yaml. The runner refuses to start when they are dirty, so an edit
-here stops next week's run — the 2026-11-06 stages left seven such files
-modified and the next run refused. If shared code is wrong, and twice now it
-genuinely has been, SAY SO IN YOUR CLOSING REPORT with the file, the line
-and the cause, and work around it.
-
-AUTO-APPROVE YOUR OWN GATE. pipeline_defs/narrated-documentary.yaml marks
-scene_plan and assets human_approval_default: true, and lib/checkpoint.py
-refuses to write a gated stage \`completed\` without human_approved=True. The
-ONLY human gate in this pipeline is the script gate, and it is handled
-outside this process and is already past. So write your checkpoint
-\`completed\` with human_approved=True and say in your closing report what a
-reviewer would have wanted to look at. A checkpoint left \`awaiting_human\`
-stops the film: the next stage reads resume_state.py, does not see yours as
-finished, and builds it again.
-
-DO NOT render the film and do not wait for a render. That is not a stage.
-PRE
-}
-
-# $1 stage  $2 cap  $3 director skill  $4 what this stage must produce
-pipeline_stage() {
-  local stage="$1" cap="$2" skill="$3" body="$4"
-  if stage_done "$stage"; then
-    say "$stage: already finished — skipping"
-    return 0
-  fi
-  if [[ "$DRY_RUN" == "1" ]]; then
-    say "dry run: skipping the $stage stage"
-    return 0
-  fi
-  require_power "the $stage stage"
-  say "$stage (claude -p, $cap turns)"
-  claude_stage "$stage" "$LOGDIR/${stage}_stage" \
-    "$(stage_preamble "$stage" "$cap" "$skill")
-
-$body" "$cap" \
-    || fail "$stage stage" "$(tail -20 "$LOGDIR/${stage}_stage.log" 2>/dev/null \
-                             || tail -20 "$LOGDIR/${stage}_stage.err")"
-}
-
 pipeline_stage scene_plan "$TURNS_SCENE_PLAN" scene-director.md \
 "Produce projects/$SLUG/artifacts/scene_plan.json from the APPROVED script at
 projects/$SLUG/artifacts/script.json.
