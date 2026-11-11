@@ -986,13 +986,25 @@ modified and the next run refused. If shared code is wrong, and twice now it
 genuinely has been, SAY SO IN YOUR CLOSING REPORT with the file, the line
 and the cause, and work around it.
 
-AUTO-APPROVE YOUR OWN GATE. pipeline_defs/narrated-documentary.yaml marks
-scene_plan and assets human_approval_default: true, and lib/checkpoint.py
-refuses to write a gated stage \`completed\` without human_approved=True. The
-ONLY human gate in this pipeline is the script gate. It is handled outside
-this process, it is not yours to wait for or to approve, and depending on
-which stage you are it may be ahead of you or behind you. Either way it is
-not your business.
+AUTO-APPROVE YOUR OWN GATE, UNLESS YOU ARE THE SCRIPT STAGE.
+pipeline_defs/narrated-documentary.yaml marks scene_plan and assets
+human_approval_default: true, and lib/checkpoint.py refuses to write a gated
+stage \`completed\` without human_approved=True. Those gates are bookkeeping
+and yours to pass.
+
+THE SCRIPT GATE IS NOT. It is the only human gate in this pipeline and it is
+the one thing in the run a person actually decides. If you are the script
+stage, write your checkpoint \`awaiting_human\` and DO NOT pass
+--human-approved:
+
+    .venv/bin/python scripts/write_checkpoint.py --project $SLUG \\
+        --stage script --artifact script --status awaiting_human
+
+A stage that writes human_approved=True on the script gate has approved its
+own script. On 2026-11-11 one did, and the run walked straight past the gate
+into the scene plan and the asset stage, spending \$24 on a film nobody had
+read. The runner records the human's approval itself, after the human gives
+it.
 
 WRITE YOUR CHECKPOINT WITH THIS COMMAND. Do not author a script to do it:
 
@@ -1007,11 +1019,15 @@ message rather than writing something the next stage cannot read.
 
 The 2026-11-11 research stage finished its brief at turn 44 of 62 and then
 spent 27% of its cap failing to write a checkpoint, because this command did
-not exist and a library call is a program. So write your checkpoint
-\`completed\` with human_approved=True and say in your closing report what a
-reviewer would have wanted to look at. A checkpoint left \`awaiting_human\`
-stops the film: the next stage reads resume_state.py, does not see yours as
-finished, and builds it again.
+not exist and a library call is a program. So write your checkpoint and say
+in your closing report what a reviewer would have wanted to look at.
+
+For every stage EXCEPT the script stage that means \`completed\` with
+human_approved=True, because a checkpoint left \`awaiting_human\` stops the
+film: the next stage reads resume_state.py, does not see yours as finished,
+and builds it again. The script stage is the exception and writes
+\`awaiting_human\` ON PURPOSE — stopping there is what the gate is for, and
+the runner records the approval once a person gives it.
 
 DO NOT render the film and do not wait for a render. That is not a stage.
 PRE
@@ -1234,11 +1250,17 @@ No model calls, no render, nothing published."
   exit 0
 fi
 if stage_done script && [[ -n "$RESUME" ]]; then
-  # checkpoint_script.json carries human_approved=True, and lib/checkpoint.py
-  # refuses to write a gated stage completed without it. So the approval is a
-  # fact on disk, not a flag this script is trusting itself about. Asking
-  # again would wake someone at 10am to re-approve what they approved at
-  # 20:48.
+  # checkpoint_script.json says completed, which lib/checkpoint.py will not
+  # write for a gated stage without human_approved=True, and the ONLY thing
+  # that passes that flag for the script stage is the gate's own approval
+  # path above. Asking again would wake someone at 10am to re-approve what
+  # they approved at 20:48.
+  #
+  # CORRECTED 2026-11-11. This comment used to say the approval was "a fact
+  # on disk, not a flag this script is trusting itself about". It was a fact
+  # on disk written by the SCRIPT STAGE, because stage_preamble told every
+  # stage to auto-approve its own gate and the script stage is a stage. A
+  # resume then skipped the only human gate in the pipeline.
   say "script gate: already approved (checkpoint_script.json) — not asking again"
 elif [[ "$DRY_RUN" == "1" ]]; then
   say "dry run: skipping the script gate (there is no script to approve)"
@@ -1255,7 +1277,20 @@ while true; do
     --hours "$GATE_HOURS" --attempt "$ATTEMPT"
   GATE=$?
   case "$GATE" in
-    0)  say "approved"; break ;;
+    0)  say "approved"
+        # THE HUMAN'S APPROVAL IS RECORDED HERE, BY THE RUNNER, and nowhere
+        # else. telegram_gate.py writes no checkpoint, so before this the
+        # only writer of human_approved=True on the script stage was the
+        # script stage itself — which made the "already approved" skip below
+        # reachable only by self-approval. The skip's old comment claimed the
+        # approval was "a fact on disk, not a flag this script is trusting
+        # itself about"; the fact on disk was written by the machine.
+        "$PY" "$REPO/scripts/write_checkpoint.py" --project "$SLUG" \
+          --stage script --artifact script --human-approved \
+          || fail "recording the approval" \
+                  "the gate was approved but the checkpoint could not be \
+written, so a resume would ask again"
+        break ;;
     2)  say "aborted by reply"; exit 0 ;;
     3)  say "aborted: no reply"; exit 0 ;;
     4)  say "aborted: second round of notes"; exit 0 ;;

@@ -173,3 +173,76 @@ class TestTheCapsAfterThisChange:
 
     def test_the_script_cap_is_unchanged(self):
         assert 'TURNS_SCRIPT="${TURNS_SCRIPT:-120}"' in RUNNER.read_text()
+
+
+class TestTheScriptStageCannotApproveItsOwnGate:
+    """THE REGRESSION OF 2026-11-11, AND IT WAS MINE.
+
+    The split commit gave the script stage `stage_preamble`, which told
+    every stage to "AUTO-APPROVE YOUR OWN GATE ... write your checkpoint
+    completed with human_approved=True". That instruction is for the
+    bookkeeping gates after the script. The script stage obeyed it, wrote
+    human_approved=True on a stage whose human_approval_required is True,
+    and a `--resume` run then read `stage_done script` and skipped the only
+    human gate in the pipeline — straight into scene_plan and assets, $24
+    on a film nobody had read.
+
+    `telegram_gate.py` writes no checkpoint at all, so before this fix the
+    only writer of that flag for the script stage WAS the script stage. The
+    skip branch's comment claimed the approval was "a fact on disk, not a
+    flag this script is trusting itself about". It was a fact on disk
+    written by the machine.
+    """
+
+    @pytest.fixture(scope="class")
+    def runner(self) -> str:
+        return RUNNER.read_text()
+
+    def test_the_preamble_carves_the_script_stage_out(self, runner):
+        assert "AUTO-APPROVE YOUR OWN GATE, UNLESS YOU ARE THE SCRIPT STAGE" \
+            in runner
+
+    def test_it_tells_the_script_stage_to_write_awaiting_human(self, runner):
+        assert "--stage script --artifact script --status awaiting_human" \
+            in runner
+
+    def test_it_tells_the_script_stage_not_to_pass_the_flag(self, runner):
+        flat = " ".join(runner.replace("\\`", "`").split())
+        assert "DO NOT pass --human-approved" in flat
+
+    def test_it_says_what_went_wrong(self, runner):
+        flat = " ".join(runner.replace("\\`", "`").split())
+        assert "has approved its own script" in flat
+
+    def test_the_awaiting_human_warning_no_longer_contradicts_it(self, runner):
+        """The preamble also says awaiting_human "stops the film". For the
+        script stage stopping is the point, and both sentences are in the
+        same prompt."""
+        # the prompt is a heredoc, so its backticks are backslash-escaped in
+        # the source; strip the escapes before matching prose
+        flat = " ".join(runner.replace("\\`", "`").split())
+        assert ("The script stage is the exception and writes "
+                "`awaiting_human` ON PURPOSE") in flat
+
+    def test_the_runner_records_the_approval_itself(self, runner):
+        """And it must, or the resume-skip has no honest way to be true."""
+        gate = runner[runner.index('case "$GATE" in'):]
+        gate = gate[:gate.index("esac")]
+        assert "write_checkpoint.py" in gate
+        assert "--human-approved" in gate
+
+    def test_recording_the_approval_is_not_allowed_to_fail_silently(self,
+                                                                    runner):
+        gate = runner[runner.index('case "$GATE" in'):]
+        gate = gate[:gate.index("esac")]
+        assert "fail " in gate
+
+    def test_the_skip_comment_records_the_correction(self, runner):
+        assert "CORRECTED 2026-11-11" in runner
+        flat = " ".join(runner.split())
+        assert "written by the SCRIPT STAGE" in flat
+
+    def test_the_skip_still_requires_a_resume(self, runner):
+        """A fresh run always asks. That is what kept the blast radius to
+        resumes rather than every Friday."""
+        assert 'if stage_done script && [[ -n "$RESUME" ]]; then' in runner
