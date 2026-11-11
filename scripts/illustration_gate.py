@@ -244,14 +244,21 @@ def main() -> int:
     for n, p in enumerate(pictures, 1):
         verdict = verdicts.get(n, "no")
         why = None
+        # WHO DECIDED IS PART OF THE RECORD, AND SILENCE IS NOT A PERSON.
+        # The default attribution is a Telegram reply, which is true of an
+        # answered picture and false of every other row here. A refusal
+        # nobody gave must not be filed under their name.
+        by = "the owner, by Telegram reply"
         if n not in verdicts:
             why = f"no reply within {args.hours:g}h — silence is not approval"
+            by = "nobody — the window closed with no reply"
         elif not p.get("posted"):
             # It cannot have been approved knowingly: nobody saw it.
             verdict, why = "no", "the picture did not upload, so it was never seen"
+            by = "nobody — the picture never arrived to be judged"
         rows.append({"cut": p["cut"], "subject": p["subject"],
                      "label": p["label"], "verdict": verdict,
-                     "posted": bool(p.get("posted")), "why": why})
+                     "posted": bool(p.get("posted")), "why": why, "by": by})
     path = illustration_spec.record_verdicts(args.project, rows, ROOT)
     ok = sum(1 for r in rows if r["verdict"] == "ok")
     print(f"{ok}/{len(rows)} approved -> {path.relative_to(ROOT)}")

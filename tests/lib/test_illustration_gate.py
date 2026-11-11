@@ -279,3 +279,44 @@ class TestARunLeavesNoTrackedFileDirty:
                        "lib/verify_approved_use.py"):
             body = (ROOT / module).read_text()
             assert "manifest.json" in body
+
+
+class TestWhoDecidedIsPartOfTheRecord:
+    """A refusal nobody gave must not be filed under their name.
+
+    Found in the live test of 2026-11-11: the silent round recorded both
+    pictures as `by: the owner, by Telegram reply`, because that is
+    `record_verdicts`'s default and the gate did not override it. The `why`
+    field said silence, so the record was not lying outright — but the one
+    field that exists to say who decided named a person who did not.
+    """
+
+    @staticmethod
+    def rows_for(source: str) -> str:
+        return (ROOT / "scripts" / "illustration_gate.py").read_text()
+
+    def test_silence_is_attributed_to_nobody(self):
+        body = self.rows_for("")
+        assert 'by = "nobody — the window closed with no reply"' in body
+
+    def test_a_picture_that_never_arrived_is_attributed_to_nobody(self):
+        body = self.rows_for("")
+        assert 'by = "nobody — the picture never arrived to be judged"' in body
+
+    def test_an_answered_picture_still_names_the_reply(self):
+        body = self.rows_for("")
+        assert 'by = "the owner, by Telegram reply"' in body
+
+    def test_the_row_carries_by_explicitly_not_by_default(self):
+        """`record_verdicts` setdefaults `by`, so a row that omits it gets
+        the owner's name whatever actually happened."""
+        body = self.rows_for("")
+        start = body.index('rows.append({"cut": p["cut"]')
+        # to the end of the call, not to the first "]" — that lands inside
+        # p["cut"] and sliced away the thing under test
+        rows_block = body[start:body.index("})", start) + 2]
+        assert '"by": by' in rows_block
+
+    def test_a_telegramless_run_is_attributed_to_nobody_too(self):
+        body = self.rows_for("")
+        assert 'by="nobody — the gate could not post"' in body
