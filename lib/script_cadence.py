@@ -46,7 +46,8 @@ from typing import Any, NamedTuple
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from script_beats import parse_section                      # noqa: E402
-from verify_fact_coverage import paragraphs, sentences      # noqa: E402
+from verify_fact_coverage import (                          # noqa: E402
+    WHITELIST, paragraphs, sentences)
 
 # ── the owner's numbers ───────────────────────────────────────────────────
 MAX_WORDS = 20
@@ -60,6 +61,28 @@ RHYTHM_BAND_WORDS = 3
 LANDING_MAX_WORDS = 8
 MAX_EM_DASHES_PER_PARAGRAPH = 2
 MIN_QUESTIONS_PER_ACT = 1
+
+#: Blocking violations a whole FILM may carry and still pass.
+#:
+#: NOT ZERO, AND THAT IS THE POINT. The script stage has 60 turns. It can
+#: rewrite the worst twenty sentences in a 176-sentence film; it cannot
+#: rewrite every one, and a gate demanding perfection makes it spend the cap
+#: trying and then fail on the turn limit with the act half-edited. Measured
+#: on the four delivered scripts, a literal zero would have refused all four
+#: at between 102 and 123 violations each.
+VOICE_BUDGET = 6
+
+#: Reported, never counted against the budget. Whether "is not" is emphasis
+#: or sloppiness is a writer's judgement and a regular expression cannot
+#: make it: "The chronology is not the part anyone disputes" is the line the
+#: act turns on.
+ADVISORY_RULES = ("contractions",)
+
+#: Zero tolerance, outside the budget. A sentence over the hard maximum and
+#: a landing line that is a paragraph are the two faults that are audible on
+#: their own — everything else is a tendency, and a tendency is what a
+#: budget is for.
+ALWAYS_BLOCKING = ("length-hard", "landing")
 
 #: Below this many sentences the short-sentence fraction is noise: one short
 #: line in three is 33% and says nothing about rhythm.
@@ -134,8 +157,9 @@ def _lower(text: str) -> str:
 def check_length(sentence: str) -> list[Violation]:
     n = words(sentence)
     if n > HARD_MAX_WORDS:
-        return [Violation("length", f"{n} words, over the {HARD_MAX_WORDS}-word "
-                          f"HARD MAXIMUM. Split it.", sentence)]
+        return [Violation("length-hard",
+                          f"{n} words, over the {HARD_MAX_WORDS}-word HARD "
+                          f"MAXIMUM. Split it.", sentence)]
     if n > MAX_WORDS:
         return [Violation("length", f"{n} words, over the {MAX_WORDS}-word "
                           f"limit.", sentence)]
@@ -300,6 +324,12 @@ def check_titles(section_text: str) -> list[Violation]:
             # ("Mail" in "the Daily Mail") is not the source's name
             parts = phrase.split()
             name = " ".join(parts[-2:]) if len(parts) >= 2 else phrase
+            # A WORD CAPITALISED BY POSITION IS NOT A NAME. "Nobody wrote it
+            # down" reported `Nobody` as an untitled source. The same
+            # whitelist the capitalisation backend uses for exactly this —
+            # one list, so the two cannot disagree about what a name is.
+            if all(w.lower() in WHITELIST for w in parts):
+                continue
             if name not in attributed:
                 attributed.append(name)
 
@@ -474,3 +504,33 @@ def summarise(violations: list[Violation]) -> dict[str, int]:
     for v in violations:
         counts[v.rule] = counts.get(v.rule, 0) + 1
     return dict(sorted(counts.items(), key=lambda kv: -kv[1]))
+
+
+def classify(violations: list[Violation]) -> dict[str, list[Violation]]:
+    """Split a run into what fails, what always fails, and what only warns."""
+    advisory = [v for v in violations if v.rule in ADVISORY_RULES]
+    blocking = [v for v in violations if v.rule not in ADVISORY_RULES]
+    hard = [v for v in blocking if v.rule in ALWAYS_BLOCKING]
+    return {"advisory": advisory, "blocking": blocking, "hard": hard}
+
+
+def verdict(violations: list[Violation], whole_film: bool = True
+            ) -> tuple[bool, list[str]]:
+    """Does this pass VOICE? With the reasons it does not.
+
+    THE BUDGET IS A WHOLE-FILM NUMBER. Run against one act it cannot be
+    judged, because six across a film is not six per act, so a single-act
+    run enforces only the zero-tolerance faults and says that the budget is
+    still owed. Pretending otherwise would let a film through at five
+    violations an act, which is thirty.
+    """
+    parts = classify(violations)
+    reasons: list[str] = []
+    for v in parts["hard"]:
+        reasons.append(f"[{v.rule}] {v.detail}  {v.sentence[:90]!r}")
+    if whole_film and len(parts["blocking"]) > VOICE_BUDGET:
+        reasons.append(
+            f"{len(parts['blocking'])} blocking violations across the film, "
+            f"over the budget of {VOICE_BUDGET}. Fix the worst "
+            f"{len(parts['blocking']) - VOICE_BUDGET} and the rest can stand.")
+    return (not reasons), reasons

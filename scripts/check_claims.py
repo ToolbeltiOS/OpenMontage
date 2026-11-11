@@ -138,7 +138,7 @@ def main() -> int:
     wanted = set(args.section)
     found = False
     failed = False
-    voice_failed = False
+    all_violations: list = []
     for section in script.get("sections", []):
         sid = section.get("id")
         if wanted and sid not in wanted:
@@ -159,32 +159,61 @@ def main() -> int:
         failed = failed or bool(problems)
 
         # ── WRITE FOR THE VOICE ──────────────────────────────────────────
-        # Reported separately and counted separately, because the two fail
-        # for different reasons and are fixed by different edits. The fact
-        # checks above are untouched by this: a sourcing check that also had
+        # Reported separately from the sourcing, because the two fail for
+        # different reasons and are fixed by different edits. The fact checks
+        # above are untouched by this: a sourcing check that also had
         # opinions about sentence length would be two gates in a coat.
         violations, vm = SC.check(section.get("text") or "", sid)
+        parts = SC.classify(violations)
         print(f"{sid}: {vm['sentences']} sentences, mean {vm['mean']} words, "
               f"{vm['short_fraction']:.0%} under {SC.SHORT_WORDS}, longest "
               f"{vm['longest']}, {vm['questions']} question(s) — "
-              f"{len(violations)} voice violation(s)")
-        for v in violations[:40]:
-            print(f"  · [{v.rule}] {v.detail}")
+              f"{len(parts['blocking'])} blocking, "
+              f"{len(parts['advisory'])} advisory")
+        for v in parts["blocking"][:40]:
+            mark = "!" if v.rule in SC.ALWAYS_BLOCKING else "·"
+            print(f"  {mark} [{v.rule}] {v.detail}")
             print(f"      {v.sentence[:160]!r}")
-        if len(violations) > 40:
-            print(f"  … and {len(violations) - 40} more")
-        if violations:
-            print(f"  {sid} by rule: {SC.summarise(violations)}")
-        voice_failed = voice_failed or bool(violations)
+        if len(parts["blocking"]) > 40:
+            print(f"  … and {len(parts['blocking']) - 40} more blocking")
+        for v in parts["advisory"][:10]:
+            print(f"  ~ [{v.rule}] {v.detail} (advisory)")
+            print(f"      {v.sentence[:160]!r}")
+        if len(parts["advisory"]) > 10:
+            print(f"  … and {len(parts['advisory']) - 10} more advisory")
+        all_violations.extend(violations)
 
     if wanted and not found:
         print(f"no section matched {sorted(wanted)}", file=sys.stderr)
         return 2
     print("CLAIMS:", "PASS" if not failed else "FAIL")
-    print("VOICE:", "PASS" if not voice_failed else "FAIL")
-    # Both block. They are reported apart so the writer knows which edit the
-    # act needs, and a single exit code so the gate is one gate.
-    return 0 if not (failed or voice_failed) else 1
+
+    # THE BUDGET IS A WHOLE-FILM NUMBER, so it is only judged on a whole-film
+    # run. Six across a film is not six per act: enforcing it per act would
+    # pass a film carrying five in each of six acts, which is thirty. A
+    # single-act run still fails on the zero-tolerance faults and says what
+    # is still owed.
+    whole_film = not wanted
+    parts = SC.classify(all_violations)
+    ok, reasons = SC.verdict(all_violations, whole_film=whole_film)
+    scope = "film" if whole_film else f"{len(wanted)} section(s)"
+    print(f"VOICE: {len(parts['blocking'])} blocking "
+          f"({len(parts['hard'])} zero-tolerance), "
+          f"{len(parts['advisory'])} advisory, over {scope}; "
+          f"budget {SC.VOICE_BUDGET} per film")
+    if reasons:
+        print("  over budget or zero-tolerance:")
+        for r in reasons[:25]:
+            print(f"    - {r}")
+        if len(reasons) > 25:
+            print(f"    … and {len(reasons) - 25} more")
+    if not whole_film:
+        print(f"  (the {SC.VOICE_BUDGET}-violation budget is judged on the "
+              f"whole film; run without --section for the verdict)")
+    print("VOICE:", "PASS" if ok else "FAIL")
+
+    # One gate, two verdicts, one exit code.
+    return 0 if not (failed or not ok) else 1
 
 
 if __name__ == "__main__":

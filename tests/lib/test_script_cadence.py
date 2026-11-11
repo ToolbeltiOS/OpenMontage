@@ -374,8 +374,8 @@ class TestItIsWiredIntoTheGate:
 
     def test_check_claims_blocks_on_it(self):
         body = self._code(ROOT / "scripts" / "check_claims.py")
-        assert "voice_failed" in body
-        assert "return 0 if not (failed or voice_failed) else 1" in body
+        assert "SC.verdict(" in body
+        assert "return 0 if not (failed or not ok) else 1" in body
 
     def test_it_reports_the_two_apart(self):
         """One gate, two verdicts: the writer needs to know which edit."""
@@ -393,3 +393,210 @@ class TestItIsWiredIntoTheGate:
     def test_the_weekly_script_stage_runs_it(self):
         body = self._code(ROOT / "scripts" / "run_weekly.sh")
         assert "scripts/check_claims.py --project $SLUG --section" in body
+
+
+class TestContractionsAreAdvisory:
+    """A writer's call, which a regular expression cannot make.
+
+    "The chronology is not the part anyone disputes" is the line act one
+    turns on, and `isn't` would weaken it. So the rule reports and never
+    counts.
+    """
+
+    def test_contractions_is_the_advisory_rule(self):
+        assert SC.ADVISORY_RULES == ("contractions",)
+
+    def test_a_contraction_violation_does_not_block(self):
+        """A section with a question, so the no-question rule stays quiet
+        and the contraction is the only thing left to find."""
+        text = ("The chronology is not the part anyone disputes. "
+                "Who sealed it? Nobody wrote it down. He left. It stood.")
+        violations, _ = SC.check(text, "act1")
+        assert any(v.rule == "contractions" for v in violations)
+        parts = SC.classify(violations)
+        assert parts["blocking"] == [], parts["blocking"]
+        assert len(parts["advisory"]) >= 1
+
+    def test_the_fixture_above_really_is_otherwise_clean(self):
+        """Or the test would pass for the wrong reason."""
+        text = ("The chronology is not the part anyone disputes. "
+                "Who sealed it? Nobody wrote it down. He left. It stood.")
+        violations, _ = SC.check(text, "act1")
+        assert {v.rule for v in violations} == {"contractions"}
+
+    def test_a_film_of_nothing_but_contractions_passes(self):
+        """Twenty-five advisory violations is still a PASS."""
+        violations = [SC.Violation("contractions", "x", "y")] * 25
+        ok, reasons = SC.verdict(violations)
+        assert ok and reasons == []
+
+    def test_it_is_still_reported(self):
+        """Advisory is not silent. It is counted and shown."""
+        violations = [SC.Violation("contractions", "x", "y")] * 3
+        assert len(SC.classify(violations)["advisory"]) == 3
+
+
+class TestTheBudget:
+    """Six blocking per film, and zero on the two audible faults."""
+
+    def test_the_budget_is_six(self):
+        assert SC.VOICE_BUDGET == 6
+
+    def test_the_zero_tolerance_rules(self):
+        assert SC.ALWAYS_BLOCKING == ("length-hard", "landing")
+
+    @staticmethod
+    def _blocking(n: int, rule: str = "length") -> list[SC.Violation]:
+        return [SC.Violation(rule, f"detail {i}", f"sentence {i}")
+                for i in range(n)]
+
+    def test_six_blocking_passes(self):
+        ok, reasons = SC.verdict(self._blocking(6))
+        assert ok, reasons
+
+    def test_seven_fails(self):
+        ok, reasons = SC.verdict(self._blocking(7))
+        assert not ok
+        assert "over the budget of 6" in reasons[0]
+
+    def test_the_message_says_how_many_to_fix(self):
+        """So a 60-turn stage knows the size of the job, not just that it
+        failed."""
+        _, reasons = SC.verdict(self._blocking(20))
+        assert "Fix the worst 14" in reasons[0]
+
+    def test_zero_blocking_passes(self):
+        assert SC.verdict([])[0] is True
+
+    def test_one_hard_max_sentence_fails_on_its_own(self):
+        """Inside the budget and still a failure."""
+        ok, reasons = SC.verdict(self._blocking(1, "length-hard"))
+        assert not ok
+        assert "length-hard" in reasons[0]
+
+    def test_one_long_landing_line_fails_on_its_own(self):
+        ok, reasons = SC.verdict(self._blocking(1, "landing"))
+        assert not ok
+        assert "landing" in reasons[0]
+
+    def test_a_hard_fault_is_named_with_its_sentence(self):
+        _, reasons = SC.verdict(
+            [SC.Violation("landing", "too long", "The case closes slowly.")])
+        assert "The case closes slowly." in reasons[0]
+
+    def test_the_twenty_word_limit_is_budgeted_not_zero_tolerance(self):
+        """Over 20 is a tendency; over 28 is audible. Only one is absolute."""
+        assert "length" not in SC.ALWAYS_BLOCKING
+        assert SC.verdict(self._blocking(3, "length"))[0] is True
+
+
+class TestTheBudgetIsAWholeFilmNumber:
+    """Six across a film is not six per act.
+
+    Enforced per act it would pass a film carrying five in each of six
+    acts, which is thirty.
+    """
+
+    @staticmethod
+    def _blocking(n: int) -> list[SC.Violation]:
+        return [SC.Violation("length", f"d{i}", f"s{i}") for i in range(n)]
+
+    def test_a_single_act_run_does_not_judge_the_budget(self):
+        ok, reasons = SC.verdict(self._blocking(20), whole_film=False)
+        assert ok, reasons
+
+    def test_but_it_still_refuses_a_hard_fault(self):
+        ok, _ = SC.verdict([SC.Violation("length-hard", "d", "s")],
+                           whole_film=False)
+        assert not ok
+
+    def test_the_whole_film_run_does_judge_it(self):
+        assert SC.verdict(self._blocking(20), whole_film=True)[0] is False
+
+
+class TestTheDeliveredScriptsAgainstTheBudget:
+    """What the budget actually means on real material, measured 2026-11-10."""
+
+    FILMS = ("king-tut", "noah", "easter-island",
+             "they-said-it-couldnt-be-built")
+
+    @pytest.mark.parametrize("film", FILMS)
+    def test_every_delivered_film_is_over_budget(self, film):
+        """They are the flat prose the rule was written against. If one ever
+        passes, the lint has stopped measuring the thing it was built for."""
+        path = ROOT / "projects" / film / "artifacts" / "script.json"
+        if not path.exists():
+            pytest.skip(f"{film} is not in this worktree")
+        violations, _ = SC.check_script(json.loads(path.read_text()))
+        ok, reasons = SC.verdict(violations)
+        assert not ok, film
+        assert reasons
+
+    def test_the_advisory_share_is_real(self):
+        """A quarter of king-tut's violations are the writer's call, and
+        making them advisory is not a rounding change."""
+        path = ROOT / "projects" / "king-tut" / "artifacts" / "script.json"
+        if not path.exists():
+            pytest.skip("king-tut is not in this worktree")
+        violations, _ = SC.check_script(json.loads(path.read_text()))
+        parts = SC.classify(violations)
+        assert len(parts["advisory"]) >= 20
+        assert len(parts["blocking"]) < len(violations)
+
+
+class TestTheGateAppliesTheBudget:
+    @staticmethod
+    def _code(path: Path) -> str:
+        return "\n".join(ln for ln in path.read_text().splitlines()
+                         if not ln.strip().startswith("#"))
+
+    def test_check_claims_uses_the_verdict_and_not_a_bare_count(self):
+        body = self._code(ROOT / "scripts" / "check_claims.py")
+        assert "SC.verdict(" in body
+        assert "SC.classify(" in body
+
+    def test_it_accumulates_across_sections_before_judging(self):
+        """A per-section verdict could not apply a per-film budget."""
+        body = self._code(ROOT / "scripts" / "check_claims.py")
+        assert "all_violations" in body
+        assert "whole_film" in body
+
+    def test_the_director_states_the_budget_and_the_exceptions(self):
+        doc = " ".join((ROOT / "skills" / "pipelines" /
+                        "narrated-documentary" /
+                        "script-director.md").read_text().split())
+        assert f"six or fewer blocking violations" in doc
+        assert "none at all" in doc
+        assert "Contractions are advisory" in doc
+        assert "sixty turns" in doc
+
+    def test_the_module_says_why_the_budget_is_not_zero(self):
+        src = (ROOT / "lib" / "script_cadence.py").read_text()
+        assert "NOT ZERO, AND THAT IS THE POINT" in src
+
+
+class TestTheTitleRuleIgnoresWordsCapitalisedByPosition:
+    """"Nobody wrote it down" reported `Nobody` as an untitled source.
+
+    Found by a test fixture that was meant to be clean and was not. It uses
+    the same WHITELIST as the capitalisation backend in
+    verify_fact_coverage, so the two cannot disagree about what a name is.
+    """
+
+    @pytest.mark.parametrize("sentence", [
+        "Nobody wrote it down.",
+        "Nothing says otherwise.",
+        "They wrote it down.",
+        "No one says so.",
+        "Some say it was never sealed.",
+    ])
+    def test_a_pronoun_is_not_an_untitled_source(self, sentence):
+        assert SC.check_titles(sentence) == [], sentence
+
+    def test_a_real_name_still_is(self):
+        assert SC.check_titles("Nelson says the odds were low.") != []
+
+    def test_the_whitelist_is_the_shared_one(self):
+        src = (ROOT / "lib" / "script_cadence.py").read_text()
+        assert "from verify_fact_coverage import" in src
+        assert "WHITELIST" in src

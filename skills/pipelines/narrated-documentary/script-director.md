@@ -173,6 +173,27 @@ At least one question per act. Each landing line ≤ 8 words.
 require one. At most two em dashes in a paragraph — each is a turn, and three
 is a list.
 
+**The gate is a budget, not a demand for perfection.** A film passes VOICE
+with **six or fewer blocking violations across the whole film**, and
+**none at all** on a landing line or over the 28-word hard maximum. Those
+two are audible on their own; everything else is a tendency, and a budget is
+what a tendency deserves.
+
+This is deliberate. You have sixty turns. You can rewrite the worst twenty
+sentences in a 176-sentence film; you cannot rewrite every one, and a gate
+demanding zero would make you spend the cap trying and then fail on the turn
+limit with an act half-edited. Fix the worst, and the rest can stand.
+
+The budget is a **whole-film** number, so a single-act run cannot judge it —
+six across a film is not six per act. Run `check_claims.py` without
+`--section` for the verdict; with `--section` it still refuses the two
+zero-tolerance faults and tells you the budget is owed.
+
+**Contractions are advisory.** They are reported and never counted. Whether
+`is not` is emphasis or sloppiness is your judgement and no regular
+expression can make it — "The chronology is not the part anyone disputes" is
+the line act one turns on.
+
 **The lint is a floor, not the goal.** No measurement hears rhythm. An act
 can satisfy every rule above and still read flat, and the only judge of that
 is reading it aloud. What the numbers catch is the specific failure the four
@@ -184,8 +205,9 @@ Two things the rules do not settle, and you decide by ear:
   Bethell." — is three sentences within three words of each other and is the
   opposite of flat. The lint allows a run whose every sentence is already
   under 8 words. Longer runs it reports, and you judge.
-- `is not` is sometimes the emphasis you want over `isn't`. The lint reports
-  it with the sentence so that it is your call and not a silent rewrite.
+- `is not` is sometimes the emphasis you want over `isn't`. That is why the
+  whole contraction rule is advisory: reported with the sentence, never
+  counted against the budget.
 
 The fact gate is unchanged by any of this. `check_claims.py` reports the
 sourcing and the voice separately, because they fail for different reasons

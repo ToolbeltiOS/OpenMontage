@@ -62,14 +62,29 @@ def main() -> int:
         total_mean = sum(m["mean"] * m["sentences"] for m in rows) / said
         print(f"\nwhole script: {said} sentences, mean {total_mean:.2f} words")
 
+    parts = SC.classify(problems)
+    whole_film = not args.section
+    ok, reasons = SC.verdict(problems, whole_film=whole_film)
+
     if problems:
-        print(f"\n{len(problems)} violation(s):")
-        for v in problems:
-            print(f"  · [{v.rule}] {v.line()}")
+        print(f"\n{len(parts['blocking'])} blocking, "
+              f"{len(parts['advisory'])} advisory:")
+        for v in parts["blocking"]:
+            mark = "!" if v.rule in SC.ALWAYS_BLOCKING else "·"
+            print(f"  {mark} [{v.rule}] {v.line()}")
+        for v in parts["advisory"]:
+            print(f"  ~ [{v.rule}] {v.line()}")
         print(f"\nby rule: {SC.summarise(problems)}")
-        return 1
-    print("\nwrites for the voice")
-    return 0
+
+    print(f"\nbudget {SC.VOICE_BUDGET} blocking per film; "
+          f"{len(parts['blocking'])} found, "
+          f"{len(parts['hard'])} of them zero-tolerance")
+    for r in reasons[:25]:
+        print(f"  - {r}")
+    if not whole_film:
+        print("  (budget judged on the whole film)")
+    print("VOICE:", "PASS" if ok else "FAIL")
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":
