@@ -109,7 +109,7 @@ Before moving on, answer all four. A no to any one means revise this act now:
 
 Record the answers in the artifact per act. The reviewer reads them.
 
-### Step 5b — The Ear Check (after every act)
+### Step 5b — Write For The Voice (after every act)
 
 The padding check asks whether the act earns its length. This asks whether a
 voice can say it.
@@ -118,45 +118,78 @@ Four rounds of voice A/Bs on 2026-11-10 ended with the plain synthesiser
 beating every attempt to improve it. A spectral chain was measured and
 rejected. A per-sentence pause model was built and rejected. A second engine
 was cloned, verified sentence by sentence, and rejected. The fault was never
-in the voice: it was prose in which every sentence ran to about the same
-length with a subordinate clause hanging off it, and nothing for the voice to
-land on. Across the three delivered films, 565 narration sentences contain
-**two questions between them**.
+in the voice. It was prose written for the **eye**: sentences all of a
+length, a subordinate clause hanging off each one, figures as digits,
+attribution trailing after the claim, and nothing short to land on. Across
+the three delivered scripts — 565 narration sentences — there are **two
+questions**.
 
-**Rewrite each act for the ear:**
-
-- **Vary the sentence length deliberately.** Some sentences under 8 words.
-  Not a rhythm of alternating long and short — a mix you would actually
-  speak.
-- **One question per paragraph where one is natural.** Where it is not
-  natural, leave it out. A forced question reads worse than the flatness.
-- **A dash before each turn.** The place the argument changes direction is
-  the place a reader's eye and a listener's ear both need a beat.
-- **One subordinate clause per sentence at most.** Two is where the listener
-  loses the subject.
-- **Let the landing line be a fragment.** "Nobody wrote it down." is a
-  sentence for this purpose.
-
-Then run the lint, which measures the three parts of that which are numbers:
+Rewrite each act against the list below, then run the lint. It blocks the
+script gate.
 
 ```
-.venv/bin/python scripts/check_cadence.py --project <slug> --section <act>
+.venv/bin/python scripts/check_claims.py --project <slug> --section <act>
 ```
 
-| limit | value |
+`scripts/check_cadence.py` prints the same violations with a per-section
+table when you want the numbers rather than the gate.
+
+**Length**
+
+| | |
 | --- | --- |
-| mean sentence length | ≤ 16 words |
+| words per sentence | ≤ 20, hard maximum 28 |
+| mean across the act | ≤ 15 |
 | sentences under 8 words | ≥ 20% |
-| longest sentence | ≤ 30 words |
 
-**The lint is a floor, not the goal.** No measurement hears rhythm. An act can
-pass all three and still read flat, and the only judge of that is reading it
-aloud. What the numbers catch is the specific failure above — an act of
-uniform mid-length sentences — which no other check in this repo can see.
+**One idea per sentence.** No sentence with two subordinate clauses. No
+semicolons. No parentheses. A voice cannot say a semicolon — the synthesiser
+reads straight through it as a comma — and a bracketed aside arrives as part
+of the sentence it interrupts.
 
-The fact gate is unchanged by any of this. `scripts/check_claims.py` and
-`scripts/check_cadence.py` are separate commands because they fail for
-different reasons and are fixed by different edits.
+**Contractions where they are natural.** `it's`, `that's`, `didn't`,
+`wasn't`, `isn't`. Never `could've`, `would've`, `should've`, `there'll`,
+`it'll`: those are sayable but not cleanly, and a synthesiser mangles them.
+
+**Everything spoken, nothing written.** Numbers, years, units, currency and
+percentages as words. No `%`, `$`, `°`, `&`. No abbreviations except where
+the letters are what is spoken — `BBC` is fine, `Dr.` and `e.g.` are not.
+
+**No eye-words.** "The former", "the latter", "respectively",
+"aforementioned", and "however" dropped into the middle of a sentence. Each
+one asks the listener to look back up a page they cannot see. Name the thing
+again instead.
+
+**Attribution leads.** Title or identification before the name on first
+mention, then `says` for a living voice or `wrote` for a document. Never a
+trailing "said X". On the page the eye has already seen the quotation marks;
+spoken, a trailing attribution gives the listener a claim with no owner and
+tells them whose it was after they have decided whether to believe it.
+
+**Rhythm.** No three consecutive sentences within three words of each other.
+At least one question per act. Each landing line ≤ 8 words.
+
+**Breath.** Commas at the breath points even where the grammar does not
+require one. At most two em dashes in a paragraph — each is a turn, and three
+is a list.
+
+**The lint is a floor, not the goal.** No measurement hears rhythm. An act
+can satisfy every rule above and still read flat, and the only judge of that
+is reading it aloud. What the numbers catch is the specific failure the four
+A/B rounds were spent on, which no other check in this repo can see.
+
+Two things the rules do not settle, and you decide by ear:
+
+- A run of deliberate fragments — "Arthur Mace. Mervyn Herbert. Richard
+  Bethell." — is three sentences within three words of each other and is the
+  opposite of flat. The lint allows a run whose every sentence is already
+  under 8 words. Longer runs it reports, and you judge.
+- `is not` is sometimes the emphasis you want over `isn't`. The lint reports
+  it with the sentence so that it is your call and not a silent rewrite.
+
+The fact gate is unchanged by any of this. `check_claims.py` reports the
+sourcing and the voice separately, because they fail for different reasons
+and are fixed by different edits.
 
 ### Step 6 — The Ending
 

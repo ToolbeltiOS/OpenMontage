@@ -45,13 +45,14 @@ def main() -> int:
         return 2
 
     print(f"{'section':22s} {'sents':>5s} {'mean':>6s} {'<8w':>6s} "
-          f"{'long':>5s}  {'?':>2s} {'—':>2s}")
+          f"{'long':>5s}  {'?':>2s} {'—':>2s} {'bad':>4s}")
     for m in rows:
         flag = "" if m["sentences"] else "  (no narration)"
         enforced = "" if m.get("short_fraction_enforced", True) else "*"
         print(f"{m['id']:22s} {m['sentences']:5d} {m['mean']:6.2f} "
               f"{m['short_fraction']:5.0%}{enforced} {m['longest']:5d} "
-              f"{m['questions']:2d} {m['dashes']:2d}{flag}")
+              f"{m['questions']:2d} {m['dashes']:2d} "
+              f"{m.get('violations', 0):4d}{flag}")
     if any(not m.get("short_fraction_enforced", True) for m in rows):
         print(f"  * fewer than {SC.MIN_SENTENCES} sentences — the "
               f"short-sentence fraction is reported, not enforced")
@@ -62,11 +63,12 @@ def main() -> int:
         print(f"\nwhole script: {said} sentences, mean {total_mean:.2f} words")
 
     if problems:
-        print(f"\n{len(problems)} problem(s):")
-        for p in problems:
-            print(f"  · {p}")
+        print(f"\n{len(problems)} violation(s):")
+        for v in problems:
+            print(f"  · [{v.rule}] {v.line()}")
+        print(f"\nby rule: {SC.summarise(problems)}")
         return 1
-    print("\ncadence ok")
+    print("\nwrites for the voice")
     return 0
 
 

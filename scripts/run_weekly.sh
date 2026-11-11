@@ -930,12 +930,19 @@ it used to carry thirty sentences.
 AFTER EACH ACT, BEFORE WRITING THE NEXT ONE, run:
 
     .venv/bin/python scripts/check_claims.py --project $SLUG --section <act>
-    .venv/bin/python scripts/check_cadence.py --project $SLUG --section <act>
 
-and fix what BOTH report before continuing. The first asks whether the act's
-facts hold up; the second asks whether a voice can say it — mean sentence
-length at most 16 words, at least a fifth of the sentences under 8, nothing
-over 30. Script-director Step 5b has the rewrite rule the numbers come from.
+and fix everything it reports before continuing. It prints TWO verdicts and
+both block. CLAIMS asks whether the act's facts hold up. VOICE asks whether
+a voice can say it: sentences at most 20 words and never over 28, a mean of
+15, a fifth of them under 8, one idea per sentence, contractions, figures as
+words, attribution leading rather than trailing, a question in the act, and
+a landing line of 8 words or fewer. Every violation is printed with the
+sentence that broke it.
+
+Script-director Step 5b, \"Write For The Voice\", is the rule the numbers come
+from. \`scripts/check_cadence.py --project \$SLUG\` prints the same violations
+with a per-section table when you want the numbers rather than the gate.
+
 The lint is a floor and not the goal: no measurement hears rhythm, so read
 the act aloud as well. It is the same two checks the gate
 makes, scoped to one act and cheap enough to run six times. Running it at the

@@ -49,6 +49,8 @@ from verify_fact_coverage import (  # noqa: E402
     framing_disqualifiers, ledger, paragraphs, sentence_index,
     sentences_marked, triggers)
 
+import script_cadence as SC  # noqa: E402
+
 
 def check_section(section: dict, book: dict, by_sentence: dict,
                   backend: str = "spacy") -> tuple[list[str], dict]:
@@ -136,6 +138,7 @@ def main() -> int:
     wanted = set(args.section)
     found = False
     failed = False
+    voice_failed = False
     for section in script.get("sections", []):
         sid = section.get("id")
         if wanted and sid not in wanted:
@@ -155,11 +158,33 @@ def main() -> int:
             print(f"  … and {len(problems) - 20} more")
         failed = failed or bool(problems)
 
+        # ── WRITE FOR THE VOICE ──────────────────────────────────────────
+        # Reported separately and counted separately, because the two fail
+        # for different reasons and are fixed by different edits. The fact
+        # checks above are untouched by this: a sourcing check that also had
+        # opinions about sentence length would be two gates in a coat.
+        violations, vm = SC.check(section.get("text") or "", sid)
+        print(f"{sid}: {vm['sentences']} sentences, mean {vm['mean']} words, "
+              f"{vm['short_fraction']:.0%} under {SC.SHORT_WORDS}, longest "
+              f"{vm['longest']}, {vm['questions']} question(s) — "
+              f"{len(violations)} voice violation(s)")
+        for v in violations[:40]:
+            print(f"  · [{v.rule}] {v.detail}")
+            print(f"      {v.sentence[:160]!r}")
+        if len(violations) > 40:
+            print(f"  … and {len(violations) - 40} more")
+        if violations:
+            print(f"  {sid} by rule: {SC.summarise(violations)}")
+        voice_failed = voice_failed or bool(violations)
+
     if wanted and not found:
         print(f"no section matched {sorted(wanted)}", file=sys.stderr)
         return 2
     print("CLAIMS:", "PASS" if not failed else "FAIL")
-    return 0 if not failed else 1
+    print("VOICE:", "PASS" if not voice_failed else "FAIL")
+    # Both block. They are reported apart so the writer knows which edit the
+    # act needs, and a single exit code so the gate is one gate.
+    return 0 if not (failed or voice_failed) else 1
 
 
 if __name__ == "__main__":
