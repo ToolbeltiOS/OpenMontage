@@ -57,18 +57,33 @@ def bank(tmp_path):
               manifest: list[tuple[str, str]] | None = None):
         manifest = manifest if manifest is not None else [
             ("ark", ARK), ("tiryns", TIRYNS)]
-        approved_path = tmp_path / "approved.json"
         manifest_path = tmp_path / "manifest.json"
         props_path = tmp_path / "render_props.json"
-        approved_path.write_text(json.dumps({"approved": [
-            {"project": project, "subject": subject,
-             "approved_at": "2026-10-31T09:20:42"}
-            for project, subject in approved]}))
+        # PER-FILM FORMAT, 2026-11-11. The fixture used to build one shared
+        # file carrying every film's approvals, with a `project` on each
+        # row, because that is what the code read. Approvals now live in
+        # projects/<slug>/artifacts/illustration_approvals.json as
+        # `verdicts`, so a row's project is the FILE it is in — and the
+        # bank writes one file per project it is asked about.
+        by_project: dict[str, list] = {}
+        for proj, subject in approved:
+            by_project.setdefault(proj, []).append(
+                {"subject": subject, "verdict": "ok",
+                 "at": "2026-10-31T09:20:42",
+                 "by": "the owner, by Telegram reply"})
+        approved_paths = {}
+        for proj, rows in by_project.items():
+            path = tmp_path / f"approvals_{proj}.json"
+            path.write_text(json.dumps({"project": proj, "verdicts": rows}))
+            approved_paths[proj] = path
+        empty = tmp_path / "approvals_none.json"
+        empty.write_text(json.dumps({"verdicts": []}))
         manifest_path.write_text(json.dumps({"assets": [
             {"subject": subject, "path": path} for subject, path in manifest]}))
         props_path.write_text(json.dumps(props))
         return lambda project: V.check(
-            project, props_path=props_path, approved_path=approved_path,
+            project, props_path=props_path,
+            approved_path=approved_paths.get(project, empty),
             manifest_path=manifest_path)
     return build
 
@@ -206,21 +221,49 @@ class TestTheRealStateOnThisBranch:
             "illustration_approvals.json"
         assert "revoked" in json.loads(record.read_text())["state"]
 
-    def test_no_approval_names_a_published_film(self):
-        """The general rule, cheap to state and easy to breach by accident.
+    PUBLISHED = ("noah", "king-tut", "easter-island",
+                 "they-said-it-couldnt-be-built")
+
+    @pytest.mark.parametrize("film", PUBLISHED)
+    def test_no_published_film_holds_an_approval(self, film):
+        """The general rule, restated for per-film approvals.
 
         An approval recorded against a delivered film is a promise its cuts
         have to keep, and the four published films are not being re-rendered
-        to keep it. An approval for a slice or a film in progress is fine.
+        to keep it. `verify_approved_use` is blocking in both directions, so
+        an approval none of their cuts references fails their next delivery.
+
+        RESTATED 2026-11-11. It used to read one shared
+        assets/library/illustrations/approved.json and check that no ROW
+        named a published film. There is no shared file now — approvals live
+        in each film's own artifacts — so the question is asked of each film
+        directly, which is both simpler and stronger: it cannot be satisfied
+        by a row with a misspelled project name.
         """
-        published = {"noah", "king-tut", "easter-island",
-                     "they-said-it-couldnt-be-built"}
-        approved = json.loads(V.APPROVED_PATH.read_text(encoding="utf-8"))
-        named = {a.get("project") for a in approved.get("approved", [])}
-        assert not (named & published), (
-            f"approvals name published films: {sorted(named & published)} — "
-            f"verify_approved_use is blocking, so their next delivery fails "
+        assert V.approved_for(film) == [], (
+            f"{film} is published and holds illustration approvals; "
+            f"verify_approved_use is blocking, so its next delivery fails "
             f"unless a cut references each one")
+
+    def test_the_shared_approvals_file_is_gone(self):
+        """And stays gone. It was tracked, so every approval dirtied the
+        runner, and the script gate approved every picture in it for
+        whatever film was at the gate."""
+        assert not (ROOT / "assets" / "library" / "illustrations"
+                    / "approved.json").exists()
+        assert not hasattr(V, "APPROVED_PATH")
+
+    def test_the_slice_evidence_survived_the_migration(self):
+        """The two real approvals of 2026-11-09 were the slice's proof that
+        an illustration can reach a cut. They are kept outside projects/,
+        because a slice is not a film."""
+        slice_file = ROOT / "reports" / "illustration_slice_approvals.json"
+        assert slice_file.exists()
+        blob = json.loads(slice_file.read_text(encoding="utf-8"))
+        assert blob["scope"] == "illustration-slice"
+        assert len(blob["approvals"]) == 2
+        assert all(a["project"] == "illustration-slice"
+                   for a in blob["approvals"])
 
     def test_the_revocation_keeps_its_reasoning_and_its_pictures(self):
         """Revoked is not deleted: the provenance of the three files stays."""

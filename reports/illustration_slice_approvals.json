@@ -1,0 +1,21 @@
+{
+ "scope": "illustration-slice",
+ "note": "THE SLICE'S OWN EVIDENCE, kept outside projects/ because the slice is not a film. These two approvals were taken on 2026-11-09 to prove the illustration slot class end to end \u2014 the gate posted the pictures, the owner approved them, and a cut used one. They are recorded here so that record survives, and NOT in a film's approvals file, because no film approved them.",
+ "migrated_from": "assets/library/illustrations/approved.json",
+ "migrated_at": "2026-11-11",
+ "why_migrated": "Approvals became per-film state on 2026-11-11. The shared tracked file meant one film's script approval covered every picture in the library, under that film's name, and dirtied a tracked file in the pull-only runner on every approval.",
+ "approvals": [
+  {
+   "subject": "a Greek traveller in a himation standing before the colossal unworked limestone blocks of the Tiryns citadel wall, scale of a man against the masonry, second century AD",
+   "project": "illustration-slice",
+   "attempt": 1,
+   "approved_at": "2026-11-09T19:32:17"
+  },
+  {
+   "subject": "a very large wooden vessel under construction on dry land, timber frames and scaffolding, workers with adzes and bow drills, ancient near-eastern dress",
+   "project": "illustration-slice",
+   "attempt": 1,
+   "approved_at": "2026-11-09T19:32:17"
+  }
+ ]
+}

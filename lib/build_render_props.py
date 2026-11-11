@@ -571,27 +571,17 @@ def main() -> int:
         cut.setdefault("actTitle", title)
         cut.setdefault("sceneIndex", "S " + sid.rsplit("_s", 1)[-1])
 
-    # AN ILLUSTRATION NOT APPROVED AT THE GATE IS NOT USED.
+    # DEMOTION HAPPENS AFTER THE ILLUSTRATION GATE, NOT HERE.
     #
-    # It is the only picture in the film nobody sourced, so it does not get
-    # in on the strength of having been generated. The gate shows each one
-    # with its subject and records the ones it CONFIRMED DELIVERED; anything
-    # else — a render made after the gate, or one whose upload failed — goes
-    # back to the slot's fallback here rather than reaching the film.
+    # This stage is what GENERATES the pictures, so at this point none of
+    # them has been shown to anybody and none is approved. Demoting here
+    # would send every illustration back to its fallback before the gate
+    # ever posted it, which is the same bug in the other direction from the
+    # one that had the script gate approving other films' pictures.
     #
-    # Applied before the proxy pass, so a demoted cut is proxied as the
-    # still it has become.
-    try:
-        import illustration_spec
-    except ImportError:
-        from . import illustration_spec          # type: ignore[no-redef]
-    demoted = illustration_spec.demote_unapproved(ed["cuts"], Path(ROOT))
-    for d in demoted:
-        print(f"  illustration refused: {d['cut']} ({d['subject']!r}) -> "
-              f"{d['fell_to']}", flush=True)
-    if demoted:
-        print(f"  {len(demoted)} illustration(s) fell back; approve them at "
-              f"the script gate to use them", flush=True)
+    # scripts/illustration_gate.py posts them, records a verdict per
+    # picture in the film's own artifacts/illustration_approvals.json, and
+    # applies `demote_unapproved` to these props before the render.
 
     # Oversized stills are rendered against downscaled proxies.
     proxied = 0

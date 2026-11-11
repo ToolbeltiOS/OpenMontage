@@ -63,6 +63,11 @@ projects/**
 # film's own provenance did not exist.
 !projects/*/artifacts/script.json
 !projects/*/artifacts/derived_assets.json
+# Per-film illustration approvals. A verdict exists because a person replied
+# to the illustration gate, so it is a decision and decisions are kept. It
+# replaced one shared tracked file for all films — see
+# lib/illustration_spec.APPROVALS.
+!projects/*/artifacts/illustration_approvals.json
 # listing.json is the PUBLISHED RECORD: the title, description, chapters and
 # the credit for every asset the film used. It is what the film claims about
 # itself and about whose work is in it, so it is tracked. render_props.json

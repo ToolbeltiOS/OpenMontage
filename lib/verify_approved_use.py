@@ -42,8 +42,12 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-APPROVED_PATH = ROOT / "assets" / "library" / "illustrations" / "approved.json"
 MANIFEST_PATH = ROOT / "assets" / "library" / "illustrations" / "manifest.json"
+
+#: APPROVALS ARE PER-FILM AND LIVE WITH THE FILM, since 2026-11-11. There was
+#: one shared tracked file for every film ever made, and approving one film's
+#: script approved every picture in the library under that film's name. See
+#: lib/illustration_spec.APPROVALS.
 
 
 def _load(path: Path) -> Any:
@@ -51,15 +55,36 @@ def _load(path: Path) -> Any:
 
 
 def approved_for(project: str, approved_path: Path | None = None,
-                 manifest_path: Path | None = None) -> list[dict[str, Any]]:
-    """The illustrations this project's owner approved, with their files.
+                 manifest_path: Path | None = None,
+                 root: Path | None = None) -> list[dict[str, Any]]:
+    """The illustrations THIS FILM's owner approved, with their files.
 
     An approval carries the subject line the owner read, not a path, because
     that is what they were shown. The manifest is what turns a subject into a
     file; an approved subject with no manifest entry is itself a fault, and
     comes back with `path: None` rather than being dropped.
+
+    It reads only this film's own record now. `approved_path` is still
+    accepted so a test can point at a fixture, and when it is given it is
+    read as a film's approvals file rather than as the old shared one.
     """
-    approved = _load(approved_path or APPROVED_PATH) or {}
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import illustration_spec
+
+    base = root or ROOT
+    if approved_path is not None:
+        blob = _load(approved_path) or {}
+        rows = blob.get("verdicts") or []
+        subjects = {r["subject"] for r in rows
+                    if r.get("verdict") == "ok" and r.get("subject")}
+        when = {r["subject"]: r.get("at") for r in rows if r.get("subject")}
+    else:
+        subjects = illustration_spec.approved_subjects(project, base)
+        when = {r["subject"]: r.get("at")
+                for r in illustration_spec.verdicts(project, base)
+                if r.get("subject")}
     manifest = _load(manifest_path or MANIFEST_PATH) or {}
     # A PICTURE ANSWERS TO EVERY NAME IT HAS HAD. `subject` became a short
     # on-screen label on 2026-11-09 and the full line it used to carry moved
@@ -74,12 +99,9 @@ def approved_for(project: str, approved_path: Path | None = None,
             if name:
                 by_subject.setdefault(name, a.get("path"))
     out = []
-    for row in (approved.get("approved") or []):
-        if row.get("project") != project:
-            continue
-        subject = row.get("subject")
+    for subject in sorted(subjects):
         out.append({"subject": subject, "path": by_subject.get(subject),
-                    "approved_at": row.get("approved_at")})
+                    "approved_at": when.get(subject)})
     return out
 
 

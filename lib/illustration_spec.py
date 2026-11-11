@@ -138,10 +138,102 @@ def full_prompt(subject: str) -> str:
 # --------------------------------------------------------------------------
 
 #: Where the gate records what it showed and the person approved.
-APPROVED = Path("assets/library/illustrations/approved.json")
+#: AN APPROVAL IS PER-FILM STATE, AND IT LIVES WITH THE FILM.
+#:
+#: It used to live in assets/library/illustrations/approved.json — one
+#: tracked, shared file for every film ever made. Two things followed, and
+#: both were measured on 2026-11-11 by approving a rehearsal's script:
+#:
+#:   1. `scripts/telegram_gate.py` posted EVERY illustration in the shared
+#:      library, because `illustrations_for` reads the directory and filters
+#:      by nothing. One "ok" on the Lighthouse rehearsal's script approved
+#:      noah's "Ark under construction" and they-said-it's "Unworked blocks
+#:      at Tiryns", recorded under the rehearsal's name. Approving a script
+#:      silently approved other films' pictures, and there was no way to
+#:      refuse one picture without refusing the script.
+#:   2. Every approval dirtied a TRACKED file in the runner, which is a
+#:      pull-only deploy target. `assets/` is not in the runner's dirty-code
+#:      guard, so nothing complained; the next fast-forward would have.
+#:
+#: So approvals are written here, per film, in the film's own artifacts —
+#: beside the revocation record that projects/noah/artifacts already holds.
+APPROVALS = "illustration_approvals.json"
 
-#: What the pictures are, and what made them.
+#: What the pictures are, and what made them. Shared, read-only, and the
+#: only thing about illustrations that IS shared: a picture is a file in a
+#: library, while permission to use it is a fact about one film.
 MANIFEST = Path("assets/library/illustrations/manifest.json")
+
+
+def approvals_path(project: str, root: Path | None = None) -> Path:
+    return (root or Path(".")) / "projects" / project / "artifacts" / APPROVALS
+
+
+def approvals(project: str, root: Path | None = None) -> dict:
+    """This film's approval record, or an empty one."""
+    import json
+
+    path = approvals_path(project, root)
+    if not path.exists():
+        return {"project": project, "verdicts": []}
+    return json.loads(path.read_text())
+
+
+def verdicts(project: str, root: Path | None = None) -> list[dict]:
+    """Every per-picture verdict, oldest first."""
+    return list(approvals(project, root).get("verdicts") or [])
+
+
+def approved_subjects(project: str, root: Path | None = None) -> set[str]:
+    """Subjects whose LATEST verdict is ok.
+
+    Only `verdicts` counts. projects/noah/artifacts/illustration_approvals.json
+    records three illustrations approved at the 2026-10-31 script gate and
+    then REVOKED, under `illustrations`, with the reasoning. That list is
+    history and is deliberately not read here, so the revocation holds by
+    construction rather than by a special case — which is the same argument
+    the revocation itself makes about waivers.
+    """
+    latest: dict[str, str] = {}
+    for row in verdicts(project, root):
+        subject = row.get("subject")
+        if subject:
+            latest[subject] = row.get("verdict", "no")
+    return {s for s, v in latest.items() if v == "ok"}
+
+
+def record_verdicts(project: str, rows: list[dict], root: Path | None = None,
+                    by: str = "the owner, by Telegram reply") -> Path:
+    """Append per-picture verdicts to this film's record, with who and when.
+
+    Appends rather than replaces: a second gate round is more evidence, not
+    a correction, and `approved_subjects` takes the latest verdict per
+    subject. Nothing here is ever written by hand — a verdict exists because
+    somebody replied — which is the whole reason it can be trusted.
+    """
+    import datetime as dt
+    import json
+
+    path = approvals_path(project, root)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    blob = approvals(project, root)
+    blob.setdefault("project", project)
+    blob.setdefault("verdicts", [])
+    now = dt.datetime.now().isoformat(timespec="seconds")
+    for row in rows:
+        entry = dict(row)
+        entry.setdefault("at", now)
+        entry.setdefault("by", by)
+        blob["verdicts"].append(entry)
+    blob["note"] = (
+        "Per-picture verdicts from the illustration gate, which runs after "
+        "the edit stage has generated the pictures and before the render. "
+        "One Telegram post per picture; a reply of no, or no reply by render "
+        "time, demotes that cut to its fallback and the film renders anyway. "
+        "Approvals are per FILM: a picture approved here is approved for "
+        "this film and for nothing else.")
+    path.write_text(json.dumps(blob, indent=1) + "\n")
+    return path
 
 
 def _identities(root: Path | None = None) -> list[set[str]]:
@@ -209,23 +301,24 @@ def record_approval(subjects: list[str], project: str, attempt: int,
     return path
 
 
-def usable(subject: str, root: Path | None = None) -> tuple[bool, str]:
-    """May this illustration be used in the film?"""
-    ok = {a["subject"] for a in approved_record(root).get("approved", [])}
+def usable(subject: str, project: str,
+           root: Path | None = None) -> tuple[bool, str]:
+    """May this illustration be used in THIS film?"""
+    ok = approved_subjects(project, root)
     if subject in ok:
-        return True, "approved at the script gate"
+        return True, "approved at the illustration gate"
     # The same picture under another of its names — see `_identities`.
     for names in _identities(root):
         if subject in names and names & ok:
-            return True, ("approved at the script gate, under the longer "
-                          "subject line it was shown as")
-    return False, (f"not approved at the script gate — an illustration is "
-                   f"the one picture nobody sourced, so it is used only if "
-                   f"it was shown and approved")
+            return True, ("approved at the illustration gate, under another "
+                          "of the subject lines it was shown as")
+    return False, ("not approved at the illustration gate — an illustration "
+                   "is the one picture nobody sourced, so it is used only if "
+                   "it was shown and approved for this film")
 
 
-def demote_unapproved(cuts: list[dict], root: Path | None = None
-                      ) -> list[dict]:
+def demote_unapproved(cuts: list[dict], project: str,
+                      root: Path | None = None) -> list[dict]:
     """Turn every unapproved illustration cut back into its fallback.
 
     THE FALLBACK IS THE SLOT'S OWN, not a blank. A slot that asked for an
@@ -239,7 +332,7 @@ def demote_unapproved(cuts: list[dict], root: Path | None = None
         if cut.get("type") != "illustration":
             continue
         subject = cut.get("subject") or cut.get("title") or ""
-        ok, why = usable(subject, root)
+        ok, why = usable(subject, project, root)
         if ok:
             continue
         fell_to = "still" if cut.get("source") else "text_card"

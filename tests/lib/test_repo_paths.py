@@ -254,6 +254,9 @@ class TestTheAllowListWasNotWidenedForOneFilm:
             "!projects/*/artifacts/publish.json",
             "!projects/*/artifacts/script.json",
             "!projects/*/artifacts/derived_assets.json",
+            # per-film illustration verdicts, 2026-11-11: approvals stopped
+            # being one shared tracked file for every film
+            "!projects/*/artifacts/illustration_approvals.json",
             "!projects/*/artifacts/listing.json",
             "!projects/*/artifacts/demo_act2_props.json",
         ])

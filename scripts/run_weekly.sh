@@ -74,6 +74,10 @@ NEW_FILM=0
 DRY_RUN=0
 PREFLIGHT=0
 GATE_HOURS="${GATE_HOURS:-12}"
+#: The illustration gate's window. Shorter than the script gate's because
+#: nothing waits on it: at the end of it the unanswered pictures fall back
+#: and the film renders.
+ILLUSTRATION_GATE_HOURS="${ILLUSTRATION_GATE_HOURS:-2}"
 SMOKE="${RUN_WEEKLY_SMOKE:-0}"
 
 #: The fact gate's proper-noun detector. spaCy + en_core_web_sm, installed
@@ -1418,7 +1422,6 @@ while true; do
     --project "$SLUG" \
     --script "$REPO/projects/$SLUG/artifacts/script.json" \
     --frames "$REPO/projects/$SLUG/renders/style" \
-    --illustrations "$REPO/assets/library/illustrations" \
     --hours "$GATE_HOURS" --attempt "$ATTEMPT"
   GATE=$?
   case "$GATE" in
@@ -1546,7 +1549,31 @@ Those three files are the whole hand-off: the next stage is NOT an agent, it
 is scripts/await_render.py, which starts the render and waits with no model
 open. Write the checkpoint and STOP."
 
-# ── 4a. depth plates for the stills that earn one ────────────────────────
+# ── 4a. the illustration gate — after the pictures exist, before render ──
+#
+# THE SCRIPT GATE CANNOT APPROVE THESE AND NEVER SHOULD HAVE. It runs before
+# the edit stage, so at that point no illustration has been authored for this
+# film; what it posted was whatever sat in the shared library, from other
+# films, and an "ok" on the script recorded them under this film's name.
+# Measured 2026-11-11.
+#
+# THIS GATE DOES NOT BLOCK. One Telegram post per picture, a verdict per
+# picture, and a refusal or a silence demotes that cut to its fallback — the
+# sourced still or the authored graphic it would have been without an
+# illustration. The film renders either way, which is why it is here and not
+# before the human gate: nobody has to be awake for it.
+if [[ "$SMOKE" != "1" && "$DRY_RUN" != "1" ]]; then
+  require_power "the illustration gate"
+  say "illustration gate (up to ${ILLUSTRATION_GATE_HOURS}h, never blocks)"
+  "$PY" "$REPO/scripts/illustration_gate.py" --project "$SLUG" \
+    --hours "$ILLUSTRATION_GATE_HOURS" \
+    2>&1 | sed 's/^/         /' \
+    || say "illustration gate: exited non-zero — every picture falls back"
+else
+  say "${DRY_RUN:+dry run}${SMOKE:+smoke}: skipping the illustration gate"
+fi
+
+# ── 4b. depth plates for the stills that earn one ────────────────────────
 #
 # AFTER the edit has written render_props.json and BEFORE the render reads
 # it: the builder writes `depth_clip` into the props, so it has to run
@@ -1578,7 +1605,7 @@ elif [[ "$DRY_RUN" != "1" ]]; then
   say "depth plates: SKIPPED, no .venv-depth in $REPO (see docs/PREFLIGHT.md)"
 fi
 
-# ── 4b. the picture: no model, no context, no usage limit ────────────────
+# ── 4c. the picture: no model, no context, no usage limit ────────────────
 require_power "the render"
 if [[ "$DRY_RUN" == "1" ]]; then
   say "dry run: skipping the render"

@@ -164,30 +164,24 @@ def fact_line(project: str, script_path: Path) -> str:
         return f"fact gate: could not be summarised ({type(exc).__name__})"
 
 
-def illustrations_for(directory: Path | None) -> list[tuple[Path, str]]:
-    """Every rendered illustration, with the subject it depicts.
-
-    The subject comes from the manifest `scripts/make_illustration.py`
-    writes, not from the filename: the filename is a slug and the caption
-    has to say what the picture is actually of, because that is the thing
-    being approved.
-    """
-    if not directory or not directory.exists():
-        return []
-    manifest = directory / "manifest.json"
-    subjects = {}
-    if manifest.exists():
-        for a in json.loads(manifest.read_text()).get("assets", []):
-            subjects[Path(a["path"]).name] = a.get("subject", "")
-    out = []
-    for img in sorted(directory.glob("*.png")) + sorted(directory.glob("*.jpg")):
-        out.append((img, subjects.get(img.name, img.stem.replace("-", " "))))
-    return out
+# ILLUSTRATIONS ARE NOT APPROVED HERE, AND NEVER WERE A SENSIBLE THING TO
+# APPROVE HERE. This gate ran before the edit stage, so at this point no
+# illustration has been authored FOR THIS FILM at all — what it posted was
+# whatever happened to be sitting in the shared library, from other films,
+# and an "ok" on the script recorded them as approved under this film's
+# name. Measured 2026-11-11: one "ok" on a rehearsal script approved
+# noah's ark picture and they-said-it's Tiryns picture.
+#
+# The pictures now have their own gate, scripts/illustration_gate.py, which
+# runs after the edit stage has generated them and before the render, posts
+# one message per picture, and takes a verdict per picture. The script gate
+# approves THE SCRIPT AND THE FRAMES, which is what a person at this point
+# can actually have an opinion about.
 
 
 def post(project: str, script_path: Path, frames: list[Path],
          title: str, outline: list[str], attempt: int = 1,
-         illustrations: list[tuple[Path, str]] | None = None) -> dict:
+) -> dict:
     """Post the four things, and report what of it actually arrived.
 
     The header and the instruction are load-bearing (`require`). The script
@@ -206,7 +200,7 @@ def post(project: str, script_path: Path, frames: list[Path],
 
     report = {"script": True, "frames_sent": 0,
               "frames_expected": len(frames[:HERO_FRAMES]), "missing": [],
-              "illustrations_shown": [], "illustrations_missing": []}
+              }
 
     if telegram.send_document(script_path, caption="the full script") is None:
         report["script"] = False
@@ -218,31 +212,7 @@ def post(project: str, script_path: Path, frames: list[Path],
         else:
             report["frames_sent"] += 1
 
-    # THE ILLUSTRATIONS, EACH WITH WHAT IT DEPICTS.
-    #
-    # They go up last and individually, because this is the only picture in
-    # the film nobody sourced and the reply has to cover each one knowingly.
-    # `illustrations_shown` records what the API CONFIRMED, not what was
-    # attempted: an illustration that failed to upload is not approved by an
-    # "ok", because the person never saw it.
-    for img, subject in (illustrations or []):
-        caption = f"ILLUSTRATION — {subject}"
-        if telegram.send_photo(img, caption=caption[:900]) is None:
-            report["illustrations_missing"].append(img.name)
-        else:
-            report["illustrations_shown"].append(subject)
-
     note = ""
-    if report["illustrations_shown"] or report["illustrations_missing"]:
-        note += (f"\n\n<i>{len(report['illustrations_shown'])} illustration(s) "
-                 f"above. These are GENERATED, not sourced. Approving the "
-                 f"script approves them; any that did not arrive will not be "
-                 f"used.</i>")
-    if report["illustrations_missing"]:
-        note += (f"\n\n<i>{len(report['illustrations_missing'])} illustration(s) "
-                 f"would not upload "
-                 f"({', '.join(report['illustrations_missing'][:4])}). Those "
-                 f"slots fall back to a still or an authored graphic.</i>")
     if not report["script"]:
         note += "\n\n<i>The .txt attachment failed; the script is above as text.</i>"
     if report["missing"]:
@@ -265,9 +235,6 @@ def main() -> int:
                     help="the .txt that is attached; defaults beside --script")
     ap.add_argument("--frames", default=None,
                     help="directory of hero style frames")
-    ap.add_argument("--illustrations", default="assets/library/illustrations",
-                    help="directory of rendered illustrations; each is posted "
-                         "with its subject and is used only if approved here")
     ap.add_argument("--hours", type=float, default=12.0)
     ap.add_argument("--notes-out", default=None,
                     help="where to write notes if the reply is notes")
@@ -320,10 +287,8 @@ def main() -> int:
         return 6
 
     offset = telegram.drain()
-    illustrations = illustrations_for(
-        Path(args.illustrations) if args.illustrations else None)
     report = post(args.project, text_path, frames, title, outline,
-                  args.attempt, illustrations)
+                  args.attempt)
     print(f"posted: script={'attached' if report['script'] else 'AS TEXT'}, "
           f"frames {report['frames_sent']}/{report['frames_expected']}")
 
@@ -331,22 +296,6 @@ def main() -> int:
     print(f"gate: {verdict}")
 
     if verdict == "ok":
-        # THE APPROVAL COVERS WHAT ARRIVED, AND ONLY THAT. An illustration
-        # that failed to upload was never seen, so an "ok" does not approve
-        # it; `demote_unapproved` sends that slot back to a still or an
-        # authored graphic. Writing the attempted list here instead would
-        # turn an upload failure into silent consent.
-        shown = report.get("illustrations_shown") or []
-        if shown or report.get("illustrations_missing"):
-            sys.path.insert(0, str(ROOT))
-            from lib.illustration_spec import record_approval
-
-            path = record_approval(shown, args.project, args.attempt, ROOT)
-            print(f"approved {len(shown)} illustration(s) -> "
-                  f"{path.relative_to(ROOT)}")
-            if report.get("illustrations_missing"):
-                print(f"  NOT approved (did not upload): "
-                      f"{', '.join(report['illustrations_missing'])}")
         telegram.send("Approved. Rendering.")
         return 0
     if verdict == "no":

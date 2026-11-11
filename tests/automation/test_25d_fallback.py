@@ -161,18 +161,18 @@ class TestTheWeeklyRunReachesIt:
         render reads them."""
         assert "pipeline_stage edit" in self.RUNNER
         edit = self.RUNNER.index("pipeline_stage edit")
-        depth = self.RUNNER.index("# ── 4a. depth plates")
-        picture = self.RUNNER.index("# ── 4b. the picture")
+        depth = self.RUNNER.index("# ── 4b. depth plates")
+        picture = self.RUNNER.index("# ── 4c. the picture")
         assert edit < depth < picture
 
     def test_it_builds_then_judges(self):
-        block = self.RUNNER[self.RUNNER.index("# ── 4a. depth plates"):
-                            self.RUNNER.index("# ── 4b. the picture")]
+        block = self.RUNNER[self.RUNNER.index("# ── 4b. depth plates"):
+                            self.RUNNER.index("# ── 4c. the picture")]
         assert block.index("build_25d_cuts.py") < block.index("verify_25d_cuts.py")
 
     def test_neither_step_can_fail_the_film(self):
-        block = self.RUNNER[self.RUNNER.index("# ── 4a. depth plates"):
-                            self.RUNNER.index("# ── 4b. the picture")]
+        block = self.RUNNER[self.RUNNER.index("# ── 4b. depth plates"):
+                            self.RUNNER.index("# ── 4c. the picture")]
         for script in ("build_25d_cuts.py", "verify_25d_cuts.py"):
             after = block[block.index(script):]
             line_end = after.index("\n", after.index("$LOGDIR"))
@@ -184,8 +184,8 @@ class TestTheWeeklyRunReachesIt:
     def test_a_missing_depth_venv_says_so_rather_than_going_quiet(self):
         """A film that stopped getting depth plates is a regression nobody
         would see if the step just vanished."""
-        block = self.RUNNER[self.RUNNER.index("# ── 4a. depth plates"):
-                            self.RUNNER.index("# ── 4b. the picture")]
+        block = self.RUNNER[self.RUNNER.index("# ── 4b. depth plates"):
+                            self.RUNNER.index("# ── 4c. the picture")]
         assert '.venv-depth/bin/python' in block
         assert "SKIPPED" in block and "PREFLIGHT.md" in block
 
