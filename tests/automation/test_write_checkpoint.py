@@ -263,11 +263,22 @@ class TestTheCapDerivationIsInSdkUnits:
         assert "~24 SDK turns of real work" in self.flat
         assert "13 x 6 = 78" in self.flat
 
-    def test_the_caps_were_not_raised(self):
+    def test_no_cap_was_raised_to_make_a_run_pass(self):
+        """The distinction that matters.
+
+        proposal and script are untouched: proposal hit its cap on
+        2026-11-11 and the fix was to stop failing a stage that had already
+        checkpointed, NOT to give it more turns. research went 30 -> 40,
+        which is a margin decision about an unattended Friday and is
+        recorded as one — the derivation still says ~24.
+        """
         body = (ROOT / "scripts" / "run_weekly.sh").read_text()
-        assert 'TURNS_RESEARCH="${TURNS_RESEARCH:-30}"' in body
         assert 'TURNS_PROPOSAL="${TURNS_PROPOSAL:-25}"' in body
         assert 'TURNS_SCRIPT="${TURNS_SCRIPT:-120}"' in body
+        assert 'TURNS_RESEARCH="${TURNS_RESEARCH:-40}"' in body
+        flat = " ".join(body.replace("#:", " ").split())
+        assert "MARGIN DECISION, NOT A DERIVATION" in flat
+        assert "~24 SDK turns of real work" in flat
 
     def test_the_untested_cap_is_named_as_untested(self):
         """proposal has never run on its own. Saying so is the honest part."""

@@ -92,10 +92,33 @@ A dedicated `gaps` list. Things you looked for and could not source are
 first-class output: they tell the proposal director which angles are unsafe and
 tell the script director which sentences can never be written.
 
+### 5b. Check Every source_url Resolves
+
+```
+.venv/bin/python scripts/check_urls.py --project <slug>
+```
+
+It reads every `source_url` in the brief, HEADs each one and falls back to a
+GET when a server rejects the HEAD for being a HEAD, follows redirects and
+reports the final URL, and exits non-zero if any URL is dead. **A dead
+`source_url` is a claim that cannot be defended** — the fact gate resolves
+the script's citations against these, so replace the source or cut the data
+point. Do not leave the id in the ledger for the script stage to cite.
+
+Read the redirects as well as the failures. A source that now redirects to a
+parked domain answers 200 and is still gone.
+
+**Do not check them with the shell.** `curl` is not on the allow-list and
+will not be: an allow-listed `curl` is an allow-listed arbitrary fetch. The
+2026-11-11 research stage tried a `for` loop and a `curl -s -L -w '%{http_code}'`,
+had both denied, and spent turns on it — on a cap that finished with one
+turn to spare.
+
 ### 6. Quality Gate
 
 - Every named entity has an encyclopedia source.
 - At least 8 ledger entries, each sourced with a URL.
+- **Every `source_url` resolves** — `scripts/check_urls.py` exits 0.
 - At least 3 angles, each with `grounded_in` references.
 - Contested claims are marked, not smoothed over.
 - Gaps are recorded.

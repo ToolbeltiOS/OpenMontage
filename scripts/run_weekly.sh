@@ -134,10 +134,16 @@ MAX_RESUMES="${MAX_RESUMES:-6}"
 #:
 #: Re-derived in SDK turns from the 2026-11-11 runs, and NOT RAISED:
 #:
-#:   research  needed ~24 SDK turns of real work — it wrote 33 sourced data
-#:             points by transcript turn 44 of 62 — and then lost 27% of the
-#:             stage to a checkpoint it could not write. Cap 30 stands, and
-#:             scripts/write_checkpoint.py is what gives those turns back.
+#:   research  40, AND THAT LAST STEP IS A MARGIN DECISION, NOT A
+#:             DERIVATION. The measurement said ~24 SDK turns of real work
+#:             (33 sourced data points by transcript turn 44 of 62, with 27%
+#:             of the stage then lost to a checkpoint it could not write).
+#:             With scripts/write_checkpoint.py that stage finished at SDK
+#:             29 of 30 — one turn of margin. Research cost depends on the
+#:             TOPIC: how many sources exist, how many disagree, how many
+#:             URLs resolve. One turn is too thin for an unattended Friday,
+#:             so the owner raised it to 40 on 2026-11-11 to buy margin.
+#:             The derivation did not change; the margin did.
 #:   script    ~13 SDK turns per section measured over the two sections the
 #:             first rehearsal completed, and a film is six sections (cold
 #:             open, four acts, outro): 13 x 6 = 78, so about 80 of the 120.
@@ -150,7 +156,7 @@ MAX_RESUMES="${MAX_RESUMES:-6}"
 #:
 #: If a cap is hit the stage FAILS and is not resumed, which is the point: a
 #: cap raised to make a run pass measures nothing.
-TURNS_RESEARCH="${TURNS_RESEARCH:-30}"
+TURNS_RESEARCH="${TURNS_RESEARCH:-40}"
 TURNS_PROPOSAL="${TURNS_PROPOSAL:-25}"
 TURNS_SCRIPT="${TURNS_SCRIPT:-120}"
 TURNS_SCENE_PLAN="${TURNS_SCENE_PLAN:-40}"
@@ -733,19 +739,55 @@ it stopped:
       return 10
     fi
 
+    # ── MAX_TURNS DECISION (sliced out and executed by
+    # tests/automation/test_cap_hit_after_finishing.py — keep the markers) ──
     if [[ "$kind" == "max_turns" ]]; then
+      # A STAGE THAT FINISHED AND THEN OVERRAN IS NOT A FAILED STAGE.
+      #
+      # The 2026-11-11 proposal stage wrote five concepts, selected one,
+      # and checkpointed `completed` — the checkpoint writer validates the
+      # artifact against its schema, so that file is proof the packet is
+      # good — and THEN spent its last turn and was failed for it. The run
+      # stopped with every artifact on disk and resume_state reading
+      # research [x] proposal [x].
+      #
+      # On a Friday that is a film abandoned over bookkeeping. The contract
+      # asks a stage to "stop and write what you have" when it is running
+      # out; this one did better than that and was punished for it.
+      #
+      # The checkpoint is the authority, not the exit code: a `completed`
+      # checkpoint cannot be written without the artifact passing its own
+      # schema, which is a stronger statement than "the process exited 0".
+      if "$PY" "$REPO/scripts/resume_state.py" --project "$SLUG" \
+           --is-done "$name" >/dev/null 2>&1; then
+        say "$name: hit the ${cap}-turn cap AFTER checkpointing completed — warning, not failing"
+        notify "<b>stage overran its cap, but had already finished</b>
+stage: $name
+cap: $cap turns
+
+It checkpointed <code>completed</code> before running out, and a completed
+checkpoint is only written when the artifact passes its own schema — so the
+work is done and the next stage can read it. The run CARRIES ON.
+
+Worth a look anyway: a stage that finishes on its last turn has no margin,
+and the next film on a harder topic may not finish at all. $base.log has
+what it was doing."
+        return 0
+      fi
       say "$name: hit the ${cap}-turn cap — FAILING, not resuming"
       notify "<b>stage hit its turn cap</b>
 stage: $name
 cap: $cap turns
 
-A stage given a budget will spend it again, so this is not resumed. Either
-the stage is looping — read $base.log for what it was doing — or the cap is
-too tight for this film. Raise it and re-fire:
+No completed checkpoint, so the artifact is half-written or absent and the
+next stage would build on it. A stage given a budget will spend it again, so
+this is not resumed. Either the stage is looping — read $base.log for what
+it was doing — or the cap is too tight for this film. Raise it and re-fire:
 
 <code>TURNS_$(printf '%s' "$name" | tr '[:lower:]' '[:upper:]')=$((cap * 2)) scripts/run_weekly.sh --resume $SLUG</code>"
       return 9
     fi
+    # ── END MAX_TURNS DECISION ──
 
     [[ $rc -eq 0 ]] && return 0
 

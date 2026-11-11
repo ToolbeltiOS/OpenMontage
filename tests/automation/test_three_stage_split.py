@@ -35,7 +35,9 @@ class TestTheThreeCaps:
     """The numbers, and the derivation beside them."""
 
     def test_each_stage_has_its_own_cap(self, weekly):
-        assert 'TURNS_RESEARCH="${TURNS_RESEARCH:-30}"' in weekly
+        # 40, not the derived 30: raised on 2026-11-11 as a MARGIN after
+        # research finished at SDK 29 of 30 with one turn to spare.
+        assert 'TURNS_RESEARCH="${TURNS_RESEARCH:-40}"' in weekly
         assert 'TURNS_PROPOSAL="${TURNS_PROPOSAL:-25}"' in weekly
         assert 'TURNS_SCRIPT="${TURNS_SCRIPT:-120}"' in weekly
 

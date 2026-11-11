@@ -161,7 +161,7 @@ class TestEveryModelStageIsCapped:
     #: those 60 turns went: research 7–34, proposal 36–66, first script at
     #: 77, cap at 61 with two of six sections written. 120 is six sections
     #: at the ~20 turns each that rehearsal actually took.
-    CAPS = {"research": 30, "proposal": 25, "script": 120,
+    CAPS = {"research": 40, "proposal": 25, "script": 120,
             "scene_plan": 40, "assets": 30, "edit": 30}
 
     @pytest.mark.parametrize("stage,cap", sorted(CAPS.items()))
@@ -186,12 +186,24 @@ class TestEveryModelStageIsCapped:
             "the cap must be enforced by the CLI, not only described in the "
             "prompt. A prompt that asks for restraint is not a budget.")
 
-    def test_hitting_the_cap_fails_and_does_not_resume(self, runner):
-        """A stage given a budget will spend it again."""
+    def test_hitting_the_cap_fails_unless_the_stage_had_finished(self, runner):
+        """A stage given a budget will spend it again — UNLESS it already
+        checkpointed `completed`, which since 2026-11-11 is a warning.
+
+        The whole decision is executed, both ways, by
+        tests/automation/test_cap_hit_after_finishing.py. This asserts the
+        shape of it here, where the cap rule lives, and the slice is taken
+        to the END marker rather than to the first `fi` — the branch now has
+        a nested `if`, and slicing to the first `fi` stopped before the
+        failing path and silently tested nothing.
+        """
         assert "max_turns" in runner
-        block = runner[runner.index('if [[ "$kind" == "max_turns" ]]'):]
-        block = block[:block.index("fi\n")]
-        assert "FAILING" in block or "not resuming" in block
+        block = runner[runner.index('if [[ "$kind" == "max_turns" ]]'):
+                       runner.index("# ── END MAX_TURNS DECISION ──")]
+        assert "FAILING" in block and "not resuming" in block
+        assert "resume_state.py" in block, (
+            "the cap rule no longer consults the checkpoint, so a stage that "
+            "finished and overran would be failed again")
         assert "sleep" not in block, (
             "a turn cap must not be slept on. Re-entering a stage that spent "
             "its budget spends it again.")
