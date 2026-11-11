@@ -119,6 +119,28 @@ edits to one is not — that is a program being developed, and a stage is not
 the place to develop a program. Promote it to `scripts/` in a commit, later,
 with a human looking.
 
+**Write it in `projects/<slug>/`, never in `/tmp`.** A throwaway under the
+project is visible afterwards: a reviewer can see what the stage had to
+invent, and that is the evidence that something is missing from `scripts/`.
+A heredoc into `/tmp` leaves nothing behind, so the gap it proves is
+invisible the moment the stage exits, and the next stage reinvents it. The
+permission layer refuses those for that reason.
+
+**Checkpointing no longer qualifies as "nothing fits".**
+`scripts/write_checkpoint.py` is the command:
+
+```
+.venv/bin/python scripts/write_checkpoint.py --project <slug> \
+    --stage <stage> --artifact <name> --human-approved
+```
+
+It initialises the project if nothing has, resolves a bare artifact name to
+`projects/<slug>/artifacts/<name>.json`, adds your stage's canonical
+artifact if you forget it, validates against the artifact's schema, and
+refuses with the validator's own message rather than writing a checkpoint
+the next stage cannot read. The 2026-11-11 research stage spent 27% of its
+cap failing to write one by hand, because this did not exist.
+
 ## Never edit shared code
 
 `lib/`, `scripts/`, `schemas/`, `styles/`, `remotion-composer/src/` and

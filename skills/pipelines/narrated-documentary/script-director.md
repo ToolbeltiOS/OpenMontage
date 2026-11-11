@@ -141,10 +141,20 @@ is refused — the 2026-11-11 rehearsal had exactly that denied and spent
 turns working out why. The same goes for piping the output into anything.
 One command, and read what it says.
 
-For the same reason, do not reach for `python - <<'PY'` to inspect an
-artifact. `docs/STAGE_CONTRACT.md` forbids a stage authoring programs, and
-a heredoc is a program. Read a slice of a large artifact with a script that
-already exists, or with `python -c`.
+A heredoc into `/tmp` is refused for a different reason, and the rule is
+not that a stage may never write a script. `docs/STAGE_CONTRACT.md` permits
+a throwaway in `projects/<slug>/` **when nothing fits**, and that rule
+stands — the 2026-11-11 research stage was obeying it when it wrote itself a
+checkpoint writer, and it quoted the line while doing so.
+
+What is refused is `/tmp`. A throwaway under the project is visible
+afterwards, so a reviewer can see what the stage had to invent and treat it
+as evidence that something is missing from `scripts/`. A heredoc into `/tmp`
+leaves nothing behind: the gap it proves disappears when the stage exits.
+
+And checkpointing no longer qualifies as "nothing fits" —
+`scripts/write_checkpoint.py` is the command for it. To read part of a large
+artifact, use `python -c` or a script that already exists.
 
 `scripts/check_cadence.py` prints the same violations with a per-section
 table when you want the numbers rather than the gate.

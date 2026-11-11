@@ -42,14 +42,21 @@ class TestTheThreeCaps:
     def test_the_old_single_cap_of_sixty_is_gone(self):
         assert 'TURNS_SCRIPT:-60' not in WEEKLY.read_text()
 
-    def test_the_derivation_of_120_is_recorded_beside_it(self):
-        """120 IS MEASURED, NOT ROUND, and a round number is what a later
-        reader would assume. The arithmetic has to be on the page."""
+    def test_the_derivation_is_recorded_beside_the_caps(self):
+        """The arithmetic has to be on the page, in the unit --max-turns
+        actually counts. The first version of this derivation used
+        transcript turn indices and was about half what it intended; that
+        mistake is recorded rather than quietly corrected.
+
+        tests/automation/test_write_checkpoint.py pins the numbers; this
+        pins that they sit ABOVE the caps they explain.
+        """
         body = WEEKLY.read_text()
         head = body[:body.index('TURNS_SCRIPT="${TURNS_SCRIPT:-120}"')]
-        for fact in ("120 IS MEASURED, NOT ROUND", "6 x 20 = 120",
-                     "turns 7–34", "36–66", "cap landed at 61"):
-            assert fact in head, fact
+        for fact in ("SDK TURNS", "FIRST DERIVATION OF THEM WAS WRONG",
+                     "transcript turns", "13 x 6 = 78",
+                     "~24 SDK turns of real work"):
+            assert fact in " ".join(head.replace("#:", " ").split()), fact
 
     def test_it_says_why_a_cap_is_not_raised_to_pass(self, weekly):
         # flattened: the sentence spans a comment line break, and a test
@@ -159,15 +166,23 @@ class TestTheExitCodeInstruction:
         assert "Read the verdict from the command's own last two lines" in doc
         assert 'Do not append `; echo "RC=$?"`' in doc
 
-    def test_the_director_also_rules_out_a_heredoc(self):
-        """A heredoc is a program, and a stage authoring programs is what
-        STAGE_CONTRACT forbids. The 2026-11-11 rehearsal wrote itself an
-        assemble_script.py."""
+    def test_the_director_rules_out_a_heredoc_into_tmp_for_the_right_reason(self):
+        """CORRECTED 2026-11-11. This test used to assert the director said
+        STAGE_CONTRACT "forbids a stage authoring programs". It does not:
+        it permits a throwaway in projects/<slug>/ when nothing fits, and
+        the research stage was obeying that rule — quoting the line — when
+        it wrote itself a checkpoint writer.
+
+        What is refused is /tmp, because a throwaway under the project is
+        visible afterwards and is evidence that something is missing from
+        scripts/, while a heredoc into /tmp leaves nothing behind.
+        """
         doc = " ".join((ROOT / "skills" / "pipelines" /
                         "narrated-documentary" /
                         "script-director.md").read_text().split())
-        assert "a heredoc is a program" in doc.lower()
-        assert "STAGE_CONTRACT" in doc
+        assert "What is refused is `/tmp`" in doc
+        assert "leaves nothing behind" in doc
+        assert "forbids a stage authoring programs" not in doc
 
 
 class TestEchoIsAllowed:

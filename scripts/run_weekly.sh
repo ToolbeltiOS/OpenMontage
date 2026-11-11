@@ -124,13 +124,29 @@ MAX_RESUMES="${MAX_RESUMES:-6}"
 #: SDK turns with the cold open and act 1 done and acts 2–4 empty. The lint
 #: loop — the thing the cap was suspected of — cost 8 turns of 99.
 #:
-#: 120 IS MEASURED, NOT ROUND. That rehearsal wrote two sections and linted
-#: them in about twenty turns each, and a film is six sections (cold open,
-#: four acts, outro): 6 x 20 = 120. Research and proposal no longer compete
-#: for it, because they are their own stages with their own caps, sized from
-#: the same transcript: research used 28 turns of its own and proposal 31,
-#: so 30 and 25 are those numbers with the research/proposal overlap that
-#: the single stage was paying for taken out.
+#: THESE CAPS ARE IN SDK TURNS, WHICH IS WHAT --max-turns COUNTS, AND THE
+#: FIRST DERIVATION OF THEM WAS WRONG BECAUSE IT USED TRANSCRIPT TURNS.
+#: The two are not the same number: the 2026-11-11 script run was 99
+#: transcript turns to 61 SDK, and the research run 62 to 31. A ratio of
+#: 1.6 to 2.0, so a cap derived from transcript indices is about half what
+#: its author intended. `scripts/stage_usage.py` reports both, as `turns`
+#: and `turns_reported`.
+#:
+#: Re-derived in SDK turns from the 2026-11-11 runs, and NOT RAISED:
+#:
+#:   research  needed ~24 SDK turns of real work — it wrote 33 sourced data
+#:             points by transcript turn 44 of 62 — and then lost 27% of the
+#:             stage to a checkpoint it could not write. Cap 30 stands, and
+#:             scripts/write_checkpoint.py is what gives those turns back.
+#:   script    ~13 SDK turns per section measured over the two sections the
+#:             first rehearsal completed, and a film is six sections (cold
+#:             open, four acts, outro): 13 x 6 = 78, so about 80 of the 120.
+#:             Cap 120 stands with that headroom recorded rather than
+#:             trimmed, because the measurement is from two sections and not
+#:             six.
+#:   proposal  25 is the one number still untested: the stage has never run
+#:             on its own. It is the bundled run's proposal span converted at
+#:             the observed ratio, and it is the cap most likely to be wrong.
 #:
 #: If a cap is hit the stage FAILS and is not resumed, which is the point: a
 #: cap raised to make a run pass measures nothing.
@@ -934,7 +950,22 @@ refuses to write a gated stage \`completed\` without human_approved=True. The
 ONLY human gate in this pipeline is the script gate. It is handled outside
 this process, it is not yours to wait for or to approve, and depending on
 which stage you are it may be ahead of you or behind you. Either way it is
-not your business. So write your checkpoint
+not your business.
+
+WRITE YOUR CHECKPOINT WITH THIS COMMAND. Do not author a script to do it:
+
+    .venv/bin/python scripts/write_checkpoint.py --project $SLUG \\
+        --stage $stage --artifact <name> --human-approved
+
+A bare artifact name resolves to projects/$SLUG/artifacts/<name>.json, the
+flag is repeatable, the stage's canonical artifact is added for you if you
+forget it, and the project is initialised if nothing has made it yet. It
+validates against the artifact's schema and REFUSES with the validator's own
+message rather than writing something the next stage cannot read.
+
+The 2026-11-11 research stage finished its brief at turn 44 of 62 and then
+spent 27% of its cap failing to write a checkpoint, because this command did
+not exist and a library call is a program. So write your checkpoint
 \`completed\` with human_approved=True and say in your closing report what a
 reviewer would have wanted to look at. A checkpoint left \`awaiting_human\`
 stops the film: the next stage reads resume_state.py, does not see yours as
