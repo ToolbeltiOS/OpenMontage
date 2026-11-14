@@ -160,6 +160,124 @@ class TestASeamIsCheckedAgainstWhatItOverwrote:
                                     "measured": m}]) == [], label
 
 
+class TestAStillWindowCannotTellAShiftFromAnEncode:
+    """Run #6's c124, and why the shift test now abstains there.
+
+    MEASURED, on the film: the head padding of 28045-28340 moves 0.0370 a
+    frame — a drifting near-still photograph — while the two encodes of it
+    differ by 0.4240. The shift curve came back
+    {-2: 0.4144, -1: 0.4156, 0: 0.4127, 1: 0.4118, 2: 0.4109}: a spread of
+    0.005 on a baseline of 0.42, with its minimum at +2. A shift of two
+    frames can only move the comparison by about two frames of motion, which
+    is 0.07 here, so that minimum is not an offset. It is the noise floor,
+    and the rule was reading it as a defect on a patch that was correct.
+
+    The other two rules keep working in a still window, which is the point:
+    the defect that actually happened was one frame that did not belong, and
+    one frame is as visible in a still window as in a moving one.
+    """
+
+    @staticmethod
+    def still(n: int, noise: float = 0.0, seed: int = 11):
+        """A window that barely moves, with two encodes' worth of difference."""
+        rng = np.random.default_rng(seed)
+        frame = rng.integers(0, 255, size=(270, 480)).astype("float32")
+        out = np.stack([frame + i * 0.01 for i in range(n)])
+        if noise:
+            out = out + rng.normal(0, noise, out.shape)
+        return out.astype("float32")
+
+    def measured(self, before, after):
+        return [{"range": "28045-28340", "edge": "head",
+                 "measured": rp.seam_alignment(before, after)}]
+
+    def test_the_window_reads_as_flat(self):
+        m = rp.seam_alignment(self.still(10), self.still(10, noise=0.6))
+        assert rp.is_flat(m), m["contrast"]
+        assert m["contrast"] < rp.SEAM_CONTRAST
+
+    def test_the_shift_test_abstains_rather_than_failing(self, capsys):
+        before, after = self.still(10), self.still(10, noise=0.6)
+        seams = self.measured(before, after)
+        # it may well land off zero — that is the whole point
+        problems = rp.check_seams(seams + MOVING_WITNESS)
+        assert problems == [], problems
+        assert "abstains" in capsys.readouterr().out
+
+    def test_a_still_seam_on_its_own_is_refused_for_want_of_a_witness(self):
+        """Abstaining everywhere is not a pass.
+
+        An offset is a property of the arithmetic, not of the content, so one
+        moving seam tests it for the whole patch — and no moving seam tests
+        it nowhere. A patch with nothing that could have failed is refused.
+        """
+        seams = self.measured(self.still(10), self.still(10, noise=0.6))
+        problems = rp.check_seams(seams)
+        assert any("could have caught" in p for p in problems), problems
+
+    def test_one_frame_that_does_not_belong_is_still_caught_in_a_still_window(self):
+        before = self.still(10)
+        after = before.copy()
+        after[0] += 7.0
+        problems = rp.check_seams(self.measured(before, after))
+        assert any("does not touch" in p for p in problems), problems
+
+    def test_c124s_own_readings_from_run_six(self):
+        """The measurement that refused a correct patch, verbatim.
+
+        Both edges of c124, as `repatch_plate.py` printed them at 16:31 on
+        2026-11-14, before the splice was abandoned.
+        """
+        for edge, curve, median, worst in (
+            ("head", {-2: 0.4144, -1: 0.4156, 0: 0.4127, 1: 0.4118, 2: 0.4109},
+             0.4240, 0.4284),
+            ("tail", {-2: 0.4160, -1: 0.4155, 0: 0.4150, 1: 0.4158, 2: 0.4166},
+             0.4150, 0.4269),
+        ):
+            m = {"median": median, "worst": worst, "worst_at": 0,
+                 "best_shift": min(curve, key=lambda k: curve[k]),
+                 "curve": curve, "motion": 0.0370,
+                 "contrast": (max(curve.values()) - min(curve.values()))
+                 / max(curve.values())}
+            assert rp.is_flat(m), (edge, m["contrast"])
+            seams = [{"range": "28045-28340", "edge": edge, "measured": m}]
+            assert rp.check_seams(seams + MOVING_WITNESS) == [], edge
+
+    def test_a_moving_window_still_has_its_shift_tested(self):
+        """The rule must not have switched itself off everywhere.
+
+        c141's head moves 2.1607 a frame against a 0.4-ish disagreement
+        between two encodes of it, so an offset there is measurable and is
+        still measured.
+        """
+        before, after = run(14), run(14, shift=1)
+        m = rp.seam_alignment(before, after)
+        assert not rp.is_flat(m), m["contrast"]
+        problems = rp.check_seams([{"range": "32060-32371", "edge": "head",
+                                    "measured": m}])
+        assert any("wrong place" in p for p in problems), problems
+
+    def test_the_discriminator_is_not_the_window_median(self):
+        """WHY THE FIRST VERSION OF THIS RULE WAS WRONG.
+
+        It abstained when the window moved less than the two encodes
+        disagreed. A real one-frame offset makes those two quantities equal —
+        39.507 against 39.511 on this control — so the rule switched the
+        shift test off on exactly the defect it exists to catch. The test is
+        the curve's contrast, which an offset drives towards 100%.
+        """
+        m = rp.seam_alignment(run(14), run(14, shift=1))
+        assert m["motion"] == pytest.approx(m["median"], rel=0.01), (
+            "the premise of this test: an offset makes them the same")
+        assert m["contrast"] > 0.5, m["curve"]
+        assert not rp.is_flat(m)
+
+
+#: A seam that moves and splices clean — the witness every patch needs.
+MOVING_WITNESS = [{"range": "32060-32371", "edge": "head", "measured":
+                   rp.seam_alignment(run(14), run(14))}]
+
+
 class TestTheRangesCoverTheCutsAndNothingElse:
     CUTS = [
         {"id": "c001", "in_seconds": 0.0, "out_seconds": 10.0, "type": "still"},

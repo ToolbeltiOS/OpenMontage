@@ -259,15 +259,49 @@ def seam_alignment(before, after) -> dict[str, Any]:
             return float("inf")
         return float(np.abs(a - b).mean())
 
+    # HOW MUCH THE WINDOW ITSELF MOVES, which is what decides whether the
+    # shift test below can mean anything. A shift of one frame can change
+    # the comparison by about one frame's worth of motion and no more, so a
+    # window whose picture is still cannot tell a shift from an encode.
+    motion = (float(np.median(np.abs(np.diff(before, axis=0)).mean(axis=(1, 2))))
+              if len(before) > 1 else 0.0)
+
     per_frame = np.abs(before - after).mean(axis=(1, 2))
     median = float(np.median(per_frame))
     worst = int(np.argmax(per_frame))
     curve = {s: mad(s) for s in SEAM_SHIFTS}
     best = min(curve, key=lambda k: curve[k])
+    spread = max(curve.values()) - min(curve.values())
+    contrast = spread / max(curve.values()) if max(curve.values()) else 0.0
     return {"per_frame": [round(float(v), 4) for v in per_frame],
-            "median": median, "worst": float(per_frame[worst]),
+            "median": median, "motion": motion, "contrast": contrast,
+            "worst": float(per_frame[worst]),
             "worst_at": worst, "best_shift": best,
             "curve": {k: round(v, 4) for k, v in curve.items()}}
+
+
+#: How much shifting the window must change the comparison before the
+#: minimum of that curve is worth believing, as a fraction of its largest
+#: reading.
+#:
+#: MEASURED both ways. Run #6's c124 head, a correct splice of an almost
+#: still picture: 0.4109 to 0.4156, a contrast of 1.1%, minimum at +2 for no
+#: reason an offset could explain. A real one-frame offset, on the synthetic
+#: control and on king-tut's lead-in frame: one reading of the curve falls
+#: towards zero while the rest stay at a frame's worth of motion, which is a
+#: contrast near 100%. Ten per cent sits an order of magnitude from either.
+SEAM_CONTRAST = 0.10
+
+
+def is_flat(measured: dict[str, Any]) -> bool:
+    """Would shifting this window tell us anything?
+
+    A curve that barely moves has no minimum worth reading. Measured on the
+    curve rather than on the window, because an offset changes the window's
+    median difference by exactly as much as the motion that would have to
+    justify looking — see `check_seams`.
+    """
+    return measured.get("contrast", 1.0) < SEAM_CONTRAST
 
 
 def check_seams(seams: list[dict[str, Any]]) -> list[str]:
@@ -294,12 +328,55 @@ def check_seams(seams: list[dict[str, Any]]) -> list[str]:
                 f"median of {m['median']:.4f} across the window and a ceiling "
                 f"of {allowed:.4f}. The padding is a cut this change does not "
                 f"touch, so it has to come back the same.")
-        if m["best_shift"] != 0:
+        if is_flat(m):
+            # MEASURED on run #6's c124. Its head padding moves 0.0370 a
+            # frame — a drifting near-still photograph — while the two
+            # encodes of it differ by 0.4240. The curve came back
+            # {-2: 0.4144, -1: 0.4156, 0: 0.4127, 1: 0.4118, 2: 0.4109}: a
+            # spread of 0.005 on a baseline of 0.42, minimum at +2. A shift
+            # of two frames can only move the comparison by about two frames
+            # of motion, which is 0.07 here, so that minimum is not an
+            # offset. The rule was reading its own noise floor as a defect,
+            # on a patch that was correct.
+            #
+            # THE TEST IS WHETHER SHIFTING CHANGES ANYTHING, and it has to be
+            # asked of the curve rather than of the window's median
+            # difference. A real one-frame offset MAKES that median equal one
+            # frame of motion — measured at 39.507 against 39.511 on the
+            # synthetic control — so a rule comparing the two abstains on
+            # precisely the defect it exists to catch. The curve's own
+            # contrast does not have that problem: an offset drives one
+            # reading of it towards zero while the others stay high.
+            #
+            # The other two rules still hold on a flat window, which is the
+            # point: the defect that actually happened was one frame that did
+            # not belong, and one frame is as visible in a still window as in
+            # a moving one.
+            print(f"   shift test abstains on {where}: shifting changes the "
+                  f"comparison by {m['contrast'] * 100:.1f}% "
+                  f"({m['curve']}), under the {SEAM_CONTRAST * 100:.0f}% a "
+                  f"real offset shows, so its minimum is noise. The window "
+                  f"moves {m.get('motion', 0.0):.4f} a frame.")
+        elif m["best_shift"] != 0:
             problems.append(
                 f"{where}: the patched frames match the frames they replaced "
                 f"best at a shift of {m['best_shift']:+d}, not at 0 "
                 f"({m['curve']}). A splice that landed in the wrong place "
                 f"looks exactly like this.")
+
+    # AND THE PATCH MUST KEEP A WITNESS. Abstaining per seam is honest; a
+    # patch where every seam abstained has nothing left that could have
+    # caught an offset, and an offset is a property of the arithmetic
+    # (`-start_number`, `skip`, `frame_span`) rather than of the content —
+    # so one moving seam anywhere in the patch tests the arithmetic for all
+    # of them, and no moving seam tests it nowhere.
+    decisive = [s for s in seams if not is_flat(s["measured"])]
+    if seams and not decisive:
+        problems.append(
+            "no seam in this patch moves enough to tell a one-frame shift "
+            "from an encode, so nothing here could have caught a splice that "
+            "landed in the wrong place. Widen the patch with --pad until a "
+            "seam has motion in it, or name a cut beside one that does.")
     return problems
 
 
