@@ -332,6 +332,33 @@ class TestWhatAStageActuallySees:
             f"the guard blocked something the pipeline needs:\n"
             f"{record.get('result')}")
 
+    @pytest.mark.live_api
+    def test_the_inspection_forms_are_not_refused_in_a_real_session(self):
+        """Does `permissionDecision: allow` actually work in this CLI?
+
+        The unit tests prove the recognisers fire. They cannot prove the
+        installed Claude Code honours an allow decision from a hook, and
+        that is the entire mechanism of item 1 — so this asserts the thing
+        that matters: the commands are NOT in the session's denial list.
+        """
+        numbered = "\n".join(f"{i+1}. {c}"
+                             for i, c in enumerate(self.INSPECTION_FORMS))
+        record = self._run(
+            "Run each of these commands with the Bash tool, exactly as "
+            "written, one at a time, from the repository root. Do not "
+            "rewrite them, do not work around a refusal, and do not use "
+            "another tool. Then reply with one line per command: the "
+            "number, then its first line of output, or the first line of "
+            "any error.\n\n" + numbered)
+        denied_commands = {d.get("tool_input", {}).get("command")
+                           for d in (record.get("permission_denials") or [])}
+        refused = [c for c in self.INSPECTION_FORMS if c in denied_commands]
+        assert not refused, (
+            f"the allow decision did not take effect: {refused}\n"
+            f"{record.get('result')}")
+        assert self.BLOCKED not in json.dumps(record)
+
+
 
 class TestTheTwoInspectionForms:
     """The hook now ALLOWS two shapes, and an allow overrides the allow-list.
@@ -466,30 +493,3 @@ class TestTheTwoInspectionForms:
         ]
         for command in not_covered:
             assert guard.inspection_allowance(command) is None
-
-
-    @pytest.mark.live_api
-    def test_the_inspection_forms_are_not_refused_in_a_real_session(self):
-        """Does `permissionDecision: allow` actually work in this CLI?
-
-        The unit tests prove the recognisers fire. They cannot prove the
-        installed Claude Code honours an allow decision from a hook, and
-        that is the entire mechanism of item 1 — so this asserts the thing
-        that matters: the commands are NOT in the session's denial list.
-        """
-        numbered = "\n".join(f"{i+1}. {c}"
-                             for i, c in enumerate(self.INSPECTION_FORMS))
-        record = self._run(
-            "Run each of these commands with the Bash tool, exactly as "
-            "written, one at a time, from the repository root. Do not "
-            "rewrite them, do not work around a refusal, and do not use "
-            "another tool. Then reply with one line per command: the "
-            "number, then its first line of output, or the first line of "
-            "any error.\n\n" + numbered)
-        denied_commands = {d.get("tool_input", {}).get("command")
-                           for d in (record.get("permission_denials") or [])}
-        refused = [c for c in self.INSPECTION_FORMS if c in denied_commands]
-        assert not refused, (
-            f"the allow decision did not take effect: {refused}\n"
-            f"{record.get('result')}")
-        assert self.BLOCKED not in json.dumps(record)
