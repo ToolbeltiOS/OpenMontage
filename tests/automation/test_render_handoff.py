@@ -161,8 +161,12 @@ class TestEveryModelStageIsCapped:
     #: those 60 turns went: research 7–34, proposal 36–66, first script at
     #: 77, cap at 61 with two of six sections written. 120 is six sections
     #: at the ~20 turns each that rehearsal actually took.
+    # scene_plan and edit were RE-MEASURED from run #5 on 2026-11-14 — 41
+    # and 61 SDK turns on a real 158-scene film, each plus a third. The
+    # derivation lives beside the caps in run_weekly.sh and is asserted by
+    # tests/automation/test_cap_hit_after_finishing.py.
     CAPS = {"research": 40, "proposal": 25, "script": 120,
-            "scene_plan": 40, "assets": 30, "edit": 30}
+            "scene_plan": 55, "assets": 30, "edit": 81}
 
     @pytest.mark.parametrize("stage,cap", sorted(CAPS.items()))
     def test_the_cap_is_defined(self, runner, stage, cap):

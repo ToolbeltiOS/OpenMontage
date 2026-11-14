@@ -186,12 +186,54 @@ WALL_EDIT="${WALL_EDIT:-60}"
 #:
 #: If a cap is hit the stage FAILS and is not resumed, which is the point: a
 #: cap raised to make a run pass measures nothing.
+#:
+#: ── RE-MEASURED FROM RUN #5, 2026-11-14 ─────────────────────────────────
+#: The caps above were derived from the 2026-11-11 rehearsal, which never
+#: reached scene_plan, assets or edit — so those three were converted
+#: guesses. Run #5 ran all three on a real 158-scene, 1,191.9-second film
+#: and two of them failed. These are the measurements:
+#:
+#:   scene_plan  41 SDK TURNS, AND THAT IS A COMPLETION MEASUREMENT. It
+#:               wrote a schema-valid 158-scene plan at 20:56 and hit the
+#:               40-turn cap at 20:57 — one turn past the cap, with the work
+#:               done. So the need is KNOWN: 41.
+#:                 41 + a third = 54.67 -> 55.
+#:
+#:   edit        61 SDK TURNS AND IT WAS NOT ENOUGH, so 61 is a FLOOR and
+#:               not a need. Two attempts: at a cap of 30 it spent the lot
+#:               on orientation (2m26s, ~6.4K output tokens net of thinking,
+#:               no artifact); at 60 it did the orientation again plus the
+#:               full word-level alignment (2,516 words, 0 unplaced) and
+#:               still never reached edit_decisions.json.
+#:                 61 + a third = 81.3 -> 81.
+#:               THIS NUMBER IS WEAKER THAN scene_plan's AND SHOULD BE SAID
+#:               SO: nobody has measured a finished edit stage. What makes
+#:               81 plausible rather than arbitrary is that three of the
+#:               costs inside the 61 were removed the same day —
+#:               scripts/edit_decisions_digest.py hands over the artifact
+#:               shape the stage was refused when it tried to read king-tut's
+#:               (one denial, then inference); align_narration.py now skips
+#:               an alignment whose inputs are unchanged, which is most of
+#:               what attempt two spent its budget on; and the two
+#:               inspection forms are allow-listed, which was 4 of the 61
+#:               turns. If edit hits 81 the answer is NOT 108: it is that
+#:               the stage is doing something nobody has accounted for, and
+#:               $base.log will say what.
+#:
+#:   assets      NOT RE-MEASURED AND LEFT AT 30. It never hit its turn cap —
+#:               it hit the 60-minute WALL cap, with its checkpoint already
+#:               written. Turns were not its constraint, so a turn cap
+#:               derived from it would be a number about nothing.
+#:
+#: "Plus a third" is the owner's margin, chosen 2026-11-14, on the same
+#: reasoning as research's 40: a stage whose cost depends on the film has to
+#: have somewhere to go on a harder one. It is a MARGIN, not a derivation.
 TURNS_RESEARCH="${TURNS_RESEARCH:-40}"
 TURNS_PROPOSAL="${TURNS_PROPOSAL:-25}"
 TURNS_SCRIPT="${TURNS_SCRIPT:-120}"
-TURNS_SCENE_PLAN="${TURNS_SCENE_PLAN:-40}"
+TURNS_SCENE_PLAN="${TURNS_SCENE_PLAN:-55}"
 TURNS_ASSETS="${TURNS_ASSETS:-30}"
-TURNS_EDIT="${TURNS_EDIT:-30}"
+TURNS_EDIT="${TURNS_EDIT:-81}"
 TURNS_NOTES="${TURNS_NOTES:-15}"
 
 #: How long the non-agent waiter gives the picture before it reports that
@@ -754,6 +796,35 @@ stage_finished_anyway() {
     --is-done "$1" >/dev/null 2>&1
 }
 
+# THE ARTIFACT IS THE WORK; THE CHECKPOINT IS BOOKKEEPING.
+#
+# `stage_finished_anyway` asks whether the stage SAID it finished. Run #5
+# showed that question being wrong in both directions on one night:
+#
+#   scene_plan wrote a valid 158-scene plan at 20:56 and hit its cap at
+#   20:57, one turn before it could checkpoint — so it had said nothing, and
+#   $5.83 of correct work was failed over bookkeeping;
+#
+#   assets checkpointed `completed` at 21:33 and kept writing until 22:08,
+#   so what it had SAID was 33 minutes stale when the rule believed it.
+#
+# So the runner now asks the artifact. scripts/reconcile_checkpoint.py
+# validates the canonical artifact against its schema and makes the
+# checkpoint match it — writing one that was never written, replacing one
+# written mid-stage — or exits non-zero when the artifact is missing or
+# invalid, which is still a failed stage. It refuses the `script` stage by
+# name: that checkpoint carries the owner's reply at the gate.
+reconcile_stage() {
+  local stage="$1" out
+  out="$("$PY" "$REPO/scripts/reconcile_checkpoint.py" \
+          --project "$SLUG" --stage "$stage" 2>&1)" || {
+    printf '%s\n' "$out"
+    return 1
+  }
+  printf '%s\n' "$out"
+  return 0
+}
+
 claude_stage() {
   local name="$1" base="$2" prompt="$3" cap="${4:-0}"
   local attempt=1 resumes=0 rc t0 t1 classified kind secs resets back
@@ -870,7 +941,26 @@ Worth a look: a stage that needs its whole budget has no margin, and the
 next film on a harder topic may not finish. $base.log has what it was doing."
         return 0
       fi
-      say "$name: NO completed checkpoint after ${wall_min} minutes — FAILING"
+      # NO CHECKPOINT IS NOT THE SAME AS NO WORK. Ask the artifact.
+      if reconcile_out="$(reconcile_stage "$name")"; then
+        say "$name: over its ${wall_min}-minute wall cap with no checkpoint, but its ARTIFACT VALIDATES — the runner wrote the checkpoint — warning, not failing"
+        say "$reconcile_out"
+        notify "<b>stage ran over its clock; its artifact is good</b>
+stage: $name
+wall cap: $wall_min minutes
+
+It never checkpointed, but its canonical artifact validates against its own
+schema, so the runner wrote the checkpoint from the artifact's final
+bytes. The run CARRIES ON.
+
+<pre>$reconcile_out</pre>
+
+Worth a look: the stage ran out of clock, so its budget is too tight even
+though the work came out right. $base.log has what it was doing."
+        return 0
+      fi
+      say "$name: NO completed checkpoint after ${wall_min} minutes, and its artifact does not validate — FAILING"
+      say "$reconcile_out"
       notify "<b>stage ran out of time</b>
 stage: $name
 wall cap: $wall_min minutes
@@ -880,6 +970,9 @@ The wall clock is the real budget, because cost tracks TIME and not SDK
 turns — measured 2026-11-11, the script stage spent \$18.86 over 32 minutes
 inside 15 of its 120 turns. A stage that has not finished in its budget is
 not about to.
+
+The artifact was checked too, and it is missing or does not validate:
+<pre>$reconcile_out</pre>
 
 Nothing is lost that was checkpointed. Read $base.log for what it was doing,
 then either fix the cause or raise this stage's budget deliberately:
@@ -923,14 +1016,40 @@ and the next film on a harder topic may not finish at all. $base.log has
 what it was doing."
         return 0
       fi
-      say "$name: hit the ${cap}-turn cap — FAILING, not resuming"
+      # THE GENERAL CASE THE RULE ABOVE MISSED. scene_plan, run #5: a valid
+      # artifact and no checkpoint, because the cap landed in the one turn
+      # between finishing the work and recording it.
+      if reconcile_out="$(reconcile_stage "$name")"; then
+        say "$name: hit the ${cap}-turn cap with no checkpoint, but its ARTIFACT VALIDATES — the runner wrote the checkpoint — warning, not failing"
+        say "$reconcile_out"
+        notify "<b>stage overran its cap; its artifact is good</b>
+stage: $name
+cap: $cap turns
+
+It ran out of turns before it could checkpoint, but its canonical artifact
+validates against its own schema, so the runner wrote the checkpoint from
+the artifact's final bytes. The run CARRIES ON. This is run #5's
+scene_plan, which was failed for exactly this and cost \$5.83 to redo.
+
+<pre>$reconcile_out</pre>
+
+Worth a look anyway: a stage that finishes on its last turn has no margin,
+and the next film on a harder topic may not finish at all. $base.log has
+what it was doing."
+        return 0
+      fi
+      say "$name: hit the ${cap}-turn cap and its artifact is missing or invalid — FAILING, not resuming"
+      say "$reconcile_out"
       notify "<b>stage hit its turn cap</b>
 stage: $name
 cap: $cap turns
 
-No completed checkpoint, so the artifact is half-written or absent and the
-next stage would build on it. A stage given a budget will spend it again, so
-this is not resumed. Either the stage is looping — read $base.log for what
+No completed checkpoint, AND the artifact is missing or does not validate:
+
+<pre>$reconcile_out</pre>
+
+so the next stage would build on nothing. A stage given a budget will spend
+it again, so this is not resumed. Either the stage is looping — read $base.log for what
 it was doing — or the cap is too tight for this film. Raise it and re-fire:
 
 <code>TURNS_$(printf '%s' "$name" | tr '[:lower:]' '[:upper:]')=$((cap * 2)) scripts/run_weekly.sh --resume $SLUG</code>"
@@ -1201,6 +1320,22 @@ pipeline_stage() {
 $body" "$cap" \
     || fail "$stage stage" "$(tail -20 "$LOGDIR/${stage}_stage.log" 2>/dev/null \
                              || tail -20 "$LOGDIR/${stage}_stage.err")"
+
+  # A CHECKPOINT IS WRITTEN WHEN THE ARTIFACT HAS STOPPED CHANGING, NEVER
+  # MID-STAGE. A stage may checkpoint whenever it likes — run #5's assets
+  # stage did it 33 minutes before it stopped working — so the runner
+  # reconciles AFTER the stage has exited, when the artifact's bytes are
+  # final. A stale checkpoint is replaced; a fresh one is left alone.
+  local reconcile_out
+  if reconcile_out="$(reconcile_stage "$stage")"; then
+    [[ "$reconcile_out" == *FRESH* ]] || say "$reconcile_out"
+  else
+    say "$reconcile_out"
+    fail "$stage stage" "the stage exited 0 but its artifact is missing or
+does not validate against its schema:
+
+$reconcile_out"
+  fi
 }
 
 # ── 2. research, proposal, script — THREE STAGES, THREE CAPS ─────────────
@@ -1544,6 +1679,19 @@ lib/build_render_props.py turns edit_decisions into the props Remotion
 renders; lib/verify_rhythm.py says whether the edit has a rhythm or only an
 average. An authored cut carries its component's props flat beside
 \`type\` and needs no \`source\`.
+
+START BY READING THE EXEMPLAR. A DELIVERED film's edit_decisions.json, as
+its shape rather than its content:
+
+    .venv/bin/python scripts/edit_decisions_digest.py --project king-tut
+
+It prints which keys every cut carries, which are conditional and on how
+many cuts, one real sourced cut and one real authored cut in full, the
+component types in use, and the blocks beside \`cuts\`. The schema says
+what is LEGAL; that says what is NORMAL, and it is 6 KB against the 250 KB
+of the file itself — do NOT read the exemplar whole, you would carry it on
+every turn after. If the digest leaves out something you need, say so in
+your report: that is a bug in the digest.
 
 Those three files are the whole hand-off: the next stage is NOT an agent, it
 is scripts/await_render.py, which starts the render and waits with no model

@@ -24,6 +24,7 @@ with the section's audio. The output has the script's spelling by construction.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -240,6 +241,91 @@ def existing_short(project: Path) -> tuple[int, int]:
     return short, total
 
 
+# ── IS THE ALIGNMENT ALREADY DONE? ──────────────────────────────────────
+# Run #5, 2026-11-13. The edit stage was killed at its turn cap having just
+# finished aligning 2,516 words — 0 unplaced, a clean result — and the next
+# attempt started from an empty context and did it again. Forced alignment
+# is the most expensive thing in the stage that is not a render: it loads
+# wav2vec2 and walks every section's audio.
+#
+# It is also perfectly cacheable, because its INPUTS are two files: the
+# narration audio and the words that were spoken. So the result records a
+# fingerprint of both, and a later run that finds the fingerprint unchanged
+# skips the work instead of repeating it.
+#
+# WHY THE TEXT AS WELL AS THE AUDIO, when the owner asked for the audio's
+# hash: the audio is what was aligned, but the SCRIPT is what it was aligned
+# AGAINST — `align_section` is handed `section["text"]`. A script edit with
+# the same audio leaves timings for words that are no longer there, and that
+# is exactly the state that put the recogniser's spelling into run #1's
+# captions. Hashing both costs nothing and closes it.
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def narration_fingerprint(project: Path, script: dict,
+                          sections: list[str] | None = None) -> dict:
+    """What an alignment of this project would be computed FROM."""
+    out: dict[str, dict] = {}
+    for section in script.get("sections", []):
+        sid = section["id"]
+        if sections and sid not in sections:
+            continue
+        wav = project / "assets" / "audio" / f"{sid}.wav"
+        if not wav.exists():
+            continue
+        out[sid] = {
+            "audio_sha256": _sha256(wav),
+            "audio_bytes": wav.stat().st_size,
+            "text_sha256": hashlib.sha256(
+                section.get("text", "").encode("utf-8")).hexdigest(),
+        }
+    return out
+
+
+def alignment_is_current(project: Path, fingerprint: dict
+                         ) -> tuple[bool, str]:
+    """Whether what is on disk was aligned from exactly these inputs.
+
+    Says NO whenever it is unsure, including on an alignment_qa.json written
+    before fingerprints existed: re-aligning costs minutes, and trusting a
+    stale alignment costs a caption track that drifts.
+    """
+    qa_path = project / "artifacts" / "alignment_qa.json"
+    if not qa_path.exists():
+        return False, "no alignment_qa.json"
+    try:
+        blob = json.loads(qa_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as error:
+        return False, f"alignment_qa.json is unreadable ({error})"
+    recorded = blob.get("inputs")
+    if not isinstance(recorded, dict) or not recorded:
+        return False, ("alignment_qa.json records no input fingerprints "
+                       "(it predates them)")
+    if not fingerprint:
+        return False, "no narration audio to compare against"
+    for sid, now in fingerprint.items():
+        was = recorded.get(sid)
+        if not isinstance(was, dict):
+            return False, f"{sid} is not in the recorded alignment"
+        if was.get("audio_sha256") != now["audio_sha256"]:
+            return False, f"{sid}: the narration audio changed since alignment"
+        if was.get("text_sha256") != now["text_sha256"]:
+            return False, f"{sid}: the script text changed since alignment"
+        transcript = project / "assets" / "captions" / sid / "transcript.json"
+        if not transcript.exists():
+            return False, (f"{sid}: alignment_qa.json claims it but "
+                           f"{transcript.name} is gone")
+    return True, (f"{len(fingerprint)} section(s) unchanged since the last "
+                  f"alignment")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--project", required=True)
@@ -247,6 +333,8 @@ def main() -> int:
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--check", action="store_true",
                     help="only report the word-duration gate on what is on disk")
+    ap.add_argument("--force", action="store_true",
+                    help="re-align even when the inputs are unchanged")
     args = ap.parse_args()
 
     project = ROOT / "projects" / args.project
@@ -257,6 +345,18 @@ def main() -> int:
         print(f"words under {MIN_WORD_MS}ms: {before_short} of {before_total}")
         print("WORD TIMINGS:", "PASS" if before_short == 0 else "FAIL")
         return 0 if before_short == 0 else 1
+
+    fingerprint = narration_fingerprint(project, script, args.sections)
+    current, why = alignment_is_current(project, fingerprint)
+    if current and not args.force:
+        print(f"alignment: already done — {why}")
+        print(f"  {before_total} word(s) on disk, {before_short} under "
+              f"{MIN_WORD_MS}ms")
+        print("  nothing re-aligned. --force re-aligns anyway.")
+        print("WORD TIMINGS:", "PASS" if before_short == 0 else "FAIL")
+        return 0 if before_short == 0 else 1
+    if not current:
+        print(f"alignment: {why} — aligning")
 
     import whisperx
 
@@ -287,6 +387,9 @@ def main() -> int:
     total_unplaced = sum(v["unplaced"] for v in STATS.values())
     qa_path.write_text(json.dumps({
         "sections": STATS,
+        # WHAT THIS WAS ALIGNED FROM. Read by alignment_is_current() so a
+        # resume does not pay for an alignment that is already correct.
+        "inputs": fingerprint,
         "words": total_words,
         "unplaced": total_unplaced,
         "unplaced_pct": round(100 * total_unplaced / max(total_words, 1), 2),

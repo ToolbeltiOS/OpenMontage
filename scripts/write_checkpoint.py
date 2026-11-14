@@ -52,6 +52,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from lib import checkpoint_reconcile as CR  # noqa: E402
 from lib.checkpoint import (  # noqa: E402
     CANONICAL_STAGE_ARTIFACTS, CheckpointValidationError, init_project,
     write_checkpoint)
@@ -124,6 +125,7 @@ def main() -> int:
                   f"{canonical}")
 
     artifacts: dict[str, object] = {}
+    resolved_paths: dict[str, Path] = {}
     for spec in specs:
         name, path = artifact_path(project_dir, spec)
         if not path.exists():
@@ -134,6 +136,16 @@ def main() -> int:
         except json.JSONDecodeError as exc:
             print(f"REFUSED: {path} is not valid JSON: {exc}", file=sys.stderr)
             return 2
+        resolved_paths[name] = path
+
+    # ── stamp what the artifacts WERE when this was written ──────────────
+    # Run #5's assets stage checkpointed `completed` at 21:33 and kept
+    # writing its manifest until 22:08. The checkpoint embedded a 31,885-byte
+    # snapshot of a file that ended up 52,801 bytes, and the runner forgave a
+    # wall-cap overrun on the strength of it. A fingerprint makes that
+    # detectable: scripts/reconcile_checkpoint.py compares it to the file
+    # after the stage ends, and rewrites a checkpoint that no longer matches.
+    metadata = CR.stamp_fingerprints(None, resolved_paths)
 
     # ── write it, or refuse with the validator's own words ───────────────
     try:
@@ -144,7 +156,8 @@ def main() -> int:
                 "style_playbook") or DEFAULT_PLAYBOOK,
             human_approval_required=args.human_approval_required,
             human_approved=args.human_approved,
-            error=args.error)
+            error=args.error,
+            metadata=metadata or None)
     except CheckpointValidationError as exc:
         print(f"REFUSED: {exc}", file=sys.stderr)
         print("Nothing was written. Fix the artifact and run this again — a "

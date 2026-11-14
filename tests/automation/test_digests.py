@@ -223,3 +223,133 @@ class TestThePlaybookIsSplitWithoutOrphans:
         path.write_text(yaml.safe_dump(book))
         second, _ = pd.digest(pd.load(path), "script")
         assert "CHANGED" in second and "ORIGINAL" not in second
+
+
+class TestTheEditExemplarDigest:
+    """The edit stage was refused the exemplar, then died at its cap twice.
+
+    WHY THIS EXISTS
+    ---------------
+    Run #5, 2026-11-13. The edit stage spent one of its 30 turns trying to
+    read `projects/king-tut/artifacts/edit_decisions.json` to learn the
+    shape of the artifact it had been asked to write, was refused, and ran
+    out of turns twice without producing it. The schema says what is legal;
+    a delivered film says what is NORMAL, and that is the cheaper teacher.
+
+    Reading it whole is not the answer either — 252 KB, 161 cuts, 95
+    distinct keys, carried on every turn after the one that read it. So the
+    stage reads a digest, and the properties worth asserting are the ones
+    that would make the digest a liability:
+
+      * a key that EVERY cut carries must appear, or the stage writes an
+        artifact missing a field every real cut has;
+      * every component type in use must appear, or the stage reaches for a
+        component the renderer has never been asked for;
+      * the prose must be truncated, or the stage inherits King Tut's
+        sentences as if they were a template;
+      * and a missing exemplar must FAIL, because a digest that prints
+        nothing on a missing file teaches the stage that there is nothing
+        to know.
+    """
+
+    EXEMPLAR = "king-tut"
+
+    @pytest.fixture(scope="class")
+    def runner_projects(self):
+        """The delivered films live in the runner worktree."""
+        path = Path("/Users/mac/Developer/wak3up-docs/runner/projects")
+        if not (path / self.EXEMPLAR / "artifacts"
+                / "edit_decisions.json").exists():
+            pytest.skip(f"no delivered exemplar at {path}")
+        return path
+
+    @pytest.fixture(scope="class")
+    def rendered(self, runner_projects):
+        from scripts import edit_decisions_digest as edd
+        blob = json.loads((runner_projects / self.EXEMPLAR / "artifacts"
+                           / "edit_decisions.json").read_text())
+        return blob, edd.digest(blob, self.EXEMPLAR)
+
+    def test_every_universally_carried_key_is_named(self, rendered):
+        blob, text = rendered
+        cuts = blob["cuts"]
+        universal = [k for k in {k for c in cuts for k in c}
+                     if sum(1 for c in cuts if k in c) == len(cuts)]
+        assert universal, "the exemplar has no universal keys — check it"
+        missing = [k for k in universal if k not in text]
+        assert missing == [], (
+            f"a key every cut carries is invisible in the digest: {missing}")
+
+    def test_every_component_type_in_use_is_named(self, rendered):
+        blob, text = rendered
+        types = {c.get("type") or (c.get("scene") or {}).get("type")
+                 for c in blob["cuts"]}
+        types.discard(None)
+        missing = [t for t in types if t not in text]
+        assert missing == [], f"components the stage cannot see: {missing}"
+
+    def test_a_conditional_key_carries_how_conditional_it_is(self, rendered):
+        """`source` on 132 of 161 cuts is a different instruction from
+        `source` on all of them."""
+        blob, text = rendered
+        cuts = blob["cuts"]
+        n = sum(1 for c in cuts if "source" in c)
+        assert n < len(cuts), "pick a different key: source is universal here"
+        assert f"{n}/{len(cuts)}" in text
+
+    def test_it_is_a_digest_and_not_the_file(self, rendered):
+        from scripts import edit_decisions_digest as edd
+        blob, text = rendered
+        whole = len(json.dumps(blob))
+        assert len(text) < whole / 10, (
+            f"{len(text)} bytes against {whole} is not a digest")
+        assert len(text.encode()) <= edd.SIZE_BUDGET_BYTES
+
+    def test_the_prose_is_truncated_not_reproduced(self, rendered):
+        """The stage should learn that `reason` holds a sentence, without
+        inheriting King Tut's sentence."""
+        from scripts import edit_decisions_digest as edd
+        blob, text = rendered
+        long_prose = [c["attribution"] for c in blob["cuts"]
+                      if isinstance(c.get("attribution"), str)
+                      and len(c["attribution"]) > edd.PROSE_CHARS]
+        assert long_prose, "no long prose in the exemplar to truncate"
+        for value in long_prose:
+            assert value not in text, "a long prose field survived whole"
+
+    def test_the_digest_says_your_film_is_not_this_film(self, rendered):
+        """An exemplar read as a template is a worse failure than no
+        exemplar: it is how four films come out identical."""
+        _, text = rendered
+        assert "not this film" in text.lower()
+
+    def test_a_missing_exemplar_fails_rather_than_printing_nothing(
+            self, tmp_path):
+        done = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "edit_decisions_digest.py"),
+             "--project", "no-such-film", "--projects-dir", str(tmp_path)],
+            capture_output=True, text=True)
+        assert done.returncode == 1
+        assert "no exemplar" in done.stderr
+        assert done.stdout == ""
+
+    def test_an_exemplar_with_no_cuts_is_not_an_exemplar(self, tmp_path):
+        art = tmp_path / "hollow" / "artifacts"
+        art.mkdir(parents=True)
+        (art / "edit_decisions.json").write_text(json.dumps({"cuts": []}))
+        done = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "edit_decisions_digest.py"),
+             "--project", "hollow", "--projects-dir", str(tmp_path)],
+            capture_output=True, text=True)
+        assert done.returncode == 1
+        assert "no cuts" in done.stderr
+
+    def test_the_edit_prompt_names_it(self):
+        """The whole point: the stage is TOLD, not left to discover."""
+        weekly = (ROOT / "scripts" / "run_weekly.sh").read_text()
+        edit_block = weekly[weekly.index('pipeline_stage edit "$TURNS_EDIT"'):]
+        edit_block = edit_block[:edit_block.index("# ── 4a.")]
+        assert "scripts/edit_decisions_digest.py" in edit_block
+        assert "king-tut" in edit_block, "name the exemplar, not just the tool"
+        assert "do NOT read the exemplar whole" in edit_block or \
+               "not read the exemplar whole" in edit_block

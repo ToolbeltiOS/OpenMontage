@@ -44,6 +44,7 @@ QUARANTINE: dict[str, str] = {
 NEEDS_REPO_ROOT = {
     "checkpoint": "imports `schemas`, a package at the repo root",
     "events": "imports `lib`, so it needs the root rather than lib/",
+    "checkpoint_reconcile": "imports `checkpoint`, which imports `schemas`",
 }
 
 
