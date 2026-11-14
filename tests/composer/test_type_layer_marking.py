@@ -170,7 +170,6 @@ UNMARKED_CUT_TYPES = {
     # Paints no text at all today — but it is not in the scan, so nothing
     # would notice if it started to. Listed rather than special-cased.
     "anime_scene": "AnimeScene.tsx",
-    "comparison": "ComparisonCard.tsx",
     "hero_title": "HeroTitle.tsx",
     "kpi_grid": "KPIGrid.tsx",
     "progress_bar": "ProgressBar.tsx",
@@ -183,6 +182,31 @@ def dispatched_cut_types() -> set[str]:
     """Every `cut.type` the documentary composition renders."""
     source = without_comments((SRC / "Explainer.tsx").read_text())
     return set(re.findall(r'cut\.type === "([a-z_]+)"', source))
+
+
+def cut_type(cut: dict) -> str | None:
+    """Where an edit records which component a cut renders.
+
+    TWO PLACES, AND THE SCHEMA ONLY ALLOWS ONE OF THEM. This read was
+    `cut.get("type")` alone, which is the shape king-tut and the two films
+    before it were written in. `schemas/artifacts/edit_decisions.json` has
+    since closed the cut object — `additionalProperties: false`, and no
+    `type` among its properties — and moved the component name to
+    `scene.type`, where `lib/build_render_props.py` flattens it onto the cut
+    before the renderer sees it.
+
+    So from the moment that schema landed, every edit this test exists to
+    read recorded its cut types somewhere this function did not look, and
+    the test passed on an empty dictionary. Run #6 is what that cost: a
+    `comparison` scene plan, a 44-minute plate with 42 legible words in it,
+    and three hours of rendering before a gate said so. The old spelling is
+    still read, because the three pre-schema films on disk are still real
+    and still worth checking.
+    """
+    scene = cut.get("scene")
+    if isinstance(scene, dict) and scene.get("type"):
+        return str(scene["type"])
+    return str(cut["type"]) if cut.get("type") else None
 
 
 def used_cut_types() -> dict[str, list[str]]:
@@ -212,7 +236,7 @@ def used_cut_types() -> dict[str, list[str]]:
             except (ValueError, OSError):
                 continue
             for cut in cuts:
-                kind = cut.get("type")
+                kind = cut_type(cut)
                 if kind:
                     out.setdefault(kind, []).append(film)
     return out
@@ -235,6 +259,55 @@ def test_no_film_uses_an_unmarked_cut_type():
         "will drift with the picture: " + "; ".join(
             f"{kind} -> {component} ({', '.join(films)})"
             for kind, (component, films) in sorted(caught.items())))
+
+
+def test_the_reader_can_see_both_shapes_an_edit_is_written_in():
+    """A guard on the guard: the vacuous read was the bug, not the list.
+
+    `test_no_film_uses_an_unmarked_cut_type` passed on an empty dictionary
+    for every film written after the edit schema closed, because it read a
+    key the schema forbids. An assertion about the films is worth nothing
+    until something asserts the films were read.
+    """
+    assert cut_type({"type": "stat_card"}) == "stat_card"          # pre-schema
+    assert cut_type({"scene": {"type": "comparison"}}) == "comparison"
+    # scene wins, because that is the one the renderer is given
+    assert cut_type({"type": "old", "scene": {"type": "new"}}) == "new"
+    assert cut_type({"scene": {}}) is None
+    assert cut_type({"scene": None}) is None
+    assert cut_type({}) is None
+
+
+def test_every_film_that_names_components_is_actually_read():
+    """The other half of the guard, read off the films on disk.
+
+    The unit test above would still pass if `used_cut_types` stopped
+    walking the worktrees, or globbed a path that no longer exists. This
+    asserts that every film whose edit names a component at all appears in
+    what the check reads — so a reader that goes blind again fails here,
+    with the film it stopped seeing in the message.
+    """
+    import json
+    import sys
+    repo = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(repo / "lib"))
+    from already_covered import worktree_roots
+
+    expected: set[str] = set()
+    for root in worktree_roots(repo):
+        for edit in sorted((root / "projects").glob("*/artifacts/edit_decisions.json")):
+            try:
+                cuts = json.loads(edit.read_text()).get("cuts") or []
+            except (ValueError, OSError):
+                continue
+            if any(cut_type(c) for c in cuts):
+                expected.add(edit.parent.parent.name)
+    assert expected, "no film on disk names a component; the glob is wrong"
+
+    seen = {film for films in used_cut_types().values() for film in films}
+    assert not expected - seen, (
+        "these films name components in their edit, but the check read none "
+        "of them: " + ", ".join(sorted(expected - seen)))
 
 
 def test_the_unmarked_list_names_only_components_that_are_really_unmarked():

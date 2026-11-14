@@ -5,6 +5,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { TYPE_CLASS } from "../design/layers";
 
 type ChangeDirection = "up" | "down" | "neutral";
 
@@ -27,6 +28,17 @@ interface ComparisonCardProps {
   valueFontSize?: number;
 }
 
+/**
+ * Two readings of the same thing, side by side.
+ *
+ * ALL SEVEN TEXT NODES CARRY `TYPE_CLASS` — see `TextCard` for why. This
+ * component was the fourth to ship without it, and the first to reach a
+ * delivered film through a cut type no earlier edit had chosen: run #6's
+ * `comparison` scenes (c124, c141) put 42 legible words into a plate that
+ * had taken 44 minutes to render, and the type pass drew none of them,
+ * because `.om-layer-type *` hides everything that is not marked. The words
+ * existed exactly once, in the wrong pass.
+ */
 export const ComparisonCard: React.FC<ComparisonCardProps> = ({
   leftLabel,
   rightLabel,
@@ -152,6 +164,7 @@ export const ComparisonCard: React.FC<ComparisonCardProps> = ({
         {/* Title */}
         {title && (
           <div
+            className={TYPE_CLASS}
             style={{
               fontFamily,
               fontWeight: 700,
@@ -205,6 +218,7 @@ export const ComparisonCard: React.FC<ComparisonCardProps> = ({
               }}
             />
             <div
+              className={TYPE_CLASS}
               style={{
                 fontFamily,
                 fontWeight: 600,
@@ -218,6 +232,7 @@ export const ComparisonCard: React.FC<ComparisonCardProps> = ({
               {leftLabel}
             </div>
             <div
+              className={TYPE_CLASS}
               style={{
                 fontFamily,
                 fontWeight: 800,
@@ -279,6 +294,7 @@ export const ComparisonCard: React.FC<ComparisonCardProps> = ({
                   }}
                 >
                   <span
+                    className={TYPE_CLASS}
                     style={{
                       fontFamily,
                       fontWeight: 700,
@@ -290,6 +306,7 @@ export const ComparisonCard: React.FC<ComparisonCardProps> = ({
                   </span>
                 </div>
                 <div
+                  className={TYPE_CLASS}
                   style={{
                     fontFamily,
                     fontWeight: 700,
@@ -329,6 +346,7 @@ export const ComparisonCard: React.FC<ComparisonCardProps> = ({
               }}
             />
             <div
+              className={TYPE_CLASS}
               style={{
                 fontFamily,
                 fontWeight: 600,
@@ -342,6 +360,7 @@ export const ComparisonCard: React.FC<ComparisonCardProps> = ({
               {rightLabel}
             </div>
             <div
+              className={TYPE_CLASS}
               style={{
                 fontFamily,
                 fontWeight: 800,
