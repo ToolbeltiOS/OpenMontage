@@ -16,10 +16,9 @@ import {
   ChromaticAberration,
   EffectComposer,
   HueSaturation,
-  Noise,
   Vignette,
 } from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
+import { BlendFunction, Effect } from "postprocessing";
 import * as THREE from "three";
 import { SYS, gradeOps } from "./design/system";
 
@@ -259,6 +258,93 @@ const useImgTexture = (src: string, enabled: boolean) => {
   return { texture, img, onDrawn };
 };
 
+/**
+ * The grain, seeded from the frame index.
+ *
+ * WHY NOT `<Noise>`
+ * -----------------
+ * postprocessing's NoiseEffect is one line — `rand(uv * (1.0 + time))` — and
+ * `time` is the EffectMaterial's accumulated delta, which
+ * `@react-three/postprocessing` advances with `composer.render(delta)` out of
+ * r3f's `useFrame`. That delta is WALL-CLOCK: how long this machine happened
+ * to spend on the previous frame. So the grain field is a function of machine
+ * load rather than of the film, and two frames rendered quickly one after the
+ * other get almost the same `time` and therefore almost the same grain.
+ *
+ * Run #6 shipped two three-frame freezes that way, at 1071.13s and 1077.10s,
+ * both inside c141 — a comparison card whose plate holds still while its type
+ * holds still, so the grain was the only thing left moving. On those frames it
+ * moved by 0.0008 of a grey level at the frame-motion gate's measuring size,
+ * under its 0.02 threshold, and the picture stopped dead. The plate was fine:
+ * the same hold decodes identically in the run before it. The grain had simply
+ * stopped. That render carried 74 duplicate pairs film-wide, and the run
+ * before it passed the identical material because its frames took a little
+ * longer to draw — the gate was deciding on machine timing.
+ *
+ * So the field is seeded from the frame index. `jitter` is a Weyl sequence —
+ * the fractional parts of n times two irrationals — computed in JS doubles and
+ * handed over as a vec2, because the same arithmetic in the shader has about
+ * three decimal digits left by frame 36863 and the sequence collapses there.
+ * An offset decorrelates the whole field, where `uv * (1.0 + time)` only
+ * rescales it and leaves the corner at uv = 0 reading the same value forever.
+ *
+ * Consecutive frames now differ by construction, every render of a frame is
+ * identical, and the grain's character is untouched: moving which random value
+ * lands on which pixel does not change the distribution it is drawn from.
+ */
+const GRAIN_FRAG = `uniform vec2 jitter;
+void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
+  outputColor = vec4(vec3(rand(uv + jitter)), inputColor.a);
+}`;
+
+//: The two irrationals of the R2 low-discrepancy sequence. Any pair would
+//: separate consecutive frames; these also keep the sequence from clumping
+//: over the length of a film.
+const JITTER_A = 0.7548776662466927;
+const JITTER_B = 0.5698402909980532;
+
+export const grainJitter = (frame: number): [number, number] => [
+  (frame * JITTER_A) % 1,
+  (frame * JITTER_B) % 1,
+];
+
+class FrameSeededGrainEffect extends Effect {
+  constructor({ opacity = 0.055, frame = 0 }: { opacity?: number; frame?: number } = {}) {
+    super("FrameSeededGrainEffect", GRAIN_FRAG, {
+      blendFunction: BlendFunction.OVERLAY,
+      uniforms: new Map([["jitter", new THREE.Uniform(new THREE.Vector2())]]),
+    });
+    this.blendMode.opacity.value = opacity;
+    this.seedFrom(frame);
+  }
+
+  /** Put this frame's field in place. Cheap enough to call on every render. */
+  seedFrom(frame: number) {
+    const [x, y] = grainJitter(frame);
+    (this.uniforms.get("jitter")!.value as THREE.Vector2).set(x, y);
+  }
+}
+
+/**
+ * The effect instance is built once per mount and seeded on every render,
+ * BEFORE the draw: Remotion's `ManualFrameRenderer` advances the canvas from
+ * an effect keyed on the frame number, which runs after this component's
+ * body. Seeding in the body rather than in an effect of our own keeps us out
+ * of any argument about sibling effect order. The constructor takes the mount
+ * frame too, because a render splits the film across concurrent tabs and each
+ * tab's first frame would otherwise draw before any update ran.
+ */
+const FrameSeededGrain: React.FC<{ opacity: number }> = ({ opacity }) => {
+  const frame = useCurrentFrame();
+  const effect = React.useMemo(
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    () => new FrameSeededGrainEffect({ opacity, frame }),
+    [opacity],
+  );
+  effect.seedFrom(frame);
+  return <primitive object={effect} dispose={null} />;
+};
+
 export const FilmLook: React.FC<FilmLookProps> = ({
   src = "doc/outro_hero.jpg",
   act,
@@ -351,7 +437,7 @@ export const FilmLook: React.FC<FilmLookProps> = ({
           <Vignette eskil={false} offset={0.28} darkness={vignette} />
 
           {/* grain last, so it sits on the image and not under the vignette */}
-          <Noise premultiply={false} blendFunction={BlendFunction.OVERLAY} opacity={grain} />
+          <FrameSeededGrain opacity={grain} />
         </EffectComposer>
       </ThreeCanvas>
     </AbsoluteFill>
