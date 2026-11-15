@@ -39,6 +39,44 @@ CANONICAL_STAGE_ARTIFACTS = {
     "publish": "publish_log",
 }
 
+#: EVERY output a stage owes, not only the one JSON artifact that names it.
+#:
+#: The reconciler validated one file per stage — `edit_decisions.json` for
+#: the edit stage — and wrote the "completed" checkpoint on the strength of
+#: it. But the edit stage's hand-off is FIVE things and the render reads four
+#: of them, so a stage could exit 0, be reconciled as complete, and leave the
+#: render to discover the gap: run_weekly.sh carries a hand-written check for
+#: exactly this ("the edit stage did not leave: ...") because the
+#: bookkeeping could not be trusted to notice.
+#:
+#: Each entry is (path relative to the project directory, kind):
+#:   "artifact" — JSON under artifacts/, validated against its schema
+#:   "file"     — must exist and be non-empty
+#:   "dir"      — must exist and hold at least one file
+#:
+#: The canonical artifact is FIRST in every tuple, and a test holds that, so
+#: this table can never disagree with CANONICAL_STAGE_ARTIFACTS about what a
+#: stage is.
+STAGE_OUTPUTS: dict[str, tuple[tuple[str, str], ...]] = {
+    "research":   (("artifacts/research_brief.json", "artifact"),),
+    "proposal":   (("artifacts/proposal_packet.json", "artifact"),),
+    "idea":       (("artifacts/brief.json", "artifact"),),
+    "script":     (("artifacts/script.json", "artifact"),),
+    "scene_plan": (("artifacts/scene_plan.json", "artifact"),),
+    "assets":     (("artifacts/asset_manifest.json", "artifact"),),
+    # The whole hand-off to the render, which is not an agent and cannot ask
+    # for a missing file. `render_props.json` has no schema of its own, so it
+    # is checked as a file; `trimmed/` is the beds the mix was actually made
+    # from, without which mix_report.json names inputs nobody can follow.
+    "edit":       (("artifacts/edit_decisions.json", "artifact"),
+                   ("artifacts/render_props.json", "file"),
+                   ("renders/mix_final.wav", "file"),
+                   ("renders/mix_report.json", "file"),
+                   ("assets/music/candidates/trimmed", "dir")),
+    "compose":    (("artifacts/render_report.json", "artifact"),),
+    "publish":    (("artifacts/publish_log.json", "artifact"),),
+}
+
 # Additional artifacts that may be produced alongside canonical ones.
 # These are not stage-defining but are required by governance contracts.
 SUPPLEMENTARY_ARTIFACTS = {

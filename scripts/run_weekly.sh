@@ -1693,9 +1693,17 @@ of the file itself — do NOT read the exemplar whole, you would carry it on
 every turn after. If the digest leaves out something you need, say so in
 your report: that is a bug in the digest.
 
-Those three files are the whole hand-off: the next stage is NOT an agent, it
-is scripts/await_render.py, which starts the render and waits with no model
-open. Write the checkpoint and STOP."
+The beds you mixed from stay at assets/music/candidates/trimmed/. That
+directory IS an output, not a scratch space: renders/mix_report.json names
+its files as the inputs of the mix, and king-tut's report could not be
+followed back to them. Do not clear it.
+
+Those FOUR artifacts and that directory are the whole hand-off, and the
+reconciler checks every one of them before it will write your checkpoint —
+lib/checkpoint.STAGE_OUTPUTS is the list. The next stage is NOT an agent,
+it is scripts/await_render.py, which starts the render and waits with no
+model open and cannot ask you for a file you did not leave. Write the
+checkpoint and STOP."
 
 # ── 4a. the illustration gate — after the pictures exist, before render ──
 #
@@ -1761,12 +1769,18 @@ else
   # Checked here, cheaply, rather than discovered by render_film.py after
   # the waiter has already started: "no mix at ..." is the right error but
   # the wrong place for it.
-  MISSING=""
-  for needed in "artifacts/render_props.json" "renders/mix_final.wav"; do
-    [[ -s "$REPO/projects/$SLUG/$needed" ]] || MISSING="$MISSING $needed"
-  done
-  if [[ -n "$MISSING" ]]; then
-    fail "render" "the edit stage did not leave:$MISSING
+  # Asked of lib/checkpoint.STAGE_OUTPUTS rather than a list written out
+  # here. This check used to name two paths — render_props.json and
+  # mix_final.wav — of the five the edit stage owes, so a film could reach
+  # the render missing its mix_report or the trimmed beds its own report
+  # names as inputs. Two copies of "what the edit stage produces" is one
+  # copy too many; the declaration is the only one.
+  if ! MISSING="$("$PY" "$REPO/scripts/reconcile_checkpoint.py" \
+                    --project "$SLUG" --stage edit --outputs-only 2>&1)"; then
+    fail "render" "the edit stage did not leave its full hand-off:
+
+$MISSING
+
 A render needs the props and the mix. Re-run the edit stage."
   fi
   # No `stage_done compose` test: compose has no agent now, so nothing

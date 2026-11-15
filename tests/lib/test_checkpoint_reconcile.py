@@ -407,3 +407,174 @@ class TestTheCLI:
         body = body[:body.index("\n}\n")]
         assert "reconcile_stage" in body
         assert "MID-STAGE" in body or "mid-stage" in body.lower()
+
+
+#: A schema-valid edit_decisions and nothing else: the shape of a stage that
+#: wrote its headline artifact and left the render four files short.
+EDIT_DECISIONS = {
+    "version": "1.0",
+    "render_runtime": "remotion",
+    "cuts": [{"id": "c001", "in_seconds": 0.0, "out_seconds": 4.0,
+              "source": "assets/images/bank/x.jpg"}],
+}
+
+
+@pytest.fixture
+def edit_film(tmp_path):
+    """A project whose edit stage left ONLY `edit_decisions.json`.
+
+    Driven at `edit` rather than `research` — unlike every fixture above —
+    because `edit` is the one stage that owes more than one output, and the
+    incompleteness check returns before `_write`, so the pipeline-order
+    rules that would otherwise demand valid predecessors are never reached.
+    """
+    project = tmp_path / "shortfall"
+    (project / "artifacts").mkdir(parents=True)
+    (project / "artifacts" / "edit_decisions.json").write_text(
+        json.dumps(EDIT_DECISIONS), encoding="utf-8")
+    return tmp_path
+
+
+def _complete(root):
+    """The other four outputs the edit stage owes, non-empty."""
+    project = root / "shortfall"
+    (project / "artifacts" / "render_props.json").write_text("{}")
+    (project / "renders").mkdir(exist_ok=True)
+    (project / "renders" / "mix_final.wav").write_bytes(b"RIFF....WAVE")
+    (project / "renders" / "mix_report.json").write_text("{}")
+    trimmed = project / "assets" / "music" / "candidates" / "trimmed"
+    trimmed.mkdir(parents=True, exist_ok=True)
+    (trimmed / "bed_dark_drone.wav").write_bytes(b"RIFF....WAVE")
+
+
+class TestAStageOwesItsWholeHandOff:
+    """A checkpoint says the hand-off is complete. It was written on the
+    strength of ONE file.
+
+    `run_weekly.sh` carried a hand-written check for exactly this — "the
+    edit stage did not leave: ..." — naming two of the five paths the edit
+    stage owes, which is the tell: the bookkeeping could not be trusted to
+    notice, so the render had to re-ask, badly.
+    """
+
+    def test_edit_decisions_alone_does_not_reconcile(self, edit_film):
+        """THE CONTROL."""
+        rc, verdict, _ = R.reconcile(edit_film, "shortfall", "edit")
+        assert (rc, verdict) == (1, "INCOMPLETE")
+
+    def test_it_writes_no_checkpoint(self, edit_film):
+        R.reconcile(edit_film, "shortfall", "edit")
+        assert not list((edit_film / "shortfall").glob("checkpoint_*.json")), (
+            "a checkpoint was written for a stage that owes four more files")
+
+    def test_it_names_every_missing_output(self, edit_film):
+        _, _, lines = R.reconcile(edit_film, "shortfall", "edit")
+        said = "\n".join(lines)
+        for owed in ("render_props.json", "mix_final.wav", "mix_report.json",
+                     "trimmed"):
+            assert owed in said, f"the report does not mention {owed}"
+
+    def test_the_valid_artifact_is_not_held_against_the_stage(self, edit_film):
+        """The distinction worth keeping: the artifact IS fine. What is
+        missing is the rest of the hand-off, and the message should say so
+        rather than implying the file is bad."""
+        _, _, lines = R.reconcile(edit_film, "shortfall", "edit")
+        assert "validates" in "\n".join(lines)
+
+    def test_the_whole_set_gets_past_the_check(self, edit_film):
+        _complete(edit_film)
+        _, verdict, _ = R.reconcile(edit_film, "shortfall", "edit")
+        assert verdict != "INCOMPLETE"
+
+    def test_an_empty_trimmed_directory_is_not_a_trimmed_directory(
+            self, edit_film):
+        """`mkdir` is not the work. mix_report.json names the beds the mix
+        was made from, and an empty directory makes that record
+        unfollowable — which is the defect the directory is checked for."""
+        _complete(edit_film)
+        trimmed = (edit_film / "shortfall" / "assets" / "music"
+                   / "candidates" / "trimmed")
+        for child in trimmed.iterdir():
+            child.unlink()
+        rc, verdict, lines = R.reconcile(edit_film, "shortfall", "edit")
+        assert (rc, verdict) == (1, "INCOMPLETE")
+        assert "empty" in "\n".join(lines)
+
+    def test_a_zero_byte_output_does_not_count(self, edit_film):
+        _complete(edit_film)
+        (edit_film / "shortfall" / "renders" / "mix_final.wav").write_bytes(b"")
+        rc, verdict, lines = R.reconcile(edit_film, "shortfall", "edit")
+        assert (rc, verdict) == (1, "INCOMPLETE")
+        assert "0 bytes" in "\n".join(lines)
+
+    def test_a_single_output_stage_is_unaffected(self, film):
+        """Every other stage declares exactly its canonical artifact, so
+        nothing above this class changes behaviour."""
+        projects, _ = film
+        rc, verdict, _ = R.reconcile(projects, "a-film", "research")
+        assert rc == 0, verdict
+
+
+class TestTheDeclarationCannotDisagreeWithItself:
+    def test_every_stage_with_a_canonical_artifact_declares_its_outputs(self):
+        import lib.checkpoint as C
+        for stage in C.CANONICAL_STAGE_ARTIFACTS:
+            assert stage in C.STAGE_OUTPUTS, (
+                f"{stage} has a canonical artifact but no declared output "
+                f"set, so the reconciler would check nothing for it")
+
+    def test_the_canonical_artifact_is_the_first_output(self):
+        """Two tables naming what a stage produces is one too many unless
+        they are held in step."""
+        import lib.checkpoint as C
+        for stage, outputs in C.STAGE_OUTPUTS.items():
+            canonical = C.CANONICAL_STAGE_ARTIFACTS.get(stage)
+            if canonical is None:
+                continue
+            first, kind = outputs[0]
+            assert first == f"artifacts/{canonical}.json", (
+                f"{stage}: declares {first} first, but its canonical "
+                f"artifact is {canonical}")
+            assert kind == "artifact"
+
+    @staticmethod
+    def edit_prompt() -> str:
+        """Just the edit stage's prompt, and nothing after it.
+
+        THE FIRST VERSION OF THIS WAS VACUOUS. It sliced from
+        `pipeline_stage edit ` to the next `pipeline_stage ` — but `edit` is
+        the LAST stage in the file, so the search returned -1 and the slice
+        ran 209 lines to the end of the script. Every output "appeared in
+        the prompt" because its name appeared SOMEWHERE LATER in the file;
+        `trimmed` matched a comment on the pre-render check, and the test
+        passed while the prompt did not name it at all.
+
+        So the end is anchored on the prompt's own last words, and asserted.
+        """
+        runner = (Path(__file__).resolve().parents[2]
+                  / "scripts" / "run_weekly.sh").read_text()
+        start = runner.index('pipeline_stage edit ')
+        end = runner.index('STOP."', start) + len('STOP."')
+        prompt = runner[start:end]
+        assert "pipeline_stage" not in prompt[20:], (
+            "the slice ran past the edit prompt into another stage")
+        return prompt
+
+    def test_the_slice_is_the_prompt_and_not_the_rest_of_the_file(self):
+        """The guard on the test above, because without it that test cannot
+        fail."""
+        prompt = self.edit_prompt()
+        assert prompt.rstrip().endswith('STOP."')
+        assert "<b>cost</b>" not in prompt, "the slice reached the run summary"
+        assert len(prompt) < 6000, f"{len(prompt)} chars is not one prompt"
+
+    def test_the_edit_stage_prompt_names_every_output_it_owes(self):
+        """"The stage prompt names the set" — otherwise the agent is being
+        marked against a list it was never given."""
+        import lib.checkpoint as C
+        prompt = self.edit_prompt()
+        for rel, _kind in C.STAGE_OUTPUTS["edit"]:
+            leaf = rel.rstrip("/").split("/")[-1]
+            assert leaf in prompt, (
+                f"the edit stage prompt never mentions {leaf}, but the "
+                f"reconciler will fail the stage without it")

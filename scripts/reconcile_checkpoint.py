@@ -36,10 +36,29 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--projects-dir", default=None)
     parser.add_argument("--quiet", action="store_true",
                         help="print the verdict word only")
+    parser.add_argument("--outputs-only", action="store_true",
+                        help="ask ONLY whether the stage's declared outputs "
+                             "are on disk, and touch no checkpoint. The "
+                             "runner uses this before the render so the "
+                             "pre-render check and the reconciler read the "
+                             "same declaration instead of keeping two "
+                             "lists, one of which was two paths short")
     args = parser.parse_args(argv)
 
     projects_dir = Path(args.projects_dir) if args.projects_dir \
         else ROOT / "projects"
+
+    if args.outputs_only:
+        short = R.missing_outputs(projects_dir, args.project, args.stage)
+        for line in short:
+            print(f"missing: {line}")
+        if not short and not args.quiet:
+            import lib.checkpoint as C
+            print(f"{args.stage}: all "
+                  f"{len(C.STAGE_OUTPUTS.get(args.stage, ()))} declared "
+                  f"output(s) are on disk")
+        return 1 if short else 0
+
     rc, verdict, lines = R.reconcile(projects_dir, args.project, args.stage)
     if args.quiet:
         print(verdict)

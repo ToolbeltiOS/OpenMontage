@@ -119,6 +119,30 @@ def artifact_path(projects_dir: Path, project: str, name: str) -> Path:
     return Path(projects_dir) / project / "artifacts" / f"{name}.json"
 
 
+def missing_outputs(projects_dir: Path, project: str, stage: str
+                    ) -> list[str]:
+    """Which of this stage's DECLARED outputs are not on disk, in order.
+
+    A checkpoint means "the hand-off is complete". It was written on the
+    strength of one file, so it could say complete about a stage that had
+    left the render four files short.
+    """
+    proj = Path(projects_dir) / project
+    short: list[str] = []
+    for rel, kind in C.STAGE_OUTPUTS.get(stage, ()):
+        path = proj / rel
+        if kind == "dir":
+            if not path.is_dir():
+                short.append(f"{rel}/ — the directory is not there")
+            elif not any(child.is_file() for child in path.iterdir()):
+                short.append(f"{rel}/ — the directory is empty")
+        elif not path.exists():
+            short.append(rel)
+        elif path.stat().st_size == 0:
+            short.append(f"{rel} — 0 bytes")
+    return short
+
+
 def reconcile(projects_dir: Path, project: str, stage: str,
               ) -> tuple[int, str, list[str]]:
     """(exit code, verdict, lines to print).
@@ -163,6 +187,17 @@ def reconcile(projects_dir: Path, project: str, stage: str,
             f"{stage}: {path.name} does not validate against its schema.",
             f"  {first}",
             "The artifact is the authority, so an invalid one still fails."]
+
+    short = missing_outputs(projects_dir, project, stage)
+    if short:
+        owed = len(C.STAGE_OUTPUTS.get(stage, ()))
+        return 1, "INCOMPLETE", [
+            f"{stage}: {path.name} validates, but this stage owes {owed} "
+            f"output(s) and {len(short)} of them are not on disk:",
+            *[f"  missing: {m}" for m in short],
+            "A checkpoint says the hand-off is complete, so it is not "
+            "written until the hand-off is complete. The artifact that "
+            "validates is not the same thing as the work being done."]
 
     now = fingerprint(path)
     existing = C.read_checkpoint(projects_dir, project, stage)
