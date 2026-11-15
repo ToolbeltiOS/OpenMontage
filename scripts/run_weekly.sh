@@ -1793,13 +1793,35 @@ fi
 
 # ── 5. publish ───────────────────────────────────────────────────────────
 require_power "publishing"
-if [[ "$DRY_RUN" == "1" && ! -f "$REPO/projects/$SLUG/artifacts/listing.json" ]]; then
-  say "dry run: no listing for $SLUG, so there is nothing to publish"
+assert_code_clean "the render"
+
+# ── 5pre. the listing, because NOTHING ELSE BUILDS IT ────────────────────
+# publish_doc.py refuses without `artifacts/listing.json` and explains that
+# "the listing is built from the project's own artifacts by the compose
+# stage" — but compose has had no agent since run #4, so for five films
+# nothing built it at all. On 2026-11-15 the film passed all eight delivery
+# gates, posted its thumbnail, pushed its credits page, and then stopped
+# dead at the upload on a file no stage owned. The build takes seconds and
+# reads only artifacts the edit stage has already written.
+#
+# BEFORE the credits page, not after: a listing that cannot be built must
+# not leave a published credits page behind for a film that never goes up.
+say "listing"
+if [[ -s "$REPO/projects/$SLUG/artifacts/script.json" ]]; then
+  "$PY" "$REPO/scripts/build_listing.py" --project "$SLUG" \
+    > "$LOGDIR/listing.log" 2>&1 \
+    || fail "listing" "$(tail -10 "$LOGDIR/listing.log")"
+  say "$(grep -E '^(title|description|chapters):' "$LOGDIR/listing.log" | tr '\n' ' ')"
+elif [[ "$DRY_RUN" == "1" ]]; then
+  say "dry run: no script for $SLUG, so there is no listing to build"
   say "         scripts/dry_run.py is what exercises the publisher"
   say "done (dry run: topic and hand-offs only)"
   exit 0
+else
+  fail "listing" "no artifacts/script.json for $SLUG, so no listing can be
+built and the upload would refuse. The script stage did not leave its
+artifact where the chain expects it."
 fi
-assert_code_clean "the render"
 
 # ── 5a. the credits page, BEFORE the upload ──────────────────────────────
 # The description links to it, so it has to be live before the description

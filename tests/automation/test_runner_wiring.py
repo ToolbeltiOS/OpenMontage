@@ -18,6 +18,29 @@ RUNNER = ROOT / "scripts" / "run_weekly.sh"
 PLIST = ROOT / "launchd" / "com.wak3up.docs.weekly.plist"
 
 
+def code(text: str) -> str:
+    """The file with its comments removed, for questions about ORDER.
+
+    Written because this very class failed on its own prose twice: the
+    comment explaining that `publish_doc.py` refuses without a listing sits
+    ABOVE the `build_listing.py` call, so a naive `index()` read the
+    explanation as the call and called the order wrong; and the comment in
+    `dry_run.py` recording that `--listing` was removed read as `--listing`
+    still being there. The same mistake was made on 2026-11-15 by a test
+    that scanned `FilmLook.tsx` for `<Noise` and tripped on the sentence
+    saying why `<Noise>` was gone.
+
+    Blank the comments, keep the line count, so an index into this text and
+    an index into the original agree on which line a thing is on.
+    """
+    out = []
+    for line in text.splitlines():
+        stripped = line.lstrip()
+        out.append("" if stripped.startswith("#") else line)
+    return "\n".join(out)
+
+
+
 class TestTheAgentCanActuallyFire:
     def test_the_program_it_runs_exists(self):
         """A path with a stray "22:" in it is a Friday that never happens."""
@@ -439,3 +462,75 @@ class TestEveryAgentRunsTheSameBranch:
                     f"{plist.name} runs {arg}, which is a different worktree "
                     f"and therefore a different branch")
 
+
+
+class TestTheListingIsBuiltByTheChain:
+    """Run #6 passed all eight delivery gates and could not be uploaded.
+
+    `publish_doc.py` refuses without `artifacts/listing.json` and says the
+    listing "is built from the project's own artifacts by the compose
+    stage" — but compose has had no agent since run #4, so for five films
+    NOTHING built it. The film of 2026-11-15 rendered for two hours and
+    eighteen minutes, posted its thumbnail, pushed its credits page, and
+    then stopped dead on a file no stage owned.
+
+    The reason it was never caught is worse than the gap: `scripts/dry_run.py`
+    exists to prove the joins, and it wrote the listing BY HAND and then
+    handed the publisher `--listing` pointing at its own file. It faked the
+    artifact whose existence it was checking, so it reported the join
+    holding every week.
+    """
+
+    CHAIN = code(RUNNER.read_text())
+
+    def test_the_chain_builds_the_listing(self):
+        assert "build_listing.py" in self.CHAIN, (
+            "nothing in run_weekly.sh builds artifacts/listing.json, so the "
+            "publisher will refuse every film")
+
+    def test_it_is_built_after_the_render(self):
+        """A listing names the film's measured chapter times, so it cannot
+        be built before there is narration to measure."""
+        assert (self.CHAIN.index("await_render.py")
+                < self.CHAIN.index("build_listing.py"))
+
+    def test_it_is_built_before_the_publisher_needs_it(self):
+        assert (self.CHAIN.index("build_listing.py")
+                < self.CHAIN.index("publish_doc.py"))
+
+    def test_it_is_built_before_the_credits_page_is_pushed(self):
+        """The credits page is a public push. A film whose listing cannot be
+        built is a film that will not go up, and it should not leave a
+        published page behind."""
+        assert (self.CHAIN.index("build_listing.py")
+                < self.CHAIN.index("publish_credits_page.sh"))
+
+    def test_exactly_one_program_in_the_chain_writes_the_listing(self):
+        """Zero is what shipped. Two would be worse: a second writer means
+        the publisher reads whichever ran last.
+
+        This is the test that would have caught it, and it does not need the
+        chain to run — only to be read.
+        """
+        writers = []
+        for script in sorted((ROOT / "scripts").glob("*.py")):
+            text = script.read_text(encoding="utf-8", errors="replace")
+            # A path ending in listing.json that is being written to, not
+            # merely named in a message or a comment.
+            if re.search(r'"listing\.json"[^\n]*\n?[^\n]*write_text|'
+                         r'write_text[^\n]*listing\.json|'
+                         r'listing_path\.write_text', text):
+                writers.append(script.name)
+        assert writers == ["build_listing.py"], (
+            f"expected build_listing.py alone to write the listing, "
+            f"got {writers or 'NOTHING — this is the run #6 defect'}")
+
+    def test_the_dry_run_no_longer_fabricates_one(self):
+        """The fake that hid the gap for five films."""
+        dry = code((ROOT / "scripts" / "dry_run.py").read_text())
+        assert "--listing" not in dry, (
+            "the dry run is handing the publisher a listing path again, "
+            "which bypasses the default path the weekly chain uses")
+        assert "build_listing.py" in dry, (
+            "the dry run must build the listing with the same program the "
+            "weekly chain calls, or it is not testing that join")

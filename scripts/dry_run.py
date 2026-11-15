@@ -55,27 +55,64 @@ SCRIPT = {
     "title": "Dry Run — Three Minutes",
     "total_duration_seconds": 180,
     "sections": [
+        # A COLD OPEN AND PRONUNCIATION GUIDES, because the listing is built
+        # from them: `hook()` quotes the cold open (a hand-written hook is a
+        # second copy of the premise that nothing keeps in step), and
+        # `subjects()` takes its tags from the guides, refusing a listing
+        # with fewer than three. A fixture without them cannot reach the
+        # publisher, which is the whole point of this file.
+        {"id": "cold_open", "label": "Cold open",
+         "start_seconds": 0, "end_seconds": 20,
+         "text": "[beat: reveal | awe]\nThe Vantrell ledger says one "
+                 "thing. The Oskaloo survey says another.\n[air 4.0s]\n",
+         "pronunciation_guides": [
+             {"word": "Vantrell", "phonetic": "VAN-trell"},
+             {"word": "Oskaloo", "phonetic": "OSS-ka-loo"},
+             {"word": "merridan", "phonetic": "MERR-ih-dan"},
+         ]},
         {"id": "act1", "label": "01 The claim",
-         "start_seconds": 0, "end_seconds": 90,
+         "start_seconds": 20, "end_seconds": 110,
          "text": "[beat: reveal | awe]\nA thing was built, and nobody "
                  "wrote down how.\n[air 4.0s]\n"},
         {"id": "act2", "label": "02 The objection",
-         "start_seconds": 90, "end_seconds": 180,
+         "start_seconds": 110, "end_seconds": 180,
          "text": "[beat: exposition]\nThe objection is arithmetic, and it "
                  "is serious.\n[air 4.0s]\n"},
     ],
 }
 
-LISTING = {
-    "title": "Dry Run — Three Minutes",
-    "description": "A dry run.", "tags": ["dry", "run"],
-    "categoryId": "27", "defaultLanguage": "en", "defaultAudioLanguage": "en",
-    "privacyStatus": "private", "selfDeclaredMadeForKids": False,
-    "license": "creativeCommon", "embeddable": True,
-    "publicStatsViewable": True, "containsSyntheticMedia": False,
-    "playlist": "Documentaries", "pinned_comment": "Credits.",
-    "entities": ["Entity 0", "Entity 1"],
+#: WHAT USED TO BE HERE, AND WHY IT IS GONE.
+#:
+#: A hand-written `LISTING` dict, written straight to
+#: `artifacts/listing.json` and then handed to the publisher with
+#: `--listing`. It faked the join twice over: it produced the artifact it
+#: was supposed to be checking the existence of, and it bypassed the default
+#: path the weekly chain actually uses. So this file reported "gate ->
+#: publisher PASS" every week while NOTHING IN THE CHAIN BUILT A LISTING —
+#: and on 2026-11-15 a film passed all eight delivery gates, posted its
+#: thumbnail, pushed its credits page, and stopped dead at the upload.
+#:
+#: The listing is now built by `scripts/build_listing.py`, the same program
+#: the weekly run calls, from this project's own artifacts, and the
+#: publisher is left to find it where it normally looks.
+
+#: The artifacts `build_listing` reads besides the script. Minimal on
+#: purpose — the point is the join, not the content — but real in shape:
+#: a brief with a primary source, an EDL with a credited bed, and a cut list.
+BRIEF = {
+    "topic": "Dry Run",
+    "sources": [{"title": "The Vantrell ledger, folio 3",
+                 "url": "https://example.invalid/vantrell",
+                 "reliability": "primary"}],
 }
+
+EDIT_DECISIONS = {
+    "music": {"beds": [{"track": "Dry Bed - A Composer.mp3",
+                        "licence": "CC BY 4.0",
+                        "source_url": "https://example.invalid/bed"}]},
+}
+
+RENDER_PROPS = {"cuts": []}
 
 
 class FakeTelegram:
@@ -166,20 +203,63 @@ def main() -> int:
             print(f"\nreply {args.reply!r}: the chain stops here, as designed")
             return 0 if all(passed) else 1
 
-        # 3. the publisher reads the project the runner made
-        listing_path = project / "artifacts" / "listing.json"
-        listing_path.write_text(json.dumps(LISTING, indent=1))
+        # 3. the chain BUILDS the listing. Nothing else does, and for five
+        #    films nothing did.
+        art = project / "artifacts"
+        (art / "research_brief.json").write_text(json.dumps(BRIEF, indent=1))
+        (art / "edit_decisions.json").write_text(json.dumps(EDIT_DECISIONS, indent=1))
+        (art / "render_props.json").write_text(json.dumps(RENDER_PROPS, indent=1))
         video = project / "renders" / "final.mp4"
         video.write_bytes(b"\x00" * 1024)
 
+        # Chapter times are MEASURED off the narration rather than taken
+        # from the script's planned seconds, so the fixture carries audio to
+        # measure. Silence of a known length is enough: the join is whether
+        # the builder can find and probe the wavs, not what is in them.
+        aud = project / "assets" / "audio"
+        aud.mkdir(parents=True, exist_ok=True)
+        for name, seconds in (("cold_open", 2), ("act1", 3), ("act2", 4)):
+            subprocess.run(
+                ["ffmpeg", "-v", "error", "-y", "-f", "lavfi",
+                 "-i", f"anullsrc=r=24000:cl=mono", "-t", str(seconds),
+                 str(aud / f"{name}.wav")],
+                capture_output=True)
+
+        listing_path = art / "listing.json"
+        built = subprocess.run(
+            [str(ROOT / ".venv" / "bin" / "python"),
+             str(ROOT / "scripts" / "build_listing.py"),
+             "--project", "dry-run", "--root", str(work)],
+            capture_output=True, text=True)
+        passed.append(step(
+            "runner -> listing", built.returncode == 0 and listing_path.exists(),
+            (built.stdout.strip().splitlines()
+             or [(built.stderr.strip() or "no output").splitlines()[-1]])[-1]))
+
+        chaps = (json.loads(listing_path.read_text()).get("chapters", [])
+                 if listing_path.exists() else [])
+        # Three, not two: `NOT_A_CHAPTER` holds only `title_sequence`, so the
+        # cold open is a chapter a viewer may skip to. The times prove the
+        # measurement — 00:00, 00:02, 00:05 are the fixture's 2s and 3s of
+        # silence, not the script's planned 20s and 110s.
+        passed.append(step("chapters are measured off the narration",
+                           len(chaps) == 3,
+                           f"{len(chaps)} chapter(s): "
+                           + ", ".join(f"{c['time']} {c['title']}" for c in chaps)))
+
+        # The publisher is handed NO PATHS. It has to find the listing and
+        # the film where the weekly chain leaves them, or this step proves
+        # nothing — which is exactly how the old fixture passed every week
+        # with `--listing` pointing at a file it had just written itself.
         result = subprocess.run(
             [str(ROOT / ".venv" / "bin" / "python"),
              str(ROOT / "scripts" / "publish_doc.py"),
-             "--project", "dry-run", "--dry-run",
-             "--listing", str(listing_path), "--video", str(video)],
+             "--project", "dry-run", "--dry-run", "--root", str(work)],
             capture_output=True, text=True, env={**os.environ, "HOME": os.environ["HOME"]})
-        passed.append(step("gate -> publisher", result.returncode == 0,
+        passed.append(step("listing -> publisher", result.returncode == 0,
                            (result.stdout.strip().splitlines() or ["no output"])[-1]))
+        passed.append(step("publisher found the listing at its default path",
+                           "no listing at" not in result.stdout))
         passed.append(step("publisher schedules, not publishes",
                            "private now, public" in result.stdout))
 

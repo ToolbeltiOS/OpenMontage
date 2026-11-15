@@ -305,6 +305,12 @@ def main() -> int:
     ap.add_argument("--captions", default=None)
     ap.add_argument("--check-token", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--root", default=None,
+                    help="the tree the project lives under (default: this "
+                         "repo). Only the dry run passes this: it builds a "
+                         "project in a temporary directory and must be able "
+                         "to reach the publisher by the SAME default paths "
+                         "the weekly chain uses, or it is not testing them")
     ap.add_argument("--now", action="store_true",
                     help="publish PUBLIC immediately instead of uploading "
                          "private and scheduling. There is no undo for an "
@@ -321,7 +327,8 @@ def main() -> int:
         telegram.send(f"<b>Publish blocked</b>\n{message}")
         return 1
 
-    project = ROOT / "projects" / args.project
+    root = Path(args.root) if args.root else ROOT
+    project = root / "projects" / args.project
     artifacts = project / "artifacts"
     listing_path = Path(args.listing) if args.listing else artifacts / "listing.json"
     if not listing_path.exists():

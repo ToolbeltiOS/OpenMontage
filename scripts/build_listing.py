@@ -340,8 +340,20 @@ STOPWORD_PHRASES = {
 }
 
 
-def build(project: str) -> dict:
-    proj = ROOT / "projects" / project
+def build(project: str, root: Path = ROOT) -> dict:
+    """`root` is the tree the project lives under, almost always this repo.
+
+    It is an argument because nothing could test this. The dry run builds a
+    project in a temporary directory and, until now, could not ask this
+    module to read it — so it wrote a listing by hand and handed it to the
+    publisher with `--listing`. That faked the one join it existed to check,
+    and the weekly chain shipped for five films with NOTHING building
+    `artifacts/listing.json`: on 2026-11-15 the publisher refused the film
+    outright ("the listing is built by the compose stage", and compose has
+    no agent). A control that writes the artifact it is checking for is not
+    a control.
+    """
+    proj = root / "projects" / project
     art, aud = proj / "artifacts", proj / "assets" / "audio"
     script = json.loads((art / "script.json").read_text())
     brief = json.loads((art / "research_brief.json").read_text())
@@ -442,11 +454,14 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--project", required=True)
     ap.add_argument("--out", default=None)
+    ap.add_argument("--root", default=None,
+                    help="the tree the project lives under (default: this repo)")
     args = ap.parse_args()
 
-    listing = build(args.project)
+    root = Path(args.root) if args.root else ROOT
+    listing = build(args.project, root)
     out = Path(args.out) if args.out else (
-        ROOT / "projects" / args.project / "artifacts" / "listing.json")
+        root / "projects" / args.project / "artifacts" / "listing.json")
     out.write_text(json.dumps(listing, indent=1, ensure_ascii=False),
                    encoding="utf-8")
 
