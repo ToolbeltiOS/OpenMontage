@@ -30,7 +30,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "lib"))
 
 from film_render import (COMPOSER, FPS, act_spans, deliver, extract_frames,  # noqa: E402
-                         frame_count, gates, props_for_layer, remux,
+                         frame_count, gates, plate_gates, props_for_layer, remux,
                          render_look, render_plate, render_type, report, verified_stills,
                          verified_video)
 
@@ -157,6 +157,40 @@ def main() -> int:
                 render_plate(props_for_layer(props_path, "plate", work,
                                              args.project),
                              picture, count, cuts)
+
+            # THE GATES THE PLATE CAN ANSWER, ASKED OF THE PLATE, NOW.
+            #
+            # Not at delivery, where they were. Run #6's first delivery
+            # failed plate purity on 42 words baked into a picture that had
+            # been on disk since minute 44 of a five-hour render; the look
+            # pass, the type pass, the mux and every other gate were paid
+            # for after the answer was already knowable. Three and a half
+            # minutes here against two and a half hours there.
+            #
+            # Asked on a REUSED plate too: the plate is the input to every
+            # pass below, and a reused one has no record of ever having been
+            # checked. --redo look,type is exactly the case that skips the
+            # plate render and inherits whatever is on disk.
+            print("   plate gates (answerable from the plate alone)")
+            plate_problems, plate_measured = plate_gates(picture, cuts, FPS)
+            purity = plate_measured["plate purity"]
+            drop = plate_measured["plate-dropout"]
+            print(f"   plate purity: {purity.get('words_in_plate')} word(s) "
+                  f"legible across {len(cuts)} cuts")
+            print(f"   plate-dropout: {drop.get('frames')} frames scanned, "
+                  f"{drop.get('certain')} certain, {drop.get('marginal')} "
+                  f"marginal (spike floor "
+                  f"{drop.get('min_spike_levels')} grey levels)")
+            if plate_problems:
+                for problem in plate_problems[:20]:
+                    print(f"   FAIL: {problem}")
+                raise SystemExit(
+                    f"{args.project}: the plate fails "
+                    f"{len(plate_problems)} plate-only check(s). Nothing "
+                    f"below this reads anything but the plate, so the look "
+                    f"and type passes are not started. Fix the plate and "
+                    f"re-render it with --redo plate.")
+
             print("2. frames")
             if not reuse("frames", frames_dir, stills=True):
                 extract_frames(picture, frames_dir, count)

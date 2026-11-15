@@ -642,3 +642,104 @@ class TestTypeThatDidNotMoveIsNotMeasuredAtAll:
             "the correlation measured a patch the equality test refuses")
         assert vtl.type_held_still(noise, noise.copy(), thin) is False, (
             "a patch too small to measure must not be reported as held still")
+
+
+def render_lossless(path, frames, fps=30):
+    """`render` is crf 12, which erases differences of under a grey level.
+
+    The plate-side dropout floor is about exactly those differences, so a
+    lossy fixture would test the codec instead of the gate.
+    """
+    import PIL.Image
+
+    raw = path.parent / f"raw_{path.stem}"
+    raw.mkdir(exist_ok=True)
+    for i, arr in enumerate(frames):
+        PIL.Image.fromarray(arr).save(raw / f"f_{i:04d}.png")
+    subprocess.run(
+        ["ffmpeg", "-v", "error", "-y", "-framerate", str(fps),
+         "-i", str(raw / "f_%04d.png"), "-c:v", "libx264", "-qp", "0",
+         "-pix_fmt", "gray", str(path)], check=True)
+    return path
+
+
+class TestThePlateIsGatedAtThePlatePass:
+    """Run #6 rendered for five hours to be told something the plate knew
+    at minute forty-four.
+
+    Its first delivery failed plate purity on 42 words baked into the
+    picture by a component nobody had marked. The plate held those words
+    the moment it finished; the look pass, the type pass, the mux and seven
+    other gates were all paid for before anyone asked. king-tut's first
+    delivery did the same with 119 words.
+    """
+
+    def test_a_clean_plate_passes(self, tmp_path):
+        from lib.film_render import plate_gates
+        plate = render(tmp_path / "clean.mp4",
+                       [noise_texture(i) for i in range(N)])
+        problems, measured = plate_gates(plate, CUTS)
+        assert problems == [], problems
+        assert measured["plate purity"]["words_in_plate"] == 0
+
+    def test_a_plate_carrying_baked_text_fails(self, tmp_path):
+        """THE CONTROL. These are the frames of a component that never got
+        its type class: the words are in the picture, and the cut asked for
+        them."""
+        from lib.film_render import plate_gates
+        plate = render(tmp_path / "baked.mp4", [frame(i) for i in range(N)])
+        problems, measured = plate_gates(plate, CUTS)
+        assert measured["plate purity"]["words_in_plate"] > 0
+        assert any("legible in the plate pass" in p for p in problems), problems
+
+    def test_the_failure_is_attributed_to_the_plate(self, tmp_path):
+        """So a run log cannot be misread as a delivery failure."""
+        from lib.film_render import plate_gates
+        plate = render(tmp_path / "baked2.mp4", [frame(i) for i in range(N)])
+        problems, _ = plate_gates(plate, CUTS)
+        assert all(p.startswith(("plate purity:", "plate-dropout:"))
+                   for p in problems), problems
+
+    def test_a_real_dropout_in_the_plate_is_still_caught(self, tmp_path):
+        """The floor must not buy its silence by going deaf."""
+        from lib.film_render import plate_gates
+        frames = [noise_texture(i).astype("int16") for i in range(N)]
+        frames[60] = np.clip(frames[60] - 6, 0, 255)      # a lost backdrop
+        plate = render_lossless(tmp_path / "dropped.mp4",
+                               [f.astype("uint8") for f in frames])
+        problems, measured = plate_gates(plate, CUTS)
+        drop = measured["plate-dropout"]
+        assert drop["certain"] + drop["marginal"] >= 1, drop
+        assert any("plate-dropout" in p for p in problems)
+
+    def test_a_flicker_of_under_a_grey_level_is_not_a_dropout(self, tmp_path):
+        """What the plate of 2026-11-15 actually had, twice.
+
+        Frames 25130 and 25134 differed from both neighbours by 0.166 and
+        0.194 grey levels against a 0.074 baseline — enough to clear the
+        relative tests, because a plate has no grain to raise the baseline,
+        and 33x smaller than the 5.55 a real lost backdrop measures. The
+        delivered film passed the same gate, where grain held the baseline
+        at 0.45 and the floor never bound.
+        """
+        from lib.film_render import plate_gates
+        rng = np.random.default_rng(3)
+        frames = [noise_texture(i).astype("int16") for i in range(N)]
+        speckle = rng.random(frames[60].shape) < 0.17      # ~0.17 levels mean
+        frames[60] = np.clip(frames[60] + speckle, 0, 255)
+        plate = render_lossless(tmp_path / "flicker.mp4",
+                                [f.astype("uint8") for f in frames])
+        _, measured = plate_gates(plate, CUTS)
+        drop = measured["plate-dropout"]
+        assert drop["certain"] + drop["marginal"] == 0, drop
+
+    def test_the_plate_scan_uses_the_floor_and_delivery_does_not(self):
+        """The delivery gate has never had a false positive in 146,000
+        frames and must not change because a new caller needed something."""
+        import inspect
+
+        from lib import verify_plate_dropout as V
+        from lib.film_render import gates, plate_gates
+        assert "MIN_SPIKE_LEVELS" in inspect.getsource(plate_gates)
+        assert "min_spike" not in inspect.getsource(gates)
+        assert V.check.__defaults__[-1] == 0.0

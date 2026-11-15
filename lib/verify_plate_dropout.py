@@ -96,6 +96,37 @@ LOCAL_FLOOR = 0.05
 #: false positive has ever been measured.
 CERTAIN_RATIO = 0.25
 
+#: An absolute floor on the spike, in grey levels, for scanning a PLATE.
+#:
+#: WHY THE RELATIVE TESTS ALONE CANNOT READ A PLATE. Every threshold above
+#: is relative, because how much a film changes between two frames is a
+#: property of the film. That holds on a DELIVERED film, where the grain
+#: keeps the frame-to-frame baseline around 0.45 grey levels — comfortably
+#: above LOCAL_FLOOR, so the floor never binds and the ratio means what it
+#: says. A plate has no grain. Measured on run #6's plate, 2026-11-15,
+#: frames 25118-25148:
+#:
+#:     median consecutive difference      0.0744 grey levels
+#:     the two frames this gate flagged   0.1664 and 0.1942
+#:     a real dropout injected there      5.5506   (MEASURED_COST, the
+#:                                                  cost of a lost backdrop
+#:                                                  on the film it was
+#:                                                  found in)
+#:
+#: So on a plate the baseline is near zero, the floor becomes the comparator,
+#: and a flicker of a sixth of ONE grey level out of 255 — 0.07%, invisible —
+#: reads as "the picture is gone for one frame". The real thing is 33x
+#: larger. Both of those frames were in a delivered film that passed this
+#: same gate at delivery, where grain held the baseline above the floor.
+#:
+#: One grey level sits 5.5x below the smallest real dropout this project has
+#: measured and 6x above the largest plate false positive, so it separates
+#: them with margin at both ends. It is NOT applied at delivery: the
+#: delivery gate's behaviour is unchanged, because a threshold that has
+#: never had a false positive in 146,000 frames should not be altered as a
+#: side effect of adding a new caller.
+MIN_SPIKE_LEVELS = 1.0
+
 
 def frames(path: str, threads: int = 2):
     """Every decoded frame, in decode order, with nothing invented.
@@ -126,7 +157,8 @@ def frames(path: str, threads: int = 2):
         proc.wait()
 
 
-def scan(path: str, fps: float = 30.0, threads: int = 2
+def scan(path: str, fps: float = 30.0, threads: int = 2,
+         min_spike: float = 0.0
          ) -> tuple[list[dict[str, Any]], int]:
     hits: list[dict[str, Any]] = []
     a = b = None
@@ -162,6 +194,7 @@ def scan(path: str, fps: float = 30.0, threads: int = 2
         local = max(float(np.median(window)) if len(window) else 0.0,
                     LOCAL_FLOOR)
         if (p["spike"] > SPIKE_RATIO * local
+                and p["spike"] >= min_spike
                 and p["d_across"] < ACROSS_RATIO * p["spike"]):
             hits.append({**p, "local": round(local, 3),
                          "spike": round(p["spike"], 3),
@@ -174,10 +207,15 @@ def _stamp(seconds: float) -> str:
     return f"{int(minutes):02d}:{rest:06.3f}"
 
 
-def check(film: str, fps: int = 30) -> tuple[list[str], dict[str, Any]]:
+def check(film: str, fps: int = 30, min_spike: float = 0.0
+          ) -> tuple[list[str], dict[str, Any]]:
     """Blocking. ANY dropout fails the film — see `CERTAIN_RATIO` for the
-    measurement that says a weak reading is not a weak defect."""
-    hits, total = scan(film, float(fps))
+    measurement that says a weak reading is not a weak defect.
+
+    `min_spike` defaults to 0, so the delivery gate is exactly what it was.
+    A caller scanning a PLATE passes MIN_SPIKE_LEVELS; see that constant.
+    """
+    hits, total = scan(film, float(fps), min_spike=min_spike)
     certain = [h for h in hits if h["decisiveness"] < CERTAIN_RATIO]
     marginal = [h for h in hits if h["decisiveness"] >= CERTAIN_RATIO]
 
@@ -200,5 +238,6 @@ def check(film: str, fps: int = 30) -> tuple[list[str], dict[str, Any]]:
         "certain_frames": [h["frame"] for h in certain],
         "marginal_frames": [h["frame"] for h in marginal],
         "marginal_seconds": [_stamp(h["seconds"]) for h in marginal],
+        "min_spike_levels": min_spike,
     }
     return problems, measured

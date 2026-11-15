@@ -794,6 +794,50 @@ def remux(dest: Path, mix: Path) -> None:
     tmp.replace(dest)
 
 
+def plate_gates(picture: Path, cuts: list[dict[str, Any]], fps: int = FPS
+                ) -> tuple[list[str], dict[str, Any]]:
+    """The checks answerable from the PLATE ALONE, asked of the plate.
+
+    Run #6 spent two and a half hours twice over learning things the plate
+    already knew. The first delivery failed plate purity on 42 legible words
+    baked into the picture by a component nobody had marked — a defect that
+    existed in `plate.mp4` forty-four minutes into the render and was
+    reported five hours later, after the look pass, the type pass, the mux
+    and the gates had all been paid for. king-tut's first delivery did the
+    same thing with 119 words.
+
+    A gate that can be answered from the plate has no business waiting for
+    the delivery. Plate purity is one OCR pass over one frame per cut, about
+    ninety-five seconds on a 158-cut film; the dropout scan is a little over
+    two minutes. Three and a half minutes, against the two and a half hours
+    they save by failing here.
+
+    The dropout scan is given MIN_SPIKE_LEVELS, which the delivery scan is
+    not: a plate has no grain, so its frame-to-frame baseline is near zero
+    and the relative tests alone flag flickers of a sixth of one grey level.
+    See that constant for the measurement.
+
+    TIMELINE COVERAGE IS NOT HERE. It is answerable from the props without
+    decoding anything, so scripts/render_film.py asks it before the plate is
+    rendered at all, which is earlier than this and therefore better.
+    """
+    sys.path.insert(0, str(ROOT / "lib"))
+    from verify_plate_dropout import MIN_SPIKE_LEVELS
+    from verify_plate_dropout import check as check_dropout
+    from verify_type_lock import plate_is_clean
+
+    results: dict[str, Any] = {}
+    problems: list[str] = []
+    for name, (found, measured) in {
+        "plate purity": plate_is_clean(str(picture), cuts),
+        "plate-dropout": check_dropout(str(picture), fps,
+                                       min_spike=MIN_SPIKE_LEVELS),
+    }.items():
+        results[name] = measured
+        problems += [f"{name}: {p}" for p in found]
+    return problems, results
+
+
 def gates(dest: Path, picture: Path, cuts: list[dict[str, Any]],
           expected_lufs: float | None, fps: int = FPS,
           type_layer: Path | None = None, *,
