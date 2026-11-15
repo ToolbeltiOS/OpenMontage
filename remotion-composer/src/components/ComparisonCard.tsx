@@ -6,6 +6,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { TYPE_CLASS } from "../design/layers";
+import { pinned } from "../design/settle";
 
 type ChangeDirection = "up" | "down" | "neutral";
 
@@ -61,73 +62,73 @@ export const ComparisonCard: React.FC<ComparisonCardProps> = ({
   const { fps } = useVideoConfig();
 
   // Phase 1: Title + left side appears
-  const titleOpacity = spring({
+  const titleOpacity = pinned(frame, spring({
     frame,
     fps,
     config: { damping: 20 },
-  });
+  }), 1);
 
-  const leftOpacity = spring({
+  const leftOpacity = pinned(frame, spring({
     frame: frame - 6,
     fps,
     config: { damping: 18 },
-  });
-  const leftSlide = spring({
+  }), 1);
+  const leftSlide = pinned(frame, spring({
     frame: frame - 6,
     fps,
     config: { damping: 14, stiffness: 90 },
     from: -40,
     to: 0,
-  });
-  const leftScale = spring({
+  }), 0);
+  const leftScale = pinned(frame, spring({
     frame: frame - 6,
     fps,
     config: { damping: 12, stiffness: 100 },
     from: 0.9,
     to: 1,
-  });
+  }), 1);
 
   // Phase 2: Divider draws in (vertical line)
-  const dividerDraw = spring({
+  const dividerDraw = pinned(frame, spring({
     frame: frame - 16,
     fps,
     config: { damping: 14, stiffness: 80 },
-  });
+  }), 1);
 
   // Phase 3: Right side appears
-  const rightOpacity = spring({
+  const rightOpacity = pinned(frame, spring({
     frame: frame - 24,
     fps,
     config: { damping: 18 },
-  });
-  const rightSlide = spring({
+  }), 1);
+  const rightSlide = pinned(frame, spring({
     frame: frame - 24,
     fps,
     config: { damping: 14, stiffness: 90 },
     from: 40,
     to: 0,
-  });
-  const rightScale = spring({
+  }), 0);
+  const rightScale = pinned(frame, spring({
     frame: frame - 24,
     fps,
     config: { damping: 12, stiffness: 100 },
     from: 0.9,
     to: 1,
-  });
+  }), 1);
 
   // Phase 4: Change indicator
-  const indicatorOpacity = spring({
+  const indicatorOpacity = pinned(frame, spring({
     frame: frame - 32,
     fps,
     config: { damping: 15 },
-  });
-  const indicatorScale = spring({
+  }), 1);
+  const indicatorScale = pinned(frame, spring({
     frame: frame - 32,
     fps,
     config: { damping: 10, stiffness: 130 },
     from: 0.6,
     to: 1,
-  });
+  }), 1);
 
   // Arrow glyph based on direction
   const directionArrow =
