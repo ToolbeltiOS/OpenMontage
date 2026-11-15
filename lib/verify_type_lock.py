@@ -222,18 +222,69 @@ def declared_moves_until(cut: dict[str, Any]) -> float:
     return latest
 
 
-def shift_in_box(first, second, box: dict[str, Any]) -> tuple[float, float] | None:
-    """How far the contents of one OCR box moved, to a fraction of a pixel."""
-    import cv2
-    import numpy as np
+def patch_bounds(shape, box: dict[str, Any]) -> tuple[int, int, int, int] | None:
+    """The padded patch one OCR box names, or None if it is too small to read.
 
-    h, w = first.shape[:2]
+    Shared, because `type_held_still` and `shift_in_box` must ask about the
+    same pixels. Two copies of this arithmetic would be two chances for the
+    equality test to clear a patch the correlation then measures.
+    """
+    h, w = shape[:2]
     x0 = max(0, box["left"] - BOX_PAD_PX)
     y0 = max(0, box["top"] - BOX_PAD_PX)
     x1 = min(w, box["left"] + box["width"] + BOX_PAD_PX)
     y1 = min(h, box["top"] + box["height"] + BOX_PAD_PX)
     if x1 - x0 < MIN_PATCH_PX or y1 - y0 < MIN_PATCH_PX:
         return None
+    return x0, y0, x1, y1
+
+
+def type_held_still(first, second, box: dict[str, Any]) -> bool:
+    """Is OUR TYPE in this box the same pixels a second later?
+
+    WHY BYTES AND NOT A MEASUREMENT
+    -------------------------------
+    `SHIFT_TOLERANCE_PX` above says it plainly: a small dim box is mostly
+    plate, the plate is moving on purpose, and neither contrast nor a
+    high-pass separates the two. It then calibrates against the worst noise
+    king-tut produced — 0.660px — and believes a lone box from 0.75.
+
+    That calibration does not survive a second film. On the atomic-bombings
+    render of 2026-11-14 the same noise reached 0.782px on c038's scene index
+    and 0.970px on c095's, while the module's own figure for a real
+    one-pixel shift starts at 0.865. Noise and signal overlap, so no
+    threshold on that measurement can separate them any more.
+
+    But the question is not hard to answer exactly. The type pass carries our
+    type and nothing else, and a glyph moved by a fraction of a pixel is
+    re-rasterised rather than relocated — this module's own opening paragraph.
+    So type that did not move is type whose pixels did not change, and that is
+    a byte comparison, not an estimate. On the render above it reads 28 of 28
+    boxes identical on c038 and on c095 — their type never moved, and both
+    failed on the picture underneath — against 18 of 23 on c141, whose
+    'casualties' really did move by 0.9969px.
+
+    Alpha is included. The type pass is RGBA over transparency, and two states
+    that differ only in alpha are two different images of our type.
+    """
+    bounds = patch_bounds(first.shape, box)
+    if bounds is None:
+        return False
+    import numpy as np
+
+    x0, y0, x1, y1 = bounds
+    return bool(np.array_equal(first[y0:y1, x0:x1], second[y0:y1, x0:x1]))
+
+
+def shift_in_box(first, second, box: dict[str, Any]) -> tuple[float, float] | None:
+    """How far the contents of one OCR box moved, to a fraction of a pixel."""
+    import cv2
+    import numpy as np
+
+    bounds = patch_bounds(first.shape, box)
+    if bounds is None:
+        return None
+    x0, y0, x1, y1 = bounds
     a = first[y0:y1, x0:x1].astype("float32")
     b = second[y0:y1, x0:x1].astype("float32")
     if a.std() < 1.0:
@@ -309,6 +360,7 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
             # push or pull that print MUST travel — c081's map moved 39px in
             # a second because the camera asked it to. Reading it as type
             # that drifted fails a film for obeying its own edit.
+            type_first_img = type_later_img = None
             if type_pass is not None:
                 type_png = frame_at(str(type_pass), t0, tmpdir / f"t{n}.png")
                 if type_png is None:
@@ -316,6 +368,13 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
                     continue           # the type pass ends before this cut does
                 boxes = [b for b in words(type_png) if measurable(b["text"])]
                 bound = "type pass"
+                # The same frames of our type a second apart, unchanged, so
+                # the equality test sees alpha as well as luma.
+                type_later = frame_at(str(type_pass), t0 + SAMPLE_GAP_S,
+                                      tmpdir / f"u{n}.png")
+                if type_later is not None:
+                    type_first_img = cv2.imread(str(type_png), cv2.IMREAD_UNCHANGED)
+                    type_later_img = cv2.imread(str(type_later), cv2.IMREAD_UNCHANGED)
             else:
                 # No type pass to ask. A word the cut put on screen, chrome
                 # included, is measured; see this function's docstring for
@@ -337,7 +396,16 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
             sizes: list[float] = []
             measured_boxes = 0
             worst = 0.0
+            held = 0
             for box in boxes:
+                # Our type, unchanged to the byte, cannot have moved. Asking
+                # the correlation about it would only let the plate answer.
+                if (type_first_img is not None and type_later_img is not None
+                        and type_held_still(type_first_img, type_later_img, box)):
+                    measured_boxes += 1
+                    held += 1
+                    sizes.append(0.0)
+                    continue
                 shift = shift_in_box(first, second, box)
                 if shift is None:
                     continue
@@ -357,6 +425,7 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
                 "settle_seconds": round(settle, 2),
                 "words": len(boxes),
                 "measured": measured_boxes,
+                "held_identical": held,
                 "moved": len(moved),
                 "worst_shift_px": round(worst, 3),
                 "median_shift_px": round(float(np.median(sizes)), 3) if sizes else 0.0,
@@ -386,6 +455,9 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
                                     if s["moved"] and not s.get("solo_noise")),
         "scenes_with_one_box_over": sum(1 for s in samples
                                         if s.get("solo_noise")),
+        "boxes_identical_in_the_type_pass": sum(s.get("held_identical", 0)
+                                                for s in samples),
+        "boxes_measured": sum(s.get("measured", 0) for s in samples),
         "worst_shift_px": round(max((s["worst_shift_px"] for s in samples),
                                     default=0.0), 3),
         "cuts_past_the_end": len(skipped),

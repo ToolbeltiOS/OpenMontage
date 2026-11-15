@@ -544,3 +544,101 @@ class TestOneBoxIsNotAMovingScene:
         assert len(sizes) >= 2, f"only {len(sizes)} words measured"
         assert min(sizes) > vtl.SHIFT_TOLERANCE_PX, (
             f"a one-pixel shift left a word under the tolerance: {sizes}")
+
+
+class TestTypeThatDidNotMoveIsNotMeasuredAtAll:
+    """atomic-bombings, run #6, cuts c038 and c095.
+
+    `SHIFT_TOLERANCE_PX` above says a small dim box is mostly plate, that the
+    plate moves on purpose, and that neither contrast nor a high-pass
+    separates the two; it then calibrates against the worst noise king-tut
+    produced, 0.660px, and believes a lone box from 0.75px.
+
+    A second film broke that calibration. c038's scene index read 0.782px and
+    c095's read 0.970px with the type BIT-IDENTICAL across the second — 28 of
+    28 boxes on each — while the module's own figure for a real one-pixel
+    shift starts at 0.865px. The gate failed a film for the motion of the
+    pictures underneath two three-digit labels.
+
+    The question it was estimating has an exact answer: a glyph moved by a
+    fraction of a pixel is re-rasterised, so type that did not move is type
+    whose pixels did not change.
+    """
+
+    def test_the_noise_this_film_made_overlaps_a_real_one_pixel_shift(self):
+        """Why no threshold on that measurement can work any more.
+
+        The numbers are this module's own calibration and run #6's readings,
+        kept as literals: once the highest noise is above the lowest real
+        shift there is no line to draw between them, whatever it is set to.
+        """
+        real_one_pixel_shift_floor = 0.865      # this module, SHIFT_TOLERANCE_PX
+        noise_king_tut_max = 0.660              # this module, SOLO_CEILING_PX
+        noise_atomic_bombings_max = 0.970       # c095, 2026-11-14, type identical
+        assert noise_king_tut_max < vtl.SOLO_CEILING_PX < real_one_pixel_shift_floor, (
+            "the shipped calibration no longer describes its own constants")
+        assert noise_atomic_bombings_max > real_one_pixel_shift_floor, (
+            "if this ever stops being true the estimate can be thresholded "
+            "again and the byte comparison is only an optimisation")
+
+    def test_identical_type_reads_zero_however_far_the_picture_travels(self, tmp_path):
+        """The regression. A 6px/s push under locked chrome, which is the
+        arrangement that produced 0.782px and 0.970px on the delivered film."""
+        film = render(tmp_path / "held.mp4",
+                      [placard_frame(i, picture_dx=i * 6.0 / 30) for i in range(N)])
+        type_pass = render(tmp_path / "held_type.mov",
+                           [type_only_frame() for _ in range(N)])
+        problems, measured = vtl.check(str(film), PLACARD_CUT,
+                                       type_layer=str(type_pass))
+        assert problems == [], problems
+        sample = measured["samples"][0]
+        assert sample["held_identical"] == sample["measured"] > 0, (
+            "the byte path did not settle these boxes, so the reading still "
+            "came from the correlation and the picture under it")
+        assert sample["worst_shift_px"] == 0.0
+        assert measured["boxes_identical_in_the_type_pass"] == measured["boxes_measured"]
+
+    def test_type_that_moves_is_still_caught_through_the_same_path(self, tmp_path):
+        """The byte comparison must only ever ADD a way to pass on proof.
+        Type that moved changes its pixels, so it never reaches the fast path."""
+        film = render(tmp_path / "moved.mp4",
+                      [placard_frame(i, picture_dx=i * 6.0 / 30, chrome_dx=i * 1.0 / 30)
+                       for i in range(N)])
+        type_pass = render(tmp_path / "moved_type.mov",
+                           [type_only_frame(chrome_dx=i * 1.0 / 30) for i in range(N)])
+        problems, measured = vtl.check(str(film), PLACARD_CUT,
+                                       type_layer=str(type_pass))
+        assert problems, "a pixel a second of real type movement was not caught"
+        assert "move within a second" in problems[0]
+        assert measured["samples"][0]["held_identical"] < measured["samples"][0]["words"]
+
+    def test_a_difference_only_in_alpha_is_not_held_still(self):
+        """The type pass is RGBA over transparency. Two states that differ
+        only in alpha are two different images of our type, and a reader that
+        dropped the alpha channel would call a fade a hold."""
+        import numpy as np
+
+        box = {"left": 20, "top": 20, "width": 60, "height": 30, "text": "WORD"}
+        first = np.zeros((120, 160, 4), dtype="uint8")
+        first[20:50, 20:80] = (255, 255, 255, 255)
+        second = first.copy()
+        second[..., 3] = np.where(second[..., 3] == 255, 128, 0)
+        assert vtl.type_held_still(first, first.copy(), box) is True
+        assert vtl.type_held_still(first, second, box) is False
+
+    def test_the_two_readers_agree_on_which_pixels_they_are_reading(self):
+        """`patch_bounds` is shared so that a box the equality test clears is
+        never a different patch from the one the correlation would have
+        measured. A box too small for one must be too small for the other."""
+        import numpy as np
+
+        frame_shape = (540, 960)
+        big = {"left": 100, "top": 100, "width": 80, "height": 40, "text": "WORD"}
+        thin = {"left": 100, "top": 100, "width": 4, "height": 40, "text": "I"}
+        assert vtl.patch_bounds(frame_shape, big) is not None
+        assert vtl.patch_bounds(frame_shape, thin) is None
+        noise = (np.random.default_rng(3).random(frame_shape) * 255).astype("uint8")
+        assert vtl.shift_in_box(noise, noise.copy(), thin) is None, (
+            "the correlation measured a patch the equality test refuses")
+        assert vtl.type_held_still(noise, noise.copy(), thin) is False, (
+            "a patch too small to measure must not be reported as held still")
