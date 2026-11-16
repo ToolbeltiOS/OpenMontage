@@ -29,11 +29,22 @@ turn "I was asleep" into "no film".
 
 REPLIES
 -------
-    ok 2          picture 2 is approved
+    ok            every picture still unanswered is approved
+    no            every picture still unanswered is not
+    ok 2          picture 2 is approved, and only picture 2
     no 3          picture 3 is not
     ok 1 2 5      several at once
-    ok all        all of them
+    ok all        all of them, answered or not
     no all        none of them
+
+The bare form is the common case: look at the batch, reply "ok". Mix them
+freely — "no 3" and then "ok" means the third is out and the rest are in,
+because a bare verdict only ever fills in what has no verdict yet.
+
+A verdict with other words in it is NOT READ. "ok looks good" records
+nothing and asks again, which is what keeps "okay then, but not the third
+one" from approving the third one. A number survives extra words, though:
+"ok 2 looks good" is a verdict about picture 2.
 
 Each picture is posted with its number and its subject label, so a reply can
 name one. Anything unanswered when the clock runs out is a no, and the
@@ -49,6 +60,7 @@ import re
 import sys
 import time
 from pathlib import Path
+from typing import Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -102,13 +114,28 @@ def picture_for(cut: dict, manifest: dict) -> tuple[str, str, Path | None]:
     return subject, label, path
 
 
-def parse(text: str, count: int) -> dict[int, str]:
+def parse(text: str, count: int, answered: Iterable[int] = ()) -> dict[int, str]:
     """A reply to verdicts. {picture number: "ok"|"no"}.
 
     Returns {} for anything it cannot read, so an unparseable message is
     neither an approval nor a refusal — it is ignored and the clock keeps
     running. Reading "okay then, but not the third one" as an approval of
     everything is the failure mode worth avoiding.
+
+    A BARE VERDICT COVERS EVERY PICTURE STILL UNANSWERED.
+    `answered` is what already has a verdict, so "no 3" then "ok" means
+    picture 3 is out and the rest are in. This used to be read only when
+    there was exactly ONE picture up, on the reasoning that a bare "ok"
+    against three was ambiguous — and it is, but the cost of that caution
+    was a person typing a number per picture for a batch they were happy
+    with, at which point the gate is the slow part of approving a film.
+    Changed by the owner, 2026-11-16.
+
+    The two rules it does NOT relax: a numbered reply is exactly those
+    numbers, and a reply with anything else in it is not read at all. "ok
+    looks good" is a sentence, not a verdict, and it still gets the nudge —
+    that is what keeps "okay then, but not the third one" from approving
+    the third one.
     """
     lowered = text.strip().lower()
     match = re.match(r"^(ok|okay|yes|y|approve[d]?|no|n|nope|reject)\b(.*)$",
@@ -123,8 +150,9 @@ def parse(text: str, count: int) -> dict[int, str]:
     numbers = [n for n in numbers if 1 <= n <= count]
     if numbers:
         return {n: verdict for n in numbers}
-    if not rest and count == 1:
-        return {1: verdict}
+    if not rest:
+        pending = [n for n in range(1, count + 1) if n not in set(answered)]
+        return {n: verdict for n in pending}
     return {}
 
 
@@ -149,23 +177,25 @@ def collect(offset: int, count: int, hours: float,
             if not text:
                 continue
             seen.append(text)
-            got = parse(text, count)
+            got = parse(text, count, answered=verdicts.keys())
             if got:
                 verdicts.update(got)
                 print(f"  reply {text!r} -> {got}", flush=True)
             else:
                 # SAY SO. An ignored reply the person cannot see being
-                # ignored is a person who thinks they answered. "ok" with
-                # three pictures up is genuinely ambiguous and is not read
-                # as approving all three.
+                # ignored is a person who thinks they answered. A bare
+                # "ok" now covers whatever is still unanswered, so what
+                # reaches here is a reply with WORDS in it — "ok looks
+                # good" — which is a sentence and not a verdict.
                 print(f"  reply {text!r} -> could not read it, ignoring",
                       flush=True)
                 telegram.send(
                     f"<i>Could not read that as a verdict, so nothing is "
                     f"recorded yet.</i>\n"
-                    f"Reply <b>ok 2</b>, <b>no 3</b>, <b>ok 1 2 5</b> or "
-                    f"<b>ok all</b> — a number per picture, or the word "
-                    f"<b>all</b>.")
+                    f"Reply <b>ok</b> or <b>no</b> on its own for every "
+                    f"picture still unanswered, or name them: <b>ok 2</b>, "
+                    f"<b>no 3</b>, <b>ok 1 2 5</b>, <b>ok all</b>. A verdict "
+                    f"with other words in it is not read.")
     return verdicts, seen
 
 

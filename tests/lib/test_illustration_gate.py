@@ -137,14 +137,24 @@ class TestTheReplyParser:
         ("okay then but not the third", 3),
         ("maybe later", 3),
         ("", 3),
-        ("ok", 3),
         ("ok 9", 3),
         ("looks good to me, ship it", 3),
+        ("ok looks good", 3),
+        ("no not that one", 3),
     ])
     def test_it_refuses_to_guess(self, text, count):
         """THE DANGEROUS CASE. "okay then but not the third" read as an
-        approval of everything is exactly the failure worth avoiding, and a
-        bare "ok" with three pictures up does not say which."""
+        approval of everything is exactly the failure worth avoiding.
+
+        `("ok", 3)` USED TO BE IN THIS LIST, on the reasoning that a bare
+        "ok" with three pictures up does not say which. The owner changed
+        that rule on 2026-11-16: a bare verdict covers every picture still
+        unanswered, because the alternative was typing a number per picture
+        for a batch you are happy with. The protection that matters is
+        unchanged and tested below — a verdict with OTHER WORDS in it is
+        still read as nothing, which is what stops "okay then but not the
+        third" from approving the third.
+        """
         assert G.parse(text, count) == {}
 
     def test_an_out_of_range_number_is_not_silently_clamped(self):
@@ -152,6 +162,47 @@ class TestTheReplyParser:
 
     def test_a_bare_ok_is_unambiguous_with_one_picture(self):
         assert G.parse("ok", 1) == {1: "ok"}
+
+
+class TestABareVerdictCoversWhatIsStillUnanswered:
+    """Owner's change, 2026-11-16: answering a batch should not mean typing
+    a number per picture."""
+
+    def test_a_bare_ok_takes_every_picture(self):
+        assert G.parse("ok", 3) == {1: "ok", 2: "ok", 3: "ok"}
+
+    def test_it_leaves_what_is_already_answered_alone(self):
+        """"no 3" then "ok" means picture 3 is out and the rest are in."""
+        assert G.parse("ok", 4, answered=(3,)) == {1: "ok", 2: "ok", 4: "ok"}
+
+    def test_a_bare_no_works_the_same_way(self):
+        assert G.parse("no", 4, answered=(1, 2)) == {3: "no", 4: "no"}
+
+    def test_a_numbered_reply_is_still_exactly_those_numbers(self):
+        """The rule that did NOT relax. A bare verdict is a sweep; a
+        numbered one is a statement about those pictures and nothing else,
+        whatever else is outstanding."""
+        assert G.parse("ok 2", 4, answered=()) == {2: "ok"}
+        assert G.parse("no 3", 4, answered=(1,)) == {3: "no"}
+
+    def test_extra_words_are_still_not_a_verdict(self):
+        assert G.parse("ok looks good", 3) == {}
+        assert G.parse("ok 2 looks good", 3) == {2: "ok"}, (
+            "a number is still a number even with words after it")
+
+    def test_nothing_is_left_when_everything_is_answered(self):
+        assert G.parse("ok", 2, answered=(1, 2)) == {}
+
+    def test_the_collector_tells_the_parser_what_is_answered(self):
+        """Otherwise a bare verdict would overwrite an earlier numbered one.
+        """
+        import inspect
+        assert "answered=verdicts.keys()" in inspect.getsource(G.collect)
+
+    def test_the_nudge_says_the_bare_form_works(self):
+        import inspect
+        nudge = inspect.getsource(G.collect)
+        assert "still unanswered" in nudge
 
 
 class TestItNeverBlocksTheFilm:
