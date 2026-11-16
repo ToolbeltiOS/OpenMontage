@@ -47,6 +47,7 @@ import sys
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -296,6 +297,68 @@ def split_comment(text: str, limit: int = COMMENT_LIMIT) -> list[str]:
             for i, part in enumerate(parts, start=1)]
 
 
+def srt_cues(path: Path) -> list[dict[str, Any]]:
+    """The track on disk, back as cues, so what is CHECKED is what is SENT.
+
+    Re-deriving from render_props.json would check the words rather than the
+    file, and a stale SRT beside fresh words would pass and then upload the
+    stale one.
+    """
+    import re as _re
+
+    stamp = _re.compile(r"(\d\d):(\d\d):(\d\d),(\d\d\d)")
+
+    def ms(match, at: int) -> int:
+        h, m, sec, milli = (int(match[at + i]) for i in range(4))
+        return ((h * 60 + m) * 60 + sec) * 1000 + milli
+
+    cues: list[dict[str, Any]] = []
+    for block in path.read_text(encoding="utf-8").strip().split("\n\n"):
+        lines = [l for l in block.splitlines() if l.strip()]
+        if len(lines) < 3:
+            continue
+        found = stamp.findall(lines[1])
+        if len(found) != 2:
+            continue
+        flat = [x for pair in found for x in pair]
+        cues.append({"text": " ".join(lines[2:]).strip(),
+                     # the file's own line breaks ARE the cue's lines, and
+                     # `check` measures them — it wraps a cue whose lines
+                     # are missing into a KeyError, which is the right
+                     # answer to an incomplete cue and a confusing one to
+                     # read, so they are carried here.
+                     "lines": [l.strip() for l in lines[2:]],
+                     "startMs": ms(flat, 0), "endMs": ms(flat, 4)})
+    return cues
+
+
+def caption_verdict(captions: Path, video: Path) -> tuple[bool, str]:
+    """(upload it?, why) — the track's own checker, run before sending.
+
+    THE DEFAULT IS NOW TO UPLOAD, so the gate matters. On 2026-11-15 the
+    track built for run #6 held 25 cues of 296 over the 20 characters-a-
+    second ceiling, every one a mid-sentence fragment, and it was held back
+    by hand. Nothing in the chain would have stopped it: this function is
+    that hand, written down.
+
+    A failing track is NOT uploaded and YouTube's auto-captions stand,
+    because auto-captions that are roughly right beat a sidecar that is
+    precisely unreadable — and the note says which cues and why.
+    """
+    sys.path.insert(0, str(ROOT / "lib"))
+    try:
+        from captions_srt import audio_duration, check
+
+        media = audio_duration(str(video)) if video.exists() else None
+        problems = check(srt_cues(captions), media)
+    except Exception as error:                            # noqa: BLE001
+        # A checker that cannot run is not permission to upload.
+        return False, f"could not be checked ({type(error).__name__}: {error})"
+    if problems:
+        return False, f"{len(problems)} problem(s): " + "; ".join(problems[:3])
+    return True, "CAPTIONS: PASS"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--project", required=True)
@@ -455,20 +518,33 @@ def main() -> int:
             manual.append(f"credits comment failed ({error.resp.status})")
 
     if captions.exists():
-        try:
-            yt.captions().insert(
-                part="snippet",
-                body={"snippet": {"videoId": video_id, "language": "en",
-                                  "name": "English", "isDraft": False}},
-                media_body=MediaFileUpload(str(captions),
-                                           mimetype="application/octet-stream")
-            ).execute()
-            done.append("closed captions uploaded")
-        except HttpError as error:
-            manual.append(f"captions failed ({error.resp.status}) — "
-                          f"upload {captions.name} in Studio")
+        good, why = caption_verdict(captions, video)
+        if not good:
+            manual.append(
+                f"captions NOT uploaded — the track fails its own checker: "
+                f"{why}. YouTube's auto-captions stand, which is the honest "
+                f"state: a sidecar that is precisely unreadable is worse "
+                f"than one that is roughly right. Fix the grouping and "
+                f"upload {captions.name} in Studio.")
+        else:
+            try:
+                yt.captions().insert(
+                    part="snippet",
+                    body={"snippet": {"videoId": video_id, "language": "en",
+                                      "name": "English", "isDraft": False}},
+                    media_body=MediaFileUpload(
+                        str(captions), mimetype="application/octet-stream")
+                ).execute()
+                done.append(f"closed captions uploaded ({why})")
+            except HttpError as error:
+                manual.append(f"captions failed ({error.resp.status}) — "
+                              f"upload {captions.name} in Studio")
     else:
-        manual.append(f"no caption file at {captions}")
+        manual.append(
+            f"no caption file at {captions} — YouTube's auto-captions stand. "
+            f"Nothing in the chain builds a track for a film whose word "
+            f"timings are gone, which is the case for noah, easter-island "
+            f"and they-said-it-couldnt-be-built.")
 
     manual += ["set the End Screen (no API)"]
 

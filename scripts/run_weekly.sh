@@ -2070,6 +2070,31 @@ if [[ -s "$REPO/projects/$SLUG/artifacts/script.json" ]]; then
     > "$LOGDIR/listing.log" 2>&1 \
     || fail "listing" "$(tail -10 "$LOGDIR/listing.log")"
   say "$(grep -E '^(title|description|chapters):' "$LOGDIR/listing.log" | tr '\n' ' ')"
+
+  # ── the caption track, which nothing built either ──────────────────────
+  #
+  # Same gap as the listing: publish_doc uploads artifacts/captions.en.srt
+  # when it is there and says "no caption file" when it is not, and nothing
+  # in the chain put one there. Run #6 went out on auto-captions with its
+  # word timings sitting in render_props.json.
+  #
+  # NOT a `fail`. A film with no readable track is a film with YouTube's
+  # auto-captions, which is worse than a good sidecar and better than no
+  # film — and publish_doc checks the track again before sending it, so a
+  # bad one here cannot reach the channel.
+  if [[ -s "$REPO/projects/$SLUG/artifacts/render_props.json" ]]; then
+    say "caption track"
+    if "$PY" "$REPO/lib/captions_srt.py" \
+         "$REPO/projects/$SLUG/artifacts/render_props.json" \
+         "$REPO/projects/$SLUG/artifacts/captions.en.srt" \
+         "$REPO/projects/$SLUG/renders/final.mp4" \
+         > "$LOGDIR/captions.log" 2>&1; then
+      say "         $(grep -E 'cues,' "$LOGDIR/captions.log" | tail -1)"
+    else
+      say "         the track does not pass its own checker — "
+      say "         auto-captions will stand. $(grep -c . "$LOGDIR/captions.log") line(s) in captions.log"
+    fi
+  fi
 elif [[ "$DRY_RUN" == "1" ]]; then
   say "dry run: no script for $SLUG, so there is no listing to build"
   say "         scripts/dry_run.py is what exercises the publisher"
