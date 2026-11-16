@@ -569,6 +569,18 @@ preflight() {
     pf_bad "disk" "${free_gb:-?} GB free, under the 40 GB a film needs"
   fi
 
+  # WHERE THE SPACE IS, when there is not enough of it. A film leaves ~12 GB
+  # of look.mp4 and type.mov behind, both rederivable from the plate, and
+  # saying "32 GB free, under 40" without saying "and 10.75 GB of it is a
+  # published film's cache" makes the reader go and find that out.
+  #
+  # Reported, never applied: deleting during a preflight is a side effect
+  # nobody asked for, and the line carries the command.
+  if [[ -x "$PY" ]]; then
+    say "  $("$PY" "$REPO/scripts/retain_renders.py" --oneline 2>/dev/null \
+             || echo "render retention: could not be surveyed")"
+  fi
+
   # ── the interpreter every check below needs ────────────────────────────
   if [[ -x "$PY" ]]; then
     pf_ok "python" "$("$PY" -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>/dev/null)"
