@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 from typing import Any
@@ -82,6 +83,79 @@ def _wrap(text: str, width: int, max_lines: int) -> list[str] | None:
     return lines if len(lines) <= max_lines else None
 
 
+#: A sentence ends where the aligner says it does, or where the writing
+#: does. `pageBreakAfter` is the authority when it is there; the punctuation
+#: fallback matters because the two together are what the feasibility
+#: measurement was taken over, and a grouping that drew its boundaries
+#: differently would not inherit its result.
+_SENTENCE_END = re.compile(r"[.!?]['\"\u2019\u201d]?$")
+
+
+def _ends_a_sentence(word: dict[str, Any]) -> bool:
+    if word.get("pageBreakAfter"):
+        return True
+    return bool(_SENTENCE_END.search(str(word.get("word") or "").strip()))
+
+
+def _split_evenly(items: list[dict[str, Any]], pieces: int,
+                  max_chars: int, max_lines: int
+                  ) -> list[list[dict[str, Any]]] | None:
+    """`items` into `pieces` groups of similar length, or None if they won't fit.
+
+    Similar LENGTH, not similar word count: what a viewer reads is
+    characters, and the rate each piece ends up at is characters over its
+    share of the window.
+    """
+    if pieces <= 0 or pieces > len(items):
+        return None
+    lengths = [len(w["word"]) + 1 for w in items]
+    target = sum(lengths) / pieces
+    groups: list[list[dict[str, Any]]] = []
+    current: list[dict[str, Any]] = []
+    size = 0
+    for i, (word, length) in enumerate(zip(items, lengths)):
+        current.append(word)
+        size += length
+        left = len(items) - i - 1
+        if (len(groups) < pieces - 1 and size >= target
+                and left >= pieces - len(groups) - 1):
+            groups.append(current)
+            current, size = [], 0
+    if current:
+        groups.append(current)
+    if len(groups) != pieces:
+        return None
+    for group in groups:
+        if _wrap(" ".join(w["word"] for w in group), max_chars,
+                 max_lines) is None:
+            return None
+    return groups
+
+
+def _cue_pieces(items: list[dict[str, Any]], max_chars: int, max_lines: int
+                ) -> list[list[dict[str, Any]]]:
+    """The fewest balanced pieces this run of words fits into.
+
+    GREEDY FILL LEAVES ORPHANS. Filling line one and line two and letting
+    the remainder become its own cue is how king-tut's track opened with
+    "At Abydos, seventy-six kings are carved along one wall of the temple of
+    Seti the" and then, alone for 1.3 seconds, "First." Measured across the
+    two films that still have word timings: 26 of 296 cues and 29 of 269
+    were fourteen characters or fewer, and the mid-sentence ones read as
+    mistakes — "off.", "cameras.", "in.".
+
+    They survived the repair pass because they were not SHORT: 1.28s is over
+    the floor, so nothing looked at them. The boundary was wrong, not the
+    duration, which is the same diagnosis the rebalance step was written
+    for and the same fix, applied before the fact instead of after.
+    """
+    for pieces in range(1, len(items) + 1):
+        got = _split_evenly(items, pieces, max_chars, max_lines)
+        if got is not None:
+            return got
+    return [[w] for w in items]        # unwrappable even one word at a time
+
+
 def group(words: list[dict[str, Any]],
           max_chars: int = MAX_CHARS_PER_LINE,
           max_lines: int = MAX_LINES,
@@ -92,44 +166,55 @@ def group(words: list[dict[str, Any]],
     wrap inside the box. Cues shorter than `min_seconds` are repaired against
     the surrounding silence, and if that is not enough, merged forward.
     """
-    cues: list[dict[str, Any]] = []
-    buf: list[dict[str, Any]] = []
-
-    def lines_for(items: list[dict[str, Any]]) -> list[str] | None:
-        return _wrap(" ".join(w["word"] for w in items).strip(), max_chars, max_lines)
-
-    def close() -> None:
-        if not buf:
-            return
-        text = " ".join(w["word"] for w in buf).strip()
-        cues.append({
-            "text": text,
-            "startMs": buf[0]["startMs"],
-            "endMs": buf[-1]["endMs"],
-            "lines": lines_for(buf) or [text[:max_chars]],
-            # kept for the repair pass, which needs word timings to move a
-            # boundary; stripped before the track is written
-            "_words": list(buf),
-        })
-        buf.clear()
-
+    # SEGMENTS FIRST. A segment is a run of words that belongs together: it
+    # ends at a sentence end, or at a pause, because a cue never spans
+    # written air and two cues either side of silence are not one sentence
+    # being read. Only a segment's own pieces share a window.
+    segments: list[list[dict[str, Any]]] = []
+    run: list[dict[str, Any]] = []
     for w in words:
-        # A cue never spans a pause. Without this a cue that straddles written
-        # air holds its text through the silence, which is both stale on
-        # screen and the exact opposite of what the air is for.
-        if buf and (w["startMs"] - buf[-1]["endMs"]) / 1000.0 > MAX_INTRA_CUE_GAP_S:
-            close()
-        if buf and lines_for(buf + [w]) is None:
-            close()
-        buf.append(w)
-        if w.get("pageBreakAfter"):
-            close()
-    close()
+        if run and (w["startMs"] - run[-1]["endMs"]) / 1000.0 > MAX_INTRA_CUE_GAP_S:
+            segments.append(run)
+            run = []
+        run.append(w)
+        if _ends_a_sentence(w):
+            segments.append(run)
+            run = []
+    if run:
+        segments.append(run)
 
-    _hold_into_gaps(cues)
+    cues: list[dict[str, Any]] = []
+    for sentence, segment in enumerate(segments):
+        for piece in _cue_pieces(segment, max_chars, max_lines):
+            text = " ".join(w["word"] for w in piece).strip()
+            cues.append({
+                "text": text,
+                "startMs": piece[0]["startMs"],
+                "endMs": piece[-1]["endMs"],
+                "lines": _wrap(text, max_chars, max_lines) or [text[:max_chars]],
+                # which segment this came out of, so the pieces of a split
+                # sentence can be given its whole window back
+                "_sentence": sentence,
+                # kept for the repair pass, which needs word timings to move
+                # a boundary; stripped before the track is written
+                "_words": list(piece),
+            })
+
+    _fit_sentences(cues)
     repaired = _repair_short_cues(cues, min_seconds, max_chars, max_lines)
+    if repaired:
+        # AND FIT AGAIN, because the repair moves boundaries. Its rebalance
+        # step moves words out of the previous cue and resets that cue's end
+        # to its new last word — which throws away the reading time the fit
+        # had given it. Measured on run #6: 37 cues repaired, and two
+        # neighbours pushed over the ceiling paying for them, cue 103 from
+        # 12.9 to 21.2 characters a second and cue 218 from 17.0 to 28.3.
+        # Fitting again is safe: it only ever widens a sentence that is
+        # short of reading time, and never past its neighbours.
+        _fit_sentences(cues)
     for cue in cues:
         cue.pop("_words", None)
+        cue.pop("_sentence", None)
     if repaired:
         cues[0].setdefault("_notes", []).append(
             f"{repaired} cues were shorter than {min_seconds}s and were given "
@@ -145,6 +230,24 @@ HOLD_INTO_GAP_S = 1.5
 COMFORTABLE_CHARS_PER_SECOND = 17.0
 #: And how much of that silence is left clear before the next cue.
 GAP_GUARD_S = 0.08
+
+#: How far a cue may appear BEFORE its first word, into the silence in front
+#: of it.
+#:
+#: `_hold_into_gaps` only ever extended the END, and that is half a gap. A
+#: sentence's reading time is the silence on BOTH sides of it, and the ones
+#: that read too fast are short sentences whose following pause is short —
+#: nothing to hold into, while a second and a half of silence sits unused in
+#: front. Measured on run #6's own track, one cue per sentence:
+#:
+#:     lead 0.0s, lag 1.5s     9 cues over 20 cps, worst 34.1
+#:     lead 0.5s, lag 1.5s     2 cues over 20 cps, worst 23.3
+#:     lead 1.0s, lag 1.5s     0 cues over 20 cps, worst 17.9
+#:
+#: One second, because that is what reaches zero and nothing is gained by
+#: more. It is comfortable against this narration's pauses: the gaps between
+#: sentences run to a median of 1.69s and a p90 of 3.57s.
+LEAD_IN_S = 1.0
 
 
 def _hold_into_gaps(cues: list[dict[str, Any]]) -> None:
@@ -172,6 +275,164 @@ def _hold_into_gaps(cues: list[dict[str, Any]]) -> None:
                                                              HOLD_INTO_GAP_S * 1000))))
 
 
+def _fit_sentences(cues: list[dict[str, Any]]) -> None:
+    """Give each sentence the reading time it needs, and share it out.
+
+    THE SENTENCE IS THE AUTHORITY, and it is the unit that owns the silence
+    around it. Three things were wrong with doing this per cue:
+
+    1. ONLY THE END WAS EXTENDED. A cue that ends on its last word gives the
+       viewer no reading time in the silence that follows, which is where
+       most of the reading happens — ending on the word is why 92 of 311
+       cues read as too fast the first time a properly aligned track came
+       through here. But a sentence's reading time is the silence on BOTH
+       sides of it, and the cues that still read too fast after the end was
+       extended were short sentences with a short pause after them and a
+       second and a half sitting unused in front.
+
+    2. A SPLIT SENTENCE LEFT ITS EARLIER PIECES WITH NOTHING. A sentence
+       longer than two lines must be split — 41 of run #6's 245 sentences
+       were, at a median of 95 characters — and the last piece inherited the
+       whole trailing pause while the earlier ones hugged their own words.
+       That is exactly where run #6's 25 fast cues came from, every one a
+       mid-sentence fragment ending on "came", "with", "north-west of". The
+       gap after such a fragment is the next fragment, 0.02–0.08s away.
+
+    3. THE NEED WAS COMPUTED PER FRAGMENT. A fragment can look readable on
+       its own while the sentence it belongs to is not.
+
+    So: take the sentence's whole text, work out what it needs at a
+    comfortable rate, and widen the sentence's window — into the pause after
+    it first, then into the pause in front, each capped — until it has that
+    or the neighbours are reached. Then apportion the window across the
+    sentence's pieces by how much text each carries, so every piece reads at
+    the sentence's own rate.
+
+    A sentence already readable in its own span is left exactly alone, which
+    is what keeps written air clear of text where the narration was not
+    rushing.
+    """
+    runs: list[tuple[int, int]] = []
+    at = 0
+    while at < len(cues):
+        end = at
+        while (end + 1 < len(cues)
+               and cues[end + 1].get("_sentence") == cues[at].get("_sentence")):
+            end += 1
+        runs.append((at, end))
+        at = end + 1
+
+    for index, (first, last) in enumerate(runs):
+        here = cues[first:last + 1]
+        chars = sum(len(c["text"]) for c in here) or 1
+        span = cues[last]["endMs"] - cues[first]["startMs"]
+        # WHAT EACH PIECE NEEDS, summed — not what the sentence averages.
+        # Proportional sharing alone satisfies the ceiling and breaks the
+        # floor: a piece carrying nine characters of an eighty-five
+        # character sentence gets a ninth of the window, 0.28s, and twenty
+        # of run #6's cues landed under the floor that way while none was
+        # over the ceiling. A sentence needs room for the SUM of its
+        # pieces' minima.
+        floors = [_readable_ms(c) for c in here]
+        needed = max(sum(floors),
+                     int(chars / COMFORTABLE_CHARS_PER_SECOND * 1000))
+
+        # WIDENING IS CONDITIONAL. SHARING IS NOT.
+        #
+        # `continue` here used to skip both, and that stranded the very cues
+        # this pass exists for. Sentence 192 of run #6 splits into a 6.18s
+        # piece and "contempt." at 0.40s — 85 characters in a 6.6s window,
+        # 12.9 a second, readable by any measure. So the widening was
+        # skipped, correctly, and the SHARING was skipped with it. The
+        # repair pass then moved words back across the boundary to lift
+        # "contempt." off the floor and handed the result 1.2s for 34
+        # characters: 28.3 a second, the worst cue in the track, inside a
+        # sentence with four seconds of slack sitting next to it.
+        #
+        # Sharing takes nothing from anybody — it only moves a boundary
+        # inside a window the sentence already holds.
+        guard = int(GAP_GUARD_S * 1000)
+        if span < needed:
+            after_limit = (cues[last + 1]["startMs"] - guard
+                           if last + 1 < len(cues)
+                           else cues[last]["endMs"] + int(HOLD_INTO_GAP_S * 1000))
+            before_limit = (cues[first - 1]["endMs"] + guard if first
+                            else max(0, cues[first]["startMs"]
+                                     - int(LEAD_IN_S * 1000)))
+
+            # the pause behind first, then the pause in front
+            room_after = min(int(HOLD_INTO_GAP_S * 1000),
+                             max(0, after_limit - cues[last]["endMs"]))
+            take = min(needed - span, room_after)
+            cues[last]["endMs"] += take
+            span += take
+
+            if span < needed:
+                room_before = min(int(LEAD_IN_S * 1000),
+                                  max(0, cues[first]["startMs"] - before_limit))
+                take = min(needed - span, room_before)
+                cues[first]["startMs"] -= take
+                span += take
+
+        if last == first:
+            continue
+
+        # ALLOCATE: every piece its minimum first, then the surplus by how
+        # much text it carries.
+        window = cues[last]["endMs"] - cues[first]["startMs"]
+        if sum(floors) <= window:
+            surplus = window - sum(floors)
+            shares = [f + int(surplus * len(c["text"]) / chars)
+                      for f, c in zip(floors, here)]
+        else:
+            # Not enough room for every minimum even after widening. Split
+            # what there is in proportion to those minima and let `check`
+            # report the remainder: the honest answer is that this sentence
+            # is spoken too fast for its own span, and the fix is upstream
+            # in the pace or the writing, not in the arithmetic here.
+            total = sum(floors) or 1
+            shares = [int(window * f / total) for f in floors]
+
+        edge = cues[first]["startMs"]
+        for cue, share in zip(here, shares):
+            cue["startMs"], cue["endMs"] = edge, edge + share
+            edge += share
+        here[-1]["endMs"] = max(here[-1]["endMs"], cues[first]["startMs"] + window)
+
+
+#: A word timing this short is the aligner failing, not speech.
+DEGENERATE_WORD_MS = 40
+
+
+def _readable_ms(cue: dict[str, Any], min_seconds: float = MIN_CUE_SECONDS
+                 ) -> int:
+    """How long a cue must be on screen to be readable: BOTH rules.
+
+    `min_seconds` stops it flashing; MAX_CHARS_PER_SECOND stops it going by
+    faster than it can be read. Satisfying one and not the other is exactly
+    how run #6 could be made to have no cue over the ceiling and twenty
+    under the floor, or the reverse, but not neither.
+
+    A degenerate cue is held to the floor alone: stretching broken alignment
+    until the arithmetic looks readable hides it, and the fix is upstream.
+    """
+    floor = int(min_seconds * 1000)
+    if _is_degenerate(cue):
+        return floor
+    return max(floor, int(len(cue["text"]) / MAX_CHARS_PER_SECOND * 1000))
+
+
+def _is_degenerate(cue: dict[str, Any]) -> bool:
+    """Every word in it is too short to have been said.
+
+    Shared, because the repair's target and its rebalance have to agree
+    about which cues are broken; they were two copies of the same condition.
+    """
+    words = cue.get("_words") or []
+    return bool(words) and all(
+        (w["endMs"] - w["startMs"]) < DEGENERATE_WORD_MS for w in words)
+
+
 def _repair_short_cues(cues: list[dict[str, Any]], min_seconds: float,
                        max_chars: int, max_lines: int) -> int:
     """Give an unreadably short cue room, without moving anyone else's words.
@@ -184,11 +445,19 @@ def _repair_short_cues(cues: list[dict[str, Any]], min_seconds: float,
     so it is repaired here and counted, because the real fix belongs upstream
     in the alignment.
     """
-    floor_ms = int(min_seconds * 1000)
+    base_floor_ms = int(min_seconds * 1000)
     guard = 40                                  # ms kept clear of the neighbour
     repaired = 0
 
+    def target(cue: dict[str, Any]) -> int:
+        """`_readable_ms` at this call's floor. The repair knew only the
+        floor, so it handed a cue exactly 1.2s for 34 characters — 28 a
+        second, run #6's worst, sitting precisely on the number it was
+        given."""
+        return _readable_ms(cue, min_seconds)
+
     for i, cue in enumerate(cues):
+        floor_ms = target(cue)
         if cue["endMs"] - cue["startMs"] >= floor_ms:
             continue
         before = cue["endMs"] - cue["startMs"]
@@ -212,8 +481,7 @@ def _repair_short_cues(cues: list[dict[str, Any]], min_seconds: float,
         # neighbour to pad a cue that no amount of words will fix, and it
         # split "nine hundred" across a cue boundary doing it. A degenerate
         # cue is reported instead, because the fix belongs in the alignment.
-        degenerate = bool(cue.get("_words")) and all(
-            (w["endMs"] - w["startMs"]) < 40 for w in cue["_words"])
+        degenerate = _is_degenerate(cue)
         if (cue["endMs"] - cue["startMs"] < floor_ms and i
                 and cue.get("_words") and not degenerate):
             prev = cues[i - 1]
