@@ -48,22 +48,36 @@ spends the run twice and overwrites a result that was fine.
 | `styles/wak3up-documentary.yaml` (44 KB) | `scripts/playbook_digest.py --stage <stage>` |
 | `artifacts/research_brief.json` (72 KB) | `scripts/brief_digest.py --project <slug>` |
 | the whole pipeline manifest (27 KB) | your stage's entry — read it with python, not `cat` |
+| a delivered film's artifacts | `scripts/inspect_project.py` — see below |
 | `scripts/run_weekly.sh` | nothing. It started you; it is not your business |
 
 Your stage's director skill (`skills/pipelines/narrated-documentary/<stage>-director.md`)
 is 5–13 KB and **is** worth reading, once. Do not read the other stages'.
 
-Read a **slice** of a large JSON artifact with python, never `cat`:
+Read a **slice** of a large JSON artifact, never the whole thing and never
+with `cat`. There is a tool for it:
 
 ```bash
-.venv/bin/python -c "
-import json; d=json.load(open('projects/<slug>/artifacts/scene_plan.json'))
-print(len(d['scenes']), [s['id'] for s in d['scenes'][:5]])"
+.venv/bin/python scripts/inspect_project.py artifacts king-tut
+.venv/bin/python scripts/inspect_project.py scenes king-tut
+.venv/bin/python scripts/inspect_project.py show king-tut edit_decisions --path cuts.0
 ```
 
 `scene_plan.json` is 329 KB, `edit_decisions.json` 288 KB and
 `render_props.json` 425 KB on a real film. Reading one whole is 80–110 K
-tokens that you then carry for every remaining turn.
+tokens that you then carry for every remaining turn — which is why `show`
+truncates and tells you to ask a narrower `--path` rather than raise the
+limit.
+
+**Use it instead of improvising a one-liner.** Every improvised shape is
+one the guard has to learn: `.claude/hooks/bash_guard.py` carries two
+bespoke exemptions, a `for` loop over `projects/` and a `python -I -c` with
+its code audited for writes, and both exist because a stage made up a shape,
+got blocked, and spent turns recovering. `inspect_project.py` is an ordinary
+script call that needs no exemption at all.
+
+A question the three forms genuinely cannot answer still takes python — but
+ask whether the question is narrower than you think first.
 
 ## Do not author programs
 

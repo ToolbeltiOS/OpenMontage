@@ -23,6 +23,21 @@ The hand trim was therefore the measurement that fixed the rule, and this is
 the rule: THE LIBRARY HOLDS LOOPABLE BEDS, and everything enters through
 here. `span_hole_db` is then a true gate rather than a reading of fades.
 
+WHAT THE HAND TRIM ACTUALLY DID, found afterwards in king-tut's own
+`artifacts/bed_trimming.json` and worth correcting the record for: it was a
+RULE, not a judgement — `keep_fraction: 0.7` from a hand-picked start, with
+`hole_ceiling_db: 10.0`. Exactly 0.700 of every one of its six beds, which
+is where 117.6s of a 168.0s file comes from. So the 117.6s was a fraction
+and not an optimum, and this search finding 160.5s at the same hole is not a
+disagreement with it.
+
+It is also why a fraction is not enough. On
+`bed_documentary_underscore.mp3` the 70% rule produced a 117.9s bed holding
+a 16.59 dB hole — 6.6 dB past the ceiling — recorded honestly as
+`clears_ceiling: false` and WRITTEN TO DISK ANYWAY, where it looks like a
+bed. The search refuses that file instead: its longest steady window is
+45.4s at 7 dB and 63.7s even at 10, both under the 90s a bed needs.
+
 WHAT IT LOOKS FOR
 -----------------
 The longest contiguous window whose hole stays under `BED_HOLE_MAX_DB`,
