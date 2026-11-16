@@ -119,12 +119,46 @@ CERTAIN_RATIO = 0.25
 #: larger. Both of those frames were in a delivered film that passed this
 #: same gate at delivery, where grain held the baseline above the floor.
 #:
-#: One grey level sits 5.5x below the smallest real dropout this project has
-#: measured and 6x above the largest plate false positive, so it separates
-#: them with margin at both ends. It is NOT applied at delivery: the
-#: delivery gate's behaviour is unchanged, because a threshold that has
-#: never had a false positive in 146,000 frames should not be altered as a
-#: side effect of adding a new caller.
+#: APPLIED AT DELIVERY TOO, on the owner's ruling of 2026-11-16 and only
+#: with the control below in the same commit. It was plate-only for a day,
+#: on the reasoning that a gate with a clean record across four films should
+#: not change as a side effect of adding a new caller. The right answer to
+#: that was to measure it rather than to leave it.
+#:
+#: THE CONTROL. Run #1 — they-said-it-couldnt-be-built, the one film whose
+#: delivery survives on disk, 36,238 frames — scanned twice:
+#:
+#:     min_spike = 0.0     115 hits, 8 certain, weakest spike 3.8060
+#:     min_spike = 1.0     115 hits, 8 certain, weakest spike 3.8060
+#:
+#: Identical. The floor costs this film nothing. Its eight real dropouts,
+#: by frame and spike in grey levels:
+#:
+#:     16648  16.7750      24603  17.9820
+#:     21332  15.6800      26725  17.3860
+#:     21715  16.8120      27668  16.9190
+#:     24220  16.7740      32992  18.1940
+#:
+#: 15.7x to 18.2x the floor. Each is ~17 grey levels brighter than BOTH
+#: neighbours — luma ~32 against ~15 — which is the unpainted-frame
+#: signature; 32992 is the known dropout and reads the most decisive value
+#: in the film at 0.010. The weakest hit of ANY kind, certain or marginal,
+#: is 3.8060, still 3.8x clear. And a lost backdrop of MEASURED_COST
+#: injected into this same film reads 5.7534, 5.8x clear.
+#:
+#: KING TUT'S THREE COULD NOT BE RE-MEASURED, and the ruling was made
+#: knowing that. Its first delivery — the one with five hits, three of them
+#: marginal — was replaced by the re-render that shipped, and the gate
+#: report records `certain_frames`, `marginal_frames` and
+#: `worst_decisiveness` but never a per-frame spike. So there is no file and
+#: no record to read those three off. They were timeline gaps, which is the
+#: same class as five of run #1's eight, and those read 15.68 to 18.19.
+#:
+#: A NOTE ON "13 HITS ACROSS FOUR FILMS" in CERTAIN_RATIO above: that counts
+#: CERTAIN hits. Run #1 alone yields 115 at any floor, 107 of them marginal
+#: and mostly at decisiveness 0.50-0.60, which is a compressed delivery's
+#: own noise rather than a missing picture. The count is not wrong, it is
+#: narrower than it reads.
 MIN_SPIKE_LEVELS = 1.0
 
 
@@ -207,13 +241,16 @@ def _stamp(seconds: float) -> str:
     return f"{int(minutes):02d}:{rest:06.3f}"
 
 
-def check(film: str, fps: int = 30, min_spike: float = 0.0
+def check(film: str, fps: int = 30, min_spike: float = MIN_SPIKE_LEVELS
           ) -> tuple[list[str], dict[str, Any]]:
     """Blocking. ANY dropout fails the film — see `CERTAIN_RATIO` for the
     measurement that says a weak reading is not a weak defect.
 
-    `min_spike` defaults to 0, so the delivery gate is exactly what it was.
-    A caller scanning a PLATE passes MIN_SPIKE_LEVELS; see that constant.
+    `min_spike` is MIN_SPIKE_LEVELS everywhere now, plate and delivery
+    alike, with the control for that in the constant's own comment: run #1
+    yields the same 115 hits and the same 8 certain ones at a floor of 0.0
+    and of 1.0. A frame whose picture is GONE does not differ from its
+    neighbours by a fraction of one grey level in any regime.
     """
     hits, total = scan(film, float(fps), min_spike=min_spike)
     certain = [h for h in hits if h["decisiveness"] < CERTAIN_RATIO]

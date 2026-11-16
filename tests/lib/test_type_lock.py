@@ -733,13 +733,49 @@ class TestThePlateIsGatedAtThePlatePass:
         drop = measured["plate-dropout"]
         assert drop["certain"] + drop["marginal"] == 0, drop
 
-    def test_the_plate_scan_uses_the_floor_and_delivery_does_not(self):
-        """The delivery gate has never had a false positive in 146,000
-        frames and must not change because a new caller needed something."""
+    def test_the_floor_now_applies_at_delivery_TOO(self):
+        """Owner's ruling, 2026-11-16, and only with the control.
+
+        It was plate-only for a day, on the reasoning that a gate with a
+        clean record across four films should not change as a side effect of
+        adding a new caller. The right answer to that was to measure it.
+
+        THE CONTROL, on run #1 — the one film whose delivery survives, all
+        36,238 frames of it, scanned twice:
+
+            min_spike 0.0     115 hits, 8 certain, weakest spike 3.8060
+            min_spike 1.0     115 hits, 8 certain, weakest spike 3.8060
+
+        Identical. Its eight real dropouts read 15.680, 16.774, 16.775,
+        16.812, 16.919, 17.386, 17.982 and 18.194 grey levels — 15.7x to
+        18.2x the floor — and the weakest hit of ANY kind is 3.8060, still
+        3.8x clear. A lost backdrop of MEASURED_COST injected into the same
+        film reads 5.7534.
+
+        King Tut's three could not be re-measured: its first delivery was
+        replaced by the re-render, and the gate report records frames and
+        decisiveness but never a per-frame spike. Recorded here because the
+        ruling was made knowing it, and an unmeasured number should be
+        visible rather than implied.
+        """
+        from lib import verify_plate_dropout as V
+        assert V.check.__defaults__[-1] == V.MIN_SPIKE_LEVELS
+        assert V.MIN_SPIKE_LEVELS == 1.0
+
+    def test_the_eight_real_dropouts_all_clear_the_floor(self):
+        """Pinned as data, so the control survives the film being deleted —
+        which is exactly what happened to King Tut's."""
+        from lib import verify_plate_dropout as V
+        measured = {16648: 16.7750, 21332: 15.6800, 21715: 16.8120,
+                    24220: 16.7740, 24603: 17.9820, 26725: 17.3860,
+                    27668: 16.9190, 32992: 18.1940}
+        assert len(measured) == 8
+        assert min(measured.values()) > V.MIN_SPIKE_LEVELS * 15
+        # and the weakest hit of any kind in that film, not just the certain
+        assert 3.8060 > V.MIN_SPIKE_LEVELS * 3
+
+    def test_both_callers_ask_for_the_same_floor(self):
         import inspect
 
-        from lib import verify_plate_dropout as V
-        from lib.film_render import gates, plate_gates
+        from lib.film_render import plate_gates
         assert "MIN_SPIKE_LEVELS" in inspect.getsource(plate_gates)
-        assert "min_spike" not in inspect.getsource(gates)
-        assert V.check.__defaults__[-1] == 0.0
