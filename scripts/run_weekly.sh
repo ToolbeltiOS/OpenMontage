@@ -1670,6 +1670,27 @@ scripts/synthesize_narration.py synthesises the narration one segment per
 beat and bakes the written air, scripts/measure_music.py measures the music
 library against the playbook's bed criteria.
 
+MUSIC COMES FROM THE SHARED LIBRARY, AND EVERY BED ENTERS IT THROUGH INGEST.
+The library is lib/shared_state.music_dir() — one place, beside the ledger,
+not a copy per project. measure_music.py reads it by default.
+
+A raw download is NOT a bed. A candidate carries fades and silence at its
+edges, and looping that over a span measures the silence rather than the
+music: bed_cinematic_quiet reads a 46.59 dB hole as a file and 28.25 dB
+through the mixer's own gate, which refuses it. So any candidate you fetch
+goes through
+
+    .venv/bin/python scripts/ingest_bed.py <file>...
+
+which takes the longest window that holds its level, writes it to the
+library with its source hash and window offsets, and REFUSES a file with no
+such window of at least 90s. A refusal is an answer: Small Drama, the piano
+bed run #1 used, has no steady 90s at any ceiling and reads 19.1 dB of build
+against a 5 dB preference. Do not hand-trim around it.
+
+Once a bed is in the library its hole IS a gate — measure_music.py enforces
+it there rather than reporting it.
+
 BEFORE synthesising, run
 
     .venv/bin/python scripts/build_narration_lexicon.py --project $SLUG

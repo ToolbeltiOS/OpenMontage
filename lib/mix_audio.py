@@ -759,6 +759,107 @@ def edge_times(env_db: np.ndarray) -> dict:
     }
 
 
+def fill_span(track: str, need: float, dest: str) -> dict:
+    """`need` seconds of bed from `track`, written to `dest`.
+
+    EXTRACTED SO THE AUDITION CAN ASK THE SAME QUESTION THE MIXER WILL.
+    `scripts/measure_music.py` ranks candidates before anybody listens, and
+    it measured three properties of the RAW FILE — melodic movement, build,
+    rhythmic periodicity — while the mixer judged the bed it actually built
+    and could refuse a track that had already won. A bed shorter than its
+    span is looped, and looping is where holes come from, so a hole measured
+    on the raw file is a measurement of something that never plays.
+
+    Two paths, both the mixer's own:
+
+      long enough   the steadiest `need` seconds, not the middle. The middle
+                    of this film's opening bed landed in the track's
+                    fade-out and put an 18.7 dB hole on the act 2 boundary.
+      too short     crossfaded repeats, not -stream_loop, which restarts the
+                    file on a hard cut and drops the listener back to bar
+                    one mid-phrase.
+
+    Returns what it did, so the caller can report it: `window` and `start`
+    for the first path, `reps` for the second, and `need`/`src_dur` for both.
+    """
+    src_dur = float(subprocess.check_output(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+         "-of", "csv=p=0", track]).strip())
+
+    if src_dur >= need:
+        start, window = steadiest_window(track, need, src_dur)
+        run(["ffmpeg", "-v", "error", "-y", "-ss", f"{start:.3f}",
+             "-i", track, "-t", f"{need:.3f}", "-ar", str(SR), "-ac", "2",
+             dest])
+        return {"need": need, "src_dur": src_dur, "start": start,
+                "window": window, "reps": 1, "looped": False}
+
+    reps = int(need // max(1.0, src_dur - LOOP_XFADE)) + 2
+    ins, chain, prev = [], [], None
+    for r in range(reps):
+        ins += ["-i", track]
+    for r in range(1, reps):
+        label = f"l{r}"
+        a = prev or "0:a"
+        chain.append(f"[{a}][{r}:a]acrossfade=d={LOOP_XFADE}:"
+                     f"c1={XFADE_CURVE}:c2={XFADE_CURVE}[{label}]")
+        prev = label
+    filt = ";".join(chain) if chain else None
+    cmd = ["ffmpeg", "-v", "error", "-y"] + ins
+    if filt:
+        cmd += ["-filter_complex", filt, "-map", f"[{prev}]"]
+    cmd += ["-t", f"{need:.3f}", "-ar", str(SR), "-ac", "2", dest]
+    run(cmd)
+    return {"need": need, "src_dur": src_dur, "start": 0.0,
+            "window": None, "reps": reps, "looped": True}
+
+
+def span_hole_db(track: str, need: float,
+                 under_speech_lufs: float = -33.0) -> dict:
+    """The hole in the bed this track WOULD become, over a `need`-second span.
+
+    What the audition needs and the raw file cannot answer, through the
+    mixer's own two steps and no reimplementation of either:
+
+        fill_span      the span as it will actually play, which for a bed
+                       shorter than its span means CROSSFADED REPEATS, and
+                       looping is where holes come from
+        condition_bed  the EQ, the compressor and the levelling — and the
+                       compressor is the point, because it LOWERS ITS
+                       THRESHOLD 3 dB at a time specifically to close a
+                       hole. A hole measured before conditioning is not the
+                       number the mixer gates on and would refuse beds the
+                       mixer can rescue.
+
+    Verified against film #5's own mix_report.json, which recorded 3.66 dB
+    for a 168s bed looped over a 609.7s span and 4.92 dB for a 117.6s bed
+    over 619.1s.
+
+    `would_be_refused` is the whole purpose: `main` fails a film whose bed
+    holds a hole deeper than BED_HOLE_MAX_DB, and it fails it after the bed
+    has been chosen, EQ'd, levelled and laid under the whole narration.
+    """
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        raw = os.path.join(tmp, "span.wav")
+        conditioned = os.path.join(tmp, "bed.wav")
+        info = fill_span(track, need, raw)
+        rep = condition_bed(raw, conditioned, os.path.basename(track),
+                            under_speech_lufs)
+    hole = rep["hole_db"]
+    return {"hole_db": hole,
+            "spread_5_95_lu": rep["spread_5_95_lu"],
+            "lra_lu": rep["lra_lu"],
+            "compressor_passes": rep["compressor_passes"],
+            "span_seconds": round(need, 2),
+            "source_seconds": round(info["src_dur"], 2),
+            "looped": info["looped"],
+            "reps": info["reps"],
+            "hole_ceiling_db": BED_HOLE_MAX_DB,
+            "would_be_refused": hole is not None and hole > BED_HOLE_MAX_DB}
+
+
 def build_bed(spans: list[dict], total: float, under_speech_lufs: float,
               crossfade: float = 2.5) -> str:
     """Lay each bed over its own span, crossfading on the act boundaries.
@@ -783,48 +884,21 @@ def build_bed(spans: list[dict], total: float, under_speech_lufs: float,
 
     parts = []
     for sp, L in zip(spans, lengths):
-        src_dur = float(subprocess.check_output(
-            ["ffprobe", "-v", "error", "-show_entries", "format=duration",
-             "-of", "csv=p=0", sp["track"]]).strip())
-        need = L + crossfade
         seg = os.path.join(OUT, f".bedseg_{sp['name']}.wav")
-        if src_dur >= need:
-            # NOT the middle. See `steadiest_window`: the middle of this
-            # film's opening bed landed in the track's fade-out and put an
-            # 18.7 dB hole on the act 2 boundary.
-            start, window = steadiest_window(sp["track"], need, src_dur)
+        info = fill_span(sp["track"], L + crossfade, seg)
+        window = info.get("window")
+        if window is not None:
             WINDOWS[sp["name"]] = window
-            print(f"bed {sp['name']}: taking {need:.1f}s from {start:.1f}s "
-                  f"(middle would be {window.get('middle_would_be')}s) — "
+            print(f"bed {sp['name']}: taking {info['need']:.1f}s from "
+                  f"{info['start']:.1f}s (middle would be "
+                  f"{window.get('middle_would_be')}s) — "
                   f"spread {window.get('spread_5_95_lu')} LU, hole "
                   f"{window.get('hole_db')} dB over "
                   f"{window.get('searched')} candidate windows")
-            run(["ffmpeg", "-v", "error", "-y", "-ss", f"{start:.3f}", "-i", sp["track"],
-                 "-t", f"{need:.3f}", "-ar", str(SR), "-ac", "2", seg])
         else:
-            # The bed is shorter than its span, so it repeats. -stream_loop
-            # restarts the file on a hard cut, which drops the listener back to
-            # bar one mid-phrase; under narration that reads as a mistake even
-            # when it does not click. The repeats are crossfaded instead, so a
-            # loop point sounds like the music turning over rather than
-            # starting again. All three chosen beds run 150-220s against spans
-            # of 284-629s, so every span has at least one of these.
-            reps = int(need // max(1.0, src_dur - LOOP_XFADE)) + 2
-            ins, chain, prev = [], [], None
-            for r in range(reps):
-                ins += ["-i", sp["track"]]
-            for r in range(1, reps):
-                label = f"l{r}"
-                a = prev or "0:a"
-                chain.append(f"[{a}][{r}:a]acrossfade=d={LOOP_XFADE}:"
-                             f"c1={XFADE_CURVE}:c2={XFADE_CURVE}[{label}]")
-                prev = label
-            filt = ";".join(chain) if chain else None
-            cmd = ["ffmpeg", "-v", "error", "-y"] + ins
-            if filt:
-                cmd += ["-filter_complex", filt, "-map", f"[{prev}]"]
-            cmd += ["-t", f"{need:.3f}", "-ar", str(SR), "-ac", "2", seg]
-            run(cmd)
+            print(f"bed {sp['name']}: {info['reps']} crossfaded repeats to "
+                  f"fill {info['need']:.1f}s from a {info['src_dur']:.1f}s "
+                  f"track")
         parts.append(seg)
 
     # EVERY BED IS CONDITIONED ON ITS OWN, BEFORE THE JOIN.

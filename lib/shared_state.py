@@ -91,6 +91,34 @@ def picks_path() -> Path:
     return state_dir() / "topic_picks.jsonl"
 
 
+#: Overrides `music_dir()`. The name already existed in two places —
+#: `scripts/measure_music.py`'s usage line and `lib/build_render_props.py`,
+#: which reads it from the environment — without anything defining it.
+MUSIC_DIR_ENV = "MUSIC_LIBRARY_DIR"
+
+
+def music_dir() -> Path:
+    """The one place the known-good beds live.
+
+    THEY WERE IN THREE PLACES AND NONE OF THEM WAS SHAREABLE. Measured
+    2026-11-15: "Lake Jupiter" and "Ancient Civilisations" sat in
+    `~/wak3up/assets/ambient_sources`, which belongs to a different project
+    and is OUTSIDE this repo — `mix_audio.report_track` already records that
+    easter-island and they-said-it "cannot be re-mixed from a clone no
+    matter how the path is written" for exactly that reason. "Small Drama"
+    sat inside one film's own `assets/audio/candidates`, so the next film
+    could only find it by knowing which earlier film had used it. Meanwhile
+    the per-project copies had multiplied: two projects held byte-identical
+    copies of six beds, and `bed_ambient_pad` and `bed_sustained_tone` are
+    THE SAME FILE under two names, so the audition screened it twice and
+    scored it twice.
+
+    Beside the ledger, and for the same reason: a per-branch copy of shared
+    state is a copy that disagrees with the others. See the module docstring.
+    """
+    return Path(os.environ.get(MUSIC_DIR_ENV) or (state_dir() / "music"))
+
+
 def _lock_path(target: Path) -> Path:
     return target.with_suffix(target.suffix + ".lock")
 

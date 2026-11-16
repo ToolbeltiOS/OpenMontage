@@ -250,10 +250,23 @@ class TestTheCrossfadeCurve:
         assert abs(dip) < 0.6, f"{dip:.2f} dB"
 
     def test_and_the_mixer_uses_qsin_for_both_kinds_of_join(self, tmp_path):
+        """Both kinds, across both functions that make one.
+
+        The span joins are in `build_bed` and the loop joins moved into
+        `fill_span` when the audition needed to build a span the same way
+        the mixer does. Two functions, the same four references, and the
+        count is still what matters: a literal curve written at a join
+        instead of the constant is the thing being prevented.
+        """
         import inspect
 
-        src = inspect.getsource(mx.build_bed)
+        src = inspect.getsource(mx.build_bed) + inspect.getsource(mx.fill_span)
         assert "c1=tri" not in src
         assert src.count("XFADE_CURVE") >= 4, (
             "both the loop joins and the span joins take the curve from the "
             "one constant")
+        for fn in (mx.build_bed, mx.fill_span):
+            body = inspect.getsource(fn)
+            assert "acrossfade" in body and "XFADE_CURVE" in body, (
+                f"{fn.__name__} makes a join without taking the curve from "
+                f"the constant")
