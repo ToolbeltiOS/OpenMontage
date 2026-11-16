@@ -166,6 +166,31 @@ The compose stage has **no agent at all**. `scripts/await_render.py` starts
 `scripts/render_film.py` runs the gates itself. If your stage's artifact is
 done and the next thing is a render, **your stage is over**.
 
+## If you do wait for something, never wait on a process name
+
+Not this, ever:
+
+    until ! pgrep -f "some_script.py" >/dev/null; do sleep 20; done
+
+A waiter's own command line is an ordinary process to everybody else's
+`pgrep`. One of these works, which is how it gets written; **two of them
+deadlock**, because each sees the other, neither ever sees an empty result,
+and both wait for ever while the job they were watching has finished. On
+2026-11-15 three such shells were waiting for one test suite. It went green
+and not one of them said so. The night before, two waiting for the same
+repatch hung for forty minutes after it was done. `pgrep` excludes only its
+own process, never the shell that called it.
+
+Wait on something that is not a name:
+
+    kill -0 "$pid"                 a specific process, not a description
+    [[ -f "$dir/done" ]]           a sentinel the work itself writes
+    [[ ! -f "$dir/render.pid" ]]   a pidfile an exit trap removes
+
+`scripts/render_detached.sh` writes and removes a pidfile for exactly this
+reason, and every waiter in this repo uses one of the three. A test holds
+that: `tests/automation/test_waiters.py`.
+
 ## Finish the stage, then stop
 
 1. Write your canonical artifact to `projects/<slug>/artifacts/`.
