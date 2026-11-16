@@ -45,6 +45,17 @@ SR = 22050
 #: loop, which is where holes come from.
 DEFAULT_SPAN_SECONDS = 600.0
 
+#: How many DISTINCT tracks an audition needs to be an audition.
+#:
+#: The shared library holds two beds that cleared ingest, and a film needs a
+#: bed per span. Choosing two from two is not a choice, it is an assignment
+#: — and the criteria rule candidates out: of film #5's six candidates (five
+#: distinct, two being the same file) exactly ONE met all three, and both
+#: library beds miss one each, Ancient Civilisations on rhythmic periodicity
+#: at 0.275 and Lake Jupiter on build at 7.42 dB. So the asset stage fetches
+#: at least two NEW candidates per film, which with the library makes four.
+MIN_CANDIDATES = 4
+
 
 def digest(path: str) -> str:
     """The file's bytes, for telling two names for one track apart.
@@ -155,6 +166,9 @@ def main() -> int:
     ap.add_argument("--span-seconds", type=float, default=DEFAULT_SPAN_SECONDS,
                     help="the span each shortlisted bed is built against to "
                          "measure its hole")
+    ap.add_argument("--min-candidates", type=int, default=MIN_CANDIDATES,
+                    help="fail if fewer distinct tracks than this are "
+                         "available to choose from")
     ap.add_argument("--no-hole", action="store_true",
                     help="skip the hole measurement (it builds and conditions "
                          "a real span per candidate, which is not quick)")
@@ -182,6 +196,15 @@ def main() -> int:
               f"{dupe['same_file_as']} — screened once", flush=True)
     if folded:
         print(f"{len(files)} distinct track(s) to measure", flush=True)
+
+    if len(files) < args.min_candidates:
+        print(f"\nonly {len(files)} distinct track(s) in {library}, under "
+              f"the {args.min_candidates} an audition needs. Choosing a bed "
+              f"per span from this few is an assignment, not a choice, and "
+              f"the criteria below will rule some of them out. Fetch at "
+              f"least two new candidates and put them through "
+              f"scripts/ingest_bed.py.", flush=True)
+        return 1
 
     rows = []
     for i, path in enumerate(files, 1):

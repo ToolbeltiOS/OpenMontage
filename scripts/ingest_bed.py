@@ -94,6 +94,10 @@ MIN_BED_SECONDS = 90.0
 #: Hence 7.0 rather than BED_HOLE_MAX_DB, which is also what the hand trim
 #: achieved (7.04 dB) and what was predicted of this rule. Raise it to
 #: BED_HOLE_MAX_DB for the longest possible bed and no margin.
+#:
+#: ACCEPTED BY THE OWNER, 2026-11-16, as a margin decision: the 1.2 seconds
+#: is the price and the 2.5 dB is what it buys, on a gate that fails a whole
+#: film. --hole-ceiling is how to spend it the other way.
 INGEST_HOLE_CEILING_DB = 7.0
 
 #: The mixer's rate, so a library bed needs no conversion to be used.
@@ -262,6 +266,17 @@ def record(out_dir: Path, rows: list[dict]) -> Path:
         if row.get("written"):
             book[row["track"]] = row
 
+    # WHAT THE LIBRARY TURNED AWAY, AND WHY. A refusal is an answer and it
+    # has to outlive the terminal it was printed in, or the next person to
+    # wonder where a bed went re-ingests it. Small Drama — the documentary
+    # piano from film #1 — has no steady 90s at any ceiling, and film #1 is
+    # the run that put tunes under the narration.
+    refused = {r["source"]: r for r in rows if "refused" in r}
+    for old_row in (json.loads(path.read_text()).get("refused") or []
+                    if path.exists() else []):
+        if isinstance(old_row, dict) and old_row.get("source") not in refused:
+            refused[old_row["source"]] = old_row
+
     # A MANIFEST DESCRIBES THE LIBRARY, NOT ITS HISTORY. Merging alone kept
     # rows for files that are no longer there: a hand-written manifest left
     # three raw mp3s listed after ingest had replaced them with two wavs, so
@@ -283,6 +298,7 @@ def record(out_dir: Path, rows: list[dict]) -> Path:
         "ingest_hole_ceiling_db": INGEST_HOLE_CEILING_DB,
         "min_bed_seconds": MIN_BED_SECONDS,
         "beds": [book[k] for k in sorted(book)],
+        "refused": [refused[k] for k in sorted(refused)],
     }, indent=1) + "\n")
     return path
 
@@ -322,7 +338,8 @@ def main(argv: list[str] | None = None) -> int:
               + (f" -> written {row['hole_db']:.2f} dB"
                  if row.get("written") else ""))
 
-    if not args.dry_run and any(r.get("written") for r in rows):
+    if not args.dry_run and (any(r.get("written") for r in rows)
+                             or (refused and out_dir.exists())):
         print(f"\nmanifest: {record(out_dir, rows)}")
     return 1 if refused else 0
 
