@@ -6,6 +6,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { TYPE_CLASS } from "../design/layers";
+import { pinned } from "../design/settle";
 
 type CalloutType = "info" | "warning" | "tip" | "quote";
 
@@ -55,56 +56,56 @@ export const CalloutBox: React.FC<CalloutBoxProps> = ({
   const resolvedIcon = icon || defaults.icon;
 
   // Slide-in from left with slight bounce
-  const slideX = spring({
+  const slideX = pinned(frame, spring({
     frame,
     fps,
     config: { damping: 13, stiffness: 90 },
     from: -80,
     to: 0,
-  });
+  }), 0);
 
-  const opacity = spring({
+  const opacity = pinned(frame, spring({
     frame,
     fps,
     config: { damping: 18 },
-  });
+  }), 1);
 
   // Scale bounce (subtle overshoot)
-  const scale = spring({
+  const scale = pinned(frame, spring({
     frame,
     fps,
     config: { damping: 11, stiffness: 100 },
     from: 0.96,
     to: 1,
-  });
+  }), 1);
 
   // Icon entrance — slightly delayed
-  const iconScale = spring({
+  const iconScale = pinned(frame, spring({
     frame: frame - 5,
     fps,
     config: { damping: 10, stiffness: 120 },
     from: 0.5,
     to: 1,
-  });
-  const iconOpacity = spring({
+  }), 1);
+  const iconOpacity = pinned(frame, spring({
     frame: frame - 5,
     fps,
     config: { damping: 20 },
-  });
+  }), 1);
 
   // Text fade in — staggered after box
-  const textOpacity = spring({
+  const textOpacity = pinned(frame, spring({
     frame: frame - 8,
     fps,
     config: { damping: 20 },
-  });
+  }), 1);
 
   // Border accent draw (height grows top to bottom)
-  const borderDraw = spring({
+  const borderDraw = pinned(frame, spring({
     frame: frame - 3,
     fps,
     config: { damping: 14, stiffness: 80 },
-  });
+  }), 1);
 
   // Quote type uses italic styling
   const isQuote = type === "quote";

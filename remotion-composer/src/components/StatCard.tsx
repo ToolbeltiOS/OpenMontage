@@ -1,5 +1,6 @@
 import { AbsoluteFill, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { TYPE_CLASS } from "../design/layers";
+import { pinned } from "../design/settle";
 import { PlateSweep } from "../design/Frame";
 
 interface StatCardProps {
@@ -39,19 +40,19 @@ export const StatCard: React.FC<StatCardProps> = ({
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const scale = spring({
+  const scale = pinned(frame, spring({
     frame,
     fps,
     config: { damping: 12, stiffness: 120 },
     from: 0.8,
     to: 1,
-  });
+  }), 1);
 
-  const subtitleOpacity = spring({
+  const subtitleOpacity = pinned(frame, spring({
     frame: frame - 8,
     fps,
     config: { damping: 20 },
-  });
+  }), 1);
 
   return (
     <AbsoluteFill

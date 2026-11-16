@@ -1,5 +1,6 @@
 import { AbsoluteFill, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { TYPE_CLASS } from "../design/layers";
+import { pinned } from "../design/settle";
 import { PlateSweep } from "../design/Frame";
 
 interface TextCardProps {
@@ -43,14 +44,15 @@ export const TextCard: React.FC<TextCardProps> = ({
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const opacity = spring({ frame, fps, config: { damping: 20 } });
-  const scale = spring({
+  const opacity = pinned(
+    frame, spring({ frame, fps, config: { damping: 20 } }), 1);
+  const scale = pinned(frame, spring({
     frame,
     fps,
     config: { damping: 15, stiffness: 100 },
     from: 0.95,
     to: 1,
-  });
+  }), 1);
 
   return (
     <AbsoluteFill
