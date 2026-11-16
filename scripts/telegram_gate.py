@@ -164,6 +164,63 @@ def fact_line(project: str, script_path: Path) -> str:
         return f"fact gate: could not be summarised ({type(exc).__name__})"
 
 
+def angle_lines(project: str, script_path: Path) -> list[str]:
+    """The angle, and the disputed threads the film is supposed to be about.
+
+    SHOWN AT THE GATE BECAUSE THIS IS THE ONE THING A PERSON CAN JUDGE AND A
+    CHECK CANNOT. `scripts/check_channel_angle.py` can count how much of the
+    film rests on a contested claim; only a reader can say whether the five
+    threads are the interesting ones and whether the angle is the subject or
+    a mood word.
+
+    Same shape as `fact_line`: computed here from the real artifacts, so a
+    script revised after notes is shown beside its own figures, and it never
+    raises — a reporting extra must not be why an approval request fails to
+    send.
+    """
+    try:
+        sys.path.insert(0, str(ROOT / "lib"))
+        import verify_channel_angle as A
+
+        art = ROOT / "projects" / project / "artifacts"
+        brief = json.loads((art / "research_brief.json").read_text())
+        lines: list[str] = []
+
+        angle = ""
+        packet = art / "proposal_packet.json"
+        if packet.exists():
+            proposal = json.loads(packet.read_text())
+            chosen = (proposal.get("selected_concept") or {}).get("concept_id")
+            concept = next(
+                (o for o in (proposal.get("concept_options") or [])
+                 if isinstance(o, dict) and o.get("id") == chosen), None)
+            angle = ((concept or {}).get("angle") or "").strip()
+        lines.append(f"<b>angle</b> — {angle}" if angle
+                     else "<b>angle</b> — <i>the proposal states none</i>")
+
+        _problems, m = A.check_script(json.loads(script_path.read_text()),
+                                     brief, backend="capitalisation")
+        lines.append(
+            f"<i>{m['on_contested']} of {m['sentences']} sentences "
+            f"({m['share_of_all']:.0%}) rest on a contested claim; "
+            f"{m['minimum_share']:.0%} is the floor</i>")
+
+        items = A.disputed_items(brief)
+        if not items:
+            lines.append("<i>the brief names no disputed threads</i>")
+        for n, entry in enumerate(items, 1):
+            claim = entry.get("claim") or {}
+            text = str(claim.get("claim") or "(no such claim)")
+            if len(text) > 160:
+                text = text[:157].rstrip() + "…"
+            kind = str(entry.get("kind") or "?").replace("_", " ")
+            lines.append(f"{n}. <i>{kind}</i> — {text}")
+        return lines
+    except Exception as exc:                       # never block the approval
+        return [f"<i>angle: could not be summarised "
+                f"({type(exc).__name__})</i>"]
+
+
 # ILLUSTRATIONS ARE NOT APPROVED HERE, AND NEVER WERE A SENSIBLE THING TO
 # APPROVE HERE. This gate ran before the edit stage, so at this point no
 # illustration has been authored FOR THIS FILM at all — what it posted was
@@ -195,6 +252,7 @@ def post(project: str, script_path: Path, frames: list[Path],
               f"<i>{project}</i> — script gate"
               + (" (revised)" if attempt > 1 else "") + "\n"
               + f"<i>{fact_line(project, script_path)}</i>\n\n"
+              + "\n".join(angle_lines(project, script_path)) + "\n\n"
               + "\n".join(outline[:40]))
     telegram.require(header)
 

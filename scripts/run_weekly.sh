@@ -1176,6 +1176,30 @@ if [[ -z "$RESUME" && -z "$BRIEF" && "$NEW_FILM" != "1" ]]; then
   RESUME="$("$PY" "$REPO/scripts/unfinished_film.py" 2>/dev/null || true)"
 fi
 
+#: The picker writes THREE briefs and the chain used to read only the first.
+#: It reads them in turn now, because a topic with nothing disputed in it is
+#: a thing the angle gate discovers at 20:00 on a Friday and there has to be
+#: a film on Monday.
+MAX_TOPICS_PER_RUN=3
+
+brief_entity() {  # the nth brief's entity, or empty when there is no nth
+  "$PY" -c "
+import json, sys
+b = json.load(open('$BRIEF'))
+briefs = b['briefs'] if isinstance(b, dict) else b
+i = int(sys.argv[1])
+print(briefs[i]['entity'] if 0 <= i < len(briefs) else '')
+" "$1"
+}
+
+slug_of() { printf '%s' "$1" | tr '[:upper:] ' '[:lower:]-' | tr -cd 'a-z0-9-'; }
+
+is_blacklisted() {
+  local needle="$1" file="$REPO/artifacts/topic_blacklist.txt"
+  [[ -f "$file" ]] || return 1
+  grep -qiFx -- "$needle" "$file"
+}
+
 if [[ -n "$RESUME" ]]; then
   SLUG="$RESUME"
   [[ -d "$REPO/projects/$SLUG" ]] \
@@ -1208,14 +1232,10 @@ else
       || fail "topic picker" "$(tail -5 "$LOGDIR/pick_topic.log")"
     BRIEF="$REPO/artifacts/topic_briefs.json"
   fi
-  TOPIC="$("$PY" -c "
-import json,sys
-b=json.load(open('$BRIEF'))
-briefs=b['briefs'] if isinstance(b,dict) else b
-print(briefs[0]['entity'] if briefs else '')
-")"
+  TOPIC_INDEX=0
+  TOPIC="$(brief_entity "$TOPIC_INDEX")"
   [[ -n "$TOPIC" ]] || fail "topic picker" "no eligible topic"
-  SLUG="$(printf '%s' "$TOPIC" | tr '[:upper:] ' '[:lower:]-' | tr -cd 'a-z0-9-')"
+  SLUG="$(slug_of "$TOPIC")"
   say "topic: $TOPIC  (project $SLUG)"
   notify "<b>Weekly run started</b>
 topic: $TOPIC
@@ -1365,6 +1385,27 @@ $reconcile_out"
 # research conversation into the proposal and both into the script was paying
 # 57 K tokens a turn for conversation it could have read in 4 KB.
 
+# ── 2. research, and the TOPIC HAS TO HAVE AN ANGLE ─────────────────────
+#
+# THE CHAIN SURVIVES A TOPIC WITH NOTHING DISPUTED IN IT, because the only
+# other option is no film. The angle gate can only run after research, so
+# this is discovered around 20:00 on a Friday — and "re-fire on Saturday"
+# was the first answer here, which is a week of the channel spent on a
+# subject the gate was always going to refuse.
+#
+# So the loop is HERE, at the runner, and not inside a stage. A stage knows
+# about one project and cannot choose a different subject; the runner owns
+# the topic. Research runs, the gate answers, and on exit 3 — nothing
+# contested in the whole brief — the entity is blacklisted and the next
+# brief becomes the film. Three topics at most, because each one is a full
+# research stage and the night is not infinite.
+#
+# Exit 1 is NOT this. A brief that holds thirteen contested claims and
+# names none of them in `disputed` is a stage that did not finish, and the
+# next topic would not fix it. See check_channel_angle.py.
+TOPIC_TRY=1
+while :; do
+
 pipeline_stage research "$TURNS_RESEARCH" research-director.md \
 "Produce projects/$SLUG/artifacts/research_brief.json for this subject, and
 stop.
@@ -1385,8 +1426,111 @@ Mark a contested claim contested rather than asserting it. The register of
 this channel is a researcher reading rival accounts and refusing to pick,
 and that only works if the brief knows which accounts are rivals.
 
+AND THE ANGLE IS A SECTION OF THE BRIEF, NOT A TONE.
+
+\`disputed\` carries at least five entries, each naming a \`claim_id\` from
+your own data_points and a \`kind\`, one of:
+
+    official_account_contradicted   an official account later contradicted
+                                    by documents
+    rejected_by_mainstream          a claim by a named investigator, witness
+                                    or researcher that the mainstream rejects
+    left_out_of_popular_tellings    a fact in the primary record that popular
+                                    tellings leave out
+    unexplained                     an unexplained detail with no settled
+                                    answer
+
+The claim it names must carry \`contested: true\` and a \`source_url\`, so a
+theory is always traceable to whoever said it. Ids rather than fresh text
+because the fact gate's ledger IS data_points, and a second namespace is a
+citation that resolves in one gate and not the other.
+
+IF THE SUBJECT HAS FEWER THAN FIVE, SAY SO AND STOP. That is an answer, not
+a failure: this channel is what is disputed, hidden or unexplained about a
+subject, and a subject with four threads would spend an act on padding.
+Measured on the films so far — they-said-it 0 contested of 43 claims,
+easter-island 0 of 83, king-tut 16 of 53, atomic-bombings 13 of 33 — the
+first two are the ones this rule exists to stop.
+
 Write the checkpoint and STOP. Do not write a proposal and do not write a
 word of script."
+
+# ── the angle, or the next topic ─────────────────────────────────────────
+if [[ "$SMOKE" == "1" || "$DRY_RUN" == "1" ]]; then
+  say "${DRY_RUN:+dry run}${SMOKE:+smoke}: skipping the channel angle gate"
+  break
+fi
+
+ANGLE_OUT="$("$PY" "$REPO/scripts/check_channel_angle.py" \
+               --project "$SLUG" --stage research 2>&1)"
+ANGLE_RC=$?
+if [[ "$ANGLE_RC" == "0" ]]; then
+  say "channel angle: $(printf '%s' "$ANGLE_OUT" | grep -E 'usable_disputed' | tr -d ' ')"
+  break
+fi
+if [[ "$ANGLE_RC" != "3" ]]; then
+  # The brief holds contested claims and did not name them: the stage did
+  # not finish. A different topic cannot fix that.
+  fail "research (channel angle)" "$ANGLE_OUT"
+fi
+
+# Exit 3: nothing contested in the WHOLE brief. The topic is the problem.
+printf '# %s: no disputed thread, blacklisted by the angle gate\n%s\n' \
+  "$(date +%Y-%m-%d)" "$TOPIC" >> "$REPO/artifacts/topic_blacklist.txt"
+say "channel angle: $TOPIC has nothing disputed in it — blacklisted"
+printf '%s\n' "$ANGLE_OUT" | sed 's/^/         /'
+
+if [[ -n "$RESUME" ]]; then
+  fail "research (the topic has no angle)" "$ANGLE_OUT
+
+This run was resuming $SLUG, so there is no next topic to take. $TOPIC is
+blacklisted; start a new film with --new."
+fi
+
+if (( TOPIC_TRY >= MAX_TOPICS_PER_RUN )); then
+  fail "research (no topic had an angle)" "$MAX_TOPICS_PER_RUN topics tried
+and not one had five disputed threads in it. All of them are now in
+artifacts/topic_blacklist.txt, so next week's picker starts somewhere else.
+
+This is the picker's shortlist being wrong, not the gate: three subjects in
+a row with nothing contested means the candidate pool needs looking at."
+fi
+
+# The next brief that is not itself blacklisted.
+NEXT_TOPIC=""
+while :; do
+  TOPIC_INDEX=$((TOPIC_INDEX + 1))
+  NEXT_TOPIC="$(brief_entity "$TOPIC_INDEX")"
+  [[ -z "$NEXT_TOPIC" ]] && break
+  if is_blacklisted "$NEXT_TOPIC"; then
+    say "         $NEXT_TOPIC is blacklisted as well — skipping"
+    continue
+  fi
+  break
+done
+if [[ -z "$NEXT_TOPIC" ]]; then
+  fail "research (no topic had an angle)" "The picker's shortlist is
+exhausted after $TOPIC_TRY topic(s): every brief it wrote is either
+blacklisted or has no disputed thread.
+
+Re-fire the run — the picker will build a new shortlist, and the entities
+tried tonight are blacklisted so it will not offer them again."
+fi
+
+TOPIC="$NEXT_TOPIC"
+SLUG="$(slug_of "$TOPIC")"
+TOPIC_TRY=$((TOPIC_TRY + 1))
+say "topic $TOPIC_TRY of $MAX_TOPICS_PER_RUN: $TOPIC  (project $SLUG)"
+notify "<b>Taking the next topic ($TOPIC_TRY of $MAX_TOPICS_PER_RUN)</b>
+The last subject had nothing disputed in it, so there is no film in it for
+this channel.
+
+dropped: $(printf '%s' "$ANGLE_OUT" | grep -E 'contested_claims' | tr -d ' ')
+now: $TOPIC
+project: <code>$SLUG</code>
+log: $LOGDIR"
+
+done
 
 pipeline_stage proposal "$TURNS_PROPOSAL" proposal-director.md \
 "Produce projects/$SLUG/artifacts/proposal_packet.json and decision_log.json
@@ -1409,7 +1553,29 @@ Say which concepts you rejected and why in the decision log. A concept that
 ran out of ledger before twenty minutes is the usual reason and it is worth
 writing down.
 
+THE SELECTED CONCEPT STATES ITS ANGLE IN ONE LINE.
+
+\`angle\` is what is DISPUTED, HIDDEN OR UNEXPLAINED about this subject —
+the thing the film is about, not a tone and not a mood word. Build the acts
+on the brief's \`disputed\` section and name the ids you built them on in
+\`disputed_grounding\`.
+
+The standard account appears in this film as THE THING BEING QUESTIONED and
+never as the thing being retold. A concept whose acts walk through what
+happened, in order, with the disputes as footnotes, is refused by
+scripts/check_channel_angle.py — and rightly: an encyclopaedia already
+tells that version, for free, and better.
+
 Write the checkpoint and STOP. Do not write a word of script."
+
+# ── the acts have to rest on what is disputed ────────────────────────────
+if [[ "$SMOKE" != "1" && "$DRY_RUN" != "1" ]]; then
+  if ! ANGLE_OUT="$("$PY" "$REPO/scripts/check_channel_angle.py" \
+                      --project "$SLUG" --stage proposal 2>&1)"; then
+    fail "proposal (channel angle)" "$ANGLE_OUT"
+  fi
+  say "channel angle: $(printf '%s' "$ANGLE_OUT" | grep -E '^  angle:' | cut -c3- | cut -c1-120)"
+fi
 
 # ── 2a. the script ───────────────────────────────────────────────────────
 require_power "the script stage"
@@ -1489,6 +1655,25 @@ A marker is not a licence. A [framing] sentence is skipped only if it
 carries no proper noun, no number of ten or more, and no date; one that
 names or counts something real is checked like any other. No more than 5% of
 the film's sentences may be framing.
+
+A THEORY IS TOLD AS A THEORY, AND IT IS ATTRIBUTED.
+
+The brief's \`disputed\` section is what this film is about. Every sentence
+resting on one of those claims says WHOSE account it is:
+
+    "Weigall claimed ..."        not  "Weigall saw ..."
+    "the declassified file shows"     not  "it was decided"
+    "no one has explained why"        not  "the reason was"
+
+Never assert a contested claim in the narrator's own voice. The register is
+a researcher reading rival accounts and refusing to pick, and the moment
+the narrator picks, the film is just another telling with better pictures.
+
+And the film has to be ABOUT the disputes, not decorated with them: at
+least 30% of its sentences must rest on a contested claim, counted by
+scripts/check_channel_angle.py --stage script. Measured on the films so far,
+king-tut reads 41.5% and atomic-bombings 48.4%, while easter-island and
+they-said-it read 0.0% — the two that have no contested claim at all.
 PROMPTEOF
 
 # The owner's angle constraint, if this subject has one, as instruction
@@ -1527,6 +1712,25 @@ elif [[ "$SMOKE" != "1" && "$DRY_RUN" != "1" ]]; then
     --backend "$FACT_BACKEND" --report "$LOGDIR/fact_coverage.md" \
     > "$LOGDIR/fact_coverage.log" 2>&1 \
     || fail "fact coverage" "$(tail -12 "$LOGDIR/fact_coverage.log")"
+fi
+
+# ── is the film ABOUT its angle, or decorated with it? ───────────────────
+#
+# Before the gate, not after: a script that fails this is a retelling, and
+# nobody should be woken at 20:48 to approve one. The fact gate above says
+# every factual sentence is sourced; this says enough of them rest on
+# something CONTESTED. Measured on the films that existed when it was
+# written: king-tut 41.5%, atomic-bombings 48.4%, easter-island 0.0%,
+# they-said-it 0.0%.
+if stage_done script && [[ -n "$RESUME" ]]; then
+  say "channel angle: the approved script already passed it — skipping"
+elif [[ "$SMOKE" != "1" && "$DRY_RUN" != "1" ]]; then
+  if ! ANGLE_OUT="$("$PY" "$REPO/scripts/check_channel_angle.py" \
+                      --project "$SLUG" --stage script \
+                      --backend "$FACT_BACKEND" 2>&1)"; then
+    fail "script (channel angle)" "$ANGLE_OUT"
+  fi
+  say "channel angle: $(printf '%s' "$ANGLE_OUT" | grep -E 'share_of_all' | tr -d ' ')"
 fi
 
 # ── 3. the human ─────────────────────────────────────────────────────────
@@ -1690,6 +1894,13 @@ against a 5 dB preference. Do not hand-trim around it.
 
 Once a bed is in the library its hole IS a gate — measure_music.py enforces
 it there rather than reporting it.
+
+FETCH AT LEAST TWO NEW CANDIDATES FOR THIS FILM. The library holds two beds
+that cleared ingest, and a film needs one per span; picking two from two is
+an assignment rather than a choice, and the criteria will often rule one
+out — on film #5's five distinct candidates exactly ONE met all three.
+Ingest the new ones into the library so next week starts with more, and
+measure_music.py refuses an audition with fewer than four distinct tracks.
 
 BEFORE synthesising, run
 

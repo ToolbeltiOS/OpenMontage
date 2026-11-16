@@ -1,295 +1,535 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "openmontage/artifacts/research_brief",
-  "title": "Research Brief",
-  "description": "Structured web research findings that ground a video in real data, trends, and audience insights. Produced by the Research Director before any creative work begins.",
-  "type": "object",
-  "required": ["version", "topic", "research_date", "landscape", "data_points", "audience_insights", "angles_discovered", "sources"],
-  "properties": {
-    "version": { "type": "string", "const": "1.0" },
-    "topic": {
-      "type": "string",
-      "description": "The core topic as stated by the user"
-    },
-    "research_date": {
-      "type": "string",
-      "format": "date",
-      "description": "When the research was conducted — freshness matters"
-    },
-    "landscape": {
-      "type": "object",
-      "description": "What already exists in the content landscape",
-      "required": ["existing_content", "saturated_angles", "underserved_gaps"],
-      "properties": {
-        "existing_content": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["title", "source", "angle", "what_it_covers"],
-            "properties": {
-              "title": { "type": "string" },
-              "url": { "type": "string", "format": "uri" },
-              "source": { "type": "string", "description": "youtube, blog, tiktok, etc." },
-              "angle": { "type": "string", "description": "The narrative approach used" },
-              "what_it_covers": { "type": "string" },
-              "what_it_misses": { "type": "string" },
-              "engagement_signal": { "type": "string", "description": "View count, upvotes, comments — whatever is available" }
-            },
-            "additionalProperties": false
-          },
-          "minItems": 3,
-          "description": "Top existing content on this topic — at least 3 entries"
-        },
-        "saturated_angles": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Angles that have been done to death — avoid these"
-        },
-        "underserved_gaps": {
-          "type": "array",
-          "items": { "type": "string" },
-          "minItems": 1,
-          "description": "Angles or questions that existing content does NOT cover well"
-        }
-      },
-      "additionalProperties": false
-    },
-    "trending": {
-      "type": "object",
-      "description": "What is happening RIGHT NOW around this topic",
-      "properties": {
-        "recent_developments": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["headline", "date", "relevance"],
-            "properties": {
-              "headline": { "type": "string" },
-              "url": { "type": "string", "format": "uri" },
-              "date": { "type": "string" },
-              "relevance": { "type": "string", "description": "Why this matters for our video" }
-            },
-            "additionalProperties": false
-          }
-        },
-        "active_discussions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["platform", "topic_or_url", "sentiment"],
-            "properties": {
-              "platform": { "type": "string", "description": "reddit, hackernews, twitter, etc." },
-              "topic_or_url": { "type": "string" },
-              "sentiment": { "type": "string", "description": "What people feel about this — excitement, frustration, debate, confusion" },
-              "key_quotes": {
-                "type": "array",
-                "items": { "type": "string" },
-                "description": "Direct quotes that capture the community's voice"
-              }
-            },
-            "additionalProperties": false
-          }
-        },
-        "timeliness_window": {
-          "type": "string",
-          "description": "How time-sensitive is this angle? 'evergreen', 'weeks', 'days', 'hours'"
-        }
-      },
-      "additionalProperties": false
-    },
-    "data_points": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["claim", "source_url", "credibility"],
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^[cr][0-9]{1,3}$",
-            "description": "THE CLAIM LEDGER ID the script cites, e.g. 'c07'. `c` for a research-stage claim, `r` for one added by a provenance repair. Was absent from this schema while lib/verify_fact_coverage.py read it as the primary key, so every citation fell back to a POSITIONAL reading of this array — which is how easter-island came to cite c03-c58 against a fifteen-entry ledger and have it look like provenance."
-          },
-          "claim": { "type": "string", "description": "The specific fact, statistic, or data point" },
-          "source_url": { "type": "string", "format": "uri" },
-          "source_name": { "type": "string", "description": "e.g., 'Stack Overflow 2025 Developer Survey'" },
-          "kind": {
-            "type": "string",
-            "enum": ["date", "name", "figure", "quote", "event", "claim"],
-            "description": "What the script gate checks for. Dates, names and figures are exactly the spans that may not be stated without a ledger entry."
-          },
-          "confidence": {
-            "type": "string",
-            "enum": ["established", "probable", "contested"],
-            "description": "How firm the claim is. `contested` is not a defect — but it must be narrated AS contested."
-          },
-          "contested": {
-            "type": "boolean",
-            "description": "True when the question is genuinely disputed. The playbook forbids narrating either side as settled when this is set."
-          },
-          "sources": {
-            "type": "array",
-            "items": { "type": "string", "format": "uri" },
-            "description": "Additional corroborating URLs. The playbook requires TWO for a surprising figure or a hook claim; source_url stays the primary."
-          },
-          "notes": { "type": "string", "description": "Caveats, rival readings, what the figure does NOT say" },
-          "supports": {
-            "type": "array",
-            "items": { "type": "string" },
-            "description": "Narration sentences this claim attributes, verbatim. Per-sentence attribution held in the LEDGER, so an already-delivered film can be attributed without its script being edited. Read by lib/verify_fact_coverage.sentence_index."
-          },
-          "repairs_sentence": {
-            "type": "array",
-            "items": { "type": "string" },
-            "description": "As `supports`, but written by a provenance repair after delivery."
-          },
-          "credibility": {
-            "type": "string",
-            "enum": ["primary_source", "secondary_source", "anecdotal"],
-            "description": "How reliable is this data point?"
-          },
-          "surprise_factor": {
-            "type": "string",
-            "enum": ["expected", "notable", "surprising", "counterintuitive"],
-            "description": "How unexpected is this for the target audience?"
-          },
-          "usable_as": {
-            "type": "string",
-            "description": "How this could be used: hook, stat_card, script_anchor, closing_punch"
-          }
-        },
-        "additionalProperties": false
-      },
-      "minItems": 3,
-      "description": "Verified facts and statistics — at least 3, aim for 5-8"
-    },
-    "audience_insights": {
-      "type": "object",
-      "required": ["common_questions", "misconceptions", "knowledge_level"],
-      "properties": {
-        "common_questions": {
-          "type": "array",
-          "items": { "type": "string" },
-          "minItems": 3,
-          "description": "Real questions people ask about this topic — sourced from forums, PAA, Quora"
-        },
-        "misconceptions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["myth", "reality"],
-            "properties": {
-              "myth": { "type": "string" },
-              "reality": { "type": "string" },
-              "source": { "type": "string" }
-            },
-            "additionalProperties": false
-          },
-          "description": "What people commonly get wrong"
-        },
-        "knowledge_level": {
-          "type": "string",
-          "description": "What the target audience likely already knows vs. what will be new"
-        },
-        "pain_points": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Frustrations, confusions, or complaints related to this topic"
-        }
-      },
-      "additionalProperties": false
-    },
-    "expert_voices": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["name", "position"],
-        "properties": {
-          "name": { "type": "string" },
-          "title_or_affiliation": { "type": "string" },
-          "position": { "type": "string", "description": "Their stance or notable quote on this topic" },
-          "source_url": { "type": "string", "format": "uri" },
-          "contrarian": { "type": "boolean", "description": "Does this challenge the mainstream view?" }
-        },
-        "additionalProperties": false
-      },
-      "description": "Named experts and their takes — useful for authority and debate framing"
-    },
-    "angles_discovered": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["name", "hook", "type", "why_now"],
-        "properties": {
-          "name": { "type": "string", "description": "Short angle title (5-8 words)" },
-          "hook": { "type": "string", "description": "One-sentence attention grabber" },
-          "type": {
-            "type": "string",
-            "enum": ["trending", "evergreen", "contrarian", "narrative", "data_driven"],
-            "description": "What kind of angle is this?"
-          },
-          "why_now": { "type": "string", "description": "Why this angle is compelling right now — cite research findings" },
-          "grounded_in": {
-            "type": "array",
-            "items": { "type": "string" },
-            "description": "Which data_points or audience_insights support this angle?"
-          }
-        },
-        "additionalProperties": false
-      },
-      "minItems": 3,
-      "description": "Angle candidates discovered through research — raw material for the Proposal Director"
-    },
-    "visual_references": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "description": { "type": "string" },
-          "url": { "type": "string", "format": "uri" },
-          "what_works": { "type": "string", "description": "Why this visual approach is effective" }
-        },
-        "additionalProperties": false
-      },
-      "description": "How the best existing content visualizes this topic"
-    },
-    "sources": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["url", "title", "used_for"],
-        "properties": {
-          "url": { "type": "string", "format": "uri" },
-          "title": { "type": "string" },
-          "used_for": { "type": "string", "description": "Which section of the brief this source supports" },
-          "reliability": {
-            "type": "string",
-            "enum": ["primary", "secondary", "anecdotal"]
-          }
-        },
-        "additionalProperties": false
-      },
-      "minItems": 5,
-      "description": "All sources used — at least 5. Full bibliography."
-    },
-    "research_summary": {
-      "type": "string",
-      "description": "One paragraph: the single most important insight from this research and why it matters for the video"
-    },
-    "gaps": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["looked_for", "why_it_matters"],
-        "properties": {
-          "looked_for": { "type": "string", "description": "What was searched for and could not be sourced" },
-          "why_it_matters": { "type": "string", "description": "Which angle it would have carried, or which sentence can now never be written" },
-          "closest_available": { "type": "string" }
-        },
-        "additionalProperties": false
-      },
-      "description": "First-class output, required by the narrated-documentary research-director: things looked for and not found. They tell the proposal which angles are unsafe and tell the script which sentences may never be written."
-    },
-    "provenance_repair": { "type": "object", "description": "Record of a post-delivery attribution repair, if one was run" },
-    "metadata": { "type": "object" }
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "openmontage/artifacts/research_brief",
+ "title": "Research Brief",
+ "description": "Structured web research findings that ground a video in real data, trends, and audience insights. Produced by the Research Director before any creative work begins.",
+ "type": "object",
+ "required": [
+  "version",
+  "topic",
+  "research_date",
+  "landscape",
+  "data_points",
+  "audience_insights",
+  "angles_discovered",
+  "sources"
+ ],
+ "properties": {
+  "version": {
+   "type": "string",
+   "const": "1.0"
   },
-  "additionalProperties": false
+  "topic": {
+   "type": "string",
+   "description": "The core topic as stated by the user"
+  },
+  "research_date": {
+   "type": "string",
+   "format": "date",
+   "description": "When the research was conducted \u2014 freshness matters"
+  },
+  "landscape": {
+   "type": "object",
+   "description": "What already exists in the content landscape",
+   "required": [
+    "existing_content",
+    "saturated_angles",
+    "underserved_gaps"
+   ],
+   "properties": {
+    "existing_content": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "title",
+       "source",
+       "angle",
+       "what_it_covers"
+      ],
+      "properties": {
+       "title": {
+        "type": "string"
+       },
+       "url": {
+        "type": "string",
+        "format": "uri"
+       },
+       "source": {
+        "type": "string",
+        "description": "youtube, blog, tiktok, etc."
+       },
+       "angle": {
+        "type": "string",
+        "description": "The narrative approach used"
+       },
+       "what_it_covers": {
+        "type": "string"
+       },
+       "what_it_misses": {
+        "type": "string"
+       },
+       "engagement_signal": {
+        "type": "string",
+        "description": "View count, upvotes, comments \u2014 whatever is available"
+       }
+      },
+      "additionalProperties": false
+     },
+     "minItems": 3,
+     "description": "Top existing content on this topic \u2014 at least 3 entries"
+    },
+    "saturated_angles": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "Angles that have been done to death \u2014 avoid these"
+    },
+    "underserved_gaps": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 1,
+     "description": "Angles or questions that existing content does NOT cover well"
+    }
+   },
+   "additionalProperties": false
+  },
+  "trending": {
+   "type": "object",
+   "description": "What is happening RIGHT NOW around this topic",
+   "properties": {
+    "recent_developments": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "headline",
+       "date",
+       "relevance"
+      ],
+      "properties": {
+       "headline": {
+        "type": "string"
+       },
+       "url": {
+        "type": "string",
+        "format": "uri"
+       },
+       "date": {
+        "type": "string"
+       },
+       "relevance": {
+        "type": "string",
+        "description": "Why this matters for our video"
+       }
+      },
+      "additionalProperties": false
+     }
+    },
+    "active_discussions": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "platform",
+       "topic_or_url",
+       "sentiment"
+      ],
+      "properties": {
+       "platform": {
+        "type": "string",
+        "description": "reddit, hackernews, twitter, etc."
+       },
+       "topic_or_url": {
+        "type": "string"
+       },
+       "sentiment": {
+        "type": "string",
+        "description": "What people feel about this \u2014 excitement, frustration, debate, confusion"
+       },
+       "key_quotes": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        },
+        "description": "Direct quotes that capture the community's voice"
+       }
+      },
+      "additionalProperties": false
+     }
+    },
+    "timeliness_window": {
+     "type": "string",
+     "description": "How time-sensitive is this angle? 'evergreen', 'weeks', 'days', 'hours'"
+    }
+   },
+   "additionalProperties": false
+  },
+  "data_points": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "claim",
+     "source_url",
+     "credibility"
+    ],
+    "properties": {
+     "id": {
+      "type": "string",
+      "pattern": "^[cr][0-9]{1,3}$",
+      "description": "THE CLAIM LEDGER ID the script cites, e.g. 'c07'. `c` for a research-stage claim, `r` for one added by a provenance repair. Was absent from this schema while lib/verify_fact_coverage.py read it as the primary key, so every citation fell back to a POSITIONAL reading of this array \u2014 which is how easter-island came to cite c03-c58 against a fifteen-entry ledger and have it look like provenance."
+     },
+     "claim": {
+      "type": "string",
+      "description": "The specific fact, statistic, or data point"
+     },
+     "source_url": {
+      "type": "string",
+      "format": "uri"
+     },
+     "source_name": {
+      "type": "string",
+      "description": "e.g., 'Stack Overflow 2025 Developer Survey'"
+     },
+     "kind": {
+      "type": "string",
+      "enum": [
+       "date",
+       "name",
+       "figure",
+       "quote",
+       "event",
+       "claim"
+      ],
+      "description": "What the script gate checks for. Dates, names and figures are exactly the spans that may not be stated without a ledger entry."
+     },
+     "confidence": {
+      "type": "string",
+      "enum": [
+       "established",
+       "probable",
+       "contested"
+      ],
+      "description": "How firm the claim is. `contested` is not a defect \u2014 but it must be narrated AS contested."
+     },
+     "contested": {
+      "type": "boolean",
+      "description": "True when the question is genuinely disputed. The playbook forbids narrating either side as settled when this is set."
+     },
+     "sources": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "format": "uri"
+      },
+      "description": "Additional corroborating URLs. The playbook requires TWO for a surprising figure or a hook claim; source_url stays the primary."
+     },
+     "notes": {
+      "type": "string",
+      "description": "Caveats, rival readings, what the figure does NOT say"
+     },
+     "supports": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Narration sentences this claim attributes, verbatim. Per-sentence attribution held in the LEDGER, so an already-delivered film can be attributed without its script being edited. Read by lib/verify_fact_coverage.sentence_index."
+     },
+     "repairs_sentence": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "As `supports`, but written by a provenance repair after delivery."
+     },
+     "credibility": {
+      "type": "string",
+      "enum": [
+       "primary_source",
+       "secondary_source",
+       "anecdotal"
+      ],
+      "description": "How reliable is this data point?"
+     },
+     "surprise_factor": {
+      "type": "string",
+      "enum": [
+       "expected",
+       "notable",
+       "surprising",
+       "counterintuitive"
+      ],
+      "description": "How unexpected is this for the target audience?"
+     },
+     "usable_as": {
+      "type": "string",
+      "description": "How this could be used: hook, stat_card, script_anchor, closing_punch"
+     }
+    },
+    "additionalProperties": false
+   },
+   "minItems": 3,
+   "description": "Verified facts and statistics \u2014 at least 3, aim for 5-8"
+  },
+  "audience_insights": {
+   "type": "object",
+   "required": [
+    "common_questions",
+    "misconceptions",
+    "knowledge_level"
+   ],
+   "properties": {
+    "common_questions": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 3,
+     "description": "Real questions people ask about this topic \u2014 sourced from forums, PAA, Quora"
+    },
+    "misconceptions": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "myth",
+       "reality"
+      ],
+      "properties": {
+       "myth": {
+        "type": "string"
+       },
+       "reality": {
+        "type": "string"
+       },
+       "source": {
+        "type": "string"
+       }
+      },
+      "additionalProperties": false
+     },
+     "description": "What people commonly get wrong"
+    },
+    "knowledge_level": {
+     "type": "string",
+     "description": "What the target audience likely already knows vs. what will be new"
+    },
+    "pain_points": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "description": "Frustrations, confusions, or complaints related to this topic"
+    }
+   },
+   "additionalProperties": false
+  },
+  "expert_voices": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "name",
+     "position"
+    ],
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "title_or_affiliation": {
+      "type": "string"
+     },
+     "position": {
+      "type": "string",
+      "description": "Their stance or notable quote on this topic"
+     },
+     "source_url": {
+      "type": "string",
+      "format": "uri"
+     },
+     "contrarian": {
+      "type": "boolean",
+      "description": "Does this challenge the mainstream view?"
+     }
+    },
+    "additionalProperties": false
+   },
+   "description": "Named experts and their takes \u2014 useful for authority and debate framing"
+  },
+  "angles_discovered": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "name",
+     "hook",
+     "type",
+     "why_now"
+    ],
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Short angle title (5-8 words)"
+     },
+     "hook": {
+      "type": "string",
+      "description": "One-sentence attention grabber"
+     },
+     "type": {
+      "type": "string",
+      "enum": [
+       "trending",
+       "evergreen",
+       "contrarian",
+       "narrative",
+       "data_driven"
+      ],
+      "description": "What kind of angle is this?"
+     },
+     "why_now": {
+      "type": "string",
+      "description": "Why this angle is compelling right now \u2014 cite research findings"
+     },
+     "grounded_in": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Which data_points or audience_insights support this angle?"
+     }
+    },
+    "additionalProperties": false
+   },
+   "minItems": 3,
+   "description": "Angle candidates discovered through research \u2014 raw material for the Proposal Director"
+  },
+  "visual_references": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "description": {
+      "type": "string"
+     },
+     "url": {
+      "type": "string",
+      "format": "uri"
+     },
+     "what_works": {
+      "type": "string",
+      "description": "Why this visual approach is effective"
+     }
+    },
+    "additionalProperties": false
+   },
+   "description": "How the best existing content visualizes this topic"
+  },
+  "sources": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "url",
+     "title",
+     "used_for"
+    ],
+    "properties": {
+     "url": {
+      "type": "string",
+      "format": "uri"
+     },
+     "title": {
+      "type": "string"
+     },
+     "used_for": {
+      "type": "string",
+      "description": "Which section of the brief this source supports"
+     },
+     "reliability": {
+      "type": "string",
+      "enum": [
+       "primary",
+       "secondary",
+       "anecdotal"
+      ]
+     }
+    },
+    "additionalProperties": false
+   },
+   "minItems": 5,
+   "description": "All sources used \u2014 at least 5. Full bibliography."
+  },
+  "research_summary": {
+   "type": "string",
+   "description": "One paragraph: the single most important insight from this research and why it matters for the video"
+  },
+  "gaps": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "looked_for",
+     "why_it_matters"
+    ],
+    "properties": {
+     "looked_for": {
+      "type": "string",
+      "description": "What was searched for and could not be sourced"
+     },
+     "why_it_matters": {
+      "type": "string",
+      "description": "Which angle it would have carried, or which sentence can now never be written"
+     },
+     "closest_available": {
+      "type": "string"
+     }
+    },
+    "additionalProperties": false
+   },
+   "description": "First-class output, required by the narrated-documentary research-director: things looked for and not found. They tell the proposal which angles are unsafe and tell the script which sentences may never be written."
+  },
+  "provenance_repair": {
+   "type": "object",
+   "description": "Record of a post-delivery attribution repair, if one was run"
+  },
+  "metadata": {
+   "type": "object"
+  },
+  "disputed": {
+   "type": "array",
+   "description": "WHAT IS DISPUTED, HIDDEN OR UNEXPLAINED about the topic \u2014 the channel's angle, carried as a section of its own so a proposal can be built on it and a script can be measured against it. Each entry names a claim id from `data_points`; that claim must carry contested: true and a source_url, so a disputed item is always traceable to who said it. Ids rather than free text because lib/verify_fact_coverage builds its ledger from data_points, and a second id namespace would be a citation that resolves in one gate and not the other. Fewer than lib/verify_channel_angle.MIN_DISPUTED entries means this topic is not one this channel can tell, and the picker moves to the next.",
+   "items": {
+    "type": "object",
+    "required": [
+     "claim_id",
+     "kind"
+    ],
+    "properties": {
+     "claim_id": {
+      "type": "string",
+      "description": "an id in data_points"
+     },
+     "kind": {
+      "type": "string",
+      "enum": [
+       "official_account_contradicted",
+       "rejected_by_mainstream",
+       "left_out_of_popular_tellings",
+       "unexplained"
+      ]
+     },
+     "why": {
+      "type": "string",
+      "description": "one line: what makes this disputed, hidden or unexplained"
+     }
+    },
+    "additionalProperties": false
+   }
+  }
+ },
+ "additionalProperties": false
 }
