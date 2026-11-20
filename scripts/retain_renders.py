@@ -37,6 +37,7 @@ seen is a film whose intermediates are only a cache.
 from __future__ import annotations
 
 import argparse
+import shutil
 import sys
 from datetime import date
 from pathlib import Path
@@ -47,13 +48,40 @@ sys.path.insert(0, str(ROOT))
 
 from lib.shared_state import published_films  # noqa: E402
 
-#: Rederivable from the plate and the props. Named here and nowhere else.
-DELETABLE = ("look.mp4", "type.mov")
+#: Rederivable from the plate and the props. Named here and nowhere else,
+#: as (path relative to the repo, with {project} filled in; kind).
+#:
+#: WHAT EACH ONE COSTS TO REBUILD, measured rather than guessed, because
+#: that is the whole basis for deleting it:
+#:
+#:   look.mp4    ~1.8 GB   the plate with the shader over it. One Remotion
+#:                         pass over the stills, about 45 minutes.
+#:   type.mov    ~8.3 GB   the type pass, ProRes 4444 with alpha. One
+#:                         Remotion pass, about 35 minutes.
+#:   frames_*    ~4.9 GB   the plate as stills, which the look pass samples
+#:                         because WebGL cannot read a <video>. NOT a
+#:                         render: one ffmpeg decode of plate.mp4, measured
+#:                         2026-11-20 on the 1.51 GB atomic-bombings plate
+#:                         at 345 frames a second sustained — 349.5 fps over
+#:                         1,800 frames and 344.1 over 3,600, so it is
+#:                         linear — which is 107 SECONDS for a 36,864-frame
+#:                         film. The cheapest thing here to rebuild and the
+#:                         second largest to keep.
+#:
+#: The stills measured 4.9 GB for atomic-bombings and 4.3 GB for king-tut,
+#: about 139 KB a frame. A prefix oversamples: the opening 600 frames run
+#: 184 KB each and converge on the average by 3,600.
+DELETABLE = (
+    ("remotion-composer/out/{project}/look.mp4", "file"),
+    ("remotion-composer/out/{project}/type.mov", "file"),
+    ("remotion-composer/public/frames_{project}", "dir"),
+)
 
 #: Kept, and listed so the reason is on the record rather than implied by
 #: absence from the line above.
 KEPT = {
-    "plate.mp4": "forty-four minutes and every cut re-rendered to rebuild",
+    "plate.mp4": "forty-four minutes and every cut re-rendered to rebuild, "
+                 "and every other line above is derived FROM it",
     "final.mp4": "the film itself, and it is not in out/ anyway",
     "artifacts/": "the whole record of how the film was made",
 }
@@ -61,6 +89,18 @@ KEPT = {
 
 def gigabytes(n: int) -> str:
     return f"{n / 1_073_741_824:.2f} GB"
+
+
+def weight(path: Path, kind: str) -> int:
+    """Bytes on disk, walking a directory rather than stat-ing it.
+
+    `stat().st_size` on a directory is the size of the directory ENTRY, a
+    few hundred bytes, which would have reported the 4.9 GB of stills as
+    nothing and quietly deleted them for no recorded gain.
+    """
+    if kind != "dir":
+        return path.stat().st_size
+    return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
 
 
 def is_public(film: dict[str, Any], today: date) -> bool:
@@ -85,14 +125,14 @@ def survey(today: date | None = None, root: Path = ROOT
         project = film.get("project") or ""
         if not project or not is_public(film, today):
             continue
-        out = root / "remotion-composer" / "out" / project
-        for name in DELETABLE:
-            path = out / name
-            if path.exists():
-                size = path.stat().st_size
-                rows.append({"project": project, "name": name,
-                             "path": path, "bytes": size})
-                total += size
+        for template, kind in DELETABLE:
+            path = root / template.format(project=project)
+            if not path.exists():
+                continue
+            size = weight(path, kind)
+            rows.append({"project": project, "name": path.name,
+                         "path": path, "kind": kind, "bytes": size})
+            total += size
     return rows, total
 
 
@@ -103,10 +143,18 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--oneline", action="store_true",
                     help="one line for the preflight")
     ap.add_argument("--root", default=None)
+    ap.add_argument("--today", default=None,
+                    help="the date to judge 'public' against, ISO format. "
+                         "Only a rehearsal passes this — but without it this "
+                         "program's behaviour depends on the wall clock, and "
+                         "so did its test: the fixture's scheduled film went "
+                         "public on 2026-11-16 and the test asserting it was "
+                         "untouched passed for five days and then deleted it.")
     args = ap.parse_args(argv)
 
     root = Path(args.root) if args.root else ROOT
-    rows, total = survey(root=root)
+    today = date.fromisoformat(args.today) if args.today else None
+    rows, total = survey(today=today, root=root)
 
     if args.oneline:
         if not rows:
@@ -127,7 +175,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  {action} {gigabytes(row['bytes']):>9}  "
               f"{row['project']}/{row['name']}")
         if args.apply:
-            row["path"].unlink()
+            if row.get("kind") == "dir":
+                shutil.rmtree(row["path"])
+            else:
+                row["path"].unlink()
 
     print(f"{'freed' if args.apply else 'would free'} {gigabytes(total)} "
           f"across {len(rows)} file(s)")
