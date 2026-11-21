@@ -75,31 +75,36 @@ class TestWhatItTakesAndWhatItLeaves:
         assert total == 2048
 
     def test_the_scheduled_film_is_untouched(self, channel):
-        R.main(["--apply", "--root", str(channel)])
+        R.main(["--apply", "--root", str(channel),
+                "--today", TODAY.isoformat()])
         out = channel / "remotion-composer" / "out" / "hiroshima"
         for name in ("look.mp4", "type.mov", "plate.mp4"):
             assert (out / name).exists(), f"{name} of a film not yet public"
 
     def test_the_plate_is_never_deleted(self, channel):
         """Forty-four minutes and every cut re-rendered to rebuild."""
-        R.main(["--apply", "--root", str(channel)])
+        R.main(["--apply", "--root", str(channel),
+                "--today", TODAY.isoformat()])
         assert (channel / "remotion-composer" / "out" / "king-tut"
                 / "plate.mp4").exists()
 
     def test_apply_deletes_the_two_rederivable_passes(self, channel):
-        R.main(["--apply", "--root", str(channel)])
+        R.main(["--apply", "--root", str(channel),
+                "--today", TODAY.isoformat()])
         out = channel / "remotion-composer" / "out" / "king-tut"
         assert not (out / "look.mp4").exists()
         assert not (out / "type.mov").exists()
 
     def test_without_apply_nothing_is_touched(self, channel):
-        R.main(["--root", str(channel)])
+        R.main(["--root", str(channel), "--today", TODAY.isoformat()])
         out = channel / "remotion-composer" / "out" / "king-tut"
         assert (out / "look.mp4").exists() and (out / "type.mov").exists()
 
     def test_it_is_idempotent(self, channel):
-        assert R.main(["--apply", "--root", str(channel)]) == 0
-        assert R.main(["--apply", "--root", str(channel)]) == 0
+        assert R.main(["--apply", "--root", str(channel),
+                       "--today", TODAY.isoformat()]) == 0
+        assert R.main(["--apply", "--root", str(channel),
+                       "--today", TODAY.isoformat()]) == 0
 
     def test_nothing_is_both_kept_and_deleted(self):
         assert not set(R.DELETABLE) & set(R.KEPT)

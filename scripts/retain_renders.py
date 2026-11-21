@@ -103,10 +103,18 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--oneline", action="store_true",
                     help="one line for the preflight")
     ap.add_argument("--root", default=None)
+    ap.add_argument("--today", default=None,
+                    help="the date to judge 'public' against, ISO format. "
+                         "Only a rehearsal passes this — but without it this "
+                         "program's behaviour depends on the wall clock, and "
+                         "so did its test: the fixture's scheduled film went "
+                         "public on 2026-11-16 and the test asserting it was "
+                         "untouched passed for five days and then deleted it.")
     args = ap.parse_args(argv)
 
     root = Path(args.root) if args.root else ROOT
-    rows, total = survey(root=root)
+    today = date.fromisoformat(args.today) if args.today else None
+    rows, total = survey(today=today, root=root)
 
     if args.oneline:
         if not rows:
