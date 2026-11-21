@@ -493,3 +493,187 @@ class TestTheSearchSpansWorktrees:
         monkeypatch.setattr(already_covered, "worktree_roots",
                             lambda repo: [here])
         assert set(already_covered.project_slugs(here)) == {"real"}
+
+
+# ── 2026-11-20: the parts of a container faced no defence at all ─────────
+#
+# The 19:00 run picked "Atomic bombings of Hiroshima and Nagasaki" — the
+# film published four days earlier as NWSDd5RJQ0Y — found that film's
+# research checkpoint already on disk, skipped the stage as "already
+# finished", and died on the angle gate at 19:08:54 with no film. Eight
+# minutes 49 seconds, and every defence above was in place and correct.
+#
+# `why_ineligible` ran over the raw clusters only. "Japan" is not a
+# published film, so the container passed; `split_container` then produced
+# three subjects that went straight onto the shortlist unexamined. The
+# ledger, the blacklist, the project directories and the channel's own
+# uploads were all bypassed for anything a split produced.
+
+#: The real cluster, with its real measured score.
+JAPAN = {"entity": "Japan", "median_views": 214, "shorts": 2}
+
+#: Its real parts, in the order the picker printed them.
+PARTS = ["Atomic bombings of Hiroshima and Nagasaki",
+         "Attack on Pearl Harbor", "Bakumatsu"]
+
+#: Film #5's real ledger row. NOT ONE of its entities is the picker's own
+#: cluster name, which is why the by-name ledger check could not see it and
+#: why the ledger is now asked by slug as well.
+HIROSHIMA_ROW = {
+    "project": "atomic-bombings-of-hiroshima-and-nagasaki",
+    "video_id": "NWSDd5RJQ0Y",
+    "title": "Hiroshima: Four Things That Never Closed",
+    "published": "2026-11-16",
+    "entities": ["Nagasaki", "Hiroshima", "Groves", "Kyoto", "Atomic",
+                 "Kokura", "Aioi", "hibakusha", "Suzuki", "Bockscar"],
+}
+
+PUBLISHED_SLUG = HIROSHIMA_ROW["project"]
+
+
+@pytest.fixture
+def picker(tmp_path, monkeypatch):
+    """`pick_topic.main()`, with the network and the real worktrees removed.
+
+    THESE DRIVE main(), NOT why_ineligible. A unit test of the helper would
+    have passed on 2026-11-20 and taught nothing: the helper was always
+    right. The defect was that the shortlist loop never called it for a
+    part, so the only test that can catch it reads what the picker offered.
+    """
+    import entity_check
+    import pick_topic
+
+    state = tmp_path / "state"
+    state.mkdir()
+    (state / "published.json").write_text(json.dumps({"films": [HIROSHIMA_ROW]}))
+    monkeypatch.setenv("WAK3UP_DOCS_STATE", str(state))
+
+    (tmp_path / "shorts.json").write_text("[]")
+    monkeypatch.setattr(pick_topic, "cluster", lambda ledger: [dict(JAPAN)])
+    monkeypatch.setattr(
+        entity_check, "is_a_subject",
+        lambda name: ({"subject": False, "container": True,
+                       "why": "a sovereign state, not a film"}
+                      if name == JAPAN["entity"]
+                      else {"subject": True, "why": "a historical event"}))
+    monkeypatch.setattr(
+        pick_topic, "split_container",
+        lambda candidate, limit=3: [
+            {**candidate, "entity": name,
+             "derived_from": candidate["entity"],
+             "median_views": candidate["median_views"] // 2}
+            for name in PARTS[:limit]])
+
+    def run(projects=None, blacklist=""):
+        if projects is None:                   # as the runner stood tonight
+            projects = {PUBLISHED_SLUG: tmp_path / "projects" / PUBLISHED_SLUG}
+        monkeypatch.setattr(already_covered, "project_slugs",
+                            lambda repo: dict(projects))
+        banned = tmp_path / "blacklist.txt"
+        banned.write_text(blacklist)
+        out = tmp_path / "briefs.json"
+        monkeypatch.setattr(sys, "argv", [
+            "pick_topic.py", "--skip-youtube", "--skip-depth", "--top", "3",
+            "--ledger-json", str(tmp_path / "shorts.json"),
+            "--blacklist", str(banned), "--out", str(out)])
+        pick_topic.main()
+        return json.loads(out.read_text())
+
+    return run
+
+
+class TestASplitPartFacesTheSameDefences:
+    def test_the_published_part_is_not_offered(self, picker):
+        """THE CONTROL: tonight's pick, refused, through the real loop."""
+        offered = [b["entity"] for b in picker()["briefs"]]
+        assert "Atomic bombings of Hiroshima and Nagasaki" not in offered
+
+    def test_the_next_part_is_offered_instead(self, picker):
+        """A film still gets made: the refusal is not a dead end."""
+        offered = [b["entity"] for b in picker()["briefs"]]
+        assert offered[0] == "Attack on Pearl Harbor"
+        assert offered == ["Attack on Pearl Harbor", "Bakumatsu"]
+
+    def test_it_says_which_defence_caught_it(self, picker):
+        why = {row["entity"]: row["why"] for row in picker()["excluded"]}
+        assert "ledger" in why["Atomic bombings of Hiroshima and Nagasaki"]
+
+    def test_the_exclusion_records_the_container_it_came_from(self, picker):
+        rows = [r for r in picker()["excluded"]
+                if r["entity"] == "Atomic bombings of Hiroshima and Nagasaki"]
+        assert rows[0]["derived_from"] == "Japan"
+
+    def test_a_blacklisted_part_is_refused(self, picker):
+        offered = [b["entity"] for b in
+                   picker(blacklist="Attack on Pearl Harbor\n")["briefs"]]
+        assert offered == ["Bakumatsu"]
+
+    def test_a_part_whose_project_directory_exists_is_refused(
+            self, picker, tmp_path):
+        offered = [b["entity"] for b in picker(projects={
+            PUBLISHED_SLUG: tmp_path / "a",
+            "bakumatsu": tmp_path / "projects" / "bakumatsu"})["briefs"]]
+        assert offered == ["Attack on Pearl Harbor"]
+
+
+class TestTheLedgerAnswersWithoutTheDirectory:
+    """Retention now deletes `frames_<project>` and the render intermediates
+    of a published film, and a future rule may take the project directory
+    itself. The ledger has to be enough on its own."""
+
+    def test_the_published_part_is_refused_with_no_directory_anywhere(
+            self, picker):
+        offered = [b["entity"] for b in picker(projects={})["briefs"]]
+        assert "Atomic bombings of Hiroshima and Nagasaki" not in offered
+        assert offered == ["Attack on Pearl Harbor", "Bakumatsu"]
+
+    def test_the_reason_names_the_project_slug(self, picker):
+        why = {r["entity"]: r["why"] for r in picker(projects={})["excluded"]}
+        assert (why["Atomic bombings of Hiroshima and Nagasaki"]
+                == f"already published (in the ledger, project {PUBLISHED_SLUG})")
+
+    def test_by_name_alone_would_not_have_caught_it(self, tmp_path):
+        """WHY THE SECOND KEY EXISTS, stated as a test. The by-name check is
+        given the real row and the real entity and comes back clean."""
+        from pick_topic import already_made, already_made_slugs
+
+        path = tmp_path / "ledger_probe.json"
+        path.write_text(json.dumps({"films": [HIROSHIMA_ROW]}))
+
+        by_name = already_made(path)
+        assert "atomic bombings of hiroshima and nagasaki" not in by_name
+        assert why_ineligible("Atomic bombings of Hiroshima and Nagasaki",
+                              made=by_name) is None
+        assert why_ineligible("Atomic bombings of Hiroshima and Nagasaki",
+                              made=by_name,
+                              made_slugs=already_made_slugs(path)) is not None
+
+
+class TestAFreshRunNeverEntersAnExistingProjectDirectory:
+    """The tripwire, and the proof it is not decorative.
+
+    Stage reuse reads whatever checkpoints it finds in `projects/<slug>`, so
+    a colliding slug does not start a film — it resumes a different one. On
+    2026-11-20 research was skipped as "already finished" and the angle gate
+    judged a brief written the week before: 13 contested claims, 0 declared,
+    exit 1. Only a 3 takes the next topic, so the run ended there.
+    """
+
+    def test_a_colliding_brief_is_refused_by_name(self, picker, monkeypatch):
+        """THE CONTROL: with every defence above neutered, main() still
+        refuses — and says which film the directory belongs to."""
+        monkeypatch.setattr(already_covered, "why_ineligible",
+                            lambda entity, **kw: None)
+        with pytest.raises(SystemExit) as refusal:
+            picker()
+        assert PUBLISHED_SLUG in str(refusal.value)
+        assert "reuse another film's checkpoints" in str(refusal.value)
+
+    def test_it_does_not_refuse_when_nothing_collides(self, picker,
+                                                      monkeypatch):
+        """The other half: the tripwire is silent on a clean shortlist, or
+        it would refuse every run."""
+        monkeypatch.setattr(already_covered, "why_ineligible",
+                            lambda entity, **kw: None)
+        offered = [b["entity"] for b in picker(projects={})["briefs"]]
+        assert offered[0] == "Atomic bombings of Hiroshima and Nagasaki"

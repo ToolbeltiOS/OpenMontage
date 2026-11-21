@@ -245,7 +245,8 @@ def covered_subjects(films: list[dict[str, Any]]) -> dict[str, list[str]]:
 def why_ineligible(entity: str, *, made: set[str] | None = None,
                    banned: set[str] | None = None,
                    projects: dict[str, Path] | None = None,
-                   covered: dict[str, list[str]] | None = None) -> str | None:
+                   covered: dict[str, list[str]] | None = None,
+                   made_slugs: set[str] | None = None) -> str | None:
     """Why this subject cannot be this week's film, or None if it can.
 
     A REASON RATHER THAN A BOOLEAN. The 2026-11-06 run printed "after
@@ -253,19 +254,33 @@ def why_ineligible(entity: str, *, made: set[str] | None = None,
     fact worth having — which list Noah failed to be on — was not in the
     log. Every exclusion now says which defence caught it and what the
     evidence was.
+
+    THE LEDGER IS ASKED TWICE, BY NAME AND BY SLUG. `made` holds the
+    entities each published film NAMED, plus the words of its title —
+    `hiroshima`, `nagasaki`, `atomic` — and never the picker's own cluster
+    name. On 2026-11-20 the picker offered "Atomic bombings of Hiroshima and
+    Nagasaki", a film published four days earlier as NWSDd5RJQ0Y, and that
+    string matched nothing in `made`. Only the project directory caught it,
+    which means the defence would have evaporated the moment retention
+    cleared that directory. `made_slugs` is each ledger row's own `project`
+    field, which IS `slug_of(entity)` as the picker spelled it, so the
+    ledger can answer for a film whose files are long gone.
     """
     made = made or set()
     banned = banned or set()
     projects = projects or {}
     covered = covered or {}
+    made_slugs = made_slugs or set()
 
     lowered = entity.lower()
+    slug = slug_of(entity)
     if lowered in made:
         return "already published (in the ledger)"
+    if slug and slug in made_slugs:
+        return f"already published (in the ledger, project {slug})"
     if lowered in banned:
         return "blacklisted"
 
-    slug = slug_of(entity)
     if slug and slug in projects:
         return f"projects/{slug}/ already exists ({projects[slug]})"
 

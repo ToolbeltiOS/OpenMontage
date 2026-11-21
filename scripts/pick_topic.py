@@ -196,6 +196,23 @@ def already_made(published_path: Path | None = None) -> set[str]:
     return {name.lower() for name in done}
 
 
+def already_made_slugs(published_path: Path | None = None) -> set[str]:
+    """The project slug of every published film.
+
+    A second key into the same ledger. `already_made` returns the entities
+    the films NAMED; this returns what the picker called each film when it
+    chose it, because the ledger's `project` field is exactly
+    `slug_of(entity)` from that week's pick. It is the one defence that
+    survives the project directory being deleted — which retention now does
+    on purpose. See `why_ineligible` for the run this was written for.
+    """
+    import shared_state
+
+    return {str(film["project"]).lower()
+            for film in shared_state.published_films(published_path)
+            if film.get("project")}
+
+
 def blacklisted(path: Path) -> set[str]:
     if not path.exists():
         return set()
@@ -575,9 +592,10 @@ def main() -> int:
 
     import shared_state
     from already_covered import (channel_films, covered_subjects,
-                                 project_slugs, why_ineligible)
+                                 project_slugs, slug_of, why_ineligible)
 
     done, banned = already_made(published), blacklisted(blacklist)
+    done_slugs = already_made_slugs(published)
     print(f"ledger: {shared_state.published_path()} "
           f"({len(shared_state.published_films(published))} films)")
 
@@ -624,7 +642,8 @@ def main() -> int:
     fresh, excluded = [], []
     for candidate in clusters:
         reason = why_ineligible(candidate["entity"], made=done, banned=banned,
-                                projects=projects, covered=covered)
+                                projects=projects, covered=covered,
+                                made_slugs=done_slugs)
         if reason is None:
             fresh.append(candidate)
         else:
@@ -652,6 +671,30 @@ def main() -> int:
             print(f"   container: {candidate['entity'][:26]:26s} "
                   f"{verdict['why'][:46]}")
             for part in split_container(candidate, args.split):
+                # A PART FACES THE SAME DEFENCES THE CONTAINER FACED. It did
+                # not until 2026-11-20. `why_ineligible` ran over `clusters`
+                # above — before any container was split — and a part went
+                # straight onto the shortlist, so the ledger, the blacklist,
+                # the project directories and the channel's own uploads were
+                # all bypassed for every subject a split produced.
+                #
+                # "Japan" is not a published film, so the container passed.
+                # Its top part was "Atomic bombings of Hiroshima and
+                # Nagasaki", published four days earlier as NWSDd5RJQ0Y, and
+                # the 19:00 run picked it, found that film's research
+                # checkpoint already in place, skipped the stage and died on
+                # the angle gate at 19:08 with no film and no retry.
+                reason = why_ineligible(
+                    part["entity"], made=done, banned=banned,
+                    projects=projects, covered=covered,
+                    made_slugs=done_slugs)
+                if reason is not None:
+                    print(f"      -> {part['entity'][:30]:30s} "
+                          f"SKIP {reason[:60]}")
+                    excluded.append({"entity": part["entity"],
+                                     "why": reason,
+                                     "derived_from": candidate["entity"]})
+                    continue
                 print(f"      -> {part['entity']}")
                 subjects.append(part)
         else:
@@ -710,6 +753,27 @@ def main() -> int:
             if len(briefs) >= args.top:
                 break
 
+    # A FRESH RUN MUST NEVER ENTER A PROJECT DIRECTORY THAT ALREADY EXISTS.
+    # Stage reuse reads whatever checkpoints it finds there, so a colliding
+    # slug does not start a film — it silently resumes a different one. That
+    # is how 2026-11-20 ended with nothing: research was skipped as "already
+    # finished" and the angle gate judged a brief written the week before,
+    # exiting 1 where only a 3 would have taken the next topic.
+    #
+    # Every defence above should make this unreachable, which is the point:
+    # it is a tripwire, so it REFUSES and names the collision rather than
+    # dropping the brief and leaving the run looking merely unlucky.
+    collisions = [(brief["entity"], projects[slug_of(brief["entity"])])
+                  for brief in briefs
+                  if slug_of(brief["entity"]) in projects]
+    if collisions:
+        for entity, where in collisions:
+            print(f"   COLLISION: {entity} -> {where}")
+        sys.exit("refusing to offer a topic whose project directory already "
+                 "exists — a fresh run would reuse another film's "
+                 "checkpoints: "
+                 + "; ".join(f"{e} ({w})" for e, w in collisions))
+
     out = Path(args.out) if args.out else ROOT / "artifacts" / "topic_briefs.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({
@@ -755,9 +819,21 @@ def main() -> int:
             print(f"   (pick history not recorded: {str(error)[:120]})")
     written = [write_brief(b, ROOT / "reports" / "briefs") for b in briefs
                if b.get("angle")]
-    print(f"\n{len(briefs)} briefs -> {out.relative_to(ROOT)}")
+    def shown(path: Path) -> str:
+        """Relative inside the repo, absolute outside it.
+
+        `--out` is a documented flag and `relative_to` RAISES on a path that
+        is not under ROOT, so every use of it outside the tree crashed the
+        picker after all of its work was already written to disk.
+        """
+        try:
+            return str(path.relative_to(ROOT))
+        except ValueError:
+            return str(path)
+
+    print(f"\n{len(briefs)} briefs -> {shown(out)}")
     for path in written:
-        print(f"   {path.relative_to(ROOT)}")
+        print(f"   {shown(path)}")
     return 0 if briefs else 1
 
 
