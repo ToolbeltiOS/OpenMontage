@@ -167,6 +167,40 @@ def send_photo(path: str | Path, caption: str = "") -> dict | None:
     return _upload("sendPhoto", "photo", Path(path), caption)
 
 
+def send_audio(path: str | Path, caption: str = "") -> dict | None:
+    """Best effort, like `send_document`.
+
+    There was no public way to post audio until 2026-11-22, so the bed
+    audition that night went out through `_upload` directly — and a post
+    made outside the public surface is a post made outside the gate.
+    """
+    return _upload("sendAudio", "audio", Path(path), caption)
+
+
+def ask_with_file(path: str | Path, caption: str, *, hours: float,
+                  method: str = "sendAudio",
+                  field: str = "audio") -> tuple[str, str]:
+    """Post a file that asks a question, and wait for the answer.
+
+    THE GATE PAIR, in one call, because the halves are useless apart.
+
+    `drain()` runs BEFORE the post: without it a reply to last week's
+    question — or anything else sent to the bot in between — is read as the
+    answer to this one. `await_reply()` runs after, from the offset drain
+    returned, so only what arrives from here counts.
+
+    WHY THIS EXISTS. On 2026-11-22 two bed previews were posted with
+    `_upload` and no poller at all. The owner replied "drone" twice,
+    forty-nine seconds apart, and both answers sat unread in the queue
+    because nothing was waiting for them. A post that asks a question and
+    does not wait for its answer is not a question, it is a notification
+    that looks like one.
+    """
+    offset = drain()
+    _upload(method, field, Path(path), caption)
+    return await_reply(offset, hours)
+
+
 def require(text: str) -> dict:
     """Load-bearing. Raises if it cannot be delivered."""
     return _call("sendMessage", {"text": text[:MAX_MESSAGE],

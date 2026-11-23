@@ -22,8 +22,10 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "lib"))
@@ -569,6 +571,106 @@ def check_callout_types(cuts: list[dict], overlays: list[dict],
     return valid
 
 
+#: The composer's own scene schemas, and the node entry that runs them.
+#: These are TypeScript because the schemas are: a Python restatement of
+#: them would be a second source of truth, which is the bug this gate is
+#: here to catch.
+SCENE_SCHEMAS = os.path.join(
+    "remotion-composer", "src", "schemas", "docComponents.ts")
+SCENE_VALIDATOR = os.path.join(
+    "remotion-composer", "src", "schemas", "validate_cut_props_cli.ts")
+ESBUILD = os.path.join("remotion-composer", "node_modules", ".bin", "esbuild")
+
+
+def _refuse(why: str) -> "NoReturn":
+    raise SystemExit(
+        f"the scene-props gate could not run: {why}\n"
+        "It refuses rather than passing: 'I could not check' and "
+        "'everything is fine' are opposite answers, and treating them as "
+        "the same is what let `note` and `distance_callout: true` reach a "
+        "render.")
+
+
+def scene_prop_report(props: dict, root: str | None = None) -> dict:
+    """Run the composer's zod schemas over the props. Returns the report.
+
+    Raises if the CHECK breaks — a broken check is not a clean bill.
+    """
+    root = root or ROOT
+    esbuild = os.path.join(root, ESBUILD)
+    entry = os.path.join(root, SCENE_VALIDATOR)
+    if not os.path.exists(entry):
+        _refuse(f"{SCENE_VALIDATOR} is missing")
+    if not os.path.exists(esbuild):
+        _refuse(f"{ESBUILD} is missing — run npm ci in remotion-composer")
+    if shutil.which("node") is None:
+        _refuse("node is not on PATH")
+
+    work = tempfile.mkdtemp(prefix="scene-props-")
+    try:
+        bundle = os.path.join(work, "validate.cjs")
+        built = subprocess.run(
+            [esbuild, entry, "--bundle", "--platform=node", "--format=cjs",
+             f"--outfile={bundle}", "--log-level=error"],
+            capture_output=True, text=True)
+        if built.returncode != 0:
+            _refuse(f"esbuild failed on {SCENE_VALIDATOR}:\n"
+                    f"{built.stderr.strip()}")
+
+        where = os.path.join(work, "props.json")
+        json.dump(props, open(where, "w", encoding="utf-8"),
+                  ensure_ascii=False)
+        ran = subprocess.run([shutil.which("node"), bundle, where],
+                             capture_output=True, text=True)
+        if ran.returncode != 0:
+            _refuse(f"the validator exited {ran.returncode}:\n"
+                    f"{ran.stderr.strip()}")
+        try:
+            return json.loads(ran.stdout)
+        except json.JSONDecodeError as error:
+            _refuse(f"the validator printed something that is not json "
+                    f"({error}): {ran.stdout[:200]!r}")
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
+def check_scene_props(props: dict, root: str | None = None) -> dict:
+    """Refuse a cut whose props the composer cannot draw.
+
+    THE SCHEMAS HAD NO CONSUMER. `docComponents.ts` has carried a zod schema
+    per scene type since the buildability check was written, and nothing
+    imported it — the fourth gate in this pipeline found defining a rule
+    nobody enforced. Pointed at cuts it also cried wolf (85 failures on a
+    film that rendered), which is why `DOC_CUT_SCHEMAS` states the cut
+    contract separately. This is the consumer.
+
+    Run on the props as they are about to be written — the same point as
+    `check_callout_types`, and the last one at which the answer is free.
+    A render that reads a bad prop dies on the frame the cut starts:
+    2026-11-22 lost 18 minutes to frame 21867 of 36705 for one cut whose
+    `distance_callout` was `true` where the component indexes `.at`.
+    """
+    report = scene_prop_report(props, root)
+    failures = report.get("failures") or []
+    if failures:
+        first = failures[0]
+        lines = [
+            f"cut {first['id']} ({first['type']}): "
+            f"{first['field']} — {first['rule']}"
+        ]
+        if len(failures) > 1:
+            lines.append(f"and {len(failures) - 1} more:")
+            lines += [f"  {f['where']} {f['id']} ({f['type']}): "
+                      f"{f['field']} — {f['rule']}" for f in failures[1:]]
+        raise SystemExit(
+            "props the composer cannot draw:\n  "
+            + "\n  ".join(lines)
+            + f"\nChecked against {SCENE_SCHEMAS}. Fix these in the edit "
+              "stage, which rebuilds render_props.json — a patch applied "
+              "here alone is overwritten on the next build.")
+    return report
+
+
 def main() -> int:
     argv = sys.argv[1:]
     if argv and argv[0] == "--project":
@@ -832,6 +934,13 @@ def main() -> int:
         "playbook": "wak3up-documentary",
         "audio": {"narration": {"src": os.path.abspath(mixed), "volume": 1.0}},
     }
+    # AND EVERY CUT AGAINST ITS SCENE TYPE'S SCHEMA, on the finished props
+    # rather than the artifact, so whatever this builder resolved is what
+    # gets checked. The callout gate above answers one union by reading the
+    # component; this answers the whole prop shape by running the composer's
+    # own zod schemas.
+    scenes = check_scene_props(props)
+
     out = os.path.join(ART, "render_props.json")
     json.dump(props, open(out, "w", encoding="utf-8"), ensure_ascii=False)
     print(f"order: {reordered} cuts re-sequenced to follow the scene plan")
@@ -848,6 +957,12 @@ def main() -> int:
     print(f"overlays: {len(overlays)} kept, {len(dropped)} dropped as slot descriptions")
     for d in dropped:
         print("  dropped:", d)
+    unchecked = scenes.get("unchecked") or {}
+    print(f"scenes: {scenes.get('checked', 0)} cuts validated against "
+          f"{SCENE_SCHEMAS}"
+          + (f", {sum(unchecked.values())} unchecked ("
+             + ", ".join(f"{t}x{n}" for t, n in sorted(unchecked.items()))
+             + ")" if unchecked else ""))
     print(f"props: {out}")
     return 0
 

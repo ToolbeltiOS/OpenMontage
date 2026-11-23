@@ -273,6 +273,37 @@ export const BeforeAfterSchema = z.object({
   ...CHROME,
 });
 
+/**
+ * A full-frame figure and its subtitle.
+ *
+ * Added 2026-11-22: `stat_card` and `callout` were the two scene types in
+ * the Pearl Harbor film with NO schema at all, so neither could be checked
+ * even once the schemas had a consumer.
+ */
+export const StatCardSchema = z.object({
+  stat: z.string().min(1),
+  subtitle: z.string().optional(),
+  statFontSize: z.number().positive().optional(),
+  subtitleFontSize: z.number().positive().optional(),
+  sustain: z.boolean().optional(),
+  ...CHROME,
+});
+
+/**
+ * A boxed aside.
+ *
+ * `callout_type` IS DELIBERATELY ABSENT. Which styles exist is read out of
+ * `CalloutBox.tsx` by `check_callout_types`, and restating that list here
+ * would be a second source of truth — which is the precise shape of the bug
+ * that killed the 2026-11-21 render at frame 16301.
+ */
+export const CalloutSchema = z.object({
+  text: z.string().min(1),
+  title: z.string().optional(),
+  backgroundColor: z.string().optional(),
+  ...CHROME,
+});
+
 export const DOC_COMPONENT_SCHEMAS = {
   annotated_still: AnnotatedStillSchema,
   schematic: SchematicSchema,
@@ -294,6 +325,8 @@ export const DOC_COMPONENT_SCHEMAS = {
     ...CHROME,
   }),
   outro_cta: outroCtaSchema,
+  stat_card: StatCardSchema,
+  callout: CalloutSchema,
 } as const;
 
 export type DocComponentName = keyof typeof DOC_COMPONENT_SCHEMAS;
@@ -310,3 +343,80 @@ export function validateDocProps(name: string, props: unknown): string | null {
 }
 
 export { outroCtaSchema };
+
+/* ─────────────────── what a CUT may carry, vs what a COMPONENT gets ────── */
+
+/**
+ * The schemas above describe what a COMPONENT receives. A CUT is not that:
+ * `Explainer` maps one onto the other, supplying some props itself and
+ * dropping others. Validating a cut against a component schema therefore
+ * reports failures that are not defects — on 2026-11-22 the Pearl Harbor
+ * film scored 85 of them while rendering perfectly well, because
+ * `AnnotatedStill` is handed `image={cut.backgroundImage ?? cut.image}` and
+ * no cut carries `image` at all.
+ *
+ * That gap is why these schemas sat for months with NO CONSUMER: pointed at
+ * cuts they cried wolf, so nobody could turn them on. This registry closes
+ * it. Every divergence from the component schema is declared HERE, with the
+ * call site that justifies it, so "the cut contract" has one answer and the
+ * difference between the two contracts is visible rather than assumed.
+ *
+ * A type with no entry of its own uses the component schema unchanged.
+ */
+export const DOC_CUT_SCHEMAS = {
+  ...DOC_COMPONENT_SCHEMAS,
+
+  /**
+   * `Explainer` resolves the plate itself — `const plate = cut.backgroundImage
+   * ?? cut.image` — and renders this scene type only when one of them is
+   * truthy. So the cut owes a plate under either name, not `image`.
+   */
+  annotated_still: AnnotatedStillSchema.omit({ image: true })
+    .extend({
+      backgroundImage: z.string().min(1).optional(),
+      image: z.string().min(1).optional(),
+    })
+    .refine((c) => Boolean(c.backgroundImage || c.image), {
+      message:
+        "needs backgroundImage or image — Explainer draws this cut only " +
+        "when one of them resolves to a plate, and silently draws nothing " +
+        "when neither does",
+      path: ["backgroundImage"],
+    }),
+
+  /**
+   * `seed` is interpolated into a string (`${seed}-x-${i}`), so a number is
+   * as good as a string here and four cuts in the Pearl Harbor film author
+   * one. `density` stays STRICT on purpose: it is used as
+   * `Math.round(density)` for the element count, so the 0.4 those same cuts
+   * carry rounds to zero and the texture beat draws nothing at all.
+   */
+  texture_field: DOC_COMPONENT_SCHEMAS.texture_field.extend({
+    seed: z.union([z.string().min(1), z.number()]),
+  }),
+
+  /**
+   * `map_route` deliberately has NO divergence. `basemap` and `basemap_drift`
+   * are authored by the edit stage and are NOT passed on by `Explainer`, so
+   * six cuts in the Pearl Harbor film ask for terrain and get none. Relaxing
+   * the rule here would bless that; the fix is to wire the props through and
+   * clamp the drift, which is owed separately.
+   */
+} as const;
+
+export type DocCutName = keyof typeof DOC_CUT_SCHEMAS;
+
+/** Validate one cut's props. Returns [] on success, else one reason per rule. */
+export function validateCutProps(
+  type: string,
+  cut: unknown,
+): { field: string; rule: string }[] | null {
+  const schema = (DOC_CUT_SCHEMAS as Record<string, z.ZodTypeAny>)[type];
+  if (!schema) return null; // no schema for this scene type — not checkable
+  const r = schema.safeParse(cut);
+  if (r.success) return [];
+  return r.error.issues.map((i) => ({
+    field: i.path.join(".") || "(root)",
+    rule: i.message,
+  }));
+}
