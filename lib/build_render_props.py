@@ -506,6 +506,69 @@ def act_chrome(script: dict) -> dict[str, tuple[str, str]]:
     return out
 
 
+#: Where the composer defines what a callout can look like. One file, so
+#: that "which styles exist" has one answer.
+CALLOUT_COMPONENT = os.path.join(
+    "remotion-composer", "src", "components", "CalloutBox.tsx")
+
+
+def callout_types(root: str | None = None) -> set[str]:
+    """The callout styles the composer actually has, read from its source.
+
+    Parsed out of `TYPE_DEFAULTS`, which is the object the component indexes
+    with the prop. A FAILURE TO PARSE RAISES: "I could not read the list"
+    and "everything is valid" are opposite answers, and the second one is
+    what let `note` reach a render.
+    """
+    path = os.path.join(root or ROOT, CALLOUT_COMPONENT)
+    try:
+        src = open(path, encoding="utf-8").read()
+    except OSError as error:
+        raise SystemExit(f"cannot read {CALLOUT_COMPONENT}: {error}")
+
+    block = re.search(r"TYPE_DEFAULTS[^=]*=\s*\{(.*?)\n\};", src, re.S)
+    if not block:
+        raise SystemExit(
+            f"TYPE_DEFAULTS not found in {CALLOUT_COMPONENT} — the callout "
+            "gate cannot tell which styles exist, so it refuses rather than "
+            "passing everything")
+    found = set(re.findall(r"^\s*(\w+):\s*\{", block.group(1), re.M))
+    if not found:
+        raise SystemExit(
+            f"TYPE_DEFAULTS in {CALLOUT_COMPONENT} parsed to nothing")
+    return found
+
+
+def check_callout_types(cuts: list[dict], overlays: list[dict],
+                        root: str | None = None) -> set[str]:
+    """Refuse a callout style the component cannot draw.
+
+    Checked on the props as they are about to be written, which is the last
+    point before a render reads them and the cheapest point at which the
+    answer is still free.
+    """
+    valid = callout_types(root)
+    bad = []
+    for where, items in (("cut", cuts), ("overlay", overlays)):
+        for item in items:
+            style = item.get("callout_type")
+            if style is None:                      # the component defaults
+                continue
+            if style not in valid:
+                bad.append(f"{where} {item.get('id', '?')}: "
+                           f"callout_type={style!r}")
+    if bad:
+        raise SystemExit(
+            "callout styles the composer does not define:\n  - "
+            + "\n  - ".join(bad)
+            + f"\n{CALLOUT_COMPONENT} defines: "
+            + ", ".join(sorted(valid))
+            + "\nA render reading one of these dies on the frame the cut "
+              "starts, not at its first frame: 2026-11-21 lost 4h26m to "
+              "frame 16301 of 36705.")
+    return valid
+
+
 def main() -> int:
     argv = sys.argv[1:]
     if argv and argv[0] == "--project":
@@ -746,6 +809,20 @@ def main() -> int:
         ed["cuts"][-1]["out_seconds"] = round(ed["cuts"][-1]["out_seconds"] + deficit + 0.1, 3)
         t = ed["cuts"][-1]["out_seconds"]
         print(f"timeline extended {deficit + 0.1:.2f}s on the final cut to cover the narration")
+
+    # THE COMPOSER'S VOCABULARY, CHECKED BEFORE THE RENDER IS SPENT.
+    #
+    # 2026-11-21: the render died at frame 16301 of 36705, four and a half
+    # hours in, on `TypeError: Cannot read properties of undefined (reading
+    # 'icon')` in CalloutBox. Cut c083 carried `callout_type: "note"`, which
+    # is not one of the four the component defines; `TYPE_DEFAULTS[type]`
+    # came back undefined. c125 held the same value and would have killed
+    # the next attempt at 806s. A TypeScript union on the props interface
+    # says nothing at runtime, because these props arrive as JSON.
+    #
+    # The set is READ FROM THE COMPONENT rather than restated here: a copy
+    # of a list is a list that drifts from it, and the drift IS this bug.
+    check_callout_types(ed["cuts"], overlays)
 
     props = {
         "cuts": ed["cuts"],
