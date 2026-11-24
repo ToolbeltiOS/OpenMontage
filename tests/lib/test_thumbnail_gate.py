@@ -230,3 +230,76 @@ class TestAFailedPostCannotTakeTheFilmDown:
                 "post_quietly" in source), (
             "a film that FAILED its gates must not post a thumbnail for "
             "approval")
+
+
+class TestAFilmThatIsAlreadyLive:
+    """A weekend is the right deadline for a film nobody can see yet.
+
+    The gate's record is written at DELIVERY, hours before the upload, so
+    its deadline is computed without knowing how the film will go out. Film
+    #6 was delivered at 10:42 on 2026-11-23 with a deadline of Sunday the
+    29th at 20:00, and went PUBLIC at 15:48 the same day — so the record sat
+    in `waiting` for six days over a video the audience was already
+    watching. The worst case of not replying is supposed to be the
+    thumbnail you were shown, not a week of the wrong one.
+    """
+
+    def test_a_scheduled_film_still_gets_its_weekend(self):
+        """THE RULE THAT MUST NOT CHANGE: nothing is live before Monday."""
+        when = T.deadline_for("2026-11-30T09:00:00-05:00",
+                               now=datetime(2026, 11, 23, 10, 42))
+        assert (when.weekday(), when.hour) == (T.DEADLINE_WEEKDAY,
+                                               T.DEADLINE_HOUR)
+        assert when == datetime(2026, 11, 29, 20, 0)
+
+    def test_a_film_that_is_public_now_gets_two_hours(self):
+        when = T.deadline_for(None, now=datetime(2026, 11, 23, 15, 48),
+                               public_now=True)
+        assert when == datetime(2026, 11, 23, 17, 48)
+        assert T.PUBLIC_NOW_HOURS == 2
+
+    def test_the_stored_deadline_is_recomputed_once_the_film_is_live(
+            self, tmp_path, monkeypatch):
+        """FILM #6's EXACT CASE. The record was written before the upload,
+        so the fix cannot live only in the writer."""
+        monkeypatch.setattr(T, "ROOT", tmp_path)
+        art = tmp_path / "projects" / "film" / "artifacts"
+        art.mkdir(parents=True)
+        (art / "publish.json").write_text(json.dumps({
+            "video_id": "pff-hxdkuiI",
+            "public_immediately": True,
+            "uploaded": "2026-11-23T15:48:03+00:00",
+            "publish_at": "2026-11-23T15:48:03+00:00"}))
+        record = {"state": "waiting", "posted": "2026-11-23T10:42:40",
+                  "deadline": "2026-11-29T20:00:00"}
+        when = T.effective_deadline("film", record,
+                                     now=datetime(2026, 11, 23, 16, 0))
+        assert when < datetime(2026, 11, 23, 18, 30), when
+        assert when < datetime.fromisoformat(record["deadline"])
+
+    def test_a_scheduled_films_record_is_left_alone(self, tmp_path,
+                                                    monkeypatch):
+        monkeypatch.setattr(T, "ROOT", tmp_path)
+        art = tmp_path / "projects" / "film" / "artifacts"
+        art.mkdir(parents=True)
+        (art / "publish.json").write_text(json.dumps({
+            "video_id": "x", "publish_at": "2026-11-30T09:00:00-05:00"}))
+        record = {"state": "waiting", "posted": "2026-11-23T10:42:40",
+                  "deadline": "2026-11-29T20:00:00"}
+        assert T.effective_deadline(
+            "film", record, now=datetime(2026, 11, 23, 16, 0)
+        ) == datetime(2026, 11, 29, 20, 0)
+
+    def test_a_scheduled_film_whose_moment_has_passed_counts_as_public(
+            self, tmp_path, monkeypatch):
+        monkeypatch.setattr(T, "ROOT", tmp_path)
+        art = tmp_path / "projects" / "film" / "artifacts"
+        art.mkdir(parents=True)
+        (art / "publish.json").write_text(json.dumps({
+            "video_id": "x", "publish_at": "2026-11-23T09:00:00-05:00"}))
+        assert T.is_public("film", now=datetime(2026, 11, 23, 16, 0))
+
+    def test_no_publish_record_is_not_public(self, tmp_path, monkeypatch):
+        monkeypatch.setattr(T, "ROOT", tmp_path)
+        (tmp_path / "projects" / "film" / "artifacts").mkdir(parents=True)
+        assert not T.is_public("film")

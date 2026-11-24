@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import json
 import os
+import html
 import re
 import sys
 import time
@@ -94,6 +95,72 @@ def category_files(category: str, descend: bool = True) -> list[str]:
     return titles
 
 
+def plain(value: str) -> str:
+    """Wikimedia's `Artist` / `Credit` HTML as the words a reader sees.
+
+    TWO DEFECTS, 30 AND 21 ROWS, PUBLISHED SIX TIMES
+    ------------------------------------------------
+    This was `re.sub("<[^>]+>", "", value).strip()`, which does neither of
+    the jobs the string needs.
+
+    1. TAGS WERE DELETED, NOT SEPARATED. Commons renders an unknown author
+       as a visible label beside a longer machine-readable one, so two
+       adjacent elements closed up into
+
+           "Unknown authorUnknown author or not provided"
+
+       — 16 rows of one variant and 14 of another across the six delivered
+       films' banks, and every one of them on a published credits page.
+
+    2. ENTITIES WERE LEFT ENCODED: "Harris &amp; Ewing, photographer",
+       21 rows.
+
+    So: tags become a space, entities are decoded, whitespace collapses,
+    and an immediately-repeated opening phrase is dropped — which is what
+    the doubling is, and dropping it is safe because the second copy is the
+    fuller one ("Unknown author" + "Unknown author or not provided").
+
+    The repair is here, at the fetcher, AND `build_listing.credits_rows`
+    calls it over whatever a bank already holds, because six banks on disk
+    carry the old strings and nothing is going to re-fetch them.
+    """
+    if not value:
+        return ""
+    text = html.unescape(re.sub("<[^>]+>", " ", value))
+    text = re.sub(r"\s+", " ", text).strip()
+    undoubled = _undouble(text)
+    if undoubled is not None:
+        return undoubled
+
+    # THE SAME DEFECT, ALREADY ON DISK. Six banks hold strings the old
+    # tag-stripper closed up with no space at all —
+    # "Unknown authorUnknown author or not provided" — and nothing is going
+    # to re-fetch 991 assets to repair a name. A lower-to-upper boundary is
+    # where the two elements met, so each one is TRIED as a seam and the
+    # split is kept ONLY when it reveals an exact repetition. "McDonald"
+    # and "LaPerouse" split to no repetition and are returned untouched:
+    # the rule changes a string only when it can prove it is a doubling.
+    for seam in [m.start() + 1 for m in re.finditer(r"[a-z][A-Z]", text)]:
+        candidate = f"{text[:seam]} {text[seam:]}"
+        undoubled = _undouble(candidate)
+        if undoubled is not None:
+            return undoubled
+    return text
+
+
+def _undouble(text: str) -> str | None:
+    """`text` without its immediately-repeated opening phrase, or None.
+
+    None means "this is not a doubling", which the caller needs to tell
+    apart from "this is a doubling that cleans up to the same string".
+    """
+    words = text.split(" ")
+    for size in range(min(6, len(words) // 2), 0, -1):
+        if words[:size] == words[size:size * 2]:
+            return " ".join(words[size:])
+    return None
+
+
 def _imageinfo_batch(batch: list[str]) -> dict:
     """One imageinfo call, splitting the batch if the URI is too long.
 
@@ -140,9 +207,9 @@ def imageinfo(titles: list[str]) -> list[dict]:
                 "width": ii.get("width", 0),
                 "height": ii.get("height", 0),
                 "mime": ii.get("mime", ""),
-                "artist": re.sub("<[^>]+>", "", (meta.get("Artist") or {}).get("value", "")).strip(),
+                "artist": plain((meta.get("Artist") or {}).get("value", "")),
                 "licence": (meta.get("LicenseShortName") or {}).get("value", ""),
-                "credit": re.sub("<[^>]+>", "", (meta.get("Credit") or {}).get("value", "")).strip(),
+                "credit": plain((meta.get("Credit") or {}).get("value", "")),
             })
     return out
 

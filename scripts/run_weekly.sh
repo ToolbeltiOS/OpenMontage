@@ -228,6 +228,41 @@ WALL_EDIT="${WALL_EDIT:-60}"
 #: "Plus a third" is the owner's margin, chosen 2026-11-14, on the same
 #: reasoning as research's 40: a stage whose cost depends on the film has to
 #: have somewhere to go on a harder one. It is a MARGIN, not a derivation.
+#: WHAT THE STAGES ACTUALLY DID, runs #5 and #6, measured 2026-11-24 from
+#: every `<stage>_stage.json` of 2026-11-11, -13, -14, -20 and -21. The
+#: figure is `num_turns`, which is what `--max-turns` counts; a resumed
+#: attempt ran with the doubled cap the run log tells the owner to pass.
+#:
+#:   stage       cap   runs #5 and #6                        verdict
+#:   research     40   29 ok · 41 CAPPED · 68 ok (cap 80)    1 finish past
+#:   proposal     25   26 CAPPED · 26 CAPPED · 30 ok (50)    1 finish past
+#:   script      120   15 ok · 18 ok · 53 ok                 room to spare
+#:   scene_plan   55   38 ok · 41 CAPPED(40) · 32 ok · 56 CAPPED   none
+#:   assets       30   NO RECORD AT ALL, three runs running
+#:   edit         81   61 CAPPED(60) · 82 CAPPED · 82 CAPPED · 132 ok (162)
+#:                                                           1 finish past
+#:   notes        15   never invoked in either run
+#:
+#: NOTHING IS RAISED. The rule is: raise a cap where the stage FINISHED
+#: past it TWICE, and no stage has done that yet. Three are one occurrence
+#: away — research, proposal and edit each finished once only after being
+#: resumed with a doubled cap — and that is worth knowing in advance rather
+#: than discovering on a Friday. The number to raise edit to, when it
+#: happens again, is what it USED (132) plus the margin, not the 162 it was
+#: given.
+#:
+#: SCRIPT IS THE OPPOSITE WARNING. Its three successes report 15, 18 and 53
+#: turns against a cap of 120, while `modelUsage` counts 209, 250 and 265
+#: exchanges and the bills were $18.86, $20.00 and $26.60. The two numbers
+#: measure different things (see scripts/stage_usage.py), so a cap that
+#: looks generous against one is not evidence of anything about the other.
+#:
+#: THE ASSETS STAGE HAS NO FIGURES BECAUSE IT LEAVES NO RECORD:
+#: `assets_stage.json` is 0 bytes on 2026-11-11, -13 and -20, and the
+#: ledger rows read "1h00m wall, None turns, $0.00". It is not cheap; it is
+#: unmeasured, because it is stopped by the 60-minute WALL cap and the CLI
+#: never gets to write its result. Its cap of 30 remains a number about
+#: nothing, and a stage that cannot be measured cannot be budgeted.
 TURNS_RESEARCH="${TURNS_RESEARCH:-40}"
 TURNS_PROPOSAL="${TURNS_PROPOSAL:-25}"
 TURNS_SCRIPT="${TURNS_SCRIPT:-120}"

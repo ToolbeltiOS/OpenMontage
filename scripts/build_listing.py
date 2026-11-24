@@ -30,6 +30,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "lib"))
+
+from asset_bank import plain                                   # noqa: E402
 SECTIONS = ["cold_open", "title_sequence", "act1", "act2", "act3", "act4", "outro"]
 DESCRIPTION_LIMIT = 5000
 
@@ -176,7 +179,13 @@ def credits_rows(art: Path, props: dict) -> tuple[list[dict], dict]:
         if aid not in wanted:
             continue
         licence = a.get("licence") or "unknown"
-        artist = (a.get("artist") or "").strip() or "(not supplied)"
+        # NORMALISED ON READ, not only on fetch. Six banks on disk carry
+        # "Unknown authorUnknown author or not provided" and "Harris &amp;
+        # Ewing" — the fetcher's old tag-stripping closed two elements up
+        # and never decoded an entity — and nothing is going to re-fetch
+        # 991 assets to repair a name. Same function as the fetcher uses,
+        # so there is one rule and not a copy of one.
+        artist = plain(a.get("artist") or "") or "(not supplied)"
         page = a.get("page") or ""
         rows.setdefault(f"{artist} — {licence} — {page}", {
             "key": f"{artist} — {licence} — {page}",
@@ -187,7 +196,7 @@ def credits_rows(art: Path, props: dict) -> tuple[list[dict], dict]:
             "deed": licence_deed(licence),
             "page": page,
             "provider": a.get("provider") or "",
-            "notice": (a.get("credit") or "").strip(),
+            "notice": plain(a.get("credit") or ""),
             "kind": "asset",
         })
     for record in rows.values():

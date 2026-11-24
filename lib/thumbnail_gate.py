@@ -40,6 +40,21 @@ sys.path.insert(0, str(ROOT / "lib"))
 DEADLINE_WEEKDAY = 6          # Monday is 0
 DEADLINE_HOUR = 20
 
+#: A FILM THAT IS ALREADY PUBLIC GETS TWO HOURS, NOT A WEEKEND.
+#:
+#: The weekend is sized for the gap between delivery and a scheduled Monday
+#: 09:00: it is the whole time there is, and nothing is live during it. When
+#: the film goes public immediately that reasoning inverts — the audience is
+#: already looking at the thumbnail, and "by Sunday 20:00" is a deadline
+#: five days after the thing it was meant to decide.
+#:
+#: Measured 2026-11-23: film #6 was delivered at 10:42, the gate posted with
+#: a deadline of Sunday 2026-11-29 20:00, and the film went public at 15:48
+#: the same day. The record said `waiting` for six days over a live video.
+#: Two hours is long enough for a reply from someone who is awake and short
+#: enough that the answer still means something.
+PUBLIC_NOW_HOURS = 2
+
 #: Variants tried in order when the answer is "no" with no usable notes.
 #: Each is a different reading of the same film rather than a nudge of the
 #: same crop — a "no" to a thumbnail is rarely a request to move it 5%.
@@ -55,15 +70,24 @@ def record_path(slug: str) -> Path:
     return ROOT / "projects" / slug / "artifacts" / "thumbnail_gate.json"
 
 
-def deadline_for(publish_at: str | None, now: datetime | None = None
-                 ) -> datetime:
-    """The Sunday 20:00 before the film goes public.
+def deadline_for(publish_at: str | None, now: datetime | None = None,
+                 public_now: bool = False) -> datetime:
+    """When the thumbnail is set whether or not anyone has answered.
 
-    With no publish date — a film put up immediately, or a record written
-    before the upload — the next Sunday 20:00 after now, so the rule is the
-    same shape either way and never lands in the past.
+    The Sunday 20:00 before a SCHEDULED film goes public — far enough
+    before to set it calmly, late enough to be a whole weekend of asking.
+
+    `public_now` is the other case and it is not a shorter version of the
+    same thing: the film is live, the audience can see the thumbnail, and
+    there is nothing left to be early for. Two hours.
+
+    With no publish date — a record written at delivery, before the upload
+    — the next Sunday 20:00 after now, so the rule is the same shape either
+    way and never lands in the past.
     """
     now = now or datetime.now()
+    if public_now:
+        return now + timedelta(hours=PUBLIC_NOW_HOURS)
     if publish_at:
         when = datetime.fromisoformat(publish_at.replace("Z", "+00:00"))
         when = when.astimezone().replace(tzinfo=None)
@@ -81,11 +105,74 @@ def deadline_for(publish_at: str | None, now: datetime | None = None
         hour=DEADLINE_HOUR, minute=0, second=0, microsecond=0)
 
 
-def _publish_at(slug: str) -> str | None:
+def _publish_record(slug: str) -> dict[str, Any]:
     path = ROOT / "projects" / slug / "artifacts" / "publish.json"
     if path.exists():
-        return json.loads(path.read_text()).get("publish_at")
-    return None
+        try:
+            return json.loads(path.read_text())
+        except json.JSONDecodeError:
+            return {}
+    return {}
+
+
+def _publish_at(slug: str) -> str | None:
+    return _publish_record(slug).get("publish_at")
+
+
+def is_public(slug: str, now: datetime | None = None) -> bool:
+    """Is the film already in front of an audience?
+
+    `public_immediately` is written by `scripts/publish_doc.py --now`. The
+    date comparison is the belt: a scheduled film whose moment has passed
+    is just as public as one uploaded live.
+    """
+    record = _publish_record(slug)
+    if not record:
+        return False
+    if record.get("public_immediately"):
+        return True
+    when = record.get("publish_at")
+    if not when:
+        return False
+    try:
+        moment = datetime.fromisoformat(
+            str(when).replace("Z", "+00:00")).astimezone().replace(tzinfo=None)
+    except ValueError:
+        return False
+    return moment <= (now or datetime.now())
+
+
+def effective_deadline(slug: str, record: dict[str, Any],
+                       now: datetime | None = None) -> datetime:
+    """The deadline as it stands NOW, not as it was written.
+
+    The gate's record is written at delivery, hours before the upload, so
+    the deadline in it was computed without knowing how the film would go
+    out. When the film then goes public immediately, the stored Sunday is
+    a week-long wait over a live video — film #6, 2026-11-23. Recomputing
+    here keeps the record honest without needing the publisher to reach
+    back into it.
+    """
+    now = now or datetime.now()
+    stored = datetime.fromisoformat(record["deadline"])
+    if not is_public(slug, now):
+        return stored
+    # Two hours from the moment the audience could first see it. Never
+    # later than the deadline already promised in the record.
+    base = now
+    for when in (_publish_record(slug).get("uploaded"),
+                 _publish_record(slug).get("publish_at"),
+                 record.get("posted")):
+        if not when:
+            continue
+        try:
+            base = datetime.fromisoformat(
+                str(when).replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        base = base.astimezone().replace(tzinfo=None) if base.tzinfo else base
+        break
+    return min(stored, base + timedelta(hours=PUBLIC_NOW_HOURS))
 
 
 def video_id(slug: str) -> str | None:
@@ -114,7 +201,7 @@ def post(slug: str, attempt: int = 0, notes: str | None = None
     except Exception:                       # noqa: BLE001
         pass
 
-    deadline = deadline_for(_publish_at(slug))
+    deadline = deadline_for(_publish_at(slug), public_now=is_public(slug))
     caption = (
         f"<b>Thumbnail — {slug}</b>\n"
         f"From {made['from_cut']}, the film's own hero still. "
@@ -192,7 +279,7 @@ def resolve(slug: str, now: datetime | None = None) -> str:
         pass
 
     now = now or datetime.now()
-    deadline = datetime.fromisoformat(record["deadline"])
+    deadline = effective_deadline(slug, record, now)
 
     if verdict == "ok":
         record["state"] = "set" if set_on_video(

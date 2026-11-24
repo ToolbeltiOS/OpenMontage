@@ -270,176 +270,28 @@ def offence(segment: str, patterns: list[str]) -> str | None:
     return None
 
 
-# ── THE TWO INSPECTION FORMS ────────────────────────────────────────────
-# Added 2026-11-14 after run #5. A non-interactive `claude -p` refuses
-# anything `permissions.allow` does not match, and that matcher works on the
-# FRONT of the command string, so it cannot see inside a `for` loop, past a
-# `VAR=x &&` prefix, or through a `$(…)`. Six read-only inspections were
-# refused across run #5's stages on that basis alone, and four of them were
-# a stage trying to find out what it had been given:
+# ── THE TWO INSPECTION FORMS, REMOVED 2026-11-24 ────────────────────────
+# They were added on 2026-11-14 after run #5, where six read-only
+# inspections were refused because `permissions.allow` matches the FRONT of
+# a command string and cannot see inside a `for` loop or a `python -I -c`.
+# Two shapes were therefore recognised structurally and allowed by name:
 #
-#   P=projects/<slug> && ls -la $P/ && ls -la $P/artifacts/ …
-#   ls projects/ && for p in projects/*/artifacts/scene_plan.json; do …
-#   .venv/bin/python -I -c "…json.load(open('projects/king-tut/…'))…"
-#
-# The last one is the expensive one: the edit stage spent a turn trying to
-# read a FINISHED film's edit_decisions.json to learn the shape of the
-# artifact it was being asked to write, which is the cheapest orientation
-# available to it, and was refused.
-#
-# So these two forms are recognised STRUCTURALLY and allowed by name. A hook
-# that returns `allow` overrides the allow-list, so the recognisers run only
-# after the whole deny pass above has cleared the command, and each one is
-# written to say no when it is unsure:
-#
-#   FORM A  a `for` loop over paths under `projects/`, whose body runs only
-#           read-only binaries and redirects nowhere but /dev/null
+#   FORM A  a `for` loop over paths under `projects/`, read-only body
 #   FORM B  `python -I -c <code>` where the code reads and does not write
 #
-# Neither form widens what the deny list refuses. What they widen is what a
-# stage may LOOK at, and looking is the part we were charging it for.
-
-#: Binaries that read and do not write. `python` is deliberately absent:
-#: form B handles it, with the code itself audited.
-READ_ONLY = frozenset({
-    "echo", "printf", "ls", "cat", "head", "tail", "wc", "du", "stat",
-    "file", "find", "grep", "egrep", "fgrep", "sort", "uniq", "cut", "tr",
-    "basename", "dirname", "jq", "test", "[", "true", "false", "cd", "pwd",
-    "date", "sha256sum", "md5", "shasum", "diff", "column", "nl", "seq",
-})
-
-#: `sed` and `awk` read, but `sed -i` writes in place and both can be handed
-#: a script that writes. They are read-only ONLY in the plain spellings.
-CONDITIONAL = {"sed": ("-i", "--in-place"), "awk": ("-i", "--in-place")}
-
-#: Names that mean the python in form B is not a reader. `open` is checked
-#: separately, by mode.
-PY_WRITES = (
-    "write", "unlink", "remove", "rmtree", "mkdir", "makedirs", "rename",
-    "replace", "truncate", "chmod", "chown", "symlink", "system", "popen",
-    "subprocess", "Popen", "socket", "urllib", "requests", "httpx",
-    "urlopen", "eval(", "exec(", "compile(", "__import__", "shutil",
-    "tempfile", "input(", "os.environ", "setattr", "delattr",
-)
-
-#: `open(x)` and `open(x, 'r')` read. Anything else may not.
-OPEN_CALL = re.compile(r"\bopen\s*\(([^)]*)\)")
-READ_MODES = {"", "r", "rb", "rt", "br", "tr"}
-
-#: The target of a redirect, stopping at whatever ends the word. `\S+`
-#: was wrong: in `ls $p 2>/dev/null; done` it captures "/dev/null;"
-#: and then nothing is ever a redirect to /dev/null.
-REDIRECT = re.compile(r"\d?>>?\s*([^\s;&|)]+)")
-
-
-def _redirects_nowhere(part: str) -> bool:
-    """/dev/null is a redirect that cannot keep anything."""
-    return all(m.group(1) == "/dev/null" for m in REDIRECT.finditer(part))
-
-
-def _is_read_only_command(segment: str) -> bool:
-    words = words_of(segment)
-    if not words:
-        return True
-    binary = os.path.basename(words[0])
-    if binary in CONDITIONAL:
-        return not any(flag in words[1:] for flag in CONDITIONAL[binary])
-    if binary == "find":
-        return not any(a in ("-delete", "-exec", "-execdir", "-ok", "-okdir",
-                             "-fprint", "-fls") for a in words[1:])
-    if binary not in READ_ONLY:
-        return False
-    return True
-
-
-FOR_LOOP = re.compile(r"^for\s+\w+\s+in\s+(.+?)\s*$", re.DOTALL)
-
-
-def _form_a(command: str) -> str | None:
-    """A `for` loop over the project tree, with a read-only body.
-
-    The whole line must be read-only, not just the loop: the shape seen in
-    the wild is `ls projects/ && for p in projects/*/…; do …; done`.
-    """
-    parts = segments(command)
-    if not any(part.startswith("for ") for part in parts):
-        return None
-    if not _redirects_nowhere(command):
-        return None
-    saw_project_glob = False
-    for part in parts:
-        if part in ("done", "do") or part.startswith("done"):
-            continue
-        loop = FOR_LOOP.match(part)
-        if loop:
-            words = loop.group(1).split()
-            if not words:
-                return None
-            for word in words:
-                bare = word.strip("\"'")
-                if ".." in bare:
-                    return None
-                if "projects/" not in bare:
-                    return None
-            saw_project_glob = True
-            continue
-        body = part[3:].strip() if part.startswith("do ") else part
-        if not _is_read_only_command(body):
-            return None
-    if not saw_project_glob:
-        return None
-    return ("form A: a for-loop over paths under projects/, body read-only, "
-            "no redirect but /dev/null")
-
-
-def _python_code_is_read_only(code: str) -> bool:
-    for name in PY_WRITES:
-        if name in code:
-            return False
-    for call in OPEN_CALL.finditer(code):
-        args = [a.strip() for a in call.group(1).split(",")]
-        mode = args[1].strip("\"'") if len(args) > 1 else ""
-        if mode not in READ_MODES:
-            return False
-    return True
-
-
-def _form_b(command: str) -> str | None:
-    """`python -I -c <code>` where the code only reads.
-
-    `-I` is required, not cosmetic: it stops python importing from the
-    current directory, which is the rule for anything run over a tree whose
-    contents a stage downloaded. The code is then audited for writes — the
-    point of the form is reading a FINISHED film's artifact to learn its
-    shape, and nothing in that needs a write.
-    """
-    parts = segments(command)
-    if len(parts) != 1:
-        return None
-    words = words_of(parts[0])
-    if not words or not os.path.basename(words[0]).startswith("python"):
-        return None
-    rest = words[1:]
-    if "-I" not in rest or "-c" not in rest:
-        return None
-    code = rest[rest.index("-c") + 1] if rest.index("-c") + 1 < len(rest) else ""
-    if not code:
-        return None
-    if not _python_code_is_read_only(code):
-        return None
-    if not _redirects_nowhere(command):
-        return None
-    return "form B: python -I -c, code audited read-only"
-
-
-def inspection_allowance(command: str) -> str | None:
-    """Which named inspection form this is, or None.
-
-    Order does not matter — the forms do not overlap — but BOTH run only
-    after the deny pass, so this can never re-admit something refused above.
-    """
-    return _form_a(command) or _form_b(command)
-
+# TWO FRIDAYS RAN AND NEITHER FORM WAS EVER REACHED. The expensive case
+# form B existed for — the edit stage reading a finished film's
+# `edit_decisions.json` to learn the shape of the artifact it was being
+# asked to write — is now answered by `scripts/edit_decisions_digest.py`,
+# which is 7 KB of shape instead of 252 KB of film and is handed to the
+# stage rather than hunted for.
+#
+# So they are gone. A recogniser that admits commands is the most dangerous
+# code in a guard, and 170 lines of it earning nothing is a liability with
+# no other side. The deny pass is untouched; what is removed is only the
+# ability to say "allow", and silence leaves the allow-list in charge.
+#
+# tests/automation/test_bash_guard.py holds the test that they stay gone.
 
 def main() -> int:
     raw = sys.stdin.read()
@@ -467,16 +319,10 @@ def main() -> int:
                   f"  in: {command}", file=sys.stderr)
             return 2
 
-    # NOTHING DENIED. If this is one of the two named inspection forms, say
-    # so out loud: a `permissionDecision: allow` overrides the allow-list,
-    # which is what these forms need, since the allow-list cannot parse them.
-    allowance = inspection_allowance(command)
-    if allowance:
-        print(json.dumps({"hookSpecificOutput": {
-            "hookEventName": "PreToolUse",
-            "permissionDecision": "allow",
-            "permissionDecisionReason":
-                f".claude/hooks/bash_guard.py: {allowance}"}}))
+    # NOTHING DENIED, AND NOTHING SAID. This hook no longer returns
+    # `permissionDecision: allow` for anything: the two inspection forms
+    # that did are gone (see above). Silence leaves `permissions.allow` in
+    # charge, which is the default for every command that is not denied.
     return 0
 
 
