@@ -31,7 +31,12 @@ import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "assets/basemaps/NE2_HR_LC_SR/NE2_HR_LC_SR.tif"
+#: The raster is 700 MB and `.gitignore`d, so it exists in whichever
+#: worktree holds the asset library and not necessarily in the one a film is
+#: rendered from. `OM_BASEMAP_RASTER` points at it; without the override this
+#: is the in-tree path it has always been.
+SOURCE = Path(os.environ.get("OM_BASEMAP_RASTER") or
+              ROOT / "assets/basemaps/NE2_HR_LC_SR/NE2_HR_LC_SR.tif")
 DEST = ROOT / "remotion-composer/public/basemaps"
 
 #: From the source's world file: 1/60 degree per pixel, top-left at
@@ -167,7 +172,8 @@ def main() -> int:
             f"no basemap at {SOURCE}.\n"
             f"Download it once (public domain, ~200MB zipped):\n"
             f"  curl -L -o ne2.zip {ATTRIBUTION['url']}\n"
-            f"and unzip into assets/basemaps/NE2_HR_LC_SR/")
+            f"and unzip into assets/basemaps/NE2_HR_LC_SR/ — or point\n"
+            f"OM_BASEMAP_RASTER at the copy another worktree already has.")
 
     meta = crop(tuple(args.bounds), args.name, args.max_width,
                 tuple(args.ocean) if args.ocean else None,

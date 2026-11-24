@@ -7,6 +7,7 @@ import { SceneShell } from "../design/Scene";
 import { TerrainBase, TerrainTile } from "./TerrainBase";
 import { TYPE_CLASS } from "../design/layers";
 import { resolveAsset } from "../lib/resolveAsset";
+import { clampBasemapDrift } from "../design/basemap";
 
 export interface MapMarker {
   lon: number;
@@ -118,8 +119,15 @@ export const MapRoute: React.FC<MapRouteProps> = ({
   detail = "auto",
   borders = false,
   basemap,
-  basemap_drift = 0.015,
+  basemap_drift,
 }) => {
+  /* The authored value, held inside the schema's ceiling. Until the prop was
+     wired through on 2026-11-24 this number never reached the component, so
+     the 1.1-1.5 six Pearl Harbor cuts carry was harmless; live, it is a map
+     zoomed 2.3x and slid half out of the frame. The props builder clamps it
+     too — this is the copy that cannot be skipped by a hand-edited props
+     file. */
+  const drift = clampBasemapDrift(basemap_drift);
   const frame = useCurrentFrame();
   const { fps, width, height, durationInFrames } = useVideoConfig();
 
@@ -215,7 +223,7 @@ export const MapRoute: React.FC<MapRouteProps> = ({
           width={width}
           height={height}
           progress={durationInFrames ? frame / durationInFrames : 0}
-          drift={basemap_drift}
+          drift={drift}
         />
       ) : null}
 

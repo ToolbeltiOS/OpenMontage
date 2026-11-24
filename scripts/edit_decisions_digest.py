@@ -90,7 +90,33 @@ def _example(cut: dict) -> dict:
     return out
 
 
-def digest(blob: dict, project: str) -> str:
+def cut_failures(cuts: list[dict], root: str | None = None
+                 ) -> tuple[dict[str, list[dict]], str | None]:
+    """Per-cut failures from the composer's own zod schemas.
+
+    Returns ({cut_id: [{field, rule}]}, None), or ({}, why) when the gate
+    could not run at all. The difference matters: an exemplar whose cuts
+    were CHECKED and passed is a model, and one that merely was not checked
+    is a guess with the same shape.
+    """
+    sys.path.insert(0, str(ROOT / "lib"))
+    try:
+        from buildability import flatten_scene
+        from build_render_props import scene_prop_report
+        report = scene_prop_report(
+            {"cuts": flatten_scene(cuts), "overlays": []}, root)
+    except SystemExit as refused:          # node or esbuild missing
+        return {}, str(refused).splitlines()[0]
+    except Exception as error:             # noqa: BLE001 - never block a digest
+        return {}, f"{type(error).__name__}: {error}"
+    out: dict[str, list[dict]] = {}
+    for failure in report.get("failures") or []:
+        out.setdefault(failure["id"], []).append(
+            {"field": failure["field"], "rule": failure["rule"]})
+    return out, None
+
+
+def digest(blob: dict, project: str, root: str | None = None) -> str:
     cuts = blob.get("cuts") or []
     total = len(cuts)
     freq = collections.Counter(k for c in cuts for k in c)
@@ -119,20 +145,52 @@ def digest(blob: dict, project: str) -> str:
         add(f"  {count:>4}/{total}  {key}")
     add("")
 
-    sourced = next((c for c in cuts
+    # THE EXAMPLE CUTS MUST PASS THE GATE THEY ARE TEACHING.
+    #
+    # King Tut carries `basemap_drift: true` on c065 and `density: 0.4` on
+    # four texture beats — the same legacy values films #1 to #6 all share.
+    # A digest that reached for "the first authored cut" could hand a stage
+    # a cut the props gate refuses, and the stage would copy it faithfully:
+    # an exemplar that fails the gate it exists to teach is worse than no
+    # exemplar. So the examples are chosen from the cuts that VALIDATE, and
+    # what the exemplar itself got wrong is printed as a warning rather than
+    # hidden.
+    failures, gate_down = cut_failures(cuts, root)
+    clean = [c for c in cuts if not failures.get(c.get("id"))]
+    pool = cuts if gate_down else clean
+
+    sourced = next((c for c in pool
                     if isinstance(c.get("source"), str) and "/" in c["source"]),
                    None)
-    authored = next((c for c in cuts if isinstance(c.get("scene"), dict)), None)
+    authored = next((c for c in pool if isinstance(c.get("scene"), dict)), None)
     if authored is None:
-        authored = next((c for c in cuts if "type" in c and "source" not in c),
+        authored = next((c for c in pool if "type" in c and "source" not in c),
                         None)
+    verified = "" if gate_down else " — validated against the composer's schemas"
     if sourced:
-        add("ONE SOURCED CUT, in full:")
+        add(f"ONE SOURCED CUT, in full{verified}:")
         add(json.dumps(_example(sourced), indent=1, ensure_ascii=False))
         add("")
     if authored:
-        add("ONE AUTHORED CUT, in full:")
+        add(f"ONE AUTHORED CUT, in full{verified}:")
         add(json.dumps(_example(authored), indent=1, ensure_ascii=False))
+        add("")
+
+    if gate_down:
+        add("THE PROPS GATE COULD NOT RUN, so the two cuts above are this")
+        add(f"film's shape and NOT a checked model: {gate_down}")
+        add("Run lib/buildability.py over your own edit before you finish.")
+        add("")
+    elif failures:
+        add(f"WHAT THIS EXEMPLAR GOT WRONG — {len(failures)} of {total} cuts")
+        add("fail the props gate today. Legacy values, shared by every film")
+        add("from #1 to #6. Do not copy them:")
+        for cid in sorted(failures):
+            for problem in failures[cid]:
+                add(f"  {cid}: {problem['field']} — {problem['rule']}")
+        add("")
+    else:
+        add(f"ALL {total} CUTS of this exemplar pass the props gate.")
         add("")
 
     types = collections.Counter(

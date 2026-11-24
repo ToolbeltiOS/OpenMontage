@@ -894,8 +894,14 @@ export const SceneRenderer: React.FC<{ cut: Cut; theme: ThemeConfig }> = ({ cut,
       labels={cut.labels} title={cut.title} caption={cut.caption} {...chrome} />);
   }
   if (cut.type === "map_route" && cut.route) {
+    /* basemap and basemap_drift are passed on, which they were not until
+       2026-11-24: the edit stage authored terrain for six cuts of the Pearl
+       Harbor film and every one of them rendered on the dark fill, because
+       this call site dropped both props. The map was the one thing in the
+       film that was asked for and silently not delivered. */
     return (<MapRoute route={cut.route} markers={cut.markers} center={cut.center}
       mapPlate={cut.mapPlate} mapPlateCredit={cut.mapPlateCredit}
+      basemap={cut.basemap} basemap_drift={cut.basemap_drift}
       scale={cut.scale} draw_seconds={cut.draw_seconds} draw_at={cut.draw_at}
       distance_callout={cut.distance_callout} title={cut.title} caption={cut.caption}
       arc={cut.arc} {...chrome} />);

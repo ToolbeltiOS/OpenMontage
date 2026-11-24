@@ -282,6 +282,59 @@ def check_timeline_coverage(cuts: list[dict[str, Any]], fps: int = 30
                       "overlaps": overlaps[:40]}
 
 
+def flatten_scene(cuts: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """A copy of the cuts with `scene` folded onto each, as the renderer sees
+    them.
+
+    `lib/build_render_props.py` does this once, on the way to
+    `render_props.json`. Doing it on a COPY here is the point: an edit-time
+    check must not quietly rewrite the artifact it is checking.
+    """
+    flat: list[dict[str, Any]] = []
+    for cut in cuts:
+        copy = dict(cut)
+        scene = copy.pop("scene", None)
+        if isinstance(scene, dict):
+            for key, value in scene.items():
+                copy.setdefault(key, value)
+        flat.append(copy)
+    return flat
+
+
+def check_cut_props(cuts: list[dict[str, Any]], root: str | None = None
+                    ) -> tuple[bool, list[str], dict[str, Any]]:
+    """The composer's own zod schemas over an EDIT, before any render.
+
+    WHY HERE AND NOT ONLY IN THE PROPS BUILDER
+    ------------------------------------------
+    The props gate added on 2026-11-22 runs at the last free moment — the
+    write of `render_props.json`. That is the right place for a blocking
+    refusal, and it is the WRONG place to learn about it: the stage that can
+    fix a cut is the edit stage, and by then it has exited. Four cuts of
+    every film from #1 to #6 carried `density: 0.4`, which is
+    `Math.round(0.4)` = 0 elements and a texture beat that draws nothing;
+    six carried `basemap: "terrain"`, which is a request and not a tile. All
+    of it was authored in a stage that was never told.
+
+    So the same schemas run here, over `edit_decisions.json`, where the
+    answer still costs nothing and the cut can still be rewritten. There is
+    no normalising: a fractional density is reported with the cut named, and
+    the value is fixed where it was written.
+    """
+    from importlib import import_module
+
+    props_builder = import_module("build_render_props")
+    report = props_builder.scene_prop_report(
+        {"cuts": flatten_scene(cuts), "overlays": []}, root)
+    failures = report.get("failures") or []
+    problems = [f"{f['id']} ({f['type']}): {f['field']} — {f['rule']}"
+                for f in failures]
+    counts = {"checked": report.get("checked", 0),
+              "failures": len(failures),
+              "unchecked": report.get("unchecked", {})}
+    return (not failures), problems, counts
+
+
 if __name__ == "__main__":
     import sys
 
@@ -290,6 +343,32 @@ if __name__ == "__main__":
         print("usage: buildability.py <slots.json>")
         raise SystemExit(2)
     data = json.load(open(src, encoding="utf-8"))
+
+    # An edit, not a scene plan. `edit_decisions.json` carries `cuts`, and
+    # what is worth checking about it is whether the composer can draw the
+    # props — the question that killed two renders in two nights in
+    # November 2026 and was only ever asked after the edit stage had gone.
+    if isinstance(data, dict) and data.get("cuts"):
+        import os
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        ok, problems, counts = check_cut_props(data["cuts"])
+        print(f"cuts: {counts['checked']} checked against the composer's "
+              f"zod schemas")
+        unchecked = counts.get("unchecked") or {}
+        if unchecked:
+            print("  no schema for: "
+                  + ", ".join(f"{k} x{v}" for k, v in sorted(unchecked.items())))
+        for problem in problems[:40]:
+            print("  -", problem)
+        if len(problems) > 40:
+            print(f"  ... and {len(problems) - 40} more")
+        print("CUT PROPS:", "PASS" if ok else "FAIL")
+        if not ok:
+            print("Fix these where they were written. Nothing downstream "
+                  "normalises them: a fractional density is zero elements "
+                  "at render time and a string basemap is no basemap.")
+        raise SystemExit(0 if ok else 1)
+
     slots = data if isinstance(data, list) else data.get("metadata", {}).get("slots", [])
     ok, problems, counts = check_scene_plan(slots)
     print(f"slots: {len(slots)}  authored {counts['authored']}  sourced {counts['sourced']}")

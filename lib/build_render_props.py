@@ -649,6 +649,49 @@ def check_scene_props(props: dict, root: str | None = None) -> dict:
     A render that reads a bad prop dies on the frame the cut starts:
     2026-11-22 lost 18 minutes to frame 21867 of 36705 for one cut whose
     `distance_callout` was `true` where the component indexes `.at`.
+
+    THE BASELINE IT INHERITED
+    -------------------------
+    Measured 2026-11-24 by running this gate over all six delivered films,
+    so that next Friday's zero is read as a gate that ran and found nothing
+    rather than a gate that never ran. Counts are of CUTS x FIELDS failing.
+
+        #  film                         published    cuts  checked  fail
+        1  they-said-it-couldnt-be-built 2026-10-20   182       89     0
+        2  easter-island                 2026-10-26   169      105     0
+        3  noah                          2026-11-02   159       85     0
+        4  king-tut                      2026-11-09   161       91     0*
+        5  atomic-bombings...nagasaki    2026-11-16   158      104    26
+        6  attack-on-pearl-harbor        2026-11-23   162      162    16
+
+        * king-tut read 6 before 2026-11-24: one inert `basemap_drift:
+          true`, repaired in the artifact because it is the edit stage's
+          exemplar, and five fractional timeline years that turned out to
+          be the SCHEMA's error — see below.
+
+    By field, across all six: events.year 22, density 8, basemap 6,
+    basemap_drift 6.
+
+    WHAT THE 26 IN FILM #5 ACTUALLY ARE, because they are the reason to
+    trust the gate: six `timeline` cuts carry `year` as a STRING — "27
+    Jul", "6 Aug", "after". `fmtYear` does `Math.abs("27 Jul")`, which is
+    NaN, and `pos(year)` places every event at NaN. The delivered film
+    shows **"NaN" where the years go and all five labels stacked on top of
+    each other at the left edge of the frame**, for six cuts. Nothing
+    failed; nothing was logged; it was published. This gate refuses it in
+    about a second.
+
+    THE OPPOSITE ERROR IS ALSO IN HERE. King Tut's fractional years
+    (1922.84 = 4 Nov 1922) were a correct use of a continuous axis that
+    `.int()` called a failure and `fmtYear` printed as "AD 1922.84". The
+    schema was wrong and was changed; the renderer now rounds for display.
+    A gate that cries wolf is a gate nobody turns on, so a failure is
+    checked against the component before the data is blamed.
+
+    COVERAGE, same measurement: 636 of 991 cuts across the six films were
+    checkable. The rest are scene types with no schema at all — `broll`
+    74, `text_card` 9, `comparison` 2 — and an unchecked type is reported
+    in `unchecked`, never counted as a pass.
     """
     report = scene_prop_report(props, root)
     failures = report.get("failures") or []

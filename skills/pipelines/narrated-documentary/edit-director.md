@@ -193,6 +193,52 @@ before the renderer sees it, so the composition is unchanged.
 `layer` is a STRING — `primary`, `overlay` or `background`. Two earlier
 films wrote it as an integer and their artifacts no longer match the schema.
 
+### 7b-i. The Props Are Checked Against The Composer, By You, Before You Finish
+
+`remotion-composer/src/schemas/docComponents.ts` holds a zod schema for
+every scene type and it is **the authority on every prop you write**. Run it
+over your own edit before you close the stage:
+
+```bash
+.venv/bin/python lib/buildability.py {artifacts}/edit_decisions.json
+```
+
+It prints `CUT PROPS: PASS` or names every cut, field and rule. Nothing
+downstream repairs what it finds, deliberately: `render_props.json` is
+rebuilt from your artifact on every render, so a value fixed anywhere else
+is overwritten by the next build. Two renders died four hours in during
+November 2026 on props this would have caught in a second
+(`callout_type: "note"`, `distance_callout: true`).
+
+Three values the first six films got wrong, as the rules now stand:
+
+- **`density` on a `texture_field` is an ELEMENT COUNT: an integer, 4 to
+  400.** Not a fraction, not an opacity. The component builds
+  `Array.from({length: Math.round(density)})`, so the `density: 0.4` that
+  four cuts of every film from #1 to #6 carried is **zero elements** — the
+  beat is four seconds of nothing. If you want a sparse field, 8 is sparse.
+- **`basemap` on a `map_route` is a TILE, not a word.** Write
+  `basemap: "terrain"` if terrain is what the shot wants, then run
+  `.venv/bin/python scripts/resolve_basemaps.py --project <slug>`, which
+  cuts the tile for the frame your `scale` and `center` imply and writes
+  `{src, bounds}` back into the cut. It also clamps `basemap_drift`, which
+  is a transform multiplier with a 0.08 ceiling — the 1.1 to 1.5 six Pearl
+  Harbor cuts carried would have been a map zoomed 2.3x and slid half out
+  of frame, had the prop ever reached the component.
+- **`year` on a `timeline` event is a NUMBER, and a fraction is how you
+  place a date inside it.** 1945.58 is 31 July 1945 — the axis is
+  continuous and the printed year is rounded, so the fraction only moves
+  the tick. Put the human date in `label`: `"31 Jul 1945 · leaflets"`.
+  Film #5 wrote `year: "27 Jul"` on six cuts, which is `Math.abs("27 Jul")`
+  = NaN; the delivered film shows "NaN" where the years go and all five
+  labels stacked on top of each other at the edge of the frame. It was
+  published that way.
+- **`scale` on a `map_route` is not optional in practice.** Omit it and
+  d3's default of 1400 draws 78.6 degrees of longitude — a third of the
+  planet. Those same six cuts omitted it, for routes of 17 to 594 km. Every
+  other film authored one. The resolver prints the scale that would frame
+  your route; `center` goes with it.
+
 ### 7c. An Illustration Cut Carries Its Subject
 
 An `illustration` cut is a scene nobody photographed, and the scene planner
@@ -262,10 +308,15 @@ Nothing essential in the last 20 seconds. The outro CTA is 10 seconds maximum.
 ## Gate Commands (Blocking)
 
 ```bash
+.venv/bin/python scripts/resolve_basemaps.py --project {slug}
+.venv/bin/python lib/buildability.py   {artifacts}/edit_decisions.json
 .venv/bin/python lib/verify_rhythm.py  {artifacts}/edit_decisions.json
 .venv/bin/python lib/camera_intent.py  {artifacts}/edit_decisions.json
 .venv/bin/python lib/edit_leads.py     {artifacts}/edit_decisions.json
 ```
+
+`resolve_basemaps.py` runs FIRST because it rewrites cuts, and
+`buildability.py` second because it judges what the rewrite left.
 
 ## Common Pitfalls
 

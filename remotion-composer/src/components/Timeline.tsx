@@ -39,7 +39,14 @@ export interface TimelineProps {
 const fmtYear = (y: number) => {
   // Years never take thousands separators: "AD 2017", not "AD 2,017".
   // BC values above 9999 are rare enough that plain digits stay readable.
-  const n = Math.abs(y);
+  //
+  // ROUNDED, because `year` is an AXIS POSITION and not a label. king-tut
+  // c009 places three events across five months — 1922.84 is 4 November
+  // 1922 — and the published film prints "AD 1922.84" above a label that
+  // already reads "4 Nov 1922 · first step". The fractional part is how the
+  // event lands in the right place on a continuous axis; it was never
+  // something to show anybody.
+  const n = Math.round(Math.abs(y));
   return y < 0 ? `${n} BC` : `AD ${n}`;
 };
 

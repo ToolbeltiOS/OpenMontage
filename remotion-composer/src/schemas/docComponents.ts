@@ -2,6 +2,9 @@ import { z } from "zod";
 // The end card ships its own schema with the component, so there is one
 // definition rather than a copy that can drift from it.
 import { outroCtaSchema } from "../components/OutroCta";
+// The drift ceiling is read from the same constant `MapRoute` clamps with,
+// so the schema and the component cannot disagree about it.
+import { MAX_BASEMAP_DRIFT } from "../design/basemap";
 
 /**
  * Props schemas for the eight documentary components.
@@ -154,7 +157,7 @@ export const MapRouteSchema = z.object({
   draw_at: sec.optional(),
   distance_callout: z.object({ text: z.string().min(1), at: sec }).optional(),
   basemap: TerrainTileSchema.optional(),
-  basemap_drift: z.number().min(0).max(0.08).optional(),
+  basemap_drift: z.number().min(0).max(MAX_BASEMAP_DRIFT).optional(),
   title: z.string().optional(),
   caption: z.string().optional(),
   arc: z.boolean().optional(),
@@ -165,7 +168,15 @@ export const TimelineSchema = z.object({
   events: z
     .array(
       z.object({
-        year: z.number().int().describe("negative = BC"),
+        /* AN AXIS POSITION, not a label, so a fraction is legal and
+           meaningful: king-tut c009 carries 1922.84 to put "4 Nov 1922"
+           five months along a one-year span. `.int()` here called that an
+           error for six films, which is the gate crying wolf at the data
+           for a fault in the renderer — `fmtYear` printed the fraction.
+           The renderer rounds for display now; the placement stays
+           exact. */
+        year: z.number().describe(
+          "negative = BC; a fraction places an event inside a year"),
         label: z.string().min(1),
         text: z.string().optional(),
         at: sec,
@@ -174,7 +185,7 @@ export const TimelineSchema = z.object({
     )
     .min(1),
   orientation: z.enum(["horizontal", "vertical"]).optional(),
-  span: z.tuple([z.number().int(), z.number().int()]).optional(),
+  span: z.tuple([z.number(), z.number()]).optional(),   // same axis
   playhead: z.boolean().optional(),
   title: z.string().optional(),
   caption: z.string().optional(),
@@ -319,7 +330,21 @@ export const DOC_COMPONENT_SCHEMAS = {
   texture_field: z.object({
     kind: z.enum(["dust", "strata", "grain_drift", "depth_field", "scanline"]),
     seed: z.string().min(1).describe("what makes two instances different configurations"),
-    density: z.number().min(4).max(400).optional(),
+    /* AN ELEMENT COUNT, NOT A FRACTION. `TextureField` builds
+       `Array.from({length: Math.round(density)})`, so 0.4 is zero elements
+       and the texture beat draws nothing at all — which is what four cuts
+       of every film from #1 to #6 did. `.int()` is new on 2026-11-24 and
+       says out loud what `min(4)` already implied: there is no such thing
+       as 2.5 specks of dust. The authority is here, and the edit stage is
+       refused at `lib/buildability.py` for a fractional value rather than
+       having it quietly rounded downstream. */
+    density: z
+      .number()
+      .int("an element count, not a fraction — Math.round(0.4) is zero " +
+           "elements, so the texture beat draws nothing at all")
+      .min(4)
+      .max(400)
+      .optional(),
     angle: z.number().optional(),
     speed: z.number().min(0).max(4).optional(),
     ...CHROME,
@@ -387,20 +412,26 @@ export const DOC_CUT_SCHEMAS = {
   /**
    * `seed` is interpolated into a string (`${seed}-x-${i}`), so a number is
    * as good as a string here and four cuts in the Pearl Harbor film author
-   * one. `density` stays STRICT on purpose: it is used as
-   * `Math.round(density)` for the element count, so the 0.4 those same cuts
-   * carry rounds to zero and the texture beat draws nothing at all.
+   * one. `density` stays STRICT on purpose, and is now `.int()` as well:
+   * it is used as `Math.round(density)` for the element count, so the 0.4
+   * those same cuts carry rounds to zero and the texture beat draws nothing
+   * at all. It is not normalised anywhere — the edit stage is told, with
+   * the cut named, and fixes it where the value is written.
    */
   texture_field: DOC_COMPONENT_SCHEMAS.texture_field.extend({
     seed: z.union([z.string().min(1), z.number()]),
   }),
 
   /**
-   * `map_route` deliberately has NO divergence. `basemap` and `basemap_drift`
-   * are authored by the edit stage and are NOT passed on by `Explainer`, so
-   * six cuts in the Pearl Harbor film ask for terrain and get none. Relaxing
-   * the rule here would bless that; the fix is to wire the props through and
-   * clamp the drift, which is owed separately.
+   * `map_route` deliberately has NO divergence, and as of 2026-11-24 it does
+   * not need one. `basemap` and `basemap_drift` WERE authored by the edit
+   * stage and dropped by `Explainer`, so six cuts in the Pearl Harbor film
+   * asked for terrain and got none; relaxing the rule here would have
+   * blessed that. Both props are now passed through to `MapRoute`, the
+   * drift is clamped against the ceiling above by the component as well as
+   * checked by it here, and `scripts/resolve_basemaps.py` turns the
+   * authored request `basemap: "terrain"` into the tile object this schema
+   * requires before the gate ever sees it.
    */
 } as const;
 

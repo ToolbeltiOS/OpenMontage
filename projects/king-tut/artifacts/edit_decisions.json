@@ -3372,7 +3372,6 @@
    "scale": 900,
    "draw_at": 1.2,
    "draw_seconds": 2.6,
-   "basemap_drift": true,
    "caption": "Of twenty candidates, Kharga's nickel and cobalt were called possibly consistent",
    "source": "Ledger c27",
    "markers": [
