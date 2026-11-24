@@ -72,7 +72,16 @@ N = 120
 #: that lost its type class from a word printed inside the photograph; a cut
 #: that declares nothing would make every leak look like picture text. The
 #: lines carry no `at`, so the type-lock sampling is unchanged.
+#:
+#: IT CARRIES A `type`, as of 2026-11-24, and that is not decoration. A cut
+#: with `lines` and no type does not draw them: `Explainer` reaches
+#: `<DocumentReveal>` only on `cut.type === "document_reveal"`, and a
+#: typeless cut falls through to the media branch, which paints the picture,
+#: the caption and the frame. `authored_words` asks the component contract
+#: what this scene type receives, so a fixture that skipped the type was
+#: asking about a cut the composer would have drawn as a bare image.
 CUTS = [{"id": "c001", "in_seconds": 0.0, "out_seconds": 4.0,
+         "type": "document_reveal",
          "lines": [{"text": line} for line in WORDS]}]
 
 #: The same four seconds of film, as a cut that never asked for any words:
@@ -228,12 +237,23 @@ class TestThePlateReadsThePictureToo:
         cut = {"id": "c058", "type": "document_reveal",
                "headline": "What it was for",
                "lines": [{"text": "“Easter Island is Earth writ small”", "at": 2.0}],
-               "source": "Jared Diamond",
+               # The credit line reaches `DocumentReveal` as `sourceLine`
+               # (`source={cut.sourceLine}` in Explainer). `source` on a
+               # built cut is the SLOT ID — `act1_s004` — which is an
+               # identifier and never type; it used to be spelled here as
+               # prose, which asked plate purity to defend a field the
+               # composer does not paint.
+               "sourceLine": "Jared Diamond",
                "caption": "It travelled further than almost any other"}
-        for authored in ("What", "Easter", "Diamond", "travelled"):
+        for authored in ("What", "Easter", "writ", "travelled"):
             assert vtl.plate_word_is_authored(authored, cut), (
                 f"{authored!r} is a word this cut puts on screen — finding it "
                 f"in the plate means it never got the type class")
+        # The credit line is CHROME, which the frame paints properly and
+        # which plate purity has always left alone — the same reason 'S 039'
+        # is not a missed element. Stated here because the field moved.
+        assert not vtl.plate_word_is_authored("Diamond", cut)
+        assert vtl.plate_word_is_authored("Diamond", cut) is False
 
     def test_a_diagnostic_field_is_never_a_word(self):
         """A field that explains a decision is not text on screen.

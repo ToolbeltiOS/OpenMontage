@@ -527,5 +527,17 @@
    "source"
   ],
   "why": "The persistent frame layer. Accepted by every documentary scene type and listed in each component's `optional`, so a slot cannot invent its own furniture names."
+ },
+ "_sourced": {
+  "props": [
+   "caption",
+   "sourceLine",
+   "actNumber",
+   "actTitle",
+   "sceneIndex",
+   "coords"
+  ],
+  "why": "A cut with NO component type falls through to Explainer's media branch: <ImageScene> or <VideoScene> wrapped in Graded + FrameLayer + SourceCaption. Those six are the only words painted over a sourced photograph; everything else such a cut carries \u2014 attribution, asset_id, licence, reason \u2014 is record, not type. Listed here because plate purity has to know the difference, and a component contract is the only place that can answer it.",
+  "sourceLine_note": "Components list this chrome slot as `source`; a cut spells it `sourceLine`, because `source` on a sourced cut is the file path. Explainer maps one onto the other (`source={cut.sourceLine}`), so anything reading this contract against a CUT reads `sourceLine` wherever a component says `source`."
  }
 }

@@ -46,6 +46,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -493,6 +494,72 @@ DIAGNOSTIC_SUFFIX = "_reason"
 CHROME_KEYS = {"sceneIndex", "actNumber", "actTitle", "sourceLine"}
 
 
+#: The composer's own statement of which props each component receives.
+#: Read, never restated: a second copy of a component's prop list is how a
+#: field that nothing paints goes on counting as type.
+COMPONENT_CONTRACT = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "remotion-composer", "component-contract.json")
+
+#: A component's chrome credit slot is `source`; a cut spells it
+#: `sourceLine`, because `source` on a sourced cut is the file path.
+#: `Explainer` maps one onto the other, and the contract records it.
+_PROP_ALIASES = {"source": "sourceLine"}
+
+_contract_cache: dict[str, Any] = {}
+
+
+def _contract() -> dict[str, Any]:
+    if not _contract_cache:
+        with open(COMPONENT_CONTRACT, encoding="utf-8") as fh:
+            _contract_cache.update(json.load(fh))
+    return _contract_cache
+
+
+def painted_props(cut: dict[str, Any]) -> set[str] | None:
+    """The cut keys the component for this scene type actually receives.
+
+    THE RULE THAT REPLACED COUNTING EVERY STRING
+    --------------------------------------------
+    On 2026-11-23 plate purity failed the Pearl Harbor delivery on eight
+    readings in c124 and c140 — 'or' and 'not'. Both are `annotated_still`
+    cuts, and both carried
+
+        "attribution": "Unknown authorUnknown author or not provided"
+
+    which `AnnotatedStill` has never received: `attribution` is a prop of
+    `EvidenceCard`, and on these cuts it is the asset record travelling
+    with the picture. The two words were in the PHOTOGRAPH — the plates are
+    scans of a typewriter-history document and the gate's own OCR reads 375
+    and 514 words off them. The film was held up by a field nothing paints.
+
+    This is the same shape as the `music_rise_reason` incident the
+    `DIAGNOSTIC_SUFFIX` rule above was written for, and the lesson is the
+    same: a NAME-based rule, not a list of fields to remember. The name
+    here is the component's own prop list, read out of
+    `component-contract.json`, which is where `lib/buildability.py` already
+    goes to decide whether an authored slot can be rendered at all.
+
+    Returns None when the contract cannot answer — never an empty set,
+    which would read as "this cut paints nothing" and pass everything.
+    """
+    contract = _contract()
+    components = contract.get("components") or {}
+    kind = cut.get("type")
+    if isinstance(kind, str) and kind in components:
+        entry = components[kind]
+        props = set(entry.get("required") or []) | set(entry.get("optional") or [])
+    elif kind:
+        return None            # a component the contract has never heard of
+    else:
+        # No type: Explainer's media branch, which paints the frame, the
+        # caption and the credit line over the picture and nothing else.
+        props = set((contract.get("_sourced") or {}).get("props") or [])
+        if not props:
+            return None
+    return {_PROP_ALIASES.get(p, p) for p in props}
+
+
 def _normalise(text: str) -> str:
     """A reading reduced to the letters and digits in it, lowercased."""
     return "".join(ch for ch in text.lower() if ch.isalnum())
@@ -505,16 +572,29 @@ def authored_words(cut: dict[str, Any], chrome: bool = False) -> set[str]:
     component, the same way `declared_moves_until` walks it for times. Keys
     that carry a path or an identifier are skipped, so a filename never
     reads as a word someone wrote.
+
+    Top-level keys are filtered by `painted_props`: a field the cut's
+    component never receives cannot be type that was missed, however many
+    words it holds. See that function for the delivery this held up.
     """
     out: set[str] = set()
+    painted = painted_props(cut)
 
-    def walk(node: Any) -> None:
+    def walk(node: Any, top: bool = False) -> None:
         if isinstance(node, dict):
             for key, value in node.items():
                 if key in NON_TEXT_KEYS or key == "reason" \
                         or key.endswith(DIAGNOSTIC_SUFFIX):
                     continue
                 if key in CHROME_KEYS and not chrome:
+                    continue
+                # ONLY FIELDS THIS SCENE TYPE PAINTS. A key the component
+                # never receives is a record travelling with the cut, and a
+                # word in it was never asked to be on screen. Nested keys
+                # are not filtered: they sit INSIDE a prop that is painted,
+                # and `markers[].label` is drawn by the same component that
+                # was handed `markers`.
+                if top and painted is not None and key not in painted:
                     continue
                 walk(value)
         elif isinstance(node, list):
@@ -528,7 +608,7 @@ def authored_words(cut: dict[str, Any], chrome: bool = False) -> set[str]:
                 if word:
                     out.add(word)
 
-    walk(cut)
+    walk(cut, top=True)
     return out
 
 
