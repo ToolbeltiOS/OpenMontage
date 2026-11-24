@@ -128,6 +128,24 @@ export const MapRoute: React.FC<MapRouteProps> = ({
      too — this is the copy that cannot be skipped by a hand-edited props
      file. */
   const drift = clampBasemapDrift(basemap_drift);
+
+  /* A TILE, OR NOTHING. Wiring `basemap` through on 2026-11-24 made this
+     prop live for the first time, and six cuts of the delivered Pearl
+     Harbor film carry the string "terrain" — a request for a kind, which
+     `scripts/resolve_basemaps.py` turns into a tile in the edit stage. A
+     non-empty string is truthy, so without this check `TerrainBase` would
+     destructure `"terrain".bounds` and kill the render on the frame the
+     cut starts. render_film.py reads render_props.json as it finds it and
+     does not rebuild, so props written before the resolver existed must
+     not be able to do that. An unusable value draws no terrain, exactly as
+     it did for six films; the props gate is what complains about it. */
+  const tile =
+    basemap && typeof basemap === "object" &&
+    typeof (basemap as TerrainTile).src === "string" &&
+    Array.isArray((basemap as TerrainTile).bounds) &&
+    (basemap as TerrainTile).bounds.length === 4
+      ? (basemap as TerrainTile)
+      : undefined;
   const frame = useCurrentFrame();
   const { fps, width, height, durationInFrames } = useVideoConfig();
 
@@ -138,7 +156,7 @@ export const MapRoute: React.FC<MapRouteProps> = ({
   const resolution =
     detail !== "auto"
       ? detail
-      : basemap || scale > DETAIL_SCALE_THRESHOLD
+      : tile || scale > DETAIL_SCALE_THRESHOLD
         ? "50m"
         : "110m";
 
@@ -215,9 +233,9 @@ export const MapRoute: React.FC<MapRouteProps> = ({
             }}
           />
         </AbsoluteFill>
-      ) : basemap ? (
+      ) : tile ? (
         <TerrainBase
-          tile={basemap}
+          tile={tile}
           projection={projection}
           land={landGeo}
           width={width}
@@ -232,7 +250,7 @@ export const MapRoute: React.FC<MapRouteProps> = ({
             as a hairline so the route has an edge to read against. */}
         <path
           d={landPath}
-          fill={basemap || mapPlate ? "none" : "#16161B"}
+          fill={tile || mapPlate ? "none" : "#16161B"}
           /* ON A HISTORICAL PLATE THE MODERN COASTLINE IS NOT DRAWN AT ALL.
              The plate has its own coastline, surveyed by hand two centuries
              earlier, and the two do not coincide. Drawn together they read
@@ -240,8 +258,8 @@ export const MapRoute: React.FC<MapRouteProps> = ({
              old survey was wrong, which is not what the cut is saying. The
              plate is the map; the route is the only thing added to it. */
           stroke={mapPlate ? "none" : SYS.rule}
-          strokeWidth={basemap ? 0.8 : 1}
-          opacity={mapPlate ? 0 : basemap ? 0.65 : 1}
+          strokeWidth={tile ? 0.8 : 1}
+          opacity={mapPlate ? 0 : tile ? 0.65 : 1}
         />
         {borderPath && !mapPlate ? (
           <path d={borderPath} fill="none" stroke={SYS.rule} strokeWidth={0.6} opacity={0.5} />

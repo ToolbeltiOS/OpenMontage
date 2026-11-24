@@ -311,3 +311,41 @@ class TestTheGateAgrees:
         after = B.scene_prop_report({"cuts": resolved,
                                      "overlays": []})["failures"]
         assert after == [], after
+
+
+class TestAStringCannotReachTheWarp:
+    """Wiring a prop through makes its bad values live for the first time.
+
+    Until 2026-11-24 `Explainer` dropped `basemap`, so the string "terrain"
+    that six delivered cuts carry was harmless. Passed through, a non-empty
+    string is TRUTHY: `TerrainBase` would destructure `"terrain".bounds`
+    and the render would die on the frame the cut starts — the exact shape
+    of the two renders lost in November, reintroduced by the fix for them.
+
+    `render_film.py` reads `render_props.json` as it finds it and does not
+    rebuild, so the props gate cannot be the only defence: a film whose
+    props were written before the resolver existed is still renderable
+    input. The component takes a tile or nothing.
+    """
+
+    def test_the_component_checks_the_shape_before_it_warps(self):
+        src = MAP_ROUTE.read_text()
+        guard = src[src.index("const tile ="):src.index("? (basemap as")]
+        assert 'typeof basemap === "object"' in guard
+        assert "Array.isArray" in guard
+        assert "length === 4" in guard
+
+    def test_terrain_base_is_handed_the_checked_value(self):
+        src = MAP_ROUTE.read_text()
+        assert "tile={tile}" in src
+        assert "tile={basemap}" not in src, (
+            "that is the unchecked prop reaching the warp")
+
+    def test_nothing_else_still_treats_the_raw_prop_as_a_tile(self):
+        """`basemap ? ...` anywhere else would re-introduce the truthiness
+        bug in the coastline and fill decisions instead of the warp."""
+        src = MAP_ROUTE.read_text()
+        body = src[src.index("const tile ="):]
+        for bad in ("basemap || scale", "basemap ? 0.8", "basemap ? 0.65",
+                    "basemap || mapPlate"):
+            assert bad not in body, bad
