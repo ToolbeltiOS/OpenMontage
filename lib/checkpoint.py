@@ -63,7 +63,15 @@ STAGE_OUTPUTS: dict[str, tuple[tuple[str, str], ...]] = {
     "idea":       (("artifacts/brief.json", "artifact"),),
     "script":     (("artifacts/script.json", "artifact"),),
     "scene_plan": (("artifacts/scene_plan.json", "artifact"),),
-    "assets":     (("artifacts/asset_manifest.json", "artifact"),),
+    # THE BEDS ARE PART OF THE HAND-OFF, not a nice-to-have. The shared
+    # library held two beds on 2026-11-24 and all six delivered films were
+    # mixed from them: nothing was broken, nothing ever asked for anything
+    # new, and the music of the channel stopped moving. `bed_intake.json`
+    # is written by scripts/ingest_bed.py --project-dir and must name at
+    # least MIN_NEW_BEDS beds that were NOT in the library before this run.
+    # Re-ingesting the same two is not fetching two.
+    "assets":     (("artifacts/asset_manifest.json", "artifact"),
+                   ("artifacts/bed_intake.json", "beds")),
     # The whole hand-off to the render, which is not an agent and cannot ask
     # for a missing file. `render_props.json` has no schema of its own, so it
     # is checked as a file; `trimmed/` is the beds the mix was actually made
@@ -76,6 +84,12 @@ STAGE_OUTPUTS: dict[str, tuple[tuple[str, str], ...]] = {
     "compose":    (("artifacts/render_report.json", "artifact"),),
     "publish":    (("artifacts/publish_log.json", "artifact"),),
 }
+
+#: How many beds a film must add to the shared library before its assets
+#: stage can be checkpointed. Two, because one is a coincidence and the
+#: cost is a fetch and a measurement, not a judgement — the CHOICE of bed
+#: is still made by ear from the shortlist.
+MIN_NEW_BEDS = 2
 
 # Additional artifacts that may be produced alongside canonical ones.
 # These are not stage-defining but are required by governance contracts.

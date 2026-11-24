@@ -136,6 +136,29 @@ def missing_outputs(projects_dir: Path, project: str, stage: str
                 short.append(f"{rel}/ — the directory is not there")
             elif not any(child.is_file() for child in path.iterdir()):
                 short.append(f"{rel}/ — the directory is empty")
+        elif kind == "beds":
+            # Existence is not the question: a record naming nothing new is
+            # a stage that did not fetch anything. See C.MIN_NEW_BEDS.
+            if not path.exists():
+                short.append(
+                    f"{rel} — no record of any bed fetched for this film. "
+                    f"scripts/ingest_bed.py --project-dir writes it")
+                continue
+            try:
+                blob = json.loads(path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError) as error:
+                short.append(f"{rel} — cannot be read: {error}")
+                continue
+            fresh = blob.get("new_to_the_library")
+            fresh = fresh if isinstance(fresh, list) else []
+            if len(fresh) < C.MIN_NEW_BEDS:
+                refused = blob.get("refused") or []
+                short.append(
+                    f"{rel} — {len(fresh)} bed(s) new to the library, "
+                    f"{C.MIN_NEW_BEDS} owed"
+                    + (f"; {len(refused)} candidate(s) were refused by the "
+                       f"ingest, which is an answer but not a bed"
+                       if refused else ""))
         elif not path.exists():
             short.append(rel)
         elif path.stat().st_size == 0:

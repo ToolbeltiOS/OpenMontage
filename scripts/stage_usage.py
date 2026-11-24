@@ -203,6 +203,63 @@ def line(row: dict) -> str:
     return "usage: " + ", ".join(bits)
 
 
+def report_text(blob: dict, row: dict) -> str:
+    """The agent's closing report, or — when there is none — how it ended.
+
+    THE EMPTY FAILURE MESSAGE
+    -------------------------
+    This used to write the file only when `result` held a closing message.
+    A stage that dies at its turn cap has `result: null`, so nothing was
+    written, and `scripts/run_weekly.sh` reports a failed stage with
+
+        tail -20 "$LOGDIR/${stage}_stage.log" || tail -20 ".err"
+
+    On 2026-11-20 the edit stage stopped at `error_max_turns` after 82
+    turns and $7.74. `edit_stage.log` did not exist, `edit_stage.err` was
+    0 bytes, and the failure message was therefore EMPTY — for the most
+    expensive failure of the run. The same held for the assets stage.
+
+    So the report is always written. A stage that said nothing still ended
+    somehow, and the structured fields say how: `subtype`, `num_turns`,
+    `terminal_reason`, `errors` and `permission_denials` are exactly the
+    things a person wants at 2am, and they are in the JSON the whole time.
+    """
+    text = blob.get("result")
+    if isinstance(text, str) and text.strip():
+        return text
+    lines = [
+        f"The {row['stage']} stage left no closing report. "
+        f"This is what it did:",
+        "",
+        f"  ended      {blob.get('subtype') or 'unknown'}"
+        + ("  (is_error)" if blob.get("is_error") else ""),
+        f"  turns      {row.get('turns')}"
+        + (f" (CLI reported {row['turns_reported']})"
+           if row.get("turns_reported") != row.get("turns") else ""),
+        f"  wall       {row.get('wall')}",
+        f"  cost       ${(row.get('cost_usd') or 0):.2f}",
+    ]
+    if blob.get("terminal_reason"):
+        lines.append(f"  terminal   {blob['terminal_reason']}")
+    denials = blob.get("permission_denials") or []
+    if denials:
+        lines.append(f"  denied     {len(denials)} permission request(s)")
+        for denial in denials[:5]:
+            name = (denial.get("tool_name") if isinstance(denial, dict)
+                    else str(denial))
+            lines.append(f"               {name}")
+    errors = blob.get("errors") or []
+    if errors:
+        lines.append(f"  errors     {len(errors)}")
+        for error in errors[:5]:
+            lines.append(f"               {str(error)[:160]}")
+    lines += ["",
+              "A stage that runs out of turns has NOT finished: whatever it "
+              "left on disk is half an artifact, and the reconciler is what "
+              "decides whether the next stage may read it."]
+    return "\n".join(lines) + "\n"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("result")
@@ -223,9 +280,7 @@ def main() -> int:
         with open(args.ledger, "a", encoding="utf-8") as fh:
             fh.write(json.dumps(row) + "\n")
     if args.report:
-        text = blob.get("result")
-        if isinstance(text, str) and text.strip():
-            Path(args.report).write_text(text, encoding="utf-8")
+        Path(args.report).write_text(report_text(blob, row), encoding="utf-8")
     return 0
 
 

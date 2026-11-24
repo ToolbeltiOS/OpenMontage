@@ -318,6 +318,46 @@ def record(out_dir: Path, rows: list[dict]) -> Path:
     return path
 
 
+def intake_record(project_dir: Path, out_dir: Path, rows: list[dict],
+                  known_before: set[str]) -> Path:
+    """What this film added to the shared library, as a stage output.
+
+    WHY A FILM RECORDS WHAT IT PUT IN THE LIBRARY
+    ---------------------------------------------
+    The library held two beds on 2026-11-24 and every one of the six
+    delivered films was mixed from them. Nothing was wrong with the
+    ingest — nothing ever asked for anything new, so the same two beds
+    carried six films and the music of the channel stopped moving.
+
+    A checkpoint says the hand-off is complete, so "complete" has to
+    include the thing that is easy to skip. `lib/checkpoint.py` declares
+    this file as an output of the assets stage and
+    `lib/checkpoint_reconcile.py` refuses the checkpoint when it names
+    fewer than the minimum new beds. The count is of beds NEW TO THE
+    LIBRARY, not of files passed in: re-ingesting the same two is not
+    fetching two.
+    """
+    artifacts = project_dir / "artifacts"
+    artifacts.mkdir(parents=True, exist_ok=True)
+    written = [r for r in rows if r.get("written")]
+    new = [r for r in written if r["track"] not in known_before]
+    old_ = [r for r in written if r["track"] in known_before]
+    path = artifacts / "bed_intake.json"
+    path.write_text(json.dumps({
+        "what": "The beds this film added to the shared library.",
+        "library": str(out_dir),
+        "ingested_utc": datetime.now(timezone.utc).isoformat(
+            timespec="seconds"),
+        "new_to_the_library": [
+            {k: r[k] for k in ("track", "source", "seconds", "hole_db",
+                               "sha256") if k in r} for r in new],
+        "already_in_the_library": [r["track"] for r in old_],
+        "refused": [{"source": r.get("source"), "why": r["refused"]}
+                    for r in rows if "refused" in r],
+    }, indent=1) + "\n")
+    return path
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("candidates", nargs="+")
@@ -329,9 +369,23 @@ def main(argv: list[str] | None = None) -> int:
                     help="the hole an ingested window may hold; see "
                          "INGEST_HOLE_CEILING_DB for what it buys")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--project-dir", default=None,
+                    help="the film this intake belongs to. Writes "
+                         "artifacts/bed_intake.json, which the assets stage "
+                         "owes its checkpoint")
     args = ap.parse_args(argv)
 
     out_dir = Path(args.out_dir) if args.out_dir else music_dir()
+    # What the library held BEFORE this run, so "new" means new.
+    known_before: set[str] = set()
+    manifest = out_dir / MANIFEST
+    if manifest.exists():
+        try:
+            known_before = {b["track"] for b
+                            in json.loads(manifest.read_text()).get("beds", [])
+                            if isinstance(b, dict) and "track" in b}
+        except json.JSONDecodeError:
+            known_before = set()
     rows, refused = [], 0
     for src in args.candidates:
         row = ingest(src, out_dir, args.min_seconds, args.dry_run,
@@ -356,6 +410,12 @@ def main(argv: list[str] | None = None) -> int:
     if not args.dry_run and (any(r.get("written") for r in rows)
                              or (refused and out_dir.exists())):
         print(f"\nmanifest: {record(out_dir, rows)}")
+    if args.project_dir and not args.dry_run:
+        where = intake_record(Path(args.project_dir), out_dir, rows,
+                              known_before)
+        fresh = sum(1 for r in rows
+                    if r.get("written") and r["track"] not in known_before)
+        print(f"intake:   {where}  ({fresh} new to the library)")
     return 1 if refused else 0
 
 

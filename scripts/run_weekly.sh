@@ -264,6 +264,29 @@ notify() {  # best effort; a notifier that raises must not stop a render
   "$PY" "$REPO/lib/telegram.py" --send "$1" >/dev/null 2>&1 || true
 }
 
+# ── what a failed stage actually left behind ─────────────────────────────
+#
+# NAMES THE FILE THAT EXISTS. The three stage failure messages tailed
+# `<stage>_stage.log`, which `scripts/stage_usage.py` wrote only when the
+# agent left a closing report — and a stage that dies at its turn cap
+# leaves `result: null`. On 2026-11-20 the edit stage stopped at
+# error_max_turns after 141 turns and $7.74 with `edit_stage.log` absent
+# and `edit_stage.err` 0 bytes, so the failure message was EMPTY. The
+# report is always written now; this picks whichever file has something in
+# it and says which one it read.
+stage_evidence() {
+  local base="$1" f
+  for f in "$base.log" "$base.err" "$base.json"; do
+    if [[ -s "$f" ]]; then
+      echo "from $(basename "$f"):"
+      tail -40 "$f"
+      return 0
+    fi
+  done
+  echo "$base.{log,err,json} are all missing or empty — the stage left no
+evidence at all, which is itself the finding."
+}
+
 fail() {
   say "FAILED at $1"
   notify "<b>Weekly run failed</b>
@@ -1350,8 +1373,7 @@ pipeline_stage() {
     "$(stage_preamble "$stage" "$cap" "$skill")
 
 $body" "$cap" \
-    || fail "$stage stage" "$(tail -20 "$LOGDIR/${stage}_stage.log" 2>/dev/null \
-                             || tail -20 "$LOGDIR/${stage}_stage.err")"
+    || fail "$stage stage" "$(stage_evidence "$LOGDIR/${stage}_stage")"
 
   # A CHECKPOINT IS WRITTEN WHEN THE ARTIFACT HAS STOPPED CHANGING, NEVER
   # MID-STAGE. A stage may checkpoint whenever it likes — run #5's assets
@@ -1690,8 +1712,7 @@ elif [[ "$DRY_RUN" == "1" ]]; then
 else
   say "writing the script (claude -p, $TURNS_SCRIPT turns)"
   claude_stage "script" "$LOGDIR/script_stage" "$(cat "$PROMPT")" "$TURNS_SCRIPT" \
-    || fail "script stage" "$(tail -20 "$LOGDIR/script_stage.log" 2>/dev/null \
-                             || tail -20 "$LOGDIR/script_stage.err")"
+    || fail "script stage" "$(stage_evidence "$LOGDIR/script_stage")"
 fi
 
 # ── 2b. is every factual sentence attributed? ────────────────────────────
@@ -1808,8 +1829,7 @@ to projects/$SLUG/artifacts/script.json. Change nothing else.
 
 Read docs/STAGE_CONTRACT.md, not AGENT_GUIDE.md. You have $TURNS_NOTES turns:
 this is an edit to one file, not a stage." "$TURNS_NOTES" \
-            || fail "applying notes" "$(tail -20 "$LOGDIR/notes_stage.log" 2>/dev/null \
-                                       || tail -20 "$LOGDIR/notes_stage.err")"
+            || fail "applying notes" "$(stage_evidence "$LOGDIR/notes_stage")"
         fi
         ;;
     5)  fail "script gate" "the script stage produced no script.json" ;;

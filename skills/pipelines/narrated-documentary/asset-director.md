@@ -166,6 +166,33 @@ Match bed length to the measured narration runtime. For a continuous bed, loop o
 crossfade to cover; for per-act beds, note the crossfade points at act
 boundaries.
 
+### Two new beds a week, and they are part of the hand-off
+
+**The library held two beds on 2026-11-24 and all six delivered films were
+mixed from them.** Nothing was broken; nothing ever asked for anything new,
+so the same two pieces of music carried six films and the sound of the
+channel stopped moving.
+
+So the assets stage owes `artifacts/bed_intake.json`, and
+`lib/checkpoint_reconcile.py` **refuses this stage's checkpoint** when it
+names fewer than two beds that were not already in the library. Fetch
+candidates, then:
+
+```bash
+.venv/bin/python scripts/ingest_bed.py <candidate files...> \
+    --project-dir projects/{slug}
+```
+
+`ingest_bed.py` is the only door into the library: it finds each file's
+longest loopable window and refuses anything with no steady 90 seconds,
+because a raw candidate's fades are not the bed's hole. A refusal is an
+answer and it is recorded — but it is not a bed, so a stage that fetched
+two files and had both refused still owes two.
+
+Two, not one: one is a coincidence. The CHOICE of which bed goes under
+which act is still made by ear from the shortlist, at the audition gate —
+this is about what there is to choose from.
+
 ## Asset Manifest
 
 One entry per asset, and provenance on every single one:
