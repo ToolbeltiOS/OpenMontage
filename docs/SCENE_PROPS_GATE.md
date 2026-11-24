@@ -1,8 +1,9 @@
 # The scene-props gate
 
 Written 2026-11-22, after the second render in two nights was killed by a
-prop the composer could not draw. **Not live in the runner**: it lands with
-Monday's merge, and items 1–3 below must land WITH it or it refuses a film.
+prop the composer could not draw. The four rulings below were carried out
+on 2026-11-24 and the gate went to the runner with them; what each one
+actually did is recorded under its own heading.
 
 ---
 
@@ -54,10 +55,11 @@ failed on films #1–#4 too. The gate surfaces debt; it did not create it.
 The four density cuts have drawn nothing on every film so far. Film #5
 shipped as-is on that basis.
 
-## Owed Monday, with the merge
+## The four rulings, and what came of them
 
-Rulings of 2026-11-22. **The gate stays strict** — none of these is a
-reason to loosen a rule.
+Rulings of 2026-11-22, carried out 2026-11-24. **The gate stayed strict** —
+none of them loosened a rule, and the one schema that did change got
+STRICTER in one place and more honest in another.
 
 1. **Basemap wiring.** Pass `basemap` and `basemap_drift` through to
    `MapRoute` (terrain is what the edit asked for), clamp the drift to the
@@ -80,8 +82,38 @@ reason to loosen a rule.
    `edit_decisions.json` and record the counts in the gate's docstring, so
    nobody reads next Friday's zero as a regression check that never ran.
 
-## Sequencing
+## What the 16 became
 
-Items 1 and 2 clear all 16. Merging the gate without them refuses the next
-film at the props build — in about a second, with the cut, field and rule,
-rather than 18 minutes into a render, but it refuses.
+Measured end to end through the composer's own schemas on 2026-11-24:
+the six published map cuts fail on `basemap` and `basemap_drift` (12), and
+`resolve_basemaps.py` clears all 12. The four `density: 0.4` cuts are
+refused at edit time with the cut named instead of drawing nothing. The
+film the gate was written against goes from 16 failures to 0.
+
+## What it found that nobody was looking for
+
+Four things, all of them in delivered films:
+
+1. **Six map shots of film #6 author no `scale` at all**, so each was drawn
+   at d3's default of 1400 — 78.6 degrees of longitude for routes of 17 to
+   594 km. Every other film authors one.
+2. **Film #5 shows "NaN" where six timeline cards' years should be**, with
+   all five labels stacked at the left edge of the frame. Six `timeline`
+   cuts carry `year` as a string ("27 Jul", "after"), and `Math.abs("27
+   Jul")` is NaN. It was published that way.
+3. **king-tut prints "AD 1922.84"** — the fractional year that places an
+   event five months into a one-year span was being rendered as the label.
+   The schema was wrong to forbid the fraction and the component was wrong
+   to print it; both are fixed.
+4. **Every film's `document_reveal` credit line is lost.** The edit authors
+   it as prose in `source` ("Ledger c33 — contested") and
+   `apply_authored_slots` overwrites that with the slot id, while the
+   component reads `sourceLine`. Film #5 carries no `sourceLine` on any of
+   its 158 cuts. NOT FIXED — recorded here because it is the same shape as
+   the basemap drop and wants its own look.
+
+## Coverage
+
+636 of 991 cuts across the six films are checkable. `broll` (74),
+`text_card` (9) and `comparison` (2) have no schema at all; they are
+reported in `unchecked` and never counted as passing.
