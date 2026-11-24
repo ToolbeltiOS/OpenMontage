@@ -2,13 +2,19 @@
 
 THE PRACTICE THIS REPLACES
 --------------------------
-`.claude/hooks/bash_guard.py` carries two bespoke exemptions — "form A", a
+`.claude/hooks/bash_guard.py` CARRIED two bespoke exemptions — "form A", a
 `for` loop over `projects/` with a read-only body, and "form B", a
-`python -I -c` whose code is audited for writes. Both exist because a stage
-improvised a shape to look at a FINISHED film's artifact, got blocked, and
-the guard learned that shape afterwards. That is per-incident
+`python -I -c` whose code was audited for writes. Both existed because a
+stage improvised a shape to look at a FINISHED film's artifact, got
+blocked, and the guard learned that shape afterwards. That is per-incident
 allow-listing: the list grows one entry per incident, and every entry is a
 parser for something a stage made up.
+
+Both were removed on 2026-11-24, unused after two Fridays, so the guard
+now has no way to say "allow" at all — see
+tests/automation/test_bash_guard.py. This file is the reason that was
+affordable: the entry point below needs no exemption, so there was nothing
+left for the forms to do.
 
 `scripts/inspect_project.py` is the entry point instead. Three questions —
 what a film has, one slice of one artifact, how many scenes and cuts — under
@@ -93,17 +99,23 @@ class TestTheStageCanRunWhatItIsToldToRun:
         ".venv/bin/python scripts/inspect_project.py scenes king-tut",
     ])
     def test_the_inspector_needs_no_exemption(self, command):
-        """Not form A, not form B — an ordinary script call."""
-        code, _ = guard(command)
+        """An ordinary script call, already covered by `Bash(scripts/:*)`.
+
+        It passes the guard in silence — no denial and no decision — which
+        is now the only answer the hook has. Form A and form B were the
+        other two, and they are gone.
+        """
+        code, said = guard(command)
         assert code == 0
+        assert said.strip() == "", (
+            f"the guard said something about an ordinary command: {said!r}")
         import importlib.util
-        spec = importlib.util.spec_from_file_location(
-            "bg", str(GUARD))
+        spec = importlib.util.spec_from_file_location("bg", str(GUARD))
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        assert module.inspection_allowance(command) is None, (
-            "the inspector should pass as a plain command, not as one of "
-            "the improvised forms the guard had to learn")
+        assert not hasattr(module, "inspection_allowance"), (
+            "per-incident allow-listing is back; this file exists to make "
+            "it unnecessary")
 
 
 class TestTheGuardStillGuards:

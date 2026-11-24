@@ -127,7 +127,17 @@ def plain(value: str) -> str:
     if not value:
         return ""
     text = html.unescape(re.sub("<[^>]+>", " ", value))
-    text = re.sub(r"\s+", " ", text).strip()
+    # NEWLINES SURVIVE. A stitched Wikimedia image credits each of its
+    # sources on its own line — "Abydos_Koenigsliste_05.jpg: Olaf Tausch"
+    # and eight more — and that structure is the attribution, not
+    # formatting. Only horizontal runs collapse.
+    text = "\n".join(re.sub(r"[^\S\n]+", " ", line).strip()
+                     for line in text.split("\n"))
+    text = re.sub(r"\n{3,}", "\n\n", text).strip()
+    if "\n" in text:
+        # Doubling happens inside one line, so each is judged on its own.
+        return "\n".join(plain(line) if line else "" for line in
+                          text.split("\n"))
     undoubled = _undouble(text)
     if undoubled is not None:
         return undoubled
