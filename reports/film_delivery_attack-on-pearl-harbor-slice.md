@@ -9,7 +9,7 @@
 | frame motion | 0.0% duplicate pairs, longest freeze 0.0s, timestamps constant | PASS |
 | frame order | 0 frames out of place, 0 isolated black, correlation with the plate 0.999 | PASS |
 | plate purity | 0 words legible in the plate pass | PASS |
-| type lock | 13 text-bearing scenes sampled a second apart, 0 with a word in a different place, worst 0.0px, readings bound to our type by type pass | PASS |
+| type lock | 13 text-bearing scenes sampled a second apart, 0 with a word in a different place, worst 0.103px, readings bound to our type by type pass | PASS |
 | plate-dropout | 3423 frames scanned, 0 certain, 0 marginal, nothing came near the limit | PASS |
 | frame count | 3423 delivered of 3423 asked (0.0s missing) | PASS |
 | delivery audio | -16.9 dBFS mean, -14.07 LUFS — no mix report, and none was required for this delivery, so the loudness was compared with NOTHING | SKIPPED |
@@ -104,10 +104,10 @@ One character per frame, 30 per row — a second a row. `#` is black, `+` under 
    81.0s |++++++++++++++++++++++++++++++
    82.0s |++++++++++++++++++++++++++++++
    83.0s |++++++++++++++++++++++++++++++
-   84.0s |++++++++++++++++++++++........
+   84.0s |+++++++++++++++++++...........
    85.0s |..............................
    86.0s |..............................
-   87.0s |...........................+++
+   87.0s |............................++
    88.0s |++++++++++++++++++++++++++++++
    89.0s |++++++++++++++++++++++++++++++
    90.0s |++++++++++++++++++++++++++++++

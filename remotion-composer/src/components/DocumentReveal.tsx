@@ -68,8 +68,26 @@ export const DocumentReveal: React.FC<DocumentRevealProps> = ({
   // On a paper TEXTURE the document's ink is always the dark one: the
   // surface is light whatever `paper` said, and the quotation has to be
   // readable against it.
-  const ink = (light || texture !== null) ? SYS.paperInk : SYS.text;
-  const emphasis = light ? "#8A5A1E" : SYS.accent;
+  /**
+   * IS THE SURFACE LIGHT? Not the same question as `paper === "light"`.
+   *
+   * A texture plate is a photograph of paper, so the card is cream
+   * whatever `paper` said — which the ink below has always known. Nothing
+   * else did. Every foreground colour on this card has to ask the same
+   * question or they disagree with each other, and on 2026-11-25 the
+   * credit line did: `paper: "dark"` with a parchment texture gave the
+   * quotation dark ink on light paper and the credit `SYS.muted`, a grey
+   * chosen for a near-black card. It is on the frame and it cannot be
+   * read — OCR gets 56 words off that card and not one of them is the
+   * credit.
+   *
+   * It had never shown before because the credit itself was being dropped
+   * before it reached the component (see build_render_props's flatten), so
+   * the first film to draw one is the first to find this.
+   */
+  const onLight = light || texture !== null;
+  const ink = onLight ? SYS.paperInk : SYS.text;
+  const emphasis = onLight ? "#8A5A1E" : SYS.accent;
 
   const appear = (at: number, frames: number = SYS.unit) =>
     interpolate(frame, [at * fps, at * fps + frames], [0, 1], {
@@ -202,11 +220,11 @@ export const DocumentReveal: React.FC<DocumentRevealProps> = ({
             <div className={TYPE_CLASS}
               style={{
                 opacity: appear(lastAt + 0.7),
-                color: light ? "rgba(36,31,24,0.62)" : SYS.muted,
+                color: onLight ? "rgba(36,31,24,0.72)" : SYS.muted,
                 fontFamily: SYS.data,
                 fontSize: TYPE.dataSm,
                 marginTop: 36,
-                borderTop: `1px solid ${light ? "rgba(36,31,24,0.25)" : SYS.rule}`,
+                borderTop: `1px solid ${onLight ? "rgba(36,31,24,0.3)" : SYS.rule}`,
                 paddingTop: 18,
                 maxWidth: width * 0.6,
                 letterSpacing: "0.06em",
