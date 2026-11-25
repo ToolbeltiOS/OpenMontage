@@ -465,8 +465,6 @@ def main() -> int:
     return 0
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
 #: A map never shows less than this much longitude: a route of 1 km framed
 #: to itself would be a scale of millions, against a raster of 1/60 of a
 #: degree per pixel. Film #6's c121 spans 0.01 degrees.
@@ -564,4 +562,5 @@ def suggest_scale(route: list[list[float]], fill: float = 0.6,
     return int(round(min(by_lon, by_lat) / 50.0) * 50)
 
 
-
+if __name__ == "__main__":
+    raise SystemExit(main())
