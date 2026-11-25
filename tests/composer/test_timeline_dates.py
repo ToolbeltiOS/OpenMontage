@@ -160,57 +160,49 @@ class TestTheGateRefusesWhatWasPublished:
         assert "a whole year; the month and day go in their own" in src
 
 
-class TestThePublishedFilmsAreLeftAlone:
-    def test_film_5_still_carries_what_it_shipped(self):
-        """Not repaired, by instruction. It cannot be re-rendered without
-        fixing it, which is the gate doing its job rather than a loss."""
-        path = (Path("/Users/mac/Developer/wak3up-docs/runner/projects")
-                / "atomic-bombings-of-hiroshima-and-nagasaki" / "artifacts"
-                / "edit_decisions.json")
+class TestEveryFilmOnDiskCarriesDates:
+    """Written 2026-11-24 asserting the opposite, and reversed on 11-25.
+
+    The instruction then was that films #5 and #6 stay as published and
+    the fix is for everything after them. It is now that both are being
+    RE-RENDERED to replace what is on the channel, so their edits were
+    migrated by `scripts/migrate_edit_props.py` — film #5's 26 string
+    years into dates, with "27 Jul" reading 1945 from a `--year` the
+    operator stated once and the report recorded.
+
+    So the guard flips with it: no edit on this machine may carry a year
+    that is not a number, because every one of them is now expected to
+    have been through the migration.
+    """
+
+    @pytest.mark.parametrize("slug", [
+        "atomic-bombings-of-hiroshima-and-nagasaki",
+        "attack-on-pearl-harbor", "king-tut", "easter-island",
+        "they-said-it-couldnt-be-built"])
+    def test_no_edit_still_carries_a_string_year(self, slug):
+        for root in ("runner", "fix-render-finalise", "OpenMontage"):
+            path = (Path("/Users/mac/Developer/wak3up-docs") / root
+                    / "projects" / slug / "artifacts" / "edit_decisions.json")
+            if not path.exists():
+                continue
+            blob = json.loads(path.read_text())
+            bad = [(c.get("id"), e.get("year"))
+                   for c in blob.get("cuts", [])
+                   for e in ((c.get("scene") or c).get("events") or [])
+                   if isinstance(e.get("year"), str)]
+            assert bad == [], f"{root}/{slug}: {bad}"
+
+    def test_film_5_kept_its_undated_markers(self):
+        """Three events the edit declined to date are still undated — the
+        migration gave them a position, not a claim."""
+        path = Path("/Users/mac/Developer/wak3up-docs/runner/projects"
+                    "/atomic-bombings-of-hiroshima-and-nagasaki/artifacts"
+                    "/edit_decisions.json")
         if not path.exists():
             pytest.skip("film #5 is not on this machine")
         blob = json.loads(path.read_text())
-        strings = [e["year"] for c in blob["cuts"]
+        undated = [e for c in blob["cuts"]
                    for e in ((c.get("scene") or c).get("events") or [])
-                   if isinstance(e.get("year"), str)]
-        assert strings, "film #5's record should still show what it shipped"
-
-
-class TestAMarkerTheEditDidNotDate:
-    """Three events in film #5 carry no date at all.
-
-        c094  "after"      · The atomic leaflets reach Nagasaki
-        c099  "condition"  · Nothing released without DoD approval
-        c147  "—"          · Groves halts the shipment of fissile material
-
-    Each is a real event on its card whose moment the edit declined to fix.
-    Giving them a date to satisfy the schema would print a claim about time
-    that nobody made; dropping them would lose the content. So they carry
-    the date of the event they follow — which is a POSITION, not a claim —
-    and `undated` is what stops the card printing it.
-
-    `scripts/migrate_edit_props.py` is what sets this, by rule, and refuses
-    if there is no dated event before the marker to place it after.
-    """
-
-    def test_an_undated_marker_prints_nothing(self):
-        assert ts_eval(
-            'fmtDate({year: 1945, month: 8, day: 10, undated: true})') == ""
-
-    def test_it_still_has_a_place_on_the_axis(self):
-        """It is drawn, and in the right order — it just has no year."""
-        after = ts_eval("axisValue({year: 1945, month: 8, day: 10})")
-        before = ts_eval("axisValue({year: 1945, month: 8, day: 9})")
-        assert after > before
-
-    def test_the_schema_takes_it(self):
-        assert failures(cut(events=[
-            {"year": 1945, "month": 8, "day": 9, "at": 0.5, "label": "x"},
-            {"year": 1945, "month": 8, "day": 10, "undated": True,
-             "at": 1.5, "label": "y"}])) == []
-
-    def test_it_is_not_a_way_round_the_date_rule(self):
-        """`undated` suppresses the LABEL. It does not let a string year
-        back in through the side door."""
-        assert failures(cut(events=[{"year": "after", "undated": True,
-                                     "at": 0.5, "label": "x"}]))
+                   if e.get("undated")]
+        assert len(undated) == 3, [e.get("label") for e in undated]
+        assert all(isinstance(e["year"], int) for e in undated)
