@@ -174,3 +174,43 @@ class TestThePublishedFilmsAreLeftAlone:
                    for e in ((c.get("scene") or c).get("events") or [])
                    if isinstance(e.get("year"), str)]
         assert strings, "film #5's record should still show what it shipped"
+
+
+class TestAMarkerTheEditDidNotDate:
+    """Three events in film #5 carry no date at all.
+
+        c094  "after"      · The atomic leaflets reach Nagasaki
+        c099  "condition"  · Nothing released without DoD approval
+        c147  "—"          · Groves halts the shipment of fissile material
+
+    Each is a real event on its card whose moment the edit declined to fix.
+    Giving them a date to satisfy the schema would print a claim about time
+    that nobody made; dropping them would lose the content. So they carry
+    the date of the event they follow — which is a POSITION, not a claim —
+    and `undated` is what stops the card printing it.
+
+    `scripts/migrate_edit_props.py` is what sets this, by rule, and refuses
+    if there is no dated event before the marker to place it after.
+    """
+
+    def test_an_undated_marker_prints_nothing(self):
+        assert ts_eval(
+            'fmtDate({year: 1945, month: 8, day: 10, undated: true})') == ""
+
+    def test_it_still_has_a_place_on_the_axis(self):
+        """It is drawn, and in the right order — it just has no year."""
+        after = ts_eval("axisValue({year: 1945, month: 8, day: 10})")
+        before = ts_eval("axisValue({year: 1945, month: 8, day: 9})")
+        assert after > before
+
+    def test_the_schema_takes_it(self):
+        assert failures(cut(events=[
+            {"year": 1945, "month": 8, "day": 9, "at": 0.5, "label": "x"},
+            {"year": 1945, "month": 8, "day": 10, "undated": True,
+             "at": 1.5, "label": "y"}])) == []
+
+    def test_it_is_not_a_way_round_the_date_rule(self):
+        """`undated` suppresses the LABEL. It does not let a string year
+        back in through the side door."""
+        assert failures(cut(events=[{"year": "after", "undated": True,
+                                     "at": 0.5, "label": "x"}]))

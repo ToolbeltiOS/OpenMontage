@@ -8,6 +8,7 @@ import { TerrainBase, TerrainTile } from "./TerrainBase";
 import { TYPE_CLASS } from "../design/layers";
 import { resolveAsset } from "../lib/resolveAsset";
 import { clampBasemapDrift } from "../design/basemap";
+import { placeLabels } from "../design/mapLabels";
 
 export interface MapMarker {
   lon: number;
@@ -184,6 +185,22 @@ export const MapRoute: React.FC<MapRouteProps> = ({
     };
   }, [route, center, scale, width, height, resolution, borders]);
 
+  /* WHERE EVERY LABEL GOES, decided once from the whole marker list.
+     Not from the markers that have appeared yet: a label that shifted when
+     a later one faded in would be type that moves on screen, and type lock
+     fails a film for exactly that. Two cuts of film #6 shipped with their
+     labels drawn on top of each other — see design/mapLabels.ts. */
+  const labelBoxes = useMemo(
+    () => placeLabels(
+      markers.map((m) => {
+        const xy = (projection as any)([m.lon, m.lat]) as [number, number] | null;
+        return { x: xy ? xy[0] : 0, y: xy ? xy[1] : 0,
+                 label: m.label, dx: m.dx, dy: m.dy };
+      }),
+      TYPE.labelSm),
+    [markers, projection],
+  );
+
   const drawStart = draw_at * fps;
   const p = interpolate(frame, [drawStart, drawStart + draw_seconds * fps], [0, 1], {
     extrapolateLeft: "clamp",
@@ -280,6 +297,7 @@ export const MapRoute: React.FC<MapRouteProps> = ({
           if (o <= 0) return null;
           const xy = (projection as any)([m.lon, m.lat]);
           if (!xy) return null;
+          const placed = labelBoxes[i];
           return (
             <g key={i}>
               <circle cx={xy[0]} cy={xy[1]} r={6} fill={SYS.accent} opacity={o} />
@@ -296,8 +314,9 @@ export const MapRoute: React.FC<MapRouteProps> = ({
                 strokeDashoffset={1 - o}
               />
               <text className={TYPE_CLASS}
-                x={xy[0] + (m.dx ?? 24)}
-                y={xy[1] + (m.dy ?? 7) + Math.round((1 - o) * SYS.rise)}
+                x={xy[0] + (placed ? placed.dx : (m.dx ?? 24))}
+                y={xy[1] + (placed ? placed.dy : (m.dy ?? 7))
+                   + Math.round((1 - o) * SYS.rise)}
                 fill={SYS.text}
                 fontFamily={SYS.label}
                 fontSize={TYPE.labelSm}

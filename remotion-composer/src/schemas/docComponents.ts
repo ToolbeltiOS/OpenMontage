@@ -193,6 +193,14 @@ export const TimelineSchema = z.object({
   events: z
     .array(
       TimelineDateSchema.extend({
+        /* A MARKER THE EDIT DID NOT DATE. Film #5 carries three — "after",
+           "condition", "—" — each a real event on the card whose moment
+           the edit deliberately declined to fix. The alternative to this
+           flag is inventing a date and printing it, which is a claim about
+           time nobody made. It still needs a POSITION, so it carries the
+           date of the event it follows; `undated` is what stops the card
+           printing that date as if it were its own. */
+        undated: z.boolean().optional(),
         label: z.string().min(1),
         text: z.string().optional(),
         at: sec,

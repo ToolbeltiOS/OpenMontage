@@ -12,6 +12,8 @@ export interface TimelineDate {
   year: number;
   month?: number;
   day?: number;
+  /** placed in sequence, with no year printed — see fmtDate */
+  undated?: boolean;
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -52,6 +54,10 @@ export const axisValue = (d: TimelineDate): number => {
  * than one labelled "NaN".
  */
 export const fmtDate = (d: TimelineDate): string => {
+  // A marker the edit did not date prints nothing. It carries the date of
+  // the event it follows so that it has somewhere to sit on the axis, and
+  // printing that date would attribute a moment to it that nobody claimed.
+  if (d?.undated) return "";
   const year = Number(d?.year);
   if (!Number.isFinite(year)) return "";
   const n = Math.round(Math.abs(year));
