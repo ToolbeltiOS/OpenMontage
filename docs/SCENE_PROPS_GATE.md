@@ -96,21 +96,30 @@ Four things, all of them in delivered films:
 
 1. **Six map shots of film #6 author no `scale` at all**, so each was drawn
    at d3's default of 1400 — 78.6 degrees of longitude for routes of 17 to
-   594 km. Every other film authors one.
+   594 km. Every other film authors one. FIXED 2026-11-25: the extent is
+   computed from the route by `scripts/resolve_basemaps.py` and is not
+   authored at all, and the gate refuses more than 20x the route's span.
 2. **Film #5 shows "NaN" where six timeline cards' years should be**, with
    all five labels stacked at the left edge of the frame. Six `timeline`
    cuts carry `year` as a string ("27 Jul", "after"), and `Math.abs("27
-   Jul")` is NaN. It was published that way.
+   Jul")` is NaN. It was published that way. FIXED 2026-11-25 for every
+   film after it: a timeline event carries a structured date, the
+   component prints it and drops what it cannot place. Film #5 stays as
+   published and can no longer be re-rendered without an edit — which is
+   the gate working, not a loss.
 3. **king-tut prints "AD 1922.84"** — the fractional year that places an
    event five months into a one-year span was being rendered as the label.
    The schema was wrong to forbid the fraction and the component was wrong
    to print it; both are fixed.
-4. **Every film's `document_reveal` credit line is lost.** The edit authors
-   it as prose in `source` ("Ledger c33 — contested") and
-   `apply_authored_slots` overwrites that with the slot id, while the
-   component reads `sourceLine`. Film #5 carries no `sourceLine` on any of
-   its 158 cuts. NOT FIXED — recorded here because it is the same shape as
-   the basemap drop and wants its own look.
+4. **Every film's `document_reveal` credit line is lost.** FIXED
+   2026-11-25, and the cause was not what this said first. It is not
+   `apply_authored_slots` — that script has no callers at all and is
+   hardcoded to film #1. `source` is two things: the slot id on a cut, the
+   component's credit prop on a scene. The flatten used `setdefault`, the
+   cut always already had a `source`, and the citation went on the floor
+   of that loop. The edit stage had authored it correctly all along.
+   Film #5 went from a credit on 0 of 158 cuts to 65; film #6 from 0 of
+   162 to 135.
 
 ## Coverage
 

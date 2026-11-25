@@ -98,6 +98,12 @@ def main() -> int:
                     help="work name; defaults to <project>-slice")
     ap.add_argument("--work", default=None,
                     help="where the slice's inputs and output go")
+    ap.add_argument("--props", default=None,
+                    help="a props file to slice INSTEAD of the film's own. "
+                         "The render-time props gate (2026-11-25) refuses "
+                         "the legacy values every delivered film carries, "
+                         "so a merge slice needs somewhere to put a "
+                         "repaired copy that is not the film's artifacts.")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
@@ -107,7 +113,11 @@ def main() -> int:
     work.mkdir(parents=True, exist_ok=True)
 
     project = source_project(args.project)
-    props = json.loads((project / "artifacts" / "render_props.json").read_text())
+    source = (Path(args.props) if args.props
+              else project / "artifacts" / "render_props.json")
+    props = json.loads(source.read_text())
+    if args.props:
+        print(f"props: {source} (not the film's own)")
 
     # A FILM'S RELATIVE ASSET PATHS BELONG TO ITS OWN WORKTREE. `stage_assets`
     # resolves them against the tree it is running in, so slicing a film that
