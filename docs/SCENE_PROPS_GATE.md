@@ -99,6 +99,11 @@ Four things, all of them in delivered films:
    594 km. Every other film authors one. FIXED 2026-11-25: the extent is
    computed from the route by `scripts/resolve_basemaps.py` and is not
    authored at all, and the gate refuses more than 20x the route's span.
+   Resolving the basemaps for those new extents then found that none of
+   the tiles were usable — Natural Earth 10m meets the detail floor only
+   at 16 degrees and wider. The maps draw as vectors at the resolved
+   extents, which is what they already did. See
+   [`MAP_TERRAIN.md`](MAP_TERRAIN.md).
 2. **Film #5 shows "NaN" where six timeline cards' years should be**, with
    all five labels stacked at the left edge of the frame. Six `timeline`
    cuts carry `year` as a string ("27 Jul", "after"), and `Math.abs("27
