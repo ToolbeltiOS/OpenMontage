@@ -116,6 +116,20 @@ ROUTE_FILL = 0.66
 #: width of the picture.
 MAX_TILE_OVERSHOOT = 4.0
 
+#: The other direction, and the one that was missing. A tile is a fixed
+#: number of SOURCE pixels; the frame is 1920 of them. Natural Earth 10m is
+#: about 60 px per degree, so a 1-degree extent — which is what a 17 km
+#: route asks for — yields a 60 px tile blown up 32x. Film #6's five
+#: resolved tiles measured 0.03, 0.25, 0.15, 0.03 and 0.03 source pixels
+#: per frame pixel on 2026-11-25; the 60x32 one is a pastel smear with
+#: JPEG blocking and no legible coastline, and the 476 px one draws the
+#: islands as lumps with a stray green square in the open ocean.
+#: 0.5 allows a 2x upscale, which shaded relief survives. Below that there
+#: is no terrain to draw and the honest answer is to draw none: every film
+#: so far has shipped these maps as vectors, because `Explainer` never
+#: passed the basemap on at all.
+MIN_SOURCE_PX_PER_FRAME_PX = 0.5
+
 
 def max_drift() -> float:
     """The ceiling, from `design/basemap.ts`.
@@ -183,14 +197,41 @@ def covers(tile_bounds: list[float] | tuple[float, ...],
     return tw <= nw and ts <= ns and te >= ne and tn >= nn
 
 
-def good_enough(tile_bounds: list[float] | tuple[float, ...],
+def source_detail(tile: dict[str, Any],
+                  need: tuple[float, float, float, float]) -> float:
+    """Source pixels that land across the frame's width, per frame pixel.
+
+    1.0 means the raster has exactly one pixel for each pixel drawn. Below
+    1.0 the tile is being upscaled; below MIN_SOURCE_PX_PER_FRAME_PX it is
+    being upscaled past what shaded relief survives.
+    """
+    bounds = tile.get("bounds") or []
+    pixels = tile.get("pixels") or []
+    if len(bounds) != 4 or len(pixels) != 2 or not pixels[0]:
+        return 0.0
+    tile_w = max(bounds[2] - bounds[0], 1e-9)
+    need_w = max(need[2] - need[0], 1e-9)
+    across = float(pixels[0]) * (need_w / tile_w)   # source px over the frame
+    return across / FRAME_W
+
+
+def good_enough(tile: dict[str, Any],
                 need: tuple[float, float, float, float]) -> bool:
-    """Covers it, and is not so much bigger that the terrain goes soft."""
-    if not covers(tile_bounds, need):
+    """Covers the frame, is not far wider than it, and has pixels to spare.
+
+    Two bounds, not one. The upper bound stops a world tile being used for
+    a city; the lower one stops a 60 px crop being blown up 32x. The second
+    was missing until 2026-11-25, so a check written to protect detail
+    passed the five coarsest tiles the pipeline has ever cut.
+    """
+    bounds = tile.get("bounds") or []
+    if len(bounds) != 4 or not covers(bounds, need):
         return False
-    tile_w = tile_bounds[2] - tile_bounds[0]
+    tile_w = bounds[2] - bounds[0]
     need_w = max(need[2] - need[0], 1e-6)
-    return tile_w <= need_w * MAX_TILE_OVERSHOOT
+    if tile_w > need_w * MAX_TILE_OVERSHOOT:
+        return False
+    return source_detail(tile, need) >= MIN_SOURCE_PX_PER_FRAME_PX
 
 
 def existing_tiles() -> list[dict[str, Any]]:
@@ -315,7 +356,32 @@ def resolve(cuts: list[dict[str, Any]], *, apply_tiles: bool = True
 
         asked = props.get("basemap")
         if isinstance(asked, dict):
-            continue                      # already a tile, nothing to do
+            # A tile already written in still has to meet the floor. This
+            # branch used to `continue` on the grounds that the work was
+            # done, which made the resolver unable to correct its own
+            # earlier output: the five film #6 tiles were resolved before
+            # there was a lower bound, and a re-run would have kept every
+            # one of them.
+            if not (isinstance(route, list) and len(route) >= 2):
+                continue
+            need_now = mercator_bounds(centre, scale)
+            known = {t.get("src"): t for t in tiles}
+            tile = known.get(asked.get("src"))
+            if tile is None:
+                continue                  # not ours to judge
+            if good_enough(tile, need_now):
+                continue
+            detail = source_detail(tile, need_now)
+            props.pop("basemap", None)
+            notes.append({
+                "cut": cid, "what": "basemap",
+                "note": f"dropped {asked.get('src')}: "
+                        + (f"{detail:.2f} source pixels per frame pixel "
+                           f"against a floor of "
+                           f"{MIN_SOURCE_PX_PER_FRAME_PX:.2f}"
+                           if detail else "no pixel size on its sidecar")
+                        + ". It was resolved before there was a floor."})
+            continue
         if asked is None:
             continue
         if not isinstance(asked, str):
@@ -365,14 +431,37 @@ def resolve(cuts: list[dict[str, Any]], *, apply_tiles: bool = True
         # The SMALLEST tile that covers the frame, and only if it is not
         # wildly bigger than the frame: a tile is a fixed number of pixels,
         # so a tile four times too wide is a quarter of the detail.
-        fits = sorted((t for t in tiles if good_enough(t["bounds"], need)),
+        fits = sorted((t for t in tiles if good_enough(t, need)),
                       key=lambda t: t["bounds"][2] - t["bounds"][0])
         have = fits[0] if fits else None
         if have is None and apply_tiles:
             name = f"{cut.get('project') or 'film'}_{cid}"
-            have = build_tile(name, need)
-            if have:
-                tiles.append(have)
+            built = build_tile(name, need)
+            if built:
+                tiles.append(built)
+                # A tile we just cut gets the same two bounds as one we
+                # found. Cutting it proves the raster covers the ground,
+                # not that it has the pixels: the builder will happily hand
+                # back 60x32 for a one-degree frame.
+                if good_enough(built, need):
+                    have = built
+                else:
+                    detail = source_detail(built, need)
+                    props.pop("basemap", None)
+                    notes.append({
+                        "cut": cid, "what": "basemap",
+                        "note": "terrain asked for and NOT drawn: the raster "
+                                f"gives {built['pixels'][0]}x"
+                                f"{built['pixels'][1]} px for this extent, "
+                                f"{detail:.2f} source pixels per frame pixel "
+                                f"against a floor of "
+                                f"{MIN_SOURCE_PX_PER_FRAME_PX:.2f} — a "
+                                f"{1 / detail:.0f}x upscale, which is a smear "
+                                "rather than terrain. The map draws as "
+                                "vectors, which is what it has always done. "
+                                "A finer raster is the only thing that "
+                                "changes this."})
+                    continue
         if have is None:
             props.pop("basemap", None)
             notes.append({

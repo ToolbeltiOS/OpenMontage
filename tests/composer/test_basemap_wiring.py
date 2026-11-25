@@ -88,9 +88,23 @@ def tiles(tmp_path, monkeypatch):
     return d
 
 
-def put_tile(d: Path, name: str, bounds: list[float]) -> dict:
+#: Enough pixels to clear the resolution floor for the frames these tests
+#: fit. The C112 route needs 292 source px per degree at the 0.5 floor;
+#: Natural Earth 10m has about 60, which is why film #6 gets no terrain
+#: and why that is tested below rather than wished away here. These
+#: fixtures are about WIRING — terrain becoming a tile — so they state a
+#: resolution that lets the wiring be seen.
+FINE_PX_PER_DEGREE = 400
+NATURAL_EARTH_10M_PX_PER_DEGREE = 60
+
+
+def put_tile(d: Path, name: str, bounds: list[float],
+             px_per_degree: float = FINE_PX_PER_DEGREE) -> dict:
     (d / f"{name}.jpg").write_bytes(b"\xff\xd8\xff")
-    meta = {"name": name, "src": f"basemaps/{name}.jpg", "bounds": bounds}
+    pixels = [max(1, round((bounds[2] - bounds[0]) * px_per_degree)),
+              max(1, round((bounds[3] - bounds[1]) * px_per_degree))]
+    meta = {"name": name, "src": f"basemaps/{name}.jpg", "bounds": bounds,
+            "pixels": pixels}
     (d / f"{name}.json").write_text(json.dumps(meta))
     return meta
 
@@ -176,6 +190,35 @@ class TestTerrainBecomesATile:
         RB.resolve([c], apply_tiles=False)
         assert c["basemap"] == {"src": "basemaps/kauai.jpg",
                                 "bounds": [-162, 19, -156, 24]}
+
+    def test_a_tile_at_the_real_rasters_resolution_is_refused(self, tiles):
+        """Covering the ground is not the same as having the pixels.
+
+        This is film #6's actual case. The tile covers the frame and is not
+        too wide, so it passed every bound this check had until 2026-11-25
+        — and it is a 32x upscale that draws as a pastel smear.
+        """
+        put_tile(tiles, "coarse", [-162, 19, -156, 24],
+                 px_per_degree=NATURAL_EARTH_10M_PX_PER_DEGREE)
+        c = cut(basemap="terrain")
+        RB.resolve([c], apply_tiles=False)
+        assert "basemap" not in c, (
+            "a tile with 60 px per degree must not be stretched over a "
+            "1920-wide frame")
+
+    def test_a_tile_already_written_in_is_re_judged(self, tiles):
+        """The resolver must be able to correct its own earlier output.
+
+        Film #6's five tiles were resolved before there was a floor. If a
+        dict short-circuits the branch, a re-run keeps every one of them.
+        """
+        meta = put_tile(tiles, "coarse", [-162, 19, -156, 24],
+                        px_per_degree=NATURAL_EARTH_10M_PX_PER_DEGREE)
+        c = cut(basemap={"src": meta["src"], "bounds": meta["bounds"]})
+        RB.resolve([c], apply_tiles=False)
+        assert "basemap" not in c, (
+            "a tile resolved before the floor existed must be dropped on "
+            "the re-run, not kept because it is already a dict")
 
     def test_a_tile_that_does_not_cover_the_frame_is_not_used(self, tiles):
         """A tile claimed to cover more than it does puts the route off the
