@@ -575,6 +575,82 @@ def check_callout_types(cuts: list[dict], overlays: list[dict],
 #: These are TypeScript because the schemas are: a Python restatement of
 #: them would be a second source of truth, which is the bug this gate is
 #: here to catch.
+def credit_lines(art: str | None = None) -> dict[str, str]:
+    """asset id -> the credit that asset requires, from its own record.
+
+    THE CREDIT IS NEVER PROSE SOMEBODY TYPED. It is the artist and the
+    licence the fetcher recorded with the picture, which is the same pair
+    the credits page and the pinned comment are built from — so a line on
+    screen cannot disagree with the attribution the film publishes.
+
+    `scripts/build_listing.py` reads the same records for the page; this
+    reads them for the frame.
+    """
+    art = art or ART
+    out: dict[str, str] = {}
+    sys.path.insert(0, os.path.join(ROOT, "lib"))
+    from asset_bank import plain
+
+    import glob
+    for path in sorted(glob.glob(os.path.join(art, "asset_bank*.json"))):
+        try:
+            bank = json.load(open(path, encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        rows = [a for subject in (bank.get("subjects") or {}).values()
+                for a in (subject.get("assets") or [])]
+        rows += list(bank.get("derived") or [])
+        for row in rows:
+            aid = row.get("asset_id")
+            if not aid or aid in out:
+                continue
+            artist = plain(row.get("artist") or "").splitlines()
+            artist = artist[0].strip() if artist else ""
+            licence = (row.get("licence") or "").strip()
+            line = " · ".join(x for x in (artist, licence) if x)
+            if line:
+                out[aid] = line
+    return out
+
+
+def asset_id_of(cut: dict) -> str | None:
+    """The bank id of the picture this cut carries, if it carries one."""
+    if cut.get("asset_id"):
+        return str(cut["asset_id"])
+    for key in ("backgroundImage", "image", "source"):
+        value = cut.get(key)
+        if not isinstance(value, str) or "/" not in value:
+            continue
+        stem = os.path.splitext(os.path.basename(value))[0]
+        return re.sub(r"_\d{3,4}$", "", stem)
+    return None
+
+
+def set_source_lines(cuts: list[dict], art: str | None = None) -> int:
+    """Give every cut that carries an asset the credit that asset requires.
+
+    Film #5 shipped with `sourceLine` on NONE of its 158 cuts. The credit
+    line is the one piece of attribution that travels with the picture
+    instead of living on a page nobody opens, and it was absent because
+    nothing put it there.
+
+    A cut that already carries one keeps it: a document card's citation is
+    not an asset credit and is authored, and the assets stage sets one for
+    some sourced stills.
+    """
+    credits = credit_lines(art)
+    given = 0
+    for cut in cuts:
+        if cut.get("sourceLine"):
+            continue
+        aid = asset_id_of(cut)
+        line = credits.get(aid) if aid else None
+        if line:
+            cut["sourceLine"] = line
+            given += 1
+    return given
+
+
 SCENE_SCHEMAS = os.path.join(
     "remotion-composer", "src", "schemas", "docComponents.ts")
 SCENE_VALIDATOR = os.path.join(
@@ -739,6 +815,22 @@ def main() -> int:
         scene = cut.pop("scene", None)
         if isinstance(scene, dict):
             for key, value in scene.items():
+                # `source` IS TWO DIFFERENT THINGS and they collide here.
+                #
+                # On a CUT it is the slot id — `act1_s004` — and the
+                # artifact's schema requires it on every cut. On a SCENE it
+                # is the component's credit line, the thing a document card
+                # prints under its quotation: "Ledger c33 — contested".
+                # `setdefault` therefore never wrote it, because the cut
+                # always already had one, and the citation was dropped on
+                # the floor of this loop. Six films' document_reveal cuts
+                # authored a credit and not one of them has ever drawn it.
+                #
+                # Explainer reads `cut.sourceLine` for that prop, so that
+                # is where it goes.
+                if key == "source":
+                    cut.setdefault("sourceLine", value)
+                    continue
                 cut.setdefault(key, value)
 
     script = json.load(open(os.path.join(ART, "script.json"), encoding="utf-8"))
@@ -982,6 +1074,9 @@ def main() -> int:
     # gets checked. The callout gate above answers one union by reading the
     # component; this answers the whole prop shape by running the composer's
     # own zod schemas.
+    # THE CREDIT LINE, from the asset's own record and nothing else.
+    lines_set = set_source_lines(props["cuts"])
+
     scenes = check_scene_props(props)
 
     out = os.path.join(ART, "render_props.json")
@@ -1001,6 +1096,8 @@ def main() -> int:
     for d in dropped:
         print("  dropped:", d)
     unchecked = scenes.get("unchecked") or {}
+    print(f"credits: {lines_set} cut(s) given the credit their asset "
+          f"requires")
     print(f"scenes: {scenes.get('checked', 0)} cuts validated against "
           f"{SCENE_SCHEMAS}"
           + (f", {sum(unchecked.values())} unchecked ("

@@ -4,7 +4,8 @@ import { z } from "zod";
 import { outroCtaSchema } from "../components/OutroCta";
 // The drift ceiling is read from the same constant `MapRoute` clamps with,
 // so the schema and the component cannot disagree about it.
-import { MAX_BASEMAP_DRIFT } from "../design/basemap";
+import { MAX_BASEMAP_DRIFT, extentDegrees, maxExtentDegrees }
+  from "../design/basemap";
 
 /**
  * Props schemas for the eight documentary components.
@@ -164,19 +165,34 @@ export const MapRouteSchema = z.object({
   ...CHROME,
 });
 
+/**
+ * A point in time an event can be placed at AND printed from.
+ *
+ * Both halves matter, and both films that got this wrong were published.
+ * king-tut authored `year: 1922.84` — right placement, and the card reads
+ * "AD 1922.84" because a fraction of a year is not a thing to show anyone.
+ * The atomic-bombings film authored `year: "27 Jul"` — `Math.abs("27 Jul")`
+ * is NaN, so six cards print "NaN" with every label stacked at the left
+ * edge of the frame. Neither film was asking for a number; both were asking
+ * for a DATE, and there was nowhere to put one.
+ *
+ * So: the year is a WHOLE number, and the month and day that place it
+ * inside that year are their own fields. `Timeline.axisValue` derives the
+ * position and `Timeline.fmtDate` prints "27 Jul 1945" or "AD 1922" — never
+ * a fraction, never NaN.
+ */
+export const TimelineDateSchema = z.object({
+  year: z.number().int("a whole year; the month and day go in their own " +
+                       "fields, and a fraction of a year is not a date")
+    .describe("negative = BC"),
+  month: z.number().int().min(1).max(12).optional(),
+  day: z.number().int().min(1).max(31).optional(),
+});
+
 export const TimelineSchema = z.object({
   events: z
     .array(
-      z.object({
-        /* AN AXIS POSITION, not a label, so a fraction is legal and
-           meaningful: king-tut c009 carries 1922.84 to put "4 Nov 1922"
-           five months along a one-year span. `.int()` here called that an
-           error for six films, which is the gate crying wolf at the data
-           for a fault in the renderer — `fmtYear` printed the fraction.
-           The renderer rounds for display now; the placement stays
-           exact. */
-        year: z.number().describe(
-          "negative = BC; a fraction places an event inside a year"),
+      TimelineDateSchema.extend({
         label: z.string().min(1),
         text: z.string().optional(),
         at: sec,
@@ -185,7 +201,7 @@ export const TimelineSchema = z.object({
     )
     .min(1),
   orientation: z.enum(["horizontal", "vertical"]).optional(),
-  span: z.tuple([z.number(), z.number()]).optional(),   // same axis
+  span: z.tuple([TimelineDateSchema, TimelineDateSchema]).optional(),
   playhead: z.boolean().optional(),
   title: z.string().optional(),
   caption: z.string().optional(),
@@ -423,7 +439,33 @@ export const DOC_CUT_SCHEMAS = {
   }),
 
   /**
-   * `map_route` deliberately has NO divergence, and as of 2026-11-24 it does
+   * A MAP IS DRAWN AT THE SIZE OF ITS ROUTE. Checked on the CUT rather
+   * than in MapRouteSchema because it needs two fields at once — the
+   * route and the scale — and because the extent is computed by
+   * scripts/resolve_basemaps.py now, so anything reaching here with a
+   * wrong one did not come through the resolver.
+   */
+  map_route: MapRouteSchema.superRefine((cut, ctx) => {
+    const route = (cut as { route?: [number, number][] }).route;
+    if (!Array.isArray(route) || route.length < 2) return;
+    const shows = extentDegrees((cut as { scale?: number }).scale);
+    const allowed = maxExtentDegrees(route);
+    if (shows > allowed) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["scale"],
+        message:
+          `the frame shows ${shows.toFixed(1)} degrees of longitude for a ` +
+          `route spanning ${(allowed / 20).toFixed(2)} — at most ` +
+          `${allowed.toFixed(1)} is a map OF this route rather than a map ` +
+          `with it somewhere in it. scripts/resolve_basemaps.py computes ` +
+          `the scale and centre from the route; do not author them.`,
+      });
+    }
+  }),
+
+  /**
+   * `map_route` HAD no divergence, and as of 2026-11-24 it does
    * not need one. `basemap` and `basemap_drift` WERE authored by the edit
    * stage and dropped by `Explainer`, so six cuts in the Pearl Harbor film
    * asked for terrain and got none; relaxing the rule here would have

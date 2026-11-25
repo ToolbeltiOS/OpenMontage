@@ -52,7 +52,14 @@ C112_ROUTE = [[-157.98, 21.47], [-159.5, 21.75], [-160.15, 21.9]]
 
 
 def map_route(**over) -> dict:
+    # `scale` and `center` as scripts/resolve_basemaps.py computes them
+    # from this route. They are not decoration: since 2026-11-25 a map that
+    # shows more than 20x its route's span is refused, and a cut with no
+    # scale takes d3's default of 1400 — 78.6 degrees for this 2.17-degree
+    # route. These tests are about the OTHER props, so the frame is the one
+    # the resolver would give them.
     cut = {"id": "c112", "type": "map_route", "route": C112_ROUTE,
+           "scale": 33458.6, "center": [-159.065, 21.685],
            "draw_seconds": 3.0, "draw_at": 1.2, "title": "Niihau"}
     cut.update(over)
     return cut

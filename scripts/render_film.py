@@ -93,6 +93,44 @@ def main() -> int:
             f"timeline has to cover every frame exactly once before anything "
             f"is rendered from it.")
 
+    # AND THE PROPS THEMSELVES, against the composer's own zod schemas.
+    #
+    # `lib/build_render_props.py` runs this gate when it WRITES
+    # render_props.json, and the edit stage runs it over its own cuts — but
+    # this script reads whatever props file it is handed and does not
+    # rebuild it. A film whose props were written before either gate
+    # existed, a hand-patched file, a slice: all of them arrive here
+    # unchecked. On 2026-11-22 one such cut — c112, carrying
+    # `distance_callout: true` where MapRoute indexes `.at` — killed the
+    # render at frame 21,867 of 36,705, eighteen minutes in. The same
+    # answer costs about a second here.
+    #
+    # NOT FATAL WHEN THE GATE CANNOT RUN. `check_cut_props` refuses rather
+    # than passing if node or esbuild is missing, and that refusal must not
+    # stop a render on a machine that can still draw frames: the check is
+    # the belt, and build_render_props is the braces. A gate that cannot
+    # run says so and the render goes on.
+    try:
+        from buildability import check_cut_props
+        ok, problems, counts = check_cut_props(cuts)
+    except SystemExit as refused:
+        print(f"   PROPS: the gate could not run, so it was not run — "
+              f"{str(refused).splitlines()[0]}")
+    else:
+        print(f"   props: {counts['checked']} cut(s) against the composer's "
+              f"schemas, {counts['failures']} failure(s)")
+        if not ok:
+            for problem in problems[:20]:
+                print("   PROPS:", problem)
+            if len(problems) > 20:
+                print(f"   PROPS: ... and {len(problems) - 20} more")
+            raise SystemExit(
+                f"{args.project}: {len(problems)} cut(s) carry props the "
+                f"composer cannot draw. A render reads a bad prop on the "
+                f"frame the cut STARTS at, so this would have failed hours "
+                f"from now instead of here. Fix them in the edit stage, "
+                f"which rebuilds render_props.json.")
+
     count = frame_count(cuts, FPS)
     seconds = count / FPS
 

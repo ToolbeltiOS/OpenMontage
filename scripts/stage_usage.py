@@ -132,7 +132,20 @@ def transcript_turns(session_id: str | None) -> int | None:
     return turns or None
 
 
-def summarise(blob: dict, stage: str, seconds: float, attempt: int) -> dict:
+def killed_by_wall_cap(result: Path, blob: dict) -> bool:
+    """Did the wall watchdog stop this stage before it could report?
+
+    The watchdog in `scripts/run_weekly.sh` touches `<base>.timedout` the
+    moment it signals, and removes it later, so its presence beside an
+    EMPTY result record is the whole answer. Both halves matter: a stage
+    that ran over its clock and still wrote its record is a different
+    thing, and is reported with its real figures.
+    """
+    return not blob and result.with_suffix(".timedout").exists()
+
+
+def summarise(blob: dict, stage: str, seconds: float, attempt: int,
+              killed_at_min: int | None = None) -> dict:
     # `usage` on a result record that ended in an api_error describes the
     # failed exchange, not the session. modelUsage is the session.
     usage = blob.get("usage") or {}
@@ -177,10 +190,19 @@ def summarise(blob: dict, stage: str, seconds: float, attempt: int) -> dict:
         # A stage that quietly could not run a command is the defect that
         # cost the first attended run; it is worth a column of its own.
         "permission_denials": len(blob.get("permission_denials") or []),
+        # NOT A STAGE WITH NO FIGURES — a stage whose figures were never
+        # written. Three runs of the assets stage read "1h00m wall, None
+        # turns, $0.00" in this ledger, which looks like a cheap stage and
+        # is actually an unmeasured one.
+        "killed_by_wall_cap_min": killed_at_min,
     }
 
 
 def line(row: dict) -> str:
+    if row.get("killed_by_wall_cap_min"):
+        return (f"usage: {row['stage']}, {row['wall']} wall, KILLED BY THE "
+                f"WALL CAP at {row['killed_by_wall_cap_min']} min — it left "
+                f"no result record, so there are no figures for it")
     bits = [f"{row['stage']}"]
     if row["attempt"] > 1:
         bits.append(f"attempt {row['attempt']}")
@@ -227,6 +249,23 @@ def report_text(blob: dict, row: dict) -> str:
     text = blob.get("result")
     if isinstance(text, str) and text.strip():
         return text
+    if row.get("killed_by_wall_cap_min"):
+        return (
+            f"The {row['stage']} stage was KILLED BY THE WALL CAP at "
+            f"{row['killed_by_wall_cap_min']} minutes.\n"
+            f"\n"
+            f"  wall       {row.get('wall')}\n"
+            f"\n"
+            f"It left NO result record, so there are no turns, no cost and "
+            f"no stop reason for it — not because the stage was cheap but "
+            f"because nothing was written. `assets_stage.json` was 0 bytes "
+            f"on 2026-11-11, -13 and -20 for exactly this reason, and the "
+            f"assets stage's turn cap has therefore never been measured "
+            f"against anything.\n"
+            f"\n"
+            f"What it DID is in the transcript and in whatever it left on "
+            f"disk; the reconciler is what decides whether that is enough "
+            f"for the next stage to read.\n")
     lines = [
         f"The {row['stage']} stage left no closing report. "
         f"This is what it did:",
@@ -270,10 +309,18 @@ def main() -> int:
                     help="JSON lines file to append the row to")
     ap.add_argument("--report", default=None,
                     help="write the agent's own closing message here")
+    ap.add_argument("--wall-min", type=int, default=0,
+                    help="this stage's wall cap in minutes, so an empty "
+                         "result record can be reported as a stage the "
+                         "watchdog killed rather than as a stage with no "
+                         "figures")
     args = ap.parse_args()
 
-    blob = load(Path(args.result))
-    row = summarise(blob, args.stage, args.seconds, args.attempt)
+    result = Path(args.result)
+    blob = load(result)
+    killed = (args.wall_min if args.wall_min
+              and killed_by_wall_cap(result, blob) else None)
+    row = summarise(blob, args.stage, args.seconds, args.attempt, killed)
     print(line(row))
 
     if args.ledger:

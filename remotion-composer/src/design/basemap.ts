@@ -42,3 +42,44 @@ export const clampBasemapDrift = (drift?: number): number => {
   }
   return Math.min(Math.max(drift, 0), MAX_BASEMAP_DRIFT);
 };
+
+/**
+ * HOW WIDE A MAP MAY BE, relative to the route it is drawing.
+ *
+ * Film #6 drew a 17 km route across 78.6 degrees of longitude — 507 times
+ * its own span — because no `scale` was authored and d3's default of 1400
+ * stood. Two of its six map cuts were over 250 times their route. The
+ * other films authored a scale and chose sensibly, which is exactly why
+ * nobody noticed that the default was doing the work.
+ *
+ * The extent is computed from the route now (`scripts/resolve_basemaps.py`,
+ * `fit_extent`) and is not an editorial decision at all. This is the gate
+ * for everything that did not come through there: a hand-patched props
+ * file, a film whose props predate the resolver, a slice.
+ *
+ * MIN_EXTENT_DEG is the floor the ratio is taken against, because a close
+ * shot of one site is not the defect: film #2 draws a 2 km route across
+ * 0.6 degrees, which is 36 times its span and entirely right.
+ */
+export const MAX_EXTENT_RATIO = 20;
+export const MIN_EXTENT_DEG = 1.0;
+
+/** The projection scale `MapRoute` uses when a cut authors none. */
+export const DEFAULT_MAP_SCALE = 1400;
+
+/** The composition's width, which with the scale fixes the extent. */
+export const MAP_FRAME_WIDTH = 1920;
+
+/** How much longitude a shot shows at this scale. */
+export const extentDegrees = (scale?: number): number =>
+  (MAP_FRAME_WIDTH / (typeof scale === "number" && scale > 0
+    ? scale : DEFAULT_MAP_SCALE)) * (180 / Math.PI);
+
+/** The widest frame this route may be drawn in. */
+export const maxExtentDegrees = (route: [number, number][]): number => {
+  const lons = route.map((p) => p[0]);
+  const lats = route.map((p) => p[1]);
+  const span = Math.max(Math.max(...lons) - Math.min(...lons),
+                        Math.max(...lats) - Math.min(...lats));
+  return Math.max(span * MAX_EXTENT_RATIO, MIN_EXTENT_DEG);
+};

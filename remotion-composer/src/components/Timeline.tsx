@@ -4,10 +4,17 @@ import { SYS, TYPE, TRACK, EXPO_OUT, LAYOUT } from "../design/system";
 import { SceneShell } from "../design/Scene";
 import { TYPE_CLASS } from "../design/layers";
 import { SvgGlyph } from "../design/Texture";
+import { axisValue, fmtDate, type TimelineDate }
+  from "../design/timelineDate";
+export { axisValue, fmtDate, type TimelineDate };
 
 export interface TimelineEvent {
-  /** Negative = BC. 1922 = AD 1922, -1400 = 1400 BC. */
+  /** Negative = BC. 1922 = AD 1922, -1400 = 1400 BC. A WHOLE NUMBER. */
   year: number;
+  /** 1-12, for an event that needs a date rather than a year. */
+  month?: number;
+  /** 1-31, with `month`. */
+  day?: number;
   label: string;
   text?: string;
   at: number;
@@ -19,8 +26,8 @@ export interface TimelineEvent {
 export interface TimelineProps {
   events: TimelineEvent[];
   orientation?: "horizontal" | "vertical";
-  /** [start, end] in the same signed-year convention; inferred when omitted */
-  span?: [number, number];
+  /** [start, end] as dates; inferred from the events when omitted */
+  span?: [TimelineDate, TimelineDate];
   playhead?: boolean;
   /** px; events closer together than this count as one cluster */
   cluster_px?: number;
@@ -36,20 +43,6 @@ export interface TimelineProps {
   coords?: string;
 }
 
-const fmtYear = (y: number) => {
-  // Years never take thousands separators: "AD 2017", not "AD 2,017".
-  // BC values above 9999 are rare enough that plain digits stay readable.
-  //
-  // ROUNDED, because `year` is an AXIS POSITION and not a label. king-tut
-  // c009 places three events across five months — 1922.84 is 4 November
-  // 1922 — and the published film prints "AD 1922.84" above a label that
-  // already reads "4 Nov 1922 · first step". The fractional part is how the
-  // event lands in the right place on a continuous axis; it was never
-  // something to show anybody.
-  const n = Math.round(Math.abs(y));
-  return y < 0 ? `${n} BC` : `AD ${n}`;
-};
-
 /**
  * Timeline with BC/AD spans and a moving playhead. Carries the film's
  * chronology beats — construction 1400-1200 BC against Pausanias in the 2nd
@@ -59,7 +52,7 @@ const fmtYear = (y: number) => {
  * so the eye separates "when" from "what" without a second colour.
  */
 export const Timeline: React.FC<TimelineProps> = ({
-  events,
+  events: allEvents,
   orientation = "horizontal",
   span,
   playhead = true,
@@ -77,9 +70,18 @@ export const Timeline: React.FC<TimelineProps> = ({
   const frame = useCurrentFrame();
   const { fps, width, height, durationInFrames } = useVideoConfig();
 
+  /* Only events that can be placed. A date the component cannot read is
+     dropped rather than drawn at NaN — six cards of the atomic-bombings
+     film stacked every label at the left edge of the frame because NaN
+     positions all compare false. The props gate refuses such a date before
+     a render starts; this is what happens to one that reaches here
+     anyway. */
+  const events = allEvents.filter((e) => Number.isFinite(axisValue(e)));
+
   const [lo, hi] = useMemo(() => {
-    if (span) return span;
-    const ys = events.map((e) => e.year);
+    if (span) return [axisValue(span[0]), axisValue(span[1])] as [number, number];
+    const ys = events.map(axisValue);
+    if (!ys.length) return [0, 1] as [number, number];
     const min = Math.min(...ys);
     const max = Math.max(...ys);
     const pad = Math.max(120, (max - min) * 0.12);
@@ -112,8 +114,8 @@ export const Timeline: React.FC<TimelineProps> = ({
     const measured = events
       .map((e, i) => {
         const labelW = e.label.length * TYPE.labelSm * CHAR;
-        const yearW = String(Math.abs(e.year)).length * TYPE.dataSm * 0.62 + 46;
-        return { e, i, p: pos(e.year), half: Math.max(labelW, yearW) / 2 };
+        const yearW = fmtDate(e).length * TYPE.dataSm * 0.62 + 46;
+        return { e, i, p: pos(axisValue(e)), half: Math.max(labelW, yearW) / 2 };
       })
       .sort((a, b) => a.p - b.p);
 
@@ -285,7 +287,7 @@ export const Timeline: React.FC<TimelineProps> = ({
                   opacity={o}
                   style={stroked}
                 >
-                  {fmtYear(e.year)}
+                  {fmtDate(e)}
                 </text>
                 <text className={TYPE_CLASS}
                   x={p}
@@ -336,7 +338,7 @@ export const Timeline: React.FC<TimelineProps> = ({
                 opacity={o}
                 style={stroked}
               >
-                {fmtYear(e.year)}
+                {fmtDate(e)}
               </text>
               <text className={TYPE_CLASS}
                 x={tickEnd + 16}

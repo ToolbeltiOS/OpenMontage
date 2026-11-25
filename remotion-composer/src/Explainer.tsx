@@ -310,7 +310,10 @@ export interface Cut {
   arc?: boolean;
   events?: any[];
   orientation?: "horizontal" | "vertical";
-  span?: [number, number];
+  /* A PAIR OF DATES as of 2026-11-25, matching `events`: a bare number was
+     a year that had to carry a fraction to express a month. */
+  span?: [{ year: number; month?: number; day?: number },
+          { year: number; month?: number; day?: number }];
   playhead?: boolean;
   headline?: string;
   lines?: any[];

@@ -520,27 +520,41 @@
    "title": "Five months",
    "orientation": "horizontal",
    "span": [
-    1922.8,
-    1923.3
+    {
+     "year": 1922,
+     "month": 10,
+     "day": 20
+    },
+    {
+     "year": 1923,
+     "month": 4,
+     "day": 20
+    }
    ],
    "playhead": true,
    "caption": "From the first step to the funeral",
    "source": "Ledger c01, c07",
    "events": [
     {
-     "year": 1922.84,
+     "year": 1922,
      "label": "4 Nov 1922 \u00b7 first step",
-     "at": 0.5
+     "at": 0.5,
+     "month": 11,
+     "day": 4
     },
     {
-     "year": 1922.9,
+     "year": 1922,
      "label": "26 Nov 1922 \u00b7 antechamber",
-     "at": 1.4
+     "at": 1.4,
+     "month": 11,
+     "day": 26
     },
     {
-     "year": 1923.26,
+     "year": 1923,
      "label": "5 Apr 1923 \u00b7 Carnarvon dies",
-     "at": 2.4
+     "at": 2.4,
+     "month": 4,
+     "day": 5
     }
    ],
    "sceneIndex": "S 003 / AUTHORED",
@@ -2947,8 +2961,12 @@
    "title": "When Egypt could make iron",
    "orientation": "horizontal",
    "span": [
-    -3500,
-    -500
+    {
+     "year": -3500
+    },
+    {
+     "year": -500
+    }
    ],
    "playhead": true,
    "caption": "The burial sits seven centuries before the smelting",
@@ -3366,10 +3384,10 @@
    ],
    "arc": false,
    "center": [
-    34.0,
-    26.0
+    33.275,
+    23.725
    ],
-   "scale": 900,
+   "scale": 10837.4,
    "draw_at": 1.2,
    "draw_seconds": 2.6,
    "caption": "Of twenty candidates, Kharga's nickel and cobalt were called possibly consistent",
@@ -4496,8 +4514,12 @@
    "title": "Four readings of one body",
    "orientation": "horizontal",
    "span": [
-    1965,
-    2015
+    {
+     "year": 1965
+    },
+    {
+     "year": 2015
+    }
    ],
    "playhead": true,
    "caption": "Each one dismantled the last",
@@ -7102,8 +7124,12 @@
    "title": "What the radar found",
    "orientation": "horizontal",
    "span": [
-    2015,
-    2019
+    {
+     "year": 2015
+    },
+    {
+     "year": 2019
+    }
    ],
    "playhead": true,
    "caption": "This is where the story is usually left",

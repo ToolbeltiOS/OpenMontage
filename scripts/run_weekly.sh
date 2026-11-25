@@ -929,7 +929,18 @@ claude_stage() {
         if kill -0 "$cpid" 2>/dev/null; then
           : > "$marker"
           kill -TERM "$cpid" 2>/dev/null
-          sleep 10
+          # LET IT WRITE ITS RESULT. TERM then ten seconds then KILL left
+          # `assets_stage.json` at 0 bytes on 2026-11-11, -13 and -20 — three
+          # runs in which the assets stage was killed before the CLI could
+          # flush its result record, so its turn cap, its cost and its turn
+          # count measured nothing at all. Thirty seconds, and the condition
+          # is the PROCESS EXITING rather than the file appearing: a file
+          # that is non-empty may still be half-written, and the only moment
+          # the record is certainly complete is after the writer is gone.
+          for _ in $(seq 1 30); do
+            kill -0 "$cpid" 2>/dev/null || break
+            sleep 1
+          done
           kill -KILL "$cpid" 2>/dev/null
         fi
       ) &
@@ -943,8 +954,12 @@ claude_stage() {
     fi
     t1=$(date +%s)
 
+    # `--wall-min` so an empty result record can be reported as what it is
+    # rather than as a stage with no figures. The marker file is still on
+    # disk at this point; the WALL_CLOCK DECISION below removes it.
     "$PY" "$REPO/scripts/stage_usage.py" "$base.json" \
       --stage "$name" --seconds $((t1 - t0)) --attempt "$attempt" \
+      --wall-min "$wall_min" \
       --ledger "$LOGDIR/usage.jsonl" --report "$base.log" || true
 
     # WHAT KIND OF STOP WAS IT. Asked before the exit code is trusted,

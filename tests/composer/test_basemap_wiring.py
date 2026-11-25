@@ -169,17 +169,19 @@ class TestTerrainBecomesATile:
     def test_a_covering_tile_is_used(self, tiles):
         """THE SECOND FAULT. `"terrain"` resolves to {src, bounds}, which is
         what MapRoute has always taken."""
-        put_tile(tiles, "pacific", [-180, -10, -120, 50])
-        c = cut(basemap="terrain", scale=3000)
+        # Sized to the frame the resolver will FIT, not to the frame the
+        # cut asked for: the extent is computed from the route now.
+        put_tile(tiles, "kauai", [-162, 19, -156, 24])
+        c = cut(basemap="terrain")
         RB.resolve([c], apply_tiles=False)
-        assert c["basemap"] == {"src": "basemaps/pacific.jpg",
-                                "bounds": [-180, -10, -120, 50]}
+        assert c["basemap"] == {"src": "basemaps/kauai.jpg",
+                                "bounds": [-162, 19, -156, 24]}
 
     def test_a_tile_that_does_not_cover_the_frame_is_not_used(self, tiles):
         """A tile claimed to cover more than it does puts the route off the
         edge of the paper — build_basemap_tile.py's own words."""
         put_tile(tiles, "tiny", [-158.5, 21.0, -157.5, 22.0])
-        c = cut(basemap="terrain", scale=3000)
+        c = cut(basemap="terrain")
         RB.resolve([c], apply_tiles=False)
         assert "basemap" not in c
 
@@ -189,7 +191,7 @@ class TestTerrainBecomesATile:
         and a missing 700 MB raster must not stop a film. A reported absence
         is the whole change — the old behaviour was the same absence with
         nothing said."""
-        c = cut(basemap="terrain", scale=3000)
+        c = cut(basemap="terrain")
         notes = RB.resolve([c], apply_tiles=False)
         assert "basemap" not in c
         note = next(n for n in notes if n["what"] == "basemap")
@@ -207,56 +209,127 @@ class TestTerrainBecomesATile:
         c = cut(basemap="satellite")
         notes = RB.resolve([c], apply_tiles=False)
         assert "basemap" not in c
-        assert "only basemap kind" in notes[0]["note"]
+        note = next(n for n in notes if n["what"] == "basemap")
+        assert "only basemap kind" in note["note"]
 
     def test_terrain_without_a_route_is_dropped(self, tiles):
         c = {"id": "c900", "type": "map_route", "basemap": "terrain"}
         notes = RB.resolve([c], apply_tiles=False)
-        assert "basemap" not in c
-        assert "needs a route" in notes[0]["note"]
+        assert "basemap" not in c, (
+            "a terrain request with no route cannot be framed OR covered")
+        assert notes == [] or all(n["what"] != "extent" for n in notes)
 
     def test_props_under_scene_are_resolved_in_place(self, tiles):
         """An authored cut's props live under `scene`
         (docs/STAGE_CONTRACT.md). Resolving the flattened copy would write
         the fix into a file nobody reads."""
-        put_tile(tiles, "pacific", [-180, -10, -120, 50])
+        put_tile(tiles, "kauai", [-162, 19, -156, 24])
         c = {"id": "c112", "scene": {"type": "map_route", "route": C112_ROUTE,
-                                     "scale": 3000, "basemap": "terrain",
+                                     "basemap": "terrain",
                                      "basemap_drift": 1.3}}
         RB.resolve([c])
-        assert c["scene"]["basemap"]["src"] == "basemaps/pacific.jpg"
+        assert c["scene"]["basemap"]["src"] == "basemaps/kauai.jpg"
         assert c["scene"]["basemap_drift"] == 0.08
         assert "basemap" not in c
 
 
-class TestTheFrameThatRunsOffTheRaster:
-    def test_the_default_scale_crosses_the_antimeridian(self, tiles):
-        """THE FOURTH FAULT. All six cuts author no scale, so each is drawn
-        at 1400 — and Hawaii at 1400 reaches past 180, where the raster
-        ends."""
-        c = cut(basemap="terrain")                     # no scale authored
+class TestTheExtentIsComputedAndNeverAuthored:
+    """A map's extent is a consequence of its route, not a taste decision.
+
+    Four of film #6's six map cuts authored no `scale` at all, so each took
+    d3's default of 1400 — 78.6 degrees of longitude, a third of the
+    planet, for routes of 17 to 594 km. c121's route spans 0.01 degrees and
+    was drawn across 10,477 times its own width. The two films that DID
+    author a scale chose sensibly, which is exactly why the default went
+    unnoticed for six films.
+
+    So the resolver computes the centre and the scale from the route's own
+    bounding box plus margin, and `docComponents.ts` gates anything that
+    did not come through it at MAX_EXTENT_RATIO times the route's span.
+    """
+
+    def test_a_cut_that_authored_nothing_gets_a_frame(self, tiles):
+        c = cut()
+        RB.resolve([c], apply_tiles=False)
+        assert c["scale"] > 1400
+        assert c["center"]
+
+    def test_the_frame_is_within_the_gate_s_ratio(self, tiles):
+        c = cut()
+        RB.resolve([c], apply_tiles=False)
+        span = RB.route_span_deg(C112_ROUTE)
+        assert (RB.extent_deg(c["scale"])
+                <= max(span * RB.MAX_EXTENT_RATIO, RB.MIN_EXTENT_DEG))
+
+    def test_the_route_fills_a_useful_share_of_it(self, tiles):
+        """Framed to itself, not lost in it: 3.3 degrees for a route
+        spanning 2.17, where d3's default gave 78.6."""
+        c = cut()
+        RB.resolve([c], apply_tiles=False)
+        shows = RB.extent_deg(c["scale"])
+        assert RB.route_span_deg(C112_ROUTE) / shows > 0.4
+
+    def test_an_authored_scale_is_replaced_and_the_change_is_reported(self,
+                                                                      tiles):
+        c = cut(scale=1400)
         notes = RB.resolve([c], apply_tiles=False)
-        note = next(n for n in notes if n["what"] == "basemap")
-        assert "runs off the end of the raster" in note["note"]
-        assert "authors no scale" in note["note"]
+        note = next(n for n in notes if n["what"] == "extent")
+        assert "78.6" in note["note"] and "degrees across" in note["note"]
+        assert c["scale"] != 1400
 
-    def test_it_says_how_long_the_route_is_and_what_scale_would_fit(self,
-                                                                    tiles):
-        notes = RB.resolve([cut(basemap="terrain")], apply_tiles=False)
-        note = next(n for n in notes if n["what"] == "basemap")
-        assert "229 km" in note["note"]
+    def test_a_route_of_almost_no_width_still_gets_a_readable_map(self,
+                                                                  tiles):
+        """c121 spans 0.01 degrees. Framed to itself that is a scale of
+        millions against a raster of 1/60 of a degree per pixel, so the
+        extent has a floor."""
+        c = cut(route=[[-157.98, 21.47], [-157.99, 21.47]])
+        RB.resolve([c], apply_tiles=False)
+        assert RB.extent_deg(c["scale"]) >= RB.MIN_EXTENT_DEG - 1e-6
 
-    def test_an_authored_scale_is_not_blamed_on_d3(self, tiles):
-        notes = RB.resolve([cut(basemap="terrain", scale=200)],
-                           apply_tiles=False)
-        note = next(n for n in notes if n["what"] == "basemap")
-        assert "runs off the end" in note["note"]
-        assert "authors no scale" not in note["note"]
+    def test_the_fit_keeps_the_frame_on_the_raster(self, tiles):
+        """Hawaii at d3's default reaches past 180, where the raster ends
+        and no single tile can cover the frame. Framed to its route it does
+        not."""
+        c = cut()
+        RB.resolve([c], apply_tiles=False)
+        half = RB.extent_deg(c["scale"]) / 2
+        assert c["center"][0] - half >= -180.0
+        assert c["center"][0] + half <= 180.0
 
-    def test_the_route_length_is_the_measured_one(self):
-        """229 km, which is also what the distance_callout patched into c112
-        on 2026-11-23 says — the same haversine over the same route."""
-        assert round(RB.route_km(C112_ROUTE)) == 229
+    def test_the_limits_are_read_from_the_gate_s_own_file(self):
+        src = (ROOT / "remotion-composer" / "src" / "design"
+               / "basemap.ts").read_text()
+        assert f"MAX_EXTENT_RATIO = {RB.MAX_EXTENT_RATIO:g}" in src
+        assert f"MIN_EXTENT_DEG = {RB.MIN_EXTENT_DEG:g}" in src
+
+
+class TestTheGateRefusesAMapThatIsNotOfItsRoute:
+    def test_film_6_as_published_is_refused(self):
+        """THE CONTROL: 78.6 degrees for a 2.17-degree route."""
+        failures = B.scene_prop_report({"cuts": [cut()], "overlays": []})[
+            "failures"]
+        assert any(f["field"] == "scale" for f in failures), failures
+
+    def test_a_fitted_frame_passes(self, tiles):
+        c = cut()
+        RB.resolve([c], apply_tiles=False)
+        assert B.scene_prop_report({"cuts": [c], "overlays": []})[
+            "failures"] == []
+
+    def test_the_message_names_both_numbers(self):
+        failures = B.scene_prop_report({"cuts": [cut()], "overlays": []})[
+            "failures"]
+        rule = next(f["rule"] for f in failures if f["field"] == "scale")
+        assert "78.6 degrees" in rule and "2.17" in rule
+        assert "resolve_basemaps.py" in rule
+
+    def test_a_close_shot_of_one_site_is_not_the_defect(self):
+        """Film #2 draws a 2 km route across 0.6 degrees — 36 times its
+        span, and entirely right. The ratio is taken against a floor."""
+        tiny = cut(route=[[-109.44, -27.19], [-109.42, -27.19]],
+                   scale=180000)
+        assert B.scene_prop_report({"cuts": [tiny], "overlays": []})[
+            "failures"] == []
 
 
 class TestTheProjectionArithmeticMatchesTheComponent:

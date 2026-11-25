@@ -237,3 +237,75 @@ class TestTheRunnerReadsTheFileThatExists:
         helper = helper[:helper.index("\nfail() {")]
         assert '"$base.log" "$base.err" "$base.json"' in helper
         assert "from $(basename" in helper
+
+
+class TestTheWallCapLetsAStageReport:
+    """Three runs of the assets stage measured nothing at all.
+
+    `assets_stage.json` was 0 bytes on 2026-11-11, -13 and -20, and the
+    ledger rows read "1h00m wall, None turns, $0.00" — which looks like a
+    cheap stage and is an unmeasured one. The watchdog sent TERM, slept ten
+    seconds and sent KILL, and the CLI never got to flush its result
+    record, so the stage's turn cap has never been compared with anything.
+
+    Thirty seconds now, and the condition is the process EXITING rather
+    than the file appearing: a file that is non-empty may still be
+    half-written, and the only moment the record is certainly complete is
+    after its writer is gone.
+    """
+
+    def test_the_watchdog_waits_for_the_writer(self):
+        watchdog = RUN_WEEKLY[RUN_WEEKLY.index("THE WALL CAP."):]
+        watchdog = watchdog[:watchdog.index('wait "$cpid"')]
+        assert "kill -TERM" in watchdog and "kill -KILL" in watchdog
+        assert "seq 1 30" in watchdog, "thirty seconds to write a result"
+        assert 'kill -0 "$cpid" 2>/dev/null || break' in watchdog
+        assert "sleep 10\n" not in watchdog, (
+            "the blind ten-second sleep is what produced 0-byte records")
+
+    def test_term_still_comes_before_kill(self):
+        watchdog = RUN_WEEKLY[RUN_WEEKLY.index("THE WALL CAP."):]
+        watchdog = watchdog[:watchdog.index('wait "$cpid"')]
+        assert watchdog.index("kill -TERM") < watchdog.index("kill -KILL")
+
+    def test_the_cap_is_passed_to_the_reporter(self):
+        assert '--wall-min "$wall_min"' in RUN_WEEKLY
+
+    def test_an_empty_record_beside_the_marker_is_named(self, tmp_path):
+        """THE CONTROL: the assets stage's own shape — a 0-byte result and
+        the watchdog's marker beside it."""
+        result = tmp_path / "assets_stage.json"
+        result.write_text("")
+        (tmp_path / "assets_stage.timedout").write_text("")
+        blob = SU.load(result)
+        assert SU.killed_by_wall_cap(result, blob)
+        row = SU.summarise(blob, "assets", 3600.0, 1, 60)
+        assert "KILLED BY THE WALL CAP at 60 min" in SU.line(row)
+        assert "no figures" in SU.line(row)
+
+    def test_the_report_says_the_figures_were_never_written(self, tmp_path):
+        result = tmp_path / "assets_stage.json"
+        result.write_text("")
+        (tmp_path / "assets_stage.timedout").write_text("")
+        row = SU.summarise(SU.load(result), "assets", 3600.0, 1, 60)
+        text = SU.report_text({}, row)
+        assert "KILLED BY THE WALL CAP at 60 minutes" in text
+        assert "not because the stage was cheap" in text
+
+    def test_a_stage_that_wrote_its_record_is_not_blamed_on_the_cap(self,
+                                                                    tmp_path):
+        """Running over the clock having finished is a different thing and
+        keeps its real figures."""
+        result = tmp_path / "edit_stage.json"
+        result.write_text(json.dumps({"subtype": "success", "num_turns": 12,
+                                      "total_cost_usd": 1.5}))
+        (tmp_path / "edit_stage.timedout").write_text("")
+        blob = SU.load(result)
+        assert not SU.killed_by_wall_cap(result, blob)
+
+    def test_no_marker_means_no_claim(self, tmp_path):
+        """An empty record with no marker is a stage that wrote nothing for
+        some other reason, and saying "the wall cap" would be a guess."""
+        result = tmp_path / "x_stage.json"
+        result.write_text("")
+        assert not SU.killed_by_wall_cap(result, SU.load(result))

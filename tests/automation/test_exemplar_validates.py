@@ -88,20 +88,46 @@ class TestTheExemplarValidates:
         assert "basemap_drift" not in scene or isinstance(
             scene["basemap_drift"], float)
 
-    def test_the_fractional_years_are_still_there(self, blob):
-        """NOT a repair. 1922.84 is 4 November 1922 and the placement is
-        the point; the fix was in `fmtYear`, which was printing it."""
+    def test_the_fractional_years_became_dates(self, blob):
+        """1922.84 was standing in for 4 November 1922, and on 2026-11-25
+        the schema grew somewhere to put a date. The exemplar carries the
+        structured form because it is what the edit stage copies; the
+        PUBLISHED film is untouched and is not re-rendered."""
         c009 = next(c for c in blob["cuts"] if c.get("id") == "c009")
         scene = c009.get("scene") if isinstance(c009.get("scene"), dict) else c009
-        years = [e["year"] for e in scene["events"]]
-        assert any(y != int(y) for y in years), years
+        for event in scene["events"]:
+            assert float(event["year"]) == int(event["year"]), event
+        first = scene["events"][0]
+        assert (first["year"], first["month"], first["day"]) == (1922, 11, 4)
+        assert first["label"].startswith("4 Nov 1922")
 
-    def test_the_component_does_not_print_the_fraction(self):
-        src = (ROOT / "remotion-composer" / "src" / "components"
-               / "Timeline.tsx").read_text()
-        assert "Math.round(Math.abs(y))" in src, (
-            "fmtYear must round: the published king-tut film reads "
-            "'AD 1922.84'")
+    def test_the_tick_did_not_move(self, blob):
+        """The conversion is faithful or it is a different film. 1922.84
+        against the date's own axis position, to three decimals."""
+        c009 = next(c for c in blob["cuts"] if c.get("id") == "c009")
+        scene = c009.get("scene") if isinstance(c009.get("scene"), dict) else c009
+
+        def axis(e):
+            sign = -1 if e["year"] < 0 else 1
+            return e["year"] + sign * (
+                (e.get("month", 1) - 1) + (e.get("day", 1) - 1) / 31) / 12
+
+        was = [1922.84, 1922.9, 1923.26]
+        for event, before in zip(scene["events"], was):
+            assert abs(axis(event) - before) < 0.003, (event, before)
+
+    def test_the_component_prints_a_date_and_never_a_fraction(self):
+        """The formatter moved to design/timelineDate.ts on 2026-11-25 —
+        React-free, so the rule can be run directly rather than restated in
+        Python. See tests/composer/test_timeline_dates.py."""
+        dates = (ROOT / "remotion-composer" / "src" / "design"
+                 / "timelineDate.ts").read_text()
+        assert "export const fmtDate" in dates
+        assert "Math.round(Math.abs(year))" in dates
+        timeline = (ROOT / "remotion-composer" / "src" / "components"
+                    / "Timeline.tsx").read_text()
+        assert "fmtYear" not in timeline
+        assert "fmtDate(e)" in timeline
 
 
 class TestTheDigestTeachesOnlyWhatPasses:
