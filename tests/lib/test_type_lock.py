@@ -799,3 +799,55 @@ class TestThePlateIsGatedAtThePlatePass:
 
         from lib.film_render import plate_gates
         assert "MIN_SPIKE_LEVELS" in inspect.getsource(plate_gates)
+
+
+class TestAPictureNobodyCanRead:
+    """A corrupt plate is a finding, not a traceback.
+
+    On 2026-11-25 a merge slice's plate was written by two renderers at
+    once — the first run's `npx remotion render` outlived a `pkill` aimed
+    at its parent — and the 135 MB result decoded at an error rate of 0.99
+    ("Invalid NAL unit size (749549561 > 94154)"). `frame_at` ran ffmpeg
+    with `check=True`, so the gates died in a CalledProcessError after the
+    whole render, with no verdict at all.
+
+    The three possible answers have to stay three: nothing legible in the
+    plate, a sample past the end of it, and a picture that cannot be
+    decoded. The last one is the one that used to crash.
+    """
+
+    @pytest.fixture()
+    def broken(self, tmp_path):
+        film = tmp_path / "broken.mp4"
+        film.write_bytes(b"this is not an mp4" * 4000)
+        return film
+
+    CUT = [{"id": "c001", "in_seconds": 0.0, "out_seconds": 10.0}]
+
+    def test_plate_purity_reports_it(self, broken):
+        problems, measured = vtl.plate_is_clean(str(broken), self.CUT)
+        assert problems and "cannot be read" in problems[0]
+        assert measured["undecodable"]
+
+    def test_plate_purity_does_not_report_a_clean_plate(self, broken):
+        """"I could not check" and "nothing is wrong" must not come out the
+        same colour — the rule the props gate is built on."""
+        _problems, measured = vtl.plate_is_clean(str(broken), self.CUT)
+        assert measured["words_in_plate"] is None, (
+            "0 would read as a plate that was checked and found clean")
+
+    def test_type_lock_reports_it(self, broken):
+        problems, measured = vtl.check(str(broken), self.CUT)
+        assert problems and "could not read the picture" in problems[0]
+        assert measured["scenes_sampled"] == 0
+        assert measured["undecodable"]
+
+    def test_a_seek_past_the_end_is_still_only_a_skip(self, tmp_path):
+        """The other answer, unchanged: ffmpeg exits 0 and writes nothing."""
+        film = render(tmp_path / "short.mp4", [frame(i) for i in range(30)])
+        assert vtl.frame_at(str(film), 99.0, tmp_path / "x.png") is None
+
+    def test_a_readable_film_still_yields_a_frame(self, tmp_path):
+        film = render(tmp_path / "ok.mp4", [frame(i) for i in range(30)])
+        got = vtl.frame_at(str(film), 0.5, tmp_path / "y.png")
+        assert got is not None and got.stat().st_size > 0

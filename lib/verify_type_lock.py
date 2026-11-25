@@ -155,6 +155,10 @@ BOX_PAD_PX = 2
 MIN_PATCH_PX = 12
 
 
+class Undecodable(Exception):
+    """The film is on disk and ffmpeg cannot read it."""
+
+
 def frame_at(film: str, seconds: float, dest: Path) -> Path | None:
     """One frame, or None if the film has no frame there.
 
@@ -163,10 +167,24 @@ def frame_at(film: str, seconds: float, dest: Path) -> Path | None:
     `FileNotFoundError` on a temp path — after the render, which is the worst
     possible moment to lose the gates. A sample past the end is now a skip
     with a name, not a traceback.
+
+    A NON-ZERO EXIT IS A DIFFERENT ANSWER and raises `Undecodable`. On
+    2026-11-25 a slice's plate was written by two renderers at once — the
+    first run's `npx remotion render` outlived a `pkill` aimed at its
+    parent — and the 135 MB result decoded at an error rate of 0.99:
+    "Invalid NAL unit size (749549561 > 94154)". The gates then died in a
+    CalledProcessError traceback, after the whole render. An unreadable
+    picture is a FINDING, and the gate that exists to read it is the place
+    to say so.
     """
-    subprocess.run(
+    done = subprocess.run(
         ["ffmpeg", "-v", "error", "-y", "-ss", f"{seconds:.3f}", "-i", film,
-         "-frames:v", "1", str(dest)], check=True)
+         "-frames:v", "1", str(dest)], capture_output=True, text=True)
+    if done.returncode != 0:
+        tail = (done.stderr or "").strip().splitlines()
+        raise Undecodable(
+            f"{film} cannot be decoded at {seconds:.3f}s (ffmpeg exited "
+            f"{done.returncode}): {tail[-1][:200] if tail else 'no reason given'}")
     return dest if dest.exists() and dest.stat().st_size else None
 
 
@@ -342,7 +360,8 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
     samples = []
     skipped: list[str] = []
 
-    with tempfile.TemporaryDirectory() as tmp:
+    try:
+      with tempfile.TemporaryDirectory() as tmp:
         tmpdir = Path(tmp)
         for n, cut in enumerate(cuts):
             start = float(cut.get("in_seconds", 0.0))
@@ -448,7 +467,15 @@ def check(film: str, cuts: list[dict[str, Any]] | None = None,
                     f"{measured_boxes} words move within a second, worst "
                     f"{worst:.2f}px — {shown}")
 
+    except Undecodable as broken:
+        # Same rule as plate purity: a film nobody can decode has not been
+        # measured, and "no movement found" would be a lie about it.
+        return ([f"type lock could not read the picture: {broken}"],
+                {"scenes_sampled": 0, "scenes_with_a_move": 0,
+                 "undecodable": str(broken), "samples": []})
+
     problems += _too_much_skipped(skipped, cuts, "type lock")
+
     measured = {
         "bound_by": "type pass" if type_pass is not None else "cut text",
         "scenes_sampled": len(samples),
@@ -679,7 +706,18 @@ def plate_is_clean(plate: str, cuts: list[dict[str, Any]] | None = None
             if end - start < 2.0:
                 continue
             at = start + (end - start) / 2
-            png = frame_at(plate, at, tmpdir / f"p{n}.png")
+            try:
+                png = frame_at(plate, at, tmpdir / f"p{n}.png")
+            except Undecodable as broken:
+                # NOT a skip. A plate nobody can read is not a plate with
+                # nothing legible in it, and the two must not come out the
+                # same colour.
+                return ([f"the plate cannot be read: {broken}. Nothing here "
+                         f"was checked, which is not the same as nothing "
+                         f"being wrong — re-render the plate pass."],
+                        {"words_in_plate": None, "words_in_picture": None,
+                         "found": [], "cuts_past_the_end": 0,
+                         "undecodable": str(broken)})
             if png is None:
                 skipped.append(cut.get("id"))
                 continue                   # the plate ends before this cut does
