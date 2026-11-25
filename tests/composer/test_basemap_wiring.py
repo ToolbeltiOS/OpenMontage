@@ -241,12 +241,32 @@ class TestTerrainBecomesATile:
         assert "NOT drawn" in note["note"]
         assert "build_basemap_tile.py --name" in note["note"]
 
-    def test_a_tile_object_is_left_alone(self, tiles):
-        already = {"src": "basemaps/noah_bosporus.jpg",
-                   "bounds": [18.0, 32.0, 44.0, 50.0]}
+    def test_a_tile_object_that_fits_is_left_alone(self, tiles):
+        """A dict used to be a free pass, and should not be.
+
+        This case was written with noah's Bosporus tile on the C112 Hawaii
+        route and asserted it survived untouched — which it did, because
+        the branch returned on `isinstance(dict)` before looking at
+        anything. A tile on the wrong side of the planet does not cover
+        this frame, and a tile that does not cover the frame puts the route
+        off the edge of the paper. The rule is the same for a dict as for
+        the word: it has to cover the frame and have the pixels.
+        """
+        meta = put_tile(tiles, "fits", [-162, 19, -156, 24])
+        already = {"src": meta["src"], "bounds": meta["bounds"]}
         c = cut(basemap=dict(already))
         RB.resolve([c], apply_tiles=False)
         assert c["basemap"] == already
+
+    def test_a_tile_object_for_the_wrong_place_is_dropped(self, tiles):
+        """noah's Bosporus tile, on the Hawaii route, as it used to pass."""
+        put_tile(tiles, "noah_bosporus", [18.0, 32.0, 44.0, 50.0])
+        c = cut(basemap={"src": "basemaps/noah_bosporus.jpg",
+                         "bounds": [18.0, 32.0, 44.0, 50.0]})
+        RB.resolve([c], apply_tiles=False)
+        assert "basemap" not in c, (
+            "a tile that does not cover the frame cannot be kept just "
+            "because somebody already wrote it in")
 
     def test_an_unknown_kind_is_dropped(self, tiles):
         c = cut(basemap="satellite")
@@ -465,3 +485,23 @@ class TestAStringCannotReachTheWarp:
         for bad in ("basemap || scale", "basemap ? 0.8", "basemap ? 0.65",
                     "basemap || mapPlate"):
             assert bad not in body, bad
+
+
+class TestATileThatIsNotThere:
+    """public/basemaps is gitignored, so props can outlive their tiles."""
+
+    def test_a_basemap_naming_a_missing_tile_is_dropped(self, tiles):
+        """Film #6's exact state in the runner: the artifact carried tiles
+        cut in the dev worktree, and the runner has none of them. Kept, it
+        is a missing-image box under the route."""
+        c = cut(basemap={"src": "basemaps/gone.jpg",
+                         "bounds": [-162, 19, -156, 24]})
+        RB.resolve([c], apply_tiles=False)
+        assert "basemap" not in c
+
+    def test_a_basemap_naming_a_present_tile_survives(self, tiles):
+        meta = put_tile(tiles, "here", [-162, 19, -156, 24])
+        c = cut(basemap={"src": meta["src"], "bounds": meta["bounds"]})
+        RB.resolve([c], apply_tiles=False)
+        assert c["basemap"]["src"] == "basemaps/here.jpg", (
+            "the floor must not drop a tile that is present and fine")

@@ -197,6 +197,18 @@ def covers(tile_bounds: list[float] | tuple[float, ...],
     return tw <= nw and ts <= ns and te >= ne and tn >= nn
 
 
+def _short(path: Path) -> str:
+    """A path a reader can place, without assuming it is under the repo.
+
+    The tests point TILES at a tmp dir; a failure message that raises
+    ValueError while explaining a drop is worse than no message.
+    """
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
 def source_detail(tile: dict[str, Any],
                   need: tuple[float, float, float, float]) -> float:
     """Source pixels that land across the frame's width, per frame pixel.
@@ -368,7 +380,20 @@ def resolve(cuts: list[dict[str, Any]], *, apply_tiles: bool = True
             known = {t.get("src"): t for t in tiles}
             tile = known.get(asked.get("src"))
             if tile is None:
-                continue                  # not ours to judge
+                # The tile is not in this checkout. public/basemaps is
+                # gitignored, so a props file can name a tile that was cut
+                # in another worktree and the composer will reach for an
+                # image that is not there. A basemap that cannot be drawn
+                # is worse than no basemap: it is a missing-image box under
+                # the route.
+                props.pop("basemap", None)
+                notes.append({
+                    "cut": cid, "what": "basemap",
+                    "note": f"dropped {asked.get('src')}: no such tile in "
+                            f"{_short(TILES)}. public/basemaps is "
+                            "gitignored, so a tile cut in one worktree is "
+                            "not present in another."})
+                continue
             if good_enough(tile, need_now):
                 continue
             detail = source_detail(tile, need_now)
