@@ -359,7 +359,7 @@ def caption_verdict(captions: Path, video: Path) -> tuple[bool, str]:
     return True, "CAPTIONS: PASS"
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--project", required=True)
     ap.add_argument("--listing", default=None)
@@ -379,7 +379,7 @@ def main() -> int:
                          "private and scheduling. There is no undo for an "
                          "audience that has already seen it; the weekly run "
                          "must not use this")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
     ok, message = check_token()
     print(("token: " if ok else "TOKEN: ") + message)
