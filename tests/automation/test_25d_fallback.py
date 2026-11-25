@@ -216,3 +216,54 @@ class TestTheGateDriverDemotesRatherThanFails:
         assert "ANTI-CORRELATED" in flat
         assert "normalises per image" in flat
         assert "burial chamber" in flat and "lantern slide" in flat
+
+
+class TestARunThatConsidersNothing:
+    """Neither --all nor --cuts used to be a silent, successful no-op.
+
+    It printed "0 still(s) within a budget of 25, 0 not taken" and exited
+    0, which reads exactly like a film with no eligible stills. On
+    2026-11-25 that cost film #6 its 24 depth plates: the props had been
+    rebuilt (which drops depth_clip), the plates needed re-attaching, and
+    the re-run looked like it had done the work and found nothing to do.
+    """
+
+    def _run_without_selection(self, monkeypatch, tmp_path, extra=()):
+        path = props_file(tmp_path, ["c001", "c002", "c003"])
+        monkeypatch.setattr(builder, "eligible", lambda cut: None)
+        monkeypatch.setattr(
+            builder, "build_cut",
+            lambda cut, project, out_dir, dry_run=False: good(cut))
+        monkeypatch.setattr(sys, "argv",
+                            ["build_25d_cuts.py", "--project", "a-film",
+                             "--props", str(path), *extra])
+        return builder.main(), json.loads(path.read_text())
+
+    def test_it_refuses_instead_of_succeeding(self, monkeypatch, tmp_path):
+        code, _ = self._run_without_selection(monkeypatch, tmp_path)
+        assert code == 2, (
+            "a run that was never going to consider a cut is a mistake at "
+            "the call site, not a result")
+
+    def test_it_changes_nothing(self, monkeypatch, tmp_path):
+        _, props = self._run_without_selection(monkeypatch, tmp_path)
+        assert all("depth_clip" not in c for c in props["cuts"])
+
+    def test_it_says_what_to_pass(self, monkeypatch, tmp_path, capsys):
+        self._run_without_selection(monkeypatch, tmp_path)
+        said = capsys.readouterr().out
+        assert "--all" in said and "--cuts" in said
+        assert "3 cut(s) were left untouched" in said
+
+    def test_all_still_works(self, monkeypatch, tmp_path):
+        code, props = self._run_without_selection(
+            monkeypatch, tmp_path, extra=("--all",))
+        assert code == 0
+        assert sum(1 for c in props["cuts"] if c.get("depth_clip")) == 3
+
+    def test_naming_cuts_still_works(self, monkeypatch, tmp_path):
+        code, props = self._run_without_selection(
+            monkeypatch, tmp_path, extra=("--cuts", "c002"))
+        assert code == 0
+        got = [c["id"] for c in props["cuts"] if c.get("depth_clip")]
+        assert got == ["c002"]

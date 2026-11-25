@@ -296,6 +296,19 @@ def main() -> int:
     wanted = set(args.cuts or [])
     cap = args.cap if args.cap is not None else cap_from_config()
 
+    # NEITHER --all NOR --cuts MEANS NOTHING IS CONSIDERED, and the loop
+    # below says so only by printing "0 still(s) ... 0 not taken" and
+    # exiting 0. That reads exactly like a film with no eligible stills.
+    # It cost film #6 its 24 depth plates on 2026-11-25: the props had been
+    # rebuilt, the plates had to be re-attached, and the re-run looked like
+    # it had done the work. A run that was never going to consider a single
+    # cut is a mistake at the call site, not a result.
+    if not wanted and not args.all:
+        print(f"{args.project}: nothing to do — pass --all to consider "
+              f"every cut, or --cuts c001 c002 to name them. "
+              f"{len(cuts)} cut(s) were left untouched.")
+        return 2
+
     picked, skipped = [], []
     for cut in cuts:
         if wanted and cut["id"] not in wanted:
