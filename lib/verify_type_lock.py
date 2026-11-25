@@ -170,7 +170,7 @@ def frame_at(film: str, seconds: float, dest: Path) -> Path | None:
 
     A NON-ZERO EXIT IS A DIFFERENT ANSWER and raises `Undecodable`. On
     2026-11-25 a slice's plate was written by two renderers at once — the
-    first run's `npx remotion render` outlived a `pkill` aimed at its
+    first run's `npx remotion render` outlived the kill aimed at its
     parent — and the 135 MB result decoded at an error rate of 0.99:
     "Invalid NAL unit size (749549561 > 94154)". The gates then died in a
     CalledProcessError traceback, after the whole render. An unreadable

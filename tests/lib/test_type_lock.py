@@ -805,7 +805,7 @@ class TestAPictureNobodyCanRead:
     """A corrupt plate is a finding, not a traceback.
 
     On 2026-11-25 a merge slice's plate was written by two renderers at
-    once — the first run's `npx remotion render` outlived a `pkill` aimed
+    once — the first run's `npx remotion render` outlived the kill aimed
     at its parent — and the 135 MB result decoded at an error rate of 0.99
     ("Invalid NAL unit size (749549561 > 94154)"). `frame_at` ran ffmpeg
     with `check=True`, so the gates died in a CalledProcessError after the
