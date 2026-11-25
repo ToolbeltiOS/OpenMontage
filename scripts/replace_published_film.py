@@ -83,48 +83,50 @@ def retire(yt, old_id: str, new_id: str, dry_run: bool) -> str:
 
 def update_ledger(project: str, new_id: str, old_id: str, title: str,
                   dry_run: bool) -> str:
-    """Point the ledger at the new video, keeping the old id beside it.
+    """One row per film, pointing at the new video.
 
-    Through `append_film`, which holds the lock across the whole
-    read-modify-write and is idempotent on `video_id` — the same door every
-    publish uses. A replacement that wrote the file itself would be the one
-    writer that did not take the lock.
+    `publish_doc` writes the ledger through `shared_state.append_film`,
+    which is idempotent on VIDEO ID — so a replacement's upload appends a
+    SECOND row for a film that already has one, because the new id matches
+    nothing. This collapses them: the original row keeps its `entities`
+    and the date the subject was first published, takes the new id, and
+    lists every id it has had in `replaces`.
+
+    Under the lock, like every other writer. `append_film` cannot express
+    it, which is why this is the one read-modify-write that matches on the
+    project instead of the id.
     """
-    row = next((r for r in ledger_rows() if r.get("project") == project), None)
-    if row is None:
-        raise SystemExit(f"{project} is not in the ledger — nothing to replace")
-    if row.get("video_id") == new_id:
-        return "the ledger already names the new video"
-    record = dict(row)
-    record["replaces"] = [*record.get("replaces", []), old_id]
-    record["video_id"] = new_id
-    record["url"] = f"https://www.youtube.com/watch?v={new_id}"
-    record["title"] = title or record.get("title")
-    record["replaced_utc"] = datetime.now(timezone.utc).isoformat(
-        timespec="seconds")
-    if dry_run:
-        return f"would point the ledger at {new_id} (was {old_id})"
     import shared_state
-    # UNDER THE LOCK, like every other write to this file. `append_film`
-    # cannot express it: it is idempotent on `video_id`, and the row being
-    # changed is the one whose video_id is about to stop being true, so
-    # append_film would add a second row for the same film rather than
-    # update the first. This is the one read-modify-write that matches on
-    # the project instead.
     path = shared_state.published_path()
+    if dry_run:
+        rows = [r for r in ledger_rows() if r.get("project") == project]
+        return (f"would collapse {len(rows)} row(s) for {project} into one "
+                f"naming {new_id} (was {old_id})")
     with shared_state._locked(path):
         ledger = shared_state.read_published(path, allow_missing=True)
-        hit = False
-        for existing in ledger.get("films", []):
-            if existing.get("project") == project:
-                existing.clear()
-                existing.update(record)
-                hit = True
-        if not hit:
-            raise SystemExit(f"{project} vanished from the ledger under the "
-                             f"lock — nothing was written")
+        films = ledger.get("films") or []
+        mine = [r for r in films if r.get("project") == project]
+        if not mine:
+            raise SystemExit(f"{project} is not in the ledger — nothing "
+                             f"was written")
+        # The oldest row is the record of the subject: it carries the
+        # entities the picker matches on and the date it was first made.
+        base = next((r for r in mine if r.get("video_id") == old_id), mine[0])
+        seen = [r.get("video_id") for r in mine
+                if r.get("video_id") and r.get("video_id") != new_id]
+        record = dict(base)
+        record["replaces"] = sorted(set([*base.get("replaces", []), *seen]))
+        record["video_id"] = new_id
+        record["url"] = f"https://www.youtube.com/watch?v={new_id}"
+        record["title"] = title or record.get("title")
+        record["replaced_utc"] = datetime.now(timezone.utc).isoformat(
+            timespec="seconds")
+        ledger["films"] = [r for r in films if r.get("project") != project]
+        ledger["films"].append(record)
+        ledger["films"].sort(key=lambda r: r.get("published") or "")
         shared_state._write_atomic(path, json.dumps(ledger, indent=1) + "\n")
-    return f"ledger now names {new_id}, keeping {old_id} in `replaces`"
+    return (f"ledger: one row for {project} naming {new_id}, "
+            f"replaces {record['replaces']}")
 
 
 def main(argv: list[str] | None = None) -> int:
