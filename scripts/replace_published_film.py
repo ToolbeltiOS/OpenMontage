@@ -15,11 +15,12 @@ WHAT IT DOES, IN THIS ORDER
   2. sets the old video to UNLISTED — never deleted, because its id is in
      links, in the ledger's history and in whatever anyone has saved — and
      puts one line at the top of its description pointing at the new one;
-  3. posts the credits comment on the new video, which is a licence
-     obligation and does not travel with the upload;
-  4. updates the shared ledger so the topic picker reads the new id, and
+  3. updates the shared ledger so the topic picker reads the new id, and
      keeps the old one beside it as `replaces`;
-  5. leaves the credits page to be rebuilt, which picks up the new id.
+  4. leaves the credits page to be rebuilt, which picks up the new id —
+     and that page, linked from the description, IS the attribution. No
+     comment is posted on the new video; the one on the retired video is
+     left where it is.
 
 THE PICKER'S OTHER DEFENCE IS UNAFFECTED, and this is worth stating
 because it looks like it should be: `lib/already_covered.channel_films`

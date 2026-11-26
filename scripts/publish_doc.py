@@ -4,7 +4,7 @@
 REUSES RUN #1's PUBLISH PATH, PARAMETERISED. `publish/build_listing.py` and
 `publish/upload.py` are run #1's record and are hardcoded to it; the shape of
 what they do is right and is what this follows — listing from the project's
-own artifacts, resumable upload, thumbnail, playlist, credits comment — with
+own artifacts, resumable upload, thumbnail, playlist — with
 the project as an argument and three things added that a weekly run needs:
 
     publishAt       private now, public next Monday 09:00 America/Toronto.
@@ -253,50 +253,6 @@ def upload(yt, listing: dict, video: Path,
     return response["id"]
 
 
-#: YouTube rejects a comment over this. The credits block for a film with a
-#: big bank goes past it — noah's is 12,502 characters against easter-island's
-#: 8,230 — and nothing checked, so the whole block was refused at publish and
-#: the credits were lost to a line in the manual to-do list.
-#:
-#: Trimming it is not available: most of those lines are CC BY or CC BY-SA,
-#: where attribution is a LICENCE OBLIGATION and not a courtesy. So the block
-#: continues into replies on its own comment.
-#:
-#: MEASURED against the live API, because the documented 10,000 is not what it
-#: enforces and the error it gives first is misleading:
-#:
-#:      7,986 chars (60 credit lines)   OK
-#:      9,888 chars (the first split)   400 processingFailure
-#:     11,636 chars (80 credit lines)   400 commentTextTooLong
-#:
-#: `processingFailure` reads like a transient server fault and says to check
-#: the structure of the request — it is neither; it is the length, under a
-#: different name. 8,000 is the largest size proved to post.
-COMMENT_LIMIT = 8000
-
-
-def split_comment(text: str, limit: int = COMMENT_LIMIT) -> list[str]:
-    """The credits block as a comment and its replies, split between lines.
-
-    Never mid-line: every line is one credit, and half a credit attributes
-    nothing. A single line longer than the limit is left over-long rather than
-    cut, because truncating a URL produces a credit that points nowhere — it
-    will be refused and named in the manual list, which is the honest failure.
-    """
-    lines = text.split("\n")
-    parts: list[list[str]] = [[]]
-    room = limit - 40                       # headroom for the part marker
-    for line in lines:
-        current = sum(len(x) + 1 for x in parts[-1])
-        if parts[-1] and current + len(line) + 1 > room:
-            parts.append([])
-        parts[-1].append(line)
-    if len(parts) == 1:
-        return ["\n".join(parts[0])]
-    return [f"({i} of {len(parts)})\n" + "\n".join(part)
-            for i, part in enumerate(parts, start=1)]
-
-
 def srt_cues(path: Path) -> list[dict[str, Any]]:
     """The track on disk, back as cues, so what is CHECKED is what is SENT.
 
@@ -463,59 +419,21 @@ def main(argv: list[str] | None = None) -> int:
         playlist_id = None
         manual.append(f"playlist failed ({error.resp.status}) — add it in Studio")
 
-    comment_id = None
-    if listing.get("pinned_comment") and publish_at is not None:
-        # YOUTUBE DISABLES COMMENTS ON A PRIVATE VIDEO, so a scheduled film
-        # cannot carry its credits until it goes public. Measured on the
-        # four films: easter-island and noah were uploaded PUBLIC
-        # immediately and their credits posted; king-tut was the first
-        # uploaded private and scheduled, and `commentThreads.list` answers
-        # `commentsDisabled` for it while both public films list their
-        # threads. A short link-free comment fails identically, so it is not
-        # the length or the 59 attribution URLs.
-        #
-        # The attempt is not made, because the API's own answer for it is
-        # 403 "insufficient permissions. The request might not be properly
-        # authorized" — which reads as a missing scope and is not one:
-        # check_youtube_auth reports youtube.force-ssl granted. An hour went
-        # into that sentence.
-        #
-        # The credits are the per-asset attribution the CC BY licences
-        # require and the description carries only sources and music, so
-        # this is owed, not optional.
-        # NOT a manual item any more, and not an obligation: the credits
-        # live on the hosted page the description links to, which is up
-        # before this upload runs. The comment is a second copy of the same
-        # list, posted by com.wak3up.docs.credits within the hour after the
-        # film goes public. If it never posts, the attribution is still
-        # published and still linked.
-        done.append(
-            f"credits are at {page_url(args.project)} — the comment copy "
-            f"follows when the film goes public "
-            f"({publish_at.astimezone().strftime('%a %d %b %H:%M')})")
-    elif listing.get("pinned_comment"):
-        parts = split_comment(listing["pinned_comment"])
-        try:
-            thread = yt.commentThreads().insert(part="snippet", body={
-                "snippet": {"videoId": video_id, "topLevelComment": {"snippet": {
-                    "textOriginal": parts[0]}}}}).execute()
-            comment_id = thread["id"]
-            top_id = thread["snippet"]["topLevelComment"]["id"]
-            done.append("credits comment posted"
-                        + (f" ({len(parts)} parts)" if len(parts) > 1 else ""))
-            for i, part in enumerate(parts[1:], start=2):
-                try:
-                    yt.comments().insert(part="snippet", body={"snippet": {
-                        "parentId": top_id, "textOriginal": part}}).execute()
-                except HttpError as error:
-                    manual.append(
-                        f"credits part {i} of {len(parts)} failed "
-                        f"({error.resp.status}) — the attribution it carries "
-                        f"is a LICENCE OBLIGATION, so post it by hand from "
-                        f"listing.json")
-            manual.append("PIN the credits comment (no API for it)")
-        except HttpError as error:
-            manual.append(f"credits comment failed ({error.resp.status})")
+    # NO CREDITS COMMENT. The attribution is the hosted credits page the
+    # description links to, above the fold, pushed before this upload runs
+    # and live from the moment anyone can see the film. CC BY 4.0 3(a)(2)
+    # is satisfied by "providing a URI or hyperlink to a resource that
+    # includes the required information", so the page IS the attribution
+    # rather than a stand-in for a comment.
+    #
+    # The comment was a second copy of the same list. It cost a per-film
+    # manual pin that was never required, an hourly agent, a length limit
+    # measured against the live API, a split-into-replies path, and an
+    # idempotency check against the channel — all to publish, twice, what
+    # the description already links. Existing comments on the six
+    # published films are left exactly as they are.
+    done.append(f"credits are at {page_url(args.project)} — linked in "
+                f"the description, which is the attribution")
 
     if captions.exists():
         good, why = caption_verdict(captions, video)
@@ -571,7 +489,7 @@ def main(argv: list[str] | None = None) -> int:
         "publish_at": now.isoformat() if publish_at is None
                       else publish_at.isoformat(),
         "playlist_id": playlist_id,
-        "comment_id": comment_id, "done": done, "manual": manual,
+        "done": done, "manual": manual,
     }
     (artifacts / "publish.json").write_text(json.dumps(record, indent=1) + "\n")
 
