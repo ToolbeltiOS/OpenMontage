@@ -108,7 +108,8 @@ class TestResolving:
         self._telegram(monkeypatch, "ok")
         calls = []
         monkeypatch.setattr(T, "set_on_video",
-                            lambda s, why: calls.append(why) or True)
+                            lambda s, why, record=None:
+                            calls.append(why) or True)
         assert T.resolve(slug) == "set"
         assert "you said ok" in calls[0]
         assert json.loads((art / "thumbnail_gate.json").read_text())["state"] == "set"
@@ -146,7 +147,8 @@ class TestResolving:
         self._telegram(monkeypatch, None)
         said = []
         monkeypatch.setattr(T, "set_on_video",
-                            lambda s, why: said.append(why) or True)
+                            lambda s, why, record=None:
+                            said.append(why) or True)
         assert T.resolve(slug, now=datetime(2026, 11, 8, 20, 1)) == "set"
         assert "no reply" in said[0] and "auto-frame" in said[0]
 
@@ -303,3 +305,172 @@ class TestAFilmThatIsAlreadyLive:
         monkeypatch.setattr(T, "ROOT", tmp_path)
         (tmp_path / "projects" / "film" / "artifacts").mkdir(parents=True)
         assert not T.is_public("film")
+
+
+class TestWhatWasPostedIsWhatIsSet:
+    """The picture you approved is the picture that goes up.
+
+    `renders/thumbnail.jpg` is a WORKING path. The delivery stage rewrites
+    it on every render and a "no" regenerates it in place, while the reply
+    arrives hours later in another process. A gate that uploads "whatever
+    is at that path now" shows one picture and sets another.
+
+    Measured 2026-11-25 on film #6: delivery regenerated the thumbnail at
+    18:52:39, the gate posted it, the owner replied ok at 18:53:13, and the
+    published image was restored over that path at 18:54. The right image
+    went up because the upload happened to run afterwards. This pins it.
+    """
+
+    POSTED = b"\xff\xd8POSTED-BYTES\xff\xd9"
+    REGENERATED = b"\xff\xd8SOMETHING-ELSE-ENTIRELY\xff\xd9"
+
+    @pytest.fixture
+    def film(self, tmp_path, monkeypatch):
+        slug = "a-film"
+        art = tmp_path / "projects" / slug / "artifacts"
+        renders = tmp_path / "projects" / slug / "renders"
+        art.mkdir(parents=True)
+        renders.mkdir(parents=True)
+        (art / "publish.json").write_text(json.dumps({"video_id": "vid1"}))
+        monkeypatch.setattr(T, "ROOT", tmp_path)
+
+        working = renders / "thumbnail.jpg"
+
+        def fake_build(_slug, out, **_variant):
+            Path(out).write_bytes(self.POSTED)
+            return {"path": str(out), "from_cut": "c001"}
+
+        import types
+        monkeypatch.setitem(sys.modules, "build_thumbnail",
+                            types.SimpleNamespace(build=fake_build))
+        return slug, art, working
+
+    def _telegram(self, monkeypatch, text):
+        sent = []
+
+        class Fake:
+            @staticmethod
+            def updates(offset=None, timeout=50):
+                return ([{"update_id": 9, "message": {"text": text}}]
+                        if text is not None else [])
+
+            @staticmethod
+            def send(message, **k):
+                sent.append(message)
+
+            @staticmethod
+            def send_photo(*a, **k):
+                return None
+
+            @staticmethod
+            def escape(t):
+                return t
+        monkeypatch.setitem(sys.modules, "telegram", Fake)
+        return sent
+
+    def _uploads(self, monkeypatch):
+        """Capture the bytes handed to thumbnails.set."""
+        uploaded = []
+        import googleapiclient.http as H
+
+        class FakeMedia:
+            def __init__(self, filename, *a, **k):
+                uploaded.append(Path(filename).read_bytes())
+        monkeypatch.setattr(H, "MediaFileUpload", FakeMedia)
+
+        class FakeYT:
+            def thumbnails(self):
+                return self
+
+            def set(self, **_kw):
+                return self
+
+            def execute(self):
+                return {}
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import publish_doc as P
+        monkeypatch.setattr(P, "client", lambda: FakeYT())
+        return uploaded
+
+    def test_posting_pins_the_bytes_beside_the_record(self, film, monkeypatch):
+        slug, art, _working = film
+        self._telegram(monkeypatch, None)
+        record = T.post(slug)
+        kept = Path(record["posted_file"])
+        assert kept.exists() and kept.parent == art
+        assert kept.read_bytes() == self.POSTED
+        assert record["sha256"] == T.digest(kept)
+
+    def test_a_variant_regenerated_in_between_is_not_what_goes_up(
+            self, film, monkeypatch):
+        """The whole case, end to end: post, regenerate the working file,
+        reply ok, and check the bytes that reached the API."""
+        slug, art, working = film
+        self._telegram(monkeypatch, None)
+        T.post(slug)
+
+        working.write_bytes(self.REGENERATED)          # a new variant lands
+        assert working.read_bytes() != self.POSTED
+
+        self._telegram(monkeypatch, "ok")
+        uploaded = self._uploads(monkeypatch)
+        assert T.resolve(slug) == "set"
+        assert uploaded == [self.POSTED]
+        assert self.REGENERATED not in uploaded
+
+    def test_the_deadline_path_sets_the_posted_bytes_too(self, film,
+                                                         monkeypatch):
+        """Silence resolves to setting it — the one that was SHOWN."""
+        slug, _art, working = film
+        self._telegram(monkeypatch, None)
+        T.post(slug)
+        working.write_bytes(self.REGENERATED)
+        uploaded = self._uploads(monkeypatch)
+        assert T.resolve(slug, now=datetime(2030, 1, 1)) == "set"
+        assert uploaded == [self.POSTED]
+
+    def test_a_pinned_file_whose_bytes_changed_is_refused(self, film,
+                                                          monkeypatch):
+        """The pin is checked, not trusted: a copy that was overwritten in
+        place is not the picture anyone saw."""
+        slug, _art, _working = film
+        self._telegram(monkeypatch, None)
+        record = T.post(slug)
+        Path(record["posted_file"]).write_bytes(self.REGENERATED)
+
+        sent = self._telegram(monkeypatch, "ok")
+        uploaded = self._uploads(monkeypatch)
+        assert T.resolve(slug) == "failed"
+        assert uploaded == []
+        assert any("not the file that was posted" in m for m in sent), sent
+
+    def test_a_missing_pinned_file_is_refused_and_said(self, film,
+                                                       monkeypatch):
+        slug, _art, _working = film
+        self._telegram(monkeypatch, None)
+        record = T.post(slug)
+        Path(record["posted_file"]).unlink()
+
+        sent = self._telegram(monkeypatch, "ok")
+        uploaded = self._uploads(monkeypatch)
+        assert T.resolve(slug) == "failed"
+        assert uploaded == []
+        assert any("is gone from" in m for m in sent), sent
+
+    def test_an_older_record_without_a_pin_still_works_and_says_so(
+            self, film, monkeypatch):
+        """Records written before this change name no posted file. They fall
+        back to the working path — and the message says that is what
+        happened, rather than claiming an approval it cannot prove."""
+        slug, art, working = film
+        working.write_bytes(self.REGENERATED)
+        (art / "thumbnail_gate.json").write_text(json.dumps({
+            "slug": slug, "state": "waiting", "attempt": 0, "variant": {},
+            "from_cut": "c001", "path": str(working), "offset": 0,
+            "posted": "2026-11-06T23:00:00",
+            "deadline": "2026-11-08T20:00:00"}))
+        sent = self._telegram(monkeypatch, "ok")
+        uploaded = self._uploads(monkeypatch)
+        assert T.resolve(slug) == "set"
+        assert uploaded == [self.REGENERATED]
+        assert any("before the posted file was pinned" in m for m in sent), sent

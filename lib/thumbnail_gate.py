@@ -26,7 +26,9 @@ from, and when the deadline falls.
 """
 from __future__ import annotations
 
+import hashlib
 import json
+import shutil
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -64,6 +66,36 @@ VARIANTS = [
     {"title_side": "left", "scale": 1.18},
     {"title_side": "right", "scale": 1.18, "offset_x": -0.06},
 ]
+
+
+def digest(path: Path) -> str:
+    """sha256 of a file, so a record can say WHICH picture it means."""
+    h = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def pin(slug: str, source: Path, attempt: int) -> tuple[Path, str]:
+    """Keep a copy of the exact bytes that were POSTED, beside the record.
+
+    `renders/thumbnail.jpg` is a working path: the delivery stage rewrites
+    it on every render, and a "no" regenerates it in place. The reply comes
+    back hours later, so a gate that uploads "whatever is at that path now"
+    sets a picture nobody approved — approving what you were shown and
+    receiving what happened to be there afterwards.
+
+    Measured 2026-11-25 on film #6: delivery regenerated the thumbnail at
+    18:52:39, the gate posted it, the owner replied ok at 18:53:13, and the
+    published image was restored over that path at 18:54. Nothing diverged
+    only because the replacement upload ran afterwards. Ordering is not a
+    guarantee, so the bytes are pinned instead.
+    """
+    kept = source.parent.parent / "artifacts" / f"thumbnail_posted_{attempt}.jpg"
+    kept.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, kept)
+    return kept, digest(kept)
 
 
 def record_path(slug: str) -> Path:
@@ -193,6 +225,7 @@ def post(slug: str, attempt: int = 0, notes: str | None = None
     variant = VARIANTS[min(attempt, len(VARIANTS) - 1)]
     out = ROOT / "projects" / slug / "renders" / "thumbnail.jpg"
     made = build(slug, out, **variant)
+    kept, sha = pin(slug, Path(made["path"]), attempt)
 
     offset = 0
     try:
@@ -220,7 +253,10 @@ def post(slug: str, attempt: int = 0, notes: str | None = None
 
     record = {"slug": slug, "state": "waiting", "attempt": attempt,
               "variant": variant, "from_cut": made["from_cut"],
-              "path": made["path"], "offset": offset,
+              # `path` is where it was BUILT and may be rewritten by anything;
+              # `posted_file` and `sha256` are the picture that was shown.
+              "path": made["path"],
+              "posted_file": str(kept), "sha256": sha, "offset": offset,
               "posted": datetime.now().isoformat(timespec="seconds"),
               "deadline": deadline.isoformat(timespec="seconds")}
     record_path(slug).write_text(json.dumps(record, indent=1) + "\n")
@@ -236,15 +272,41 @@ def classify(reply: str) -> str:
     return "notes" if word else "none"
 
 
-def set_on_video(slug: str, why: str) -> bool:
-    """thumbnails.set, and say so. Returns whether it went up."""
+def set_on_video(slug: str, why: str,
+                 record: dict[str, Any] | None = None) -> bool:
+    """thumbnails.set, and say so. Returns whether it went up.
+
+    WHAT GOES UP IS WHAT WAS POSTED. The file is taken from the record's
+    `posted_file` and checked against the `sha256` written beside it, so a
+    picture regenerated at the working path between the question and the
+    answer cannot be uploaded in place of the one that was approved.
+    """
     import telegram
     sys.path.insert(0, str(ROOT / "scripts"))
     import publish_doc as P
     from googleapiclient.http import MediaFileUpload
 
     vid = video_id(slug)
-    path = ROOT / "projects" / slug / "renders" / "thumbnail.jpg"
+    record = record or {}
+    pinned = record.get("posted_file")
+    if pinned:
+        path = Path(pinned)
+        if not path.exists():
+            telegram.send(f"<b>Thumbnail not set</b> — {slug}\nThe picture "
+                          f"that was posted is gone from {path}, so there is "
+                          f"nothing to set that anyone has seen.")
+            return False
+        if record.get("sha256") and digest(path) != record["sha256"]:
+            telegram.send(f"<b>Thumbnail not set</b> — {slug}\n{path.name} "
+                          f"is not the file that was posted — its bytes "
+                          f"changed. Nothing is uploaded.")
+            return False
+    else:
+        # A record written before the bytes were pinned. Say so rather than
+        # pretend the old path is the approved picture.
+        path = ROOT / "projects" / slug / "renders" / "thumbnail.jpg"
+        why += " (a record from before the posted file was pinned, so this " \
+               "is whatever is at the working path)"
     if not vid or not path.exists():
         return False
     try:
@@ -283,7 +345,7 @@ def resolve(slug: str, now: datetime | None = None) -> str:
 
     if verdict == "ok":
         record["state"] = "set" if set_on_video(
-            slug, "you said ok") else "failed"
+            slug, "you said ok", record) else "failed"
     elif verdict in ("no", "notes"):
         nxt = post(slug, attempt=record.get("attempt", 0) + 1,
                    notes=reply if verdict == "notes" else None)
@@ -292,7 +354,8 @@ def resolve(slug: str, now: datetime | None = None) -> str:
         record["state"] = "set" if set_on_video(
             slug,
             f"no reply by {deadline:%a %d %b %H:%M}, so it went up as shown — "
-            f"a generated thumbnail beats the auto-frame") else "failed"
+            f"a generated thumbnail beats the auto-frame",
+            record) else "failed"
         record["by_deadline"] = True
     else:
         return f"waiting until {record['deadline']}"
